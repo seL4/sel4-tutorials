@@ -15,6 +15,7 @@ First of all we assume that you are running Linux.  We typically use some flavou
     sudo apt-get install -y build-essential realpath 
     sudo apt-get install -y gcc-multilib ccache ncurses-dev
     sudo apt-get install -y gcc-arm-linux-gnueabi
+    sudo apt-get install -y gcc-arm-none-eabi
 
     sudo apt-get install -y python-pip python-jinja2 python-ply  python-tempita
     sudo pip install --upgrade pip
@@ -57,6 +58,7 @@ Building and running seL4 and CAmkES reguires:
     sudo add-apt-repository universe
     sudo apt-get update
     sudo apt-get install gcc-arm-linux-gnueabi
+    sudo apt-get install gcc-arm-none-eabi
 
 
 ### Python and Python packages
