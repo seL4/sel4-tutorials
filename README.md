@@ -1,2 +1,2 @@
 # sel4-tutorials
-Various tutorials for using seL4, it's libraries, and tools.
+Various tutorials for using seL4, its libraries, and tools.
