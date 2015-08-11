@@ -1,0 +1,18 @@
+#
+# Copyright 2014, NICTA
+#
+# This software may be distributed and modified according to the terms of
+# the BSD 2-Clause license. Note that NO WARRANTY is provided.
+# See "LICENSE_BSD2.txt" for details.
+#
+# @TAG(NICTA_BSD)
+#
+
+menuconfig APP_HELLO_LIBS_4_APPS
+    bool "Apps for hello-libs-4"
+    default y
+    depends on LIB_SEL4 && (LIB_MUSL_C || LIB_SEL4_C) && LIB_SEL4_MUSLC_SYS && LIB_UTILS 
+    help
+        Contains all the apps that hello-libs-4 starts.
+
+#    depends on LIB_SEL4 && LIB_MUSL_C && LIB_SEL4_MUSLC_SYS && LIB_SEL4_PLAT_SUPPORT && LIB_CPIO && LIB_SEL4_ALLOCMAN && LIB_ELF && LIB_SEL4_VSPACE
