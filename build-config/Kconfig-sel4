@@ -1,0 +1,56 @@
+#
+# Copyright 2014, NICTA
+#
+# This software may be distributed and modified according to the terms of
+# the BSD 2-Clause license. Note that NO WARRANTY is provided.
+# See "LICENSE_BSD2.txt" for details.
+#
+# @TAG(NICTA_BSD)
+#
+
+# This file defines the Kconfig menu structure.
+
+mainmenu "Project Configuration"
+
+config COMMON_PATH
+    string
+    option env="COMMON_PATH"
+
+menu "seL4 Kernel"
+source "kernel/Kconfig"
+endmenu
+
+menu "seL4 Applications"
+    source "apps/sel4test-driver/Kconfig"
+    source "apps/sel4test-tests/Kconfig"
+    source "apps/hello-libs-1/Kconfig"
+    source "apps/hello-libs-2/Kconfig"
+    source "apps/hello-libs-3/Kconfig"
+    source "apps/hello-libs-4/Kconfig"
+    source "apps/hello-libs-4-apps/Kconfig"
+endmenu
+
+menu "seL4 Libraries"
+    source "libs/libsel4/Kconfig"
+    source "libs/libmuslc/Kconfig"
+    source "libs/libsel4muslcsys/Kconfig"
+    source "libs/libsel4vka/Kconfig"
+    source "libs/libsel4vspace/Kconfig"
+    source "libs/libsel4allocman/Kconfig"
+    source "libs/libcpio/Kconfig"
+    source "libs/libelf/Kconfig"
+    source "libs/libsel4utils/Kconfig"
+    source "libs/libsel4platsupport/Kconfig"
+    source "libs/libsel4test/Kconfig"
+    source "libs/libsel4simple/Kconfig"
+    source "libs/libsel4simple-default/Kconfig"
+    source "libs/libsel4simple-stable/Kconfig"
+    source "libs/libutils/Kconfig"
+    source "libs/libplatsupport/Kconfig"
+endmenu
+
+menu "Tools"
+    source "tools/elfloader/Kconfig"
+endmenu
+
+source "$COMMON_PATH/Kconfig"
