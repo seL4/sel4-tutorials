@@ -8,6 +8,11 @@
  * @TAG(NICTA_BSD)
  */
 
+/*
+ * seL4 tutorial part 1:  simple printf
+ */
+
+
 #include <stdio.h>
 
 int main(void)
