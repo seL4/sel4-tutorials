@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Project Configuration
-# Tue Aug 11 17:32:05 2015
+# Tue Aug 11 17:32:42 2015
 #
 
 #
@@ -66,9 +66,9 @@ CONFIG_OPTIMISATION_O2=y
 #
 # seL4 Applications
 #
-CONFIG_APP_HELLO_1=y
+# CONFIG_APP_HELLO_1 is not set
 # CONFIG_APP_HELLO_2 is not set
-# CONFIG_APP_HELLO_3 is not set
+CONFIG_APP_HELLO_3=y
 # CONFIG_APP_HELLO_4 is not set
 # CONFIG_APP_HELLO_4_APP is not set
 

@@ -44,7 +44,7 @@
 #define MSG_DATA 0x6161
 
 #define APP_PRIORITY 255
-#define APP_IMAGE_NAME "hello-libs-4-apps"
+#define APP_IMAGE_NAME "hello-4-app"
 
 seL4_BootInfo *info;
 simple_t simple;
@@ -83,7 +83,7 @@ int main(void)
     UNUSED seL4_CPtr ipc_frame;
 
 #ifdef SEL4_DEBUG_KERNEL
-    seL4_DebugNameThread(seL4_CapInitThreadTCB, "hello-libs-4");
+    seL4_DebugNameThread(seL4_CapInitThreadTCB, "hello-4");
 #endif
 
     /* get boot info */
@@ -149,6 +149,7 @@ int main(void)
     error = sel4utils_spawn_process_v(&new_process, &vka, &vspace, 0, NULL, 1);
     assert(error == 0);
 
+#if 0
     /* send message on EP */
     seL4_Word msg;
     seL4_MessageInfo_t tag = seL4_MessageInfo_new(0, 0, 0, 1);
@@ -161,7 +162,21 @@ int main(void)
     assert(msg == ~MSG_DATA);
 
     printf("main: got a reply: %#x\n", msg);
+#endif
+    seL4_Word sender_badge;
+    seL4_MessageInfo_t tag;
+    seL4_Word msg;
 
+    tag = seL4_Wait(ep_cap_path.capPtr, &sender_badge);
+    printf("got a message from sender badge: %#x\n", sender_badge);
+    assert(sender_badge == EP_BADGE);
+
+    assert(seL4_MessageInfo_get_length(tag) == 1);
+    msg = seL4_GetMR(0);
+    printf("main: got a message %#x from %#x\n", msg, sender_badge);
+
+    seL4_SetMR(0, ~msg);
+    seL4_ReplyWait(ep_cap_path.capPtr, tag, &sender_badge);
 
     printf("main: hello world\n");
 

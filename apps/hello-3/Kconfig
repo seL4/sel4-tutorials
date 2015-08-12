@@ -8,14 +8,10 @@
 # @TAG(NICTA_BSD)
 #
 
-menuconfig APP_HELLO_LIBS_3
-    bool "Hello World for libraries tutorial - v3"
+menuconfig APP_HELLO_3
+    bool "Hello World tutorial - v3"
     default y
     depends on LIB_SEL4 && (LIB_MUSL_C || LIB_SEL4_C) && LIB_SEL4_VKA && LIB_SEL4_UTILS 
     help
-       Simple example of how to use seL4 libraries - version 3. 
-
-# LIB_UTILS
-# LIB_SEL4_PLAT_SUPPORT
-# CPIO?  ELF?
+       Simple example of how to use the seL4 API and libraries - version 3. 
 

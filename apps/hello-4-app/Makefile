@@ -1,5 +1,5 @@
 #
-# Copyright 2014, NICTA
+# Copyright 2015, NICTA
 #
 # This software may be distributed and modified according to the terms of
 # the BSD 2-Clause license. Note that NO WARRANTY is provided.
@@ -17,10 +17,8 @@ LDFLAGS += -u __vsyscall_ptr
 
 # Source files required to build the target	
 CFILES :=  $(patsubst $(SOURCE_DIR)/%,%,$(wildcard $(SOURCE_DIR)/src/*.c))
-#CFILES +=  $(patsubst $(SOURCE_DIR)/%,%,$(wildcard $(SOURCE_DIR)/src/tests/*.c))
 
 # Libraries
 LIBS := c sel4 sel4muslcsys platsupport utils
-# LIBS := sel4 c cpio sel4muslcsys sel4utils sel4allocman sel4simple sel4test elf sel4platsupport platsupport sel4vspace
 
 include $(SEL4_COMMON)/common.mk

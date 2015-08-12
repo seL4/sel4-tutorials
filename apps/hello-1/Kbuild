@@ -8,13 +8,16 @@
 # @TAG(NICTA_BSD)
 #
 
-apps-$(CONFIG_APP_HELLO_LIBS_1)        += hello-libs-1
+apps-$(CONFIG_APP_HELLO_1) += hello-1
 
 # list of libraries the app needs to build
-hello-libs-1-y                      = common libsel4 libmuslc libsel4vka libcpio libelf \
-                                      libsel4allocman \
-                                      libsel4platsupport libsel4platsupport libsel4muslcsys libsel4test \
-                                      libsel4simple libsel4vspace libsel4utils libutils
+hello-1-y = common libsel4 libmuslc \
+            libsel4muslcsys \
+            libsel4platsupport libsel4platsupport \
+            libsel4utils libutils 
+#            libsel4vka \
+#            libsel4allocman \
+#            libsel4simple libsel4vspace 
 
 # set up correct simple lib for our kernel
 ifdef CONFIG_KERNEL_STABLE
@@ -23,7 +26,7 @@ else
 sel4test-driver-$(CONFIG_LIB_SEL4_SIMPLE_DEFAULT) += libsel4simple-default
 endif
 
-hello-libs-1: kernel_elf $(hello-libs-1-y)
+hello-1: kernel_elf $(hello-1-y)
 
 # add the tests app  as a component so that we can elf load it
 # sel4test-driver-components-y += sel4test-tests
