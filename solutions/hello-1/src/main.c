@@ -8,23 +8,7 @@
  * @TAG(NICTA_BSD)
  */
 
-/* Include Kconfig variables. */
-#include <autoconf.h>
-
 #include <stdio.h>
-
-#include <sel4/sel4.h>
-
-void abort(void) {
-    while (1);
-}
-
-void __arch_putchar(int c) {
-#ifdef CONFIG_DEBUG_BUILD
-    seL4_DebugPutChar(c);
-#endif
-}
-
 
 int main(void)
 {
