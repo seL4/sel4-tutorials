@@ -1,0 +1,77 @@
+#
+# Copyright 2015, NICTA
+#
+# This software may be distributed and modified according to the terms of
+# the BSD 2-Clause license. Note that NO WARRANTY is provided.
+# See "LICENSE_BSD2.txt" for details.
+#
+# @TAG(NICTA_BSD)
+#
+
+mainmenu "CAmkES project configuration"
+
+config COMMON_PATH
+    string
+    option env="COMMON_PATH"
+
+menu "Kernel"
+    source "kernel/Kconfig"
+endmenu
+
+menu "Libraries"
+    source "libs/libmuslc/Kconfig"
+    source "libs/libsel4/Kconfig"
+    source "libs/libsel4muslcsys/Kconfig"
+    source "libs/libsel4muslccamkes/Kconfig"
+    source "libs/libsel4platsupport/Kconfig"
+    source "libs/libsel4utils/Kconfig"
+    source "libs/libcpio/Kconfig"
+    source "libs/libelf/Kconfig"
+    source "libs/libsel4bench/Kconfig"
+    source "libs/libsel4sync/Kconfig"
+    source "libs/libsel4vspace/Kconfig"
+    source "libs/libsel4vka/Kconfig"
+    source "libs/libplatsupport/Kconfig"
+    source "libs/libsel4debug/Kconfig"
+    source "libs/libutils/Kconfig"
+    source "libs/libsel4simple/Kconfig"
+    source "libs/libsel4simple-default/Kconfig"
+endmenu
+
+menu "Applications"
+    source "apps/capdl-loader-experimental/Kconfig"
+    source "apps/hello_1/Kconfig"
+    source "apps/hello_2/Kconfig"
+    source "apps/hello_3/Kconfig"
+    source "apps/hello_4/Kconfig"
+
+    menu "Examples"
+        source "apps/simple/Kconfig"
+        source "apps/dataport/Kconfig"
+        source "apps/event/Kconfig"
+        source "apps/filter/Kconfig"
+        source "apps/terminal/Kconfig"
+        source "apps/mutex/Kconfig"
+        source "apps/lockserver/Kconfig"
+        source "apps/multiclient/Kconfig"
+        source "apps/multiassembly/Kconfig"
+        source "apps/hierarchical-components/Kconfig"
+        source "apps/hierarchical-attributes/Kconfig"
+        source "apps/global-imports/Kconfig"
+        source "apps/swapcounter/Kconfig"
+        source "apps/uart/Kconfig"
+        source "apps/epit/Kconfig"
+        source "apps/keyboard/Kconfig"
+    endmenu
+
+    menu "Integration tests"
+        source "apps/rotate/Kconfig"
+        source "apps/adder/Kconfig"
+        source "apps/socket/Kconfig"
+        source "apps/multiplier/Kconfig"
+        source "apps/exchangestring/Kconfig"
+    endmenu
+endmenu
+
+source "tools/camkes/Kconfig"
+source "$COMMON_PATH/Kconfig"
