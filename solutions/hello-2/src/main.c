@@ -39,8 +39,8 @@ allocman_t *allocman;
 #define ALLOCATOR_STATIC_POOL_SIZE ((1 << seL4_PageBits) * 10)
 UNUSED static char allocator_mem_pool[ALLOCATOR_STATIC_POOL_SIZE];
 
-#define THREAD_2_STACK_SIZE 4096
-static int thread_2_stack[THREAD_2_STACK_SIZE];
+#define THREAD_2_STACK_SIZE 512
+static uint64_t thread_2_stack[THREAD_2_STACK_SIZE];
 
 void abort(void) {
     while (1);
@@ -115,7 +115,7 @@ int main(void)
     error = seL4_TCB_ReadRegisters(tcb_object.cptr, 0, 0, 2, &regs);
     assert(error == 0);
     sel4utils_set_instruction_pointer(&regs, (seL4_Word)thread_2);
-    sel4utils_set_stack_pointer(&regs, (seL4_Word)thread_2_stack);
+    sel4utils_set_stack_pointer(&regs, (seL4_Word)(thread_2_stack + sizeof(thread_2_stack)));
 
 /*    seL4_TCB_WriteRegisters(seL4_TCB service, seL4_Bool resume_target, seL4_Uint8 arch_flags, seL4_Word count, seL4_UserContext *regs)
       count: number of registers to transfer. IP is first, SP is second.

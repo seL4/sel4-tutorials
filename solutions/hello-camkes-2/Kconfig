@@ -8,10 +8,8 @@
 # @TAG(NICTA_BSD)
 #
 
-menuconfig APP_HELLO_3
-    bool "Hello World tutorial - v3"
+config APP_HELLO_CAMKES_2
+    bool "CAmkES Hello World application with events and dataports"
     default n
-    depends on LIB_SEL4 && (LIB_MUSL_C || LIB_SEL4_C) && LIB_SEL4_VKA && LIB_SEL4_UTILS 
     help
-       Simple example of how to use the seL4 API and libraries - version 3. 
-
+        Hello World application to demonstrate CAmkES events and dataports.

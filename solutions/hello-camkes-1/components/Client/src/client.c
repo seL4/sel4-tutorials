@@ -8,28 +8,17 @@
  * @TAG(NICTA_BSD)
  */
 
-/* Include Kconfig variables. */
-#include <autoconf.h>
-
 #include <stdio.h>
 
-#include <sel4/sel4.h>
+#include <camkes.h>
 
-void abort(void) {
-    while (1);
-}
+int run(void) {
+    printf("Starting the client\n");
+    printf("-------------------\n");
 
-void __arch_putchar(int c) {
-#ifdef CONFIG_DEBUG_BUILD
-    seL4_DebugPutChar(c);
-#endif
-}
+    char *shello = "hello world";
+    hello_say_hello(shello);
 
-
-int main(void)
-{
-    printf("hello world\n");
-
+    printf("After the client\n");
     return 0;
 }
-

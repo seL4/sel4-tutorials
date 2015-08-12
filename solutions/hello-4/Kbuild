@@ -8,29 +8,25 @@
 # @TAG(NICTA_BSD)
 #
 
-apps-$(CONFIG_APP_HELLO_LIBS_4)        += hello-libs-4
+apps-$(CONFIG_APP_HELLO_4) += hello-4
 
 # list of libraries the app needs to build
-hello-libs-4-y = common libsel4 libmuslc libsel4muslcsys \
-                 libsel4simple libsel4vka libsel4allocman libsel4vspace \
-		 libplatsupport libsel4platsupport \
-                 libsel4utils \
-                 libcpio libelf
-#                libutils \
-
+hello-4-y = common libsel4 libmuslc libsel4muslcsys \
+            libsel4simple libsel4vka libsel4allocman libsel4vspace \
+	    libplatsupport libsel4platsupport \
+            libsel4utils \
+            libcpio libelf
 
 # set up correct simple lib for our kernel
 ifdef CONFIG_KERNEL_STABLE
-hello-libs-4-$(CONFIG_LIB_SEL4_SIMPLE_STABLE) += libsel4simple-stable
+hello-4-$(CONFIG_LIB_SEL4_SIMPLE_STABLE) += libsel4simple-stable
 else
-hello-libs-4-$(CONFIG_LIB_SEL4_SIMPLE_DEFAULT) += libsel4simple-default
+hello-4-$(CONFIG_LIB_SEL4_SIMPLE_DEFAULT) += libsel4simple-default
 endif
 
-# hello-libs-4: kernel_elf $(hello-libs-4-y)
-
 # add the companion app  as a component so that we can elf load it
-hello-libs-4-components-y += hello-libs-4-apps
-hello-libs-4-components = $(addprefix $(STAGE_BASE)/bin/, $(hello-libs-4-components-y))
+hello-4-components-y += hello-4-app
+hello-4-components = $(addprefix $(STAGE_BASE)/bin/, $(hello-4-components-y))
 
-hello-libs-4: export COMPONENTS=${hello-libs-4-components}
-hello-libs-4: ${hello-libs-4-components-y} kernel_elf $(hello-libs-4-y)
+hello-4: export COMPONENTS=${hello-4-components}
+hello-4: ${hello-4-components-y} kernel_elf $(hello-4-y)

@@ -1,0 +1,25 @@
+/*
+ * Copyright 2015, NICTA
+ *
+ * This software may be distributed and modified according to the terms of
+ * the BSD 2-Clause license. Note that NO WARRANTY is provided.
+ * See "LICENSE_BSD2.txt" for details.
+ *
+ * @TAG(NICTA_BSD)
+ */
+
+import <std_connector.camkes>;
+
+import "components/Client/Client.camkes";
+import "components/Echo/Echo.camkes";
+
+assembly {
+        composition {
+                component Client client;
+                component Echo echo;
+
+                //connection seL4RPC hello_con(from client.hello, to echo.hello);
+                connection seL4RPCCall hello_con(from client.hello, to echo.hello);
+        }
+}
+

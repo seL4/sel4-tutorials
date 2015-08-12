@@ -1,0 +1,38 @@
+/*
+ * Copyright 2015, NICTA
+ *
+ * This software may be distributed and modified according to the terms of
+ * the BSD 2-Clause license. Note that NO WARRANTY is provided.
+ * See "LICENSE_BSD2.txt" for details.
+ *
+ * @TAG(NICTA_BSD)
+ */
+
+import <std_connector.camkes>;
+
+import "components/Client/Client.camkes";
+import "components/Echo/Echo.camkes";
+
+assembly {
+        composition {
+                component Client client;
+                component Echo echo;
+		
+		connection seL4Asynch echo_event(from client.echo, to echo.echo);
+		connection seL4Asynch client_event(from echo.client, to client.client);
+		connection seL4SharedData data_conn(from client.d, to echo.d);
+		connection seL4SharedData typed_data_conn(from client.d_typed, to echo.d_typed);
+		connection seL4SharedData ptr_data_conn(from client.d_ptrs, to echo.d_ptrs);
+	
+	}
+	configuration {
+		client.priority = 255;
+		echo.priority = 254;
+
+		data_conn.to_access = "R";
+		data_conn.from_access = "W";
+		typed_data_conn.to_access ="W";
+		typed_data_conn.from_access = "R";
+	}
+}
+
