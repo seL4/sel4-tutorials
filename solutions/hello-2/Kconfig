@@ -9,9 +9,9 @@
 #
 
 menuconfig APP_HELLO_2
-    bool "Hello World tutorial - v2"
+    bool "seL4 Hello World tutorial - v2"
     default n
-    depends on LIB_SEL4 && (LIB_MUSL_C || LIB_SEL4_C) && LIB_SEL4_VKA && LIB_SEL4_UTILS 
+    depends on LIB_SEL4 && (LIB_MUSL_C || LIB_SEL4_C) && LIB_SEL4_SIMPLE && LIB_SEL4_VKA && LIB_SEL4_ALLOCMAN && LIB_SEL4_PLAT_SUPPORT
     help
        Simple example of how to use the seL4 API and libraries - version 2. 
 

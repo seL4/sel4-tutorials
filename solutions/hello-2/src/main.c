@@ -9,7 +9,7 @@
  */
 
 /*
- * Part X: create a new thread
+ * seL4 tutorial part 2: create and run a new thread
  */
 
 /* Include Kconfig variables. */
@@ -30,6 +30,7 @@
 #include <allocman/vka.h>
 
 
+/* global environment variables */
 seL4_BootInfo *info;
 simple_t simple;
 vka_t vka;
@@ -39,21 +40,16 @@ allocman_t *allocman;
 #define ALLOCATOR_STATIC_POOL_SIZE ((1 << seL4_PageBits) * 10)
 UNUSED static char allocator_mem_pool[ALLOCATOR_STATIC_POOL_SIZE];
 
+/* stack for the new thread */
 #define THREAD_2_STACK_SIZE 512
 static uint64_t thread_2_stack[THREAD_2_STACK_SIZE];
 
-void abort(void) {
-    while (1);
-}
+/* convenience function */
+extern void name_thread(seL4_CPtr tcb, char *name);
 
-void __arch_putchar(int c) {
-#ifdef CONFIG_DEBUG_BUILD
-    seL4_DebugPutChar(c);
-#endif
-}
-
-void thread_2(void *a) {
-    printf("hallo wereld\n");
+/* function to run in the new thread */
+void thread_2(void) {
+    printf("thread_2: hallo wereld\n");
     while(1);
 }
 
@@ -61,9 +57,8 @@ int main(void)
 {
     UNUSED int error;
 
-#ifdef SEL4_DEBUG_KERNEL
-    seL4_DebugNameThread(seL4_CapInitThreadTCB, "hello-libs-2");
-#endif
+    /* give us a name: useful for debugging if the thread faults */
+    name_thread(seL4_CapInitThreadTCB, "hello-2");
 
     /* get boot info */
     info = seL4_GetBootInfo();
@@ -71,63 +66,62 @@ int main(void)
     /* init simple */
     simple_default_init_bootinfo(&simple, info);
 
-    /* Print bootinfo and other info about simple */
+    /* print out bootinfo and other info about simple */
     simple_print(&simple);
 
     /* create an allocator */
-    allocman = bootstrap_use_current_simple(&simple, ALLOCATOR_STATIC_POOL_SIZE, allocator_mem_pool);
+    allocman = bootstrap_use_current_simple(&simple, ALLOCATOR_STATIC_POOL_SIZE,
+        allocator_mem_pool);
     assert(allocman);
 
     /* create a vka (interface for interacting with the underlying allocator) */
     allocman_make_vka(&vka, allocman);
 
-    /* get our cspace */
+    /* get our cspace root cnode */
     seL4_CPtr cspace_cap;
     cspace_cap = simple_get_cnode(&simple);
 
-    /* get our vspace root */
+    /* get our vspace root page diretory */
     seL4_CPtr pd_cap;
     pd_cap = simple_get_pd(&simple);
 
-    /* create a TCB */
-    vka_object_t tcb_object;
-    tcb_object.cptr = 0; // compiler complains otherwise!
+    /* create a new TCB */
+    vka_object_t tcb_object = {0};
     error = vka_alloc_tcb(&vka, &tcb_object);
     assert(error == 0);
 
-    /* initialise the TCB */
-    error = seL4_TCB_Configure(tcb_object.cptr /* service */, 
-                               seL4_CapNull /* fault ep */, 
-                               seL4_MaxPrio /* priority */,
-                               cspace_cap /* cspace root */, 
-                               seL4_NilData /* cspace root data */, 
-                               pd_cap /* vspace root */,
-                               seL4_NilData /* vspace root data */, 
-                               0 /* buffer */, 
-                               0 /* buffer frame */);
+    /* initialise the new TCB */
+    error = seL4_TCB_Configure(tcb_object.cptr, seL4_CapNull, seL4_MaxPrio,
+        cspace_cap, seL4_NilData, pd_cap, seL4_NilData, 0, 0);
     assert(error == 0);
 
-#ifdef SEL4_DEBUG_KERNEL
-    seL4_DebugNameThread(tcb_object.cptr, "hello-libs-2: thread_2");
-#endif
+    /* give the new thread a name */
+    name_thread(tcb_object.cptr, "hello-2: thread_2");
 
-    seL4_UserContext regs;
-    error = seL4_TCB_ReadRegisters(tcb_object.cptr, 0, 0, 2, &regs);
-    assert(error == 0);
+    /* set start up registers for the new thread: */
+    seL4_UserContext regs = {0};
+
+    /* set instruction pointer where the thread shoud start running */
     sel4utils_set_instruction_pointer(&regs, (seL4_Word)thread_2);
-    sel4utils_set_stack_pointer(&regs, (seL4_Word)(thread_2_stack + sizeof(thread_2_stack)));
 
-/*    seL4_TCB_WriteRegisters(seL4_TCB service, seL4_Bool resume_target, seL4_Uint8 arch_flags, seL4_Word count, seL4_UserContext *regs)
-      count: number of registers to transfer. IP is first, SP is second.
-*/
+    /* check that stack is aligned correctly */
+    assert((seL4_Word) thread_2_stack % (sizeof(seL4_Word) * 2) == 0);
+
+    /* set stack pointer for the new thread. remember the stack grows down */
+    sel4utils_set_stack_pointer(&regs, (seL4_Word)(thread_2_stack + 
+        sizeof(thread_2_stack)));
+
+    /* actually write the TCB registers.  we write 2 registers:
+     * instruction pointer is first, stack pointer is second. */
     error = seL4_TCB_WriteRegisters(tcb_object.cptr, 0, 0, 2, &regs);
     assert(error == 0);
 
-    /* start it running */
+    /* start the new thread running */
     error = seL4_TCB_Resume(tcb_object.cptr);
     assert(error == 0);
 
-    printf("hello world\n");
+    /* we are done, say hello */
+    printf("main: hello world\n");
 
     return 0;
 }
