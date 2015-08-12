@@ -9,7 +9,7 @@
 #
 
 TARGETS := $(notdir ${SOURCE_DIR}).cdl
-ADL := hello_4.camkes
+ADL := hello-camkes-2.camkes
 
 Client_CFILES := \
     $(patsubst ${SOURCE_DIR}/%,%,$(wildcard ${SOURCE_DIR}/components/Client/src/*.c)) 

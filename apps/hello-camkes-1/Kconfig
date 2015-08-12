@@ -8,8 +8,8 @@
 # @TAG(NICTA_BSD)
 #
 
-config APP_HELLO_1
-    bool "Simple Hello World application"
+config APP_HELLO_CAMKES_1
+    bool "Simple CAmkES Hello World application"
     default n
     help
         A simple Hello World application to demonstrate CAmkES functionality.

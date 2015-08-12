@@ -8,5 +8,5 @@
 # @TAG(NICTA_BSD)
 #
 
-apps-$(CONFIG_APP_HELLO_1) += hello_1
-hello_1: libsel4 libmuslc libsel4platsupport libsel4muslccamkes libsel4camkes libsel4sync libsel4debug libsel4bench
+apps-$(CONFIG_APP_HELLO_CAMKES_1) += hello-camkes-1
+hello-camkes-1: libsel4 libmuslc libsel4platsupport libsel4muslccamkes libsel4camkes libsel4sync libsel4debug

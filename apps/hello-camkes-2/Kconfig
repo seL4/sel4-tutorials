@@ -8,8 +8,8 @@
 # @TAG(NICTA_BSD)
 #
 
-config APP_HELLO_4
-    bool "Hello World application with events and dataports"
+config APP_HELLO_CAMKES_2
+    bool "CAmkES Hello World application with events and dataports"
     default n
     help
         Hello World application to demonstrate CAmkES events and dataports.
