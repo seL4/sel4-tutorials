@@ -11,7 +11,7 @@
 menuconfig APP_HELLO_4_APP
     bool "App for hello-4"
     default n
-    depends on LIB_SEL4 && (LIB_MUSL_C || LIB_SEL4_C) && LIB_SEL4_MUSLC_SYS && LIB_UTILS 
+    depends on LIB_SEL4 && (LIB_MUSL_C || LIB_SEL4_C) && LIB_SEL4_MUSLC_SYS 
     help
         Contains the app that hello-4 starts.
 
