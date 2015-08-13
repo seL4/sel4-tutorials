@@ -15,5 +15,5 @@
 
 #include <stdio.h>
 
-/* add a main function to print a message */
+/* TODO: add a main function to print a message */
 
