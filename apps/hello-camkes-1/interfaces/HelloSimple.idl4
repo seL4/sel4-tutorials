@@ -8,7 +8,12 @@
  * @TAG(NICTA_BSD)
  */
 
+/*
+ * CAmkES tutorial part 1: components with RPC.
+ */
+
+/* Simple RPC interface */
 procedure HelloSimple {
-    void say_hello(in string str);
+    /* TODO: RPC functions */
 };
 

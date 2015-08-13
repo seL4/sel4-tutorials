@@ -8,4 +8,4 @@
  * @TAG(NICTA_BSD)
  */
 
-This is an example of a simple CAmkES system using RPC connections.
+This is an example of a simple CAmkES system using events and dataports.

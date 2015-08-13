@@ -8,48 +8,43 @@
  * @TAG(NICTA_BSD)
  */
 
+/*
+ * CAmkES tutorial part 2: events and dataports
+ */
+
 #include <stdio.h>
 #include <string.h>
 
-#include <camkes.h>
-
 #include <camkes/dataport.h>
 
+/* generated header for our component */
+#include <camkes.h>
+
+/* strings to send across to the other component */
 char *s_arr[NUM_STRINGS] = { "hello", "world", "how", "are", "you?" };
 
+/* run the control thread */
 int run(void) {
     printf("%s: Starting the client\n", get_instance_name());
 
-    int *n = (int*)d;
-    *n = NUM_STRINGS;
-    char *str = (char*)(n+1);
-    for (int i = 0; i < NUM_STRINGS; i++) {
-	strcpy(str, s_arr[i]);
-	str += strlen(str) + 1;
-    }
+    /* TODO: copy strings to an untyped dataport */
 
-    echo_emit();
+    /* TODO: emit event to signal that the data is available */
 
-    client_wait();
+    /* TODO: wait to get event back signalling that reply data is avaialble */
 
-    for (int i = 0; i < d_typed->n; i++) {
-	printf("%s: string %d (%p): \"%s\"\n", get_instance_name(), i, d_typed->str[i], d_typed->str[i]);
-    }	
+    /* TODO: read the reply data from a typed dataport */
 
-    d_ptrs->n = NUM_STRINGS;
-    str = (char*)d;
-    for (int i = 0; i < NUM_STRINGS; i++) {
-        strcpy(str, s_arr[i]);
-	d_ptrs->ptr[i] = dataport_wrap_ptr(str);
-        str += strlen(str) + 1;
-    }
+    /* TODO: send the data over again, this time using two dataports, one typed
+     * dataport containing dataport pointers, pointing to data in the 
+     * second, untyped, dataport. */
 
-    echo_emit();
+    /* TODO: emit event to signal that the data is available */
 
-    client_wait();
+    /* TODO: wait to get an event back signalling that data has been read */
 
-    printf("%s: the next instruction will cause a vm fault due to permissions\n", get_instance_name());
-    d_typed->n = 0;
+    /* TODO: test the read and write permissions on the dataport.  
+     * When we try to write to a read-only dataport, we will get a VM fault. */
 
     return 0;
 }
