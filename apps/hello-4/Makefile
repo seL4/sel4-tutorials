@@ -29,7 +29,7 @@ ASMFILES += $(patsubst $(SOURCE_DIR)/%,%,$(wildcard $(SOURCE_DIR)/src/plat/${PLA
 # Libraries required to build the target
 LIBS = c sel4 sel4muslcsys \
        sel4simple sel4vka sel4allocman sel4vspace \
-       platsupport sel4platsupport \
+       sel4platsupport \
        sel4utils \
        cpio elf 
 
@@ -41,10 +41,6 @@ endif
 
 # extra cflags 
 CFLAGS += -Werror -g
-
-#ifdef CONFIG_X86_64
-#CFLAGS += -mno-sse
-#endif
 
 include $(SEL4_COMMON)/common.mk
 

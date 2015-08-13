@@ -11,9 +11,10 @@
 apps-$(CONFIG_APP_HELLO_4) += hello-4
 
 # list of libraries the app needs to build
-hello-4-y = common libsel4 libmuslc libsel4muslcsys \
+hello-4-y = common libsel4 libmuslc \
+            libsel4muslcsys \
             libsel4simple libsel4vka libsel4allocman libsel4vspace \
-	    libplatsupport libsel4platsupport \
+	    libsel4platsupport \
             libsel4utils \
             libcpio libelf
 
@@ -24,7 +25,7 @@ else
 hello-4-$(CONFIG_LIB_SEL4_SIMPLE_DEFAULT) += libsel4simple-default
 endif
 
-# add the companion app  as a component so that we can elf load it
+# add the companion app as a component so that we can elf load it
 hello-4-components-y += hello-4-app
 hello-4-components = $(addprefix $(STAGE_BASE)/bin/, $(hello-4-components-y))
 

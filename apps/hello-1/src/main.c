@@ -8,28 +8,12 @@
  * @TAG(NICTA_BSD)
  */
 
-/* Include Kconfig variables. */
-#include <autoconf.h>
+/*
+ * seL4 tutorial part 1:  simple printf
+ */
+
 
 #include <stdio.h>
 
-#include <sel4/sel4.h>
-
-void abort(void) {
-    while (1);
-}
-
-void __arch_putchar(int c) {
-#ifdef CONFIG_DEBUG_BUILD
-    seL4_DebugPutChar(c);
-#endif
-}
-
-
-int main(void)
-{
-    printf("hello world\n");
-
-    return 0;
-}
+/* add a main function to print a message */
 

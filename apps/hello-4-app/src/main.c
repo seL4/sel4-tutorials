@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, NICTA
+ * Copyright 2015, NICTA
  *
  * This software may be distributed and modified according to the terms of
  * the BSD 2-Clause license. Note that NO WARRANTY is provided.
@@ -8,63 +8,37 @@
  * @TAG(NICTA_BSD)
  */
 
-#include <autoconf.h>
+/*
+ * seL4 tutorial part 4: application to be run in a process
+ */
 
 #include <stdio.h>
-
 #include <assert.h>
-#include <stdlib.h>
 
 #include <sel4/sel4.h>
 
-#include <utils/util.h>
+/* constants */
+#define EP_CPTR 0x3 // where the cap for the endpoint was placed.
+#define EP_BADGE 0x61 // arbitrary (but unique) number for a badge
+#define MSG_DATA 0x6161 //  arbitrary data to send
 
-/* dummy global for libsel4muslcsys */
-char _cpio_archive[1];
-
-void abort(void) {
-    while (1);
-}
-
-void __arch_putchar(int c) {
-#ifdef CONFIG_DEBUG_BUILD
-    seL4_DebugPutChar(c);
-#endif
-}
-
-#define EP_CPTR 0x3
-#define EP_BADGE 0x61
-#define MSG_DATA 0x6161
-
-
-int
-main(int argc, char **argv)
-{
-    //UNUSED seL4_Word sender_badge;
-    UNUSED seL4_MessageInfo_t tag;
-    UNUSED seL4_Word msg;
+int main(int argc, char **argv) {
+    seL4_MessageInfo_t tag;
+    seL4_Word msg;
 
     printf("process_2: hey hey hey\n");
 
-#if 0
-    tag = seL4_Wait(EP_CPTR, &sender_badge);
-    // printf("got a message from sender badge: %#x\n", sender_badge);
-    // assert(sender_badge == EP_BADGE);
+    /*
+     * send a message to our parent, and wait for a reply
+     */
 
-    assert(seL4_MessageInfo_get_length(tag) == 1);
-    msg = seL4_GetMR(0); 
-    printf("process_2: got a message %#x from %#x\n", msg, sender_badge);
-
-    seL4_SetMR(0, ~msg);
-    seL4_ReplyWait(EP_CPTR, tag, &sender_badge);
-#endif
-
-    /* send message on EP */
+    /* TODO: set the data to send. We send it in the first message register */
     tag = seL4_MessageInfo_new(0, 0, 0, 1);
     seL4_SetMR(0, MSG_DATA);
 
-    tag = seL4_Call(EP_CPTR, tag);
+    /* TODO: send and wait for a reply: hint seL4_Call() */
 
+    /* check that we got the expected repy */
     assert(seL4_MessageInfo_get_length(tag) == 1);
     msg = seL4_GetMR(0);
     assert(msg == ~MSG_DATA);

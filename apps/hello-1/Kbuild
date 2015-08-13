@@ -1,5 +1,5 @@
 #
-# Copyright 2014, NICTA
+# Copyright 2015, NICTA
 #
 # This software may be distributed and modified according to the terms of
 # the BSD 2-Clause license. Note that NO WARRANTY is provided.
@@ -13,24 +13,6 @@ apps-$(CONFIG_APP_HELLO_1) += hello-1
 # list of libraries the app needs to build
 hello-1-y = common libsel4 libmuslc \
             libsel4muslcsys \
-            libsel4platsupport libsel4platsupport \
-            libsel4utils libutils 
-#            libsel4vka \
-#            libsel4allocman \
-#            libsel4simple libsel4vspace 
-
-# set up correct simple lib for our kernel
-ifdef CONFIG_KERNEL_STABLE
-sel4test-driver-$(CONFIG_LIB_SEL4_SIMPLE_STABLE) += libsel4simple-stable
-else
-sel4test-driver-$(CONFIG_LIB_SEL4_SIMPLE_DEFAULT) += libsel4simple-default
-endif
+            libsel4platsupport 
 
 hello-1: kernel_elf $(hello-1-y)
-
-# add the tests app  as a component so that we can elf load it
-# sel4test-driver-components-y += sel4test-tests
-# sel4test-driver-components = $(addprefix $(STAGE_BASE)/bin/, $(sel4test-driver-components-y))
-
-# sel4test-driver: export COMPONENTS=${sel4test-driver-components}
-# sel4test-driver: ${sel4test-driver-components-y} kernel_elf $(sel4test-driver-y)
