@@ -8,6 +8,10 @@
  * @TAG(NICTA_BSD)
  */
 
+/*
+ * CAmkES tutorial part 1: components with RPC. Client part.
+ */
+
 import "../../interfaces/HelloSimple.idl4";
 
 component Client {
