@@ -193,11 +193,11 @@ int main(void)
     sel4utils_set_instruction_pointer(&regs, (seL4_Word)thread_2);
 
     /* check that stack is aligned correctly */
-    assert((seL4_Word) thread_2_stack % (sizeof(seL4_Word) * 2) == 0);
+    uintptr_t thread_2_stack_top = (uintptr_t)thread_2_stack + sizeof(thread_2_stack);
+    assert(thread_2_stack_top % (sizeof(seL4_Word) * 2) == 0);
 
     /* set stack pointer for the new thread. remember the stack grows down */
-    sel4utils_set_stack_pointer(&regs, (seL4_Word)(thread_2_stack +
-        sizeof(thread_2_stack)));
+    sel4utils_set_stack_pointer(&regs, thread_2_stack_top);
 
     /* set the gs register for thread local storage */
     regs.gs = IPCBUF_GDT_SELECTOR;
