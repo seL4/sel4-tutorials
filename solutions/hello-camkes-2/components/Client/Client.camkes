@@ -8,12 +8,22 @@
  * @TAG(NICTA_BSD)
  */
 
+/*
+ * CAmkES tutorial part 2: events and dataports
+ */
+
 component Client {
+        /* include definitions of typedefs for the dataports */
 	include "str_buf.h";
 
+        /* this component has a control thread */
         control;
+
+        /* the event interfaces */
 	emits TheEvent echo;
 	consumes TheEvent client;
+
+        /* the dataport interfaces */
 	dataport Buf d;
 	dataport str_buf_t d_typed;
 	dataport ptr_buf_t d_ptrs;
