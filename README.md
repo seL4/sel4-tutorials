@@ -25,5 +25,16 @@ To get a copy of the CAmkES exercise code and all libraries and tools needed to 
         repo init -u http://github.com/sel4-projects/sel4-tutorials-manifest
         repo sync -m camkes-tutorials.xml
 
+# Documentation
+
 ## Tutorial Slides
 The slides used for the tutorial are available in [`docs`](docs).
+
+## seL4 Manual
+The seL4 manual lives in the kernel source in the [`manual`](https://github.com/seL4/seL4/tree/master/manual) directory.
+To generate a PDF go into that directory and type `make`.
+You will need to have LaTeX installed to build it.
+We've also included a pre-generated PDF version in [`docs/manual.pdf'](docs/manual.pdf)
+
+## CAmkES Documentation
+CAmkES documentation lives in the camkes-tool repository in [docs/index.md](https://github.com/seL4/camkes-tool/blob/master/docs/index.md).
