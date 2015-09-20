@@ -13,6 +13,7 @@ apps-$(CONFIG_APP_HELLO_1) += hello-1
 # list of libraries the app needs to build
 hello-1-y = common libsel4 libmuslc \
             libsel4muslcsys \
-            libsel4platsupport 
+            libsel4platsupport \
+            libutils
 
 hello-1: kernel_elf $(hello-1-y)
