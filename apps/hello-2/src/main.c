@@ -162,7 +162,7 @@ int main(void)
      * @return 0 on success. 
      * Note: this function is generated during build.  It is generated from the following definition: 
      * https://github.com/seL4/seL4/blob/master/libsel4/include/interfaces/sel4.xml#L44
-     * You can find out more about it in the API manual: http://sel4.systems/Docs/seL4-manual.pdf
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual.pdf
      * 
      * hint 2: use seL4_CapNull for the fault endpoint
      * hint 3: use seL4_NilData for cspace and vspace data
@@ -215,7 +215,7 @@ int main(void)
      *
      * Note: this function is generated during build.  It is generated from the following definition:
      * https://github.com/seL4/seL4/blob/master/libsel4/include/interfaces/sel4.xml#L30
-     * You can find out more about it in the API manual: http://sel4.systems/Docs/seL4-manual.pdf 
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual.pdf
      */
 
     /* TODO: start the new thread running */
@@ -226,7 +226,7 @@ int main(void)
      *
      * Note: this function is generated during build.  It is generated from the following definition:
      * https://github.com/seL4/seL4/blob/master/libsel4/include/interfaces/sel4.xml#L69
-     * You can find out more about it in the API manual: http://sel4.systems/Docs/seL4-manual.pdf
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual.pdf
      */
 
     /* we are done, say hello */
