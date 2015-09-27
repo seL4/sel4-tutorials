@@ -24,22 +24,38 @@ assembly {
                 component Client client;
                 component Echo echo;
 		
-                /* Event connections */
+                /* TODO: Event connections */
+                /* hint 1: connect each "emits" interface in a component to the "consumes" interface in the other
+		 * hint 2: use seL4Asynch as the connector
+                 * hint 3: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
+                 */
 		connection seL4Asynch echo_event(from client.echo, to echo.echo);
 		connection seL4Asynch client_event(from echo.client, to client.client);
 
-                /* Dataport connections */
+                /* TODO: Dataport connections */
+                /* hint 1: connect the corresponding dataport interfaces of the components to each other
+		 * hint 2: use seL4SharedData as the connector
+                 * hint 3: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-dataports
+                 */
 		connection seL4SharedData data_conn(from client.d, to echo.d);
 		connection seL4SharedData typed_data_conn(from client.d_typed, to echo.d_typed);
 		connection seL4SharedData ptr_data_conn(from client.d_ptrs, to echo.d_ptrs);
 	
 	}
 	configuration {
-                /* set component priorities */
+                /* TODO: set component priorities */
+		/* hint 1: component priority is specified as an attribute with the name <component name>.priority
+		 * hint 2: the highest priority is represented by 255, the lowest by 0
+                 */
 		client.priority = 255;
 		echo.priority = 254;
 
-                /* restrict access to dataports */
+                /* TODO: restrict access to dataports */
+		/* hint 1: use attributes <connection name>.to_access and <connection name>.from_access
+		 * hint 2: appropriate values for the to_access and from_access attributes are: "R" or "W"
+		 * hint 4: make the "Buf" dataport read only for the Echo component
+		 * hint 3: make the "str_buf_t" dataport read only for the Client component
+                 */
 		data_conn.to_access = "R";
 		data_conn.from_access = "W";
 		typed_data_conn.to_access ="W";
