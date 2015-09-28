@@ -39,6 +39,7 @@ endmenu
 
 menu "Applications"
     source "apps/capdl-loader-experimental/Kconfig"
+    source "apps/hello-camkes-0/Kconfig"
     source "apps/hello-camkes-1/Kconfig"
     source "apps/hello-camkes-2/Kconfig"
 
