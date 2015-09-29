@@ -19,7 +19,6 @@
 
 /* constants */
 #define EP_CPTR 0x3 // where the cap for the endpoint was placed.
-#define EP_BADGE 0x61 // arbitrary (but unique) number for a badge
 #define MSG_DATA 0x6161 //  arbitrary data to send
 
 int main(int argc, char **argv) {
@@ -32,11 +31,21 @@ int main(int argc, char **argv) {
      * send a message to our parent, and wait for a reply
      */
 
-    /* TODO: set the data to send. We send it in the first message register */
+    /* set the data to send. We send it in the first message register */
     tag = seL4_MessageInfo_new(0, 0, 0, 1);
     seL4_SetMR(0, MSG_DATA);
 
-    /* TODO: send and wait for a reply: hint seL4_Call() */
+    /* TODO 1: send and wait for a reply */
+    /* hint 1: seL4_Call() 
+     * seL4_MessageInfo_t seL4_Call(seL4_CPtr dest, seL4_MessageInfo_t msgInfo)
+     * @param dest The capability to be invoked.
+     * @param msgInfo The messageinfo structure for the IPC.  This specifies information about the message to send (such as the number of message registers to send).
+     * @return A seL4_MessageInfo_t structure.  This is information about the repy message.
+     * https://github.com/seL4/seL4/blob/master/libsel4/arch_include/x86/sel4/arch/syscalls.h#L242
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual.pdf 
+     *
+     * hint 2: the endpoint cap is in slot EP_CPTR
+     */
 
     /* check that we got the expected repy */
     assert(seL4_MessageInfo_get_length(tag) == 1);
