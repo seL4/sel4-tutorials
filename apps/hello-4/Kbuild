@@ -16,7 +16,8 @@ hello-4-y = common libsel4 libmuslc \
             libsel4simple libsel4vka libsel4allocman libsel4vspace \
 	    libsel4platsupport \
             libsel4utils \
-            libcpio libelf
+            libcpio libelf \
+            libutils
 
 # set up correct simple lib for our kernel
 ifdef CONFIG_KERNEL_STABLE
