@@ -31,7 +31,8 @@ LIBS = c sel4 sel4muslcsys \
        sel4simple sel4vka sel4allocman sel4vspace \
        sel4platsupport \
        sel4utils \
-       cpio elf 
+       cpio elf \
+       utils
 
 ifdef CONFIG_KERNEL_STABLE
 LIBS += sel4simple-stable
