@@ -73,7 +73,7 @@ void thread_2(void) {
 
     printf("thread_2: hallo wereld\n");
 
-    /* TODO: wait for a message to come in over the endpoint */
+    /* TODO 11: wait for a message to come in over the endpoint */
     /* hint 1: seL4_Wait() 
      * seL4_MessageInfo_t seL4_Wait(seL4_CPtr src, seL4_Word* sender)
      * @param src The capability to be invoked.
@@ -91,7 +91,7 @@ void thread_2(void) {
      */
     tag = seL4_Wait(ep_object.cptr, &sender_badge);
 
-    /* TODO: make sure it is what we expected */
+    /* TODO 12: make sure it is what we expected */
     /* hint 1: check the badge. is it EP_BADGE?
      * hint 2: we are expecting only 1 message register
      * hint 3: seL4_MessageInfo_get_length()
@@ -106,7 +106,7 @@ void thread_2(void) {
     assert(sender_badge == EP_BADGE);
     assert(seL4_MessageInfo_get_length(tag) == 1);
 
-    /* TODO: get the message stored in the first message register */
+    /* TODO 13: get the message stored in the first message register */
     /* hint: seL4_GetMR() 
      * seL4_Word seL4_GetMR(int i)
      * @param i The message register to retreive
@@ -121,7 +121,7 @@ void thread_2(void) {
     /* modify the message */
     msg = ~msg;
 
-    /* TODO: copy the modified message back into the message register */
+    /* TODO 14: copy the modified message back into the message register */
     /* hint: seL4_SetMR() 
      * void seL4_SetMR(int i, seL4_Word mr)
      * @param i The message register to write
@@ -131,7 +131,7 @@ void thread_2(void) {
      */
     seL4_SetMR(0, msg);
 
-    /* TODO: send the message back */
+    /* TODO 15: send the message back */
     /* hint 1: seL4_ReplyWait()
      * seL4_MessageInfo_t seL4_ReplyWait(seL4_CPtr dest, seL4_MessageInfo_t msgInfo, seL4_Word *sender) 
      * @param dest The capability to be invoked.
@@ -191,8 +191,8 @@ int main(void)
      * create and map an ipc buffer:
      */
 
-    /* TODO: get a frame cap for the ipc buffer */
-    /* hint vka_alloc_frame() 
+    /* TODO 1: get a frame cap for the ipc buffer */
+    /* hint: vka_alloc_frame()
      * int vka_alloc_frame(vka_t *vka, uint32_t size_bits, vka_object_t *result)
      * @param vka Pointer to vka interface.
      * @param size_bits Frame size: 2^size_bits
@@ -214,7 +214,7 @@ int main(void)
 
     seL4_Word ipc_buffer_vaddr = IPCBUF_VADDR;
 
-    /* TODO: try to map the frame the first time  */
+    /* TODO 2: try to map the frame the first time  */
     /* hint 1: seL4_ARCH_Page_Map()
      * The *ARCH* versions of seL4 sys calls are abstractions over the architecture provided by libsel4utils
      * this one is defined as:
@@ -239,7 +239,7 @@ int main(void)
     error = seL4_ARCH_Page_Map(ipc_frame_object.cptr, pd_cap, ipc_buffer_vaddr,
         seL4_AllRights, seL4_ARCH_Default_VMAttributes);
     if (error != 0) {
-        /* TODO: create a page table */
+        /* TODO 3: create a page table */
         /* hint: vka_alloc_page_table()
 	 * int vka_alloc_page_table(vka_t *vka, vka_object_t *result)
 	 * @param vka Pointer to vka interface.
@@ -251,7 +251,7 @@ int main(void)
         error =  vka_alloc_page_table(&vka, &pt_object);
         assert(error == 0);
 
-        /* TODO: map the page table */
+        /* TODO 4: map the page table */
         /* hint 1: seL4_ARCH_PageTable_Map()
 	 * The *ARCH* versions of seL4 sys calls are abstractions over the architecture provided by libsel4utils
 	 * this one is defined as:
@@ -276,7 +276,7 @@ int main(void)
             ipc_buffer_vaddr, seL4_ARCH_Default_VMAttributes);
         assert(error == 0);
 
-        /* TODO: then map the frame in */
+        /* TODO 5: then map the frame in */
         /* hint 1: use seL4_ARCH_Page_Map() as above
          * hint 2: for the rights, use seL4_AllRights 
          * hint 3: for VM attributes use seL4_ARCH_Default_VMAttributes
@@ -290,7 +290,7 @@ int main(void)
     seL4_IPCBuffer *ipcbuf = (seL4_IPCBuffer*)ipc_buffer_vaddr;
     ipcbuf->userData = ipc_buffer_vaddr;
 
-    /* TODO: create an endpoint */
+    /* TODO 6: create an endpoint */
     /* hint: vka_alloc_endpoint() 
      * int vka_alloc_endpoint(vka_t *vka, vka_object_t *result)
      * @param vka Pointer to vka interface.
@@ -301,7 +301,7 @@ int main(void)
     error = vka_alloc_endpoint(&vka, &ep_object);
     assert(error == 0);
 
-    /* TODO: make a badged copy of it in our cspace. This copy will be used to send 
+    /* TODO 7: make a badged copy of it in our cspace. This copy will be used to send 
      * an IPC message to the original cap */
     /* hint 1: vka_mint_object()
      * int vka_mint_object(vka_t *vka, vka_object_t *object, cspacepath_t *result, seL4_CapRights rights, seL4_CapData_t badge) 
@@ -377,7 +377,7 @@ int main(void)
     seL4_Word msg;
     seL4_MessageInfo_t tag;
 
-    /* TODO: set the data to send. We send it in the first message register */
+    /* TODO 8: set the data to send. We send it in the first message register */
     /* hint 1: seL4_MessageInfo_new()
      * seL4_MessageInfo_t CONST seL4_MessageInfo_new(seL4_Uint32 label, seL4_Uint32 capsUnwrapped, seL4_Uint32 extraCaps, seL4_Uint32 length) 
      * @param label The value of the label field
@@ -406,7 +406,7 @@ int main(void)
     tag = seL4_MessageInfo_new(0, 0, 0, 1);
     seL4_SetMR(0, MSG_DATA);
 
-    /* TODO: send and wait for a reply. */
+    /* TODO 9: send and wait for a reply. */
     /* hint: seL4_Call() 
      * seL4_MessageInfo_t seL4_Call(seL4_CPtr dest, seL4_MessageInfo_t msgInfo)
      * @param dest The capability to be invoked.
@@ -424,7 +424,7 @@ int main(void)
      */
     tag = seL4_Call(ep_cap_path.capPtr, tag);
 
-    /* TODO: get the reply message */
+    /* TODO 10: get the reply message */
     /* hint: seL4_GetMR()
      * seL4_Word seL4_GetMR(int i)
      * @param i The message register to retreive

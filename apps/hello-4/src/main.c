@@ -218,7 +218,7 @@ int main(void)
      * https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/types.bf#L35
      * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual.pdf     
      *
-     * hint 3: use the badged endpoint cap that you minted above
+     * hint 3: use the original endpoint cap 
      */
 
     /* make sure it is what we expected */
@@ -249,7 +249,7 @@ int main(void)
      * https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/types.bf#L35
      * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual.pdf     
      *
-     * hint 3: use the badged endpoint cap that you used for Call 
+     * hint 3: use the endpoint cap that you used for Wait
      */
 
     return 0;

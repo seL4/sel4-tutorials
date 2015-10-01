@@ -27,7 +27,7 @@ char *s_arr[NUM_STRINGS] = { "hello", "world", "how", "are", "you?" };
 int run(void) {
     printf("%s: Starting the client\n", get_instance_name());
 
-    /* TODO: copy strings to an untyped dataport */
+    /* TODO 9: copy strings to an untyped dataport */
     /* hint 1: use the "Buf" dataport as defined in the Client.camkes file
      * hint 2: to access the dataport use the interface name as defined in Client.camkes.
      * For example if you defined it as "dataport Buf d" then you would use "d" to refer to the dataport in C.
@@ -36,17 +36,17 @@ int run(void) {
      * hint 5: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-dataports
      */
 
-    /* TODO: emit event to signal that the data is available */
+    /* TODO 10: emit event to signal that the data is available */
     /* hint 1: use the function <interface_name>.emit
      * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
      */
 
-    /* TODO: wait to get an event back signalling that the reply data is avaialble */
+    /* TODO 11: wait to get an event back signalling that the reply data is avaialble */
     /* hint 1: use the function <interface_name>.wait
      * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
      */
 
-    /* TODO: read the reply data from a typed dataport */
+    /* TODO 12: read the reply data from a typed dataport */
     /* hint 1: use the "str_buf_t" dataport as defined in the Client.camkes file
      * hint 2: to access the dataport use the interface name as defined in Client.camkes.
      * For example if you defined it as "dataport str_buf_t d_typed" then you would use "d_typed" to refer to the dataport in C.
@@ -57,7 +57,7 @@ int run(void) {
      * hint 6: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-dataports
      */
 
-    /* TODO: send the data over again, this time using two dataports, one
+    /* TODO 13: send the data over again, this time using two dataports, one
      * untyped dataport containing the data, and one typed dataport containing
      * dataport pointers pointing to data in the untyped, dataport.
      */
@@ -73,15 +73,15 @@ int run(void) {
      * hint 9: for more information about dataport pointers see: https://github.com/seL4/camkes-tool/blob/master/docs/index.md
      */
 
-    /* TODO: emit event to signal that the data is available */
+    /* TODO 14: emit event to signal that the data is available */
     /* hint 1: we've already done this before */
 
-    /* TODO: wait to get an event back signalling that data has been read */
+    /* TODO 15: wait to get an event back signalling that data has been read */
     /* hint 1: we've already done this before */
 
     printf("%s: the next instruction will cause a vm fault due to permissions\n", get_instance_name());
 
-    /* TODO: test the read and write permissions on the dataport.
+    /* TODO 16: test the read and write permissions on the dataport.
      * When we try to write to a read-only dataport, we will get a VM fault.
      */
     /* hint 1: try to assign a value to a field of the "str_buf_t" dataport */

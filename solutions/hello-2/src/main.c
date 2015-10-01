@@ -63,7 +63,7 @@ extern void name_thread(seL4_CPtr tcb, char *name);
 
 /* function to run in the new thread */
 void thread_2(void) {
-    /* TODO: print something */
+    /* TODO 15: print something */
     /* hint: printf() */
     printf("thread_2: hallo wereld\n");
 
@@ -82,7 +82,7 @@ int main(void)
      */
     name_thread(seL4_CapInitThreadTCB, "hello-2");
 
-    /* TODO: get boot info */
+    /* TODO 1: get boot info */
     /* hint: seL4_GetBootInfo() 
      * seL4_BootInfo* seL4_GetBootInfo(void);
      * @return Pointer to the bootinfo, no failure.
@@ -90,7 +90,7 @@ int main(void)
      */
     info = seL4_GetBootInfo();
 
-    /* TODO: init simple */
+    /* TODO 2: init simple */
     /* hint: simple_default_init_bootinfo() 
      * void simple_default_init_bootinfo(simple_t *simple, seL4_BootInfo *bi);
      * @param simple Structure for the simple interface object. This gets initialised.
@@ -99,7 +99,7 @@ int main(void)
      */
     simple_default_init_bootinfo(&simple, info);
 
-    /* TODO: print out bootinfo and other info about simple */
+    /* TODO 3: print out bootinfo and other info about simple */
     /* hint: simple_print()
      * void simple_print(simple_t *simple);
      * @param simple Pointer to simple interface.
@@ -108,7 +108,7 @@ int main(void)
      */ 
     simple_print(&simple);
 
-    /* TODO: create an allocator */
+    /* TODO 4: create an allocator */
     /* hint: bootstrap_use_current_simple() 
      * allocman_t *bootstrap_use_current_simple(simple_t *simple, uint32_t pool_size, char *pool);
      * @param simple Pointer to simple interface.
@@ -120,7 +120,7 @@ int main(void)
     allocman = bootstrap_use_current_simple(&simple, ALLOCATOR_STATIC_POOL_SIZE, allocator_mem_pool);
     assert(allocman);
 
-    /* TODO: create a vka (interface for interacting with the underlying allocator) */
+    /* TODO 5: create a vka (interface for interacting with the underlying allocator) */
     /* hint: allocman_make_vka() 
      * void allocman_make_vka(vka_t *vka, allocman_t *alloc);
      * @param vka Structure for the vka interface object.  This gets initialised.
@@ -129,7 +129,7 @@ int main(void)
      */
     allocman_make_vka(&vka, allocman);
 
-    /* TODO: get our cspace root cnode */
+    /* TODO 6: get our cspace root cnode */
     /* hint: simple_get_cnode() 
      * seL4_CPtr simple_get_cnode(simple_t *simple);
      * @param simple Pointer to simple interface.
@@ -139,7 +139,7 @@ int main(void)
     seL4_CPtr cspace_cap;
     cspace_cap = simple_get_cnode(&simple);
 
-    /* TODO: get our vspace root page diretory */
+    /* TODO 7: get our vspace root page diretory */
     /* hint: simple_get_pd() 
      * seL4_CPtr simple_get_pd(simple_t *simple);
      * @param simple Pointer to simple interface.
@@ -149,7 +149,7 @@ int main(void)
     seL4_CPtr pd_cap;
     pd_cap = simple_get_pd(&simple);
 
-    /* TODO: create a new TCB */
+    /* TODO 8: create a new TCB */
     /* hint: vka_alloc_tcb() 
      * int vka_alloc_tcb(vka_t *vka, vka_object_t *result);
      * @param vka Pointer to vka interface.
@@ -161,7 +161,7 @@ int main(void)
     error = vka_alloc_tcb(&vka, &tcb_object);
     assert(error == 0);
 
-    /* TODO: initialise the new TCB */
+    /* TODO 9: initialise the new TCB */
     /* hint 1: seL4_TCB_Configure()
      * int seL4_TCB_Configure(seL4_TCB service, seL4_Word fault_ep, seL4_Uint8 priority, seL4_CNode cspace_root, seL4_CapData_t cspace_root_data, seL4_CNode vspace_root, seL4_CapData_t vspace_root_data, seL4_Word buffer, seL4_CPtr bufferFrame)
      * @param service Capability to the TCB which is being operated on.
@@ -185,7 +185,7 @@ int main(void)
     error = seL4_TCB_Configure(tcb_object.cptr, seL4_CapNull, seL4_MaxPrio, cspace_cap, seL4_NilData, pd_cap, seL4_NilData, 0, 0);
     assert(error == 0);
 
-    /* TODO: give the new thread a name */
+    /* TODO 10: give the new thread a name */
     /* hint: we've done thread naming before */
     name_thread(tcb_object.cptr, "hello-2: thread_2");
 
@@ -195,8 +195,8 @@ int main(void)
 
     seL4_UserContext regs = {0};
 
-    /* TODO: set instruction pointer where the thread shoud start running */
-    /* hint: sel4utils_set_instruction_pointer() 
+    /* TODO 11: set instruction pointer where the thread shoud start running */
+    /* hint 1: sel4utils_set_instruction_pointer() 
      * void sel4utils_set_instruction_pointer(seL4_UserContext *regs, seL4_Word value);
      * @param regs Data structure in which to set the instruction pointer value
      * @param value New instruction pointer value
@@ -210,7 +210,7 @@ int main(void)
     uintptr_t thread_2_stack_top = (uintptr_t)thread_2_stack + sizeof(thread_2_stack);
     assert(thread_2_stack_top % (sizeof(seL4_Word) * 2) == 0);
 
-    /* TODO: set stack pointer for the new thread */
+    /* TODO 12: set stack pointer for the new thread */
     /* hint 1: sel4utils_set_stack_pointer()
      * void sel4utils_set_stack_pointer(seL4_UserContext *regs, seL4_Word value);
      * @param regs  Data structure in which to set the stack pointer value
@@ -221,7 +221,7 @@ int main(void)
      */
     sel4utils_set_stack_pointer(&regs, thread_2_stack_top);
 
-    /* TODO: actually write the TCB registers.  We write 2 registers:
+    /* TODO 13: actually write the TCB registers.  We write 2 registers:
      * instruction pointer is first, stack pointer is second. */
     /* hint: seL4_TCB_WriteRegisters() 
      * int seL4_TCB_WriteRegisters(seL4_TCB service, seL4_Bool resume_target, seL4_Uint8 arch_flags, seL4_Word count, seL4_UserContext *regs)
@@ -234,12 +234,12 @@ int main(void)
      *
      * Note: this function is generated during build.  It is generated from the following definition:
      * https://github.com/seL4/seL4/blob/master/libsel4/include/interfaces/sel4.xml#L30
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual.pdf 
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual.pdf
      */
     error = seL4_TCB_WriteRegisters(tcb_object.cptr, 0, 0, 2, &regs);
     assert(error == 0);
 
-    /* TODO: start the new thread running */
+    /* TODO 14: start the new thread running */
     /* hint: seL4_TCB_Resume()
      * int seL4_TCB_Resume(seL4_TCB service)
      * @param service Capability to the TCB which is being operated on.

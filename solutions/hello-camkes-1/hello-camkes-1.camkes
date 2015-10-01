@@ -20,14 +20,14 @@ import "components/Echo/Echo.camkes";
 
 assembly {
         composition {
-                /* TODO: component instances */
+                /* TODO 1: component instances */
                 /* hint 1: one Client compoent, one Echo component 
                  * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
                  */
                 component Client client;
                 component Echo echo;
 
-                /* TODO: connections */
+                /* TODO 2: connections */
                 /* hint 1: use seL4RPCCall as the connector (or you could use seL4RPC if you prefer)
                  * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
                  */

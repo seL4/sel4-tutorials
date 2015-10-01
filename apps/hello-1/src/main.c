@@ -15,6 +15,7 @@
 
 #include <stdio.h>
 
-/* TODO: add a main function to print a message */
+/* TODO 1: add a main function to print a message */
 /* hint: printf */
+
 

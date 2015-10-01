@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
     tag = seL4_MessageInfo_new(0, 0, 0, 1);
     seL4_SetMR(0, MSG_DATA);
 
-    /* TODO 1: send and wait for a reply */
+    /* TODO 9: send and wait for a reply */
     /* hint 1: seL4_Call() 
      * seL4_MessageInfo_t seL4_Call(seL4_CPtr dest, seL4_MessageInfo_t msgInfo)
      * @param dest The capability to be invoked.
