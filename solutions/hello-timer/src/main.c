@@ -141,12 +141,27 @@ int main(void)
     error = sel4utils_spawn_process_v(&new_process, &vka, &vspace, 0, NULL, 1);
     assert(error == 0);
 
-    /* TODO 1: create an endpoint for the timer interrupt */
+    /* TODO 1: create an async endpoint for the timer interrupt */
+    /* hint: vka_alloc_async_endpoint()
+     * int vka_alloc_async_endpoint(vka_t *vka, vka_object_t *result)
+     * @param vka Pointer to vka interface.
+     * @param result Structure for the Endpoint object.  This gets initialised.
+     * @return 0 on success
+     * https://github.com/seL4/libsel4vka/blob/master/include/vka/object.h#L98
+     */
     vka_object_t aep_object = {0};
     error = vka_alloc_async_endpoint(&vka, &aep_object);
     assert(error == 0);
 
-    /* TODO 2: get the default timer */
+    /* TODO 2: call sel4platsupport library to get the default timer */
+    /* hint: sel4platsupport_get_default_timer
+     * seL4_timer_t * sel4platsupport_get_default_timer(vka_t *vka, vspace_t *vspace, simple_t *simple, seL4_CPtr aep);
+     * @param vka Pointer to vka interface
+     * @param vspace Pointer to vspace interface
+     * @param simple Pointer to simple interface
+     * @param aep Async endpoint to receive the interrupt
+     * @return Pointer to timer structure
+     */
     timer = sel4platsupport_get_default_timer(&vka, &vspace, &simple, aep_object.cptr);
     assert(timer != NULL);
 
@@ -172,13 +187,33 @@ int main(void)
     msg = seL4_GetMR(0);
     printf("main: got a message from %#x to sleep %u seconds\n", sender_badge, msg);
 
-    /* TODO 3: wait for the timeout */
     seL4_Word sender;
+
+    /*
+     * The PIT only has 16-bit count down register, we cannot make it
+     * sleep for 1 second, instead, we make PIT to fire an interrupt every
+     * one millisecond, and count for 1000 times to make one second.
+     */
     int count = 0;
     while(1) {
+        /* TODO 3: wait for the timeout */
+	/* hint 1: set timeout to 1 millisecond
+	 * hint 2: wait for the incoming interrupt
+	 * hint 3: handle the interrupt
+	 *
+	 * int timer_oneshot_relative(pstimer_t* device, uint64_t ns)
+	 * @param device generic timer handler
+	 * @param ns number of nanoseconds before firing the interrupt
+	 * @return 0 on success
+	 *
+         * void timer_handle_irq(pstimer_t* device);
+	 * @param device generic timer handler
+	 *
+	 * https://github.com/seL4/libplatsupport/blob/master/include/platsupport/timer.h#L146
+	 */
         timer_oneshot_relative(timer->timer, 1000 * 1000);
         seL4_Wait(aep_object.cptr, &sender);
-        sel4_timer_handle_single_irq(timer);
+        timer_handle_irq(timer->timer);
         count++;
         if (count == 1000 * msg) break;
     }
