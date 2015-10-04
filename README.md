@@ -5,7 +5,7 @@ Various tutorials for using seL4, its libraries, and CAmkES.
 Download the prerequisites for building and running the tutorial code following the [instructions](Prerequisites.md).
 
 ### Virtual Machine Image
-You can also download a [VirtualBox virtual machine appliance](http://ssrg.nicta.com.au/Downloads/sel4-tutorial-lubuntu-15.04-v2.ova)([md5](http://ssrg.nicta.com.au/Downloads/sel4-tutorial-lubuntu-15.04-v2.md5)) (2.6GB, based on Lubuntu 15.04 with all the seL4 tutorial prerequisites installed).
+You can also download a [VirtualBox virtual machine appliance](http://ssrg.nicta.com.au/Downloads/sel4-tutorial-lubuntu-15.04-v3.ova)([md5](http://ssrg.nicta.com.au/Downloads/sel4-tutorial-lubuntu-15.04-v3.md5)) (2.6GB, based on Lubuntu 15.04 with all the seL4 tutorial prerequisites installed).
 
 This appliance is based on [VirtualBox 5.0.4](https://www.virtualbox.org/wiki/Downloads).  
 You may also need to install the appropriate [VirtualBox extensions](http://download.virtualbox.org/virtualbox/5.0.4/Oracle_VM_VirtualBox_Extension_Pack-5.0.4-102546.vbox-extpack).
