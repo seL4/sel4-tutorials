@@ -12,14 +12,7 @@ apps-$(CONFIG_APP_HELLO_3_NOLIBS) += hello-3-nolibs
 
 # list of libraries the app needs to build
 hello-3-nolibs-y = common libsel4 libmuslc \
-            libsel4muslcsys
-
-# set up correct simple lib for our kernel
-ifdef CONFIG_KERNEL_STABLE
-hello-3-nolibs-$(CONFIG_LIB_SEL4_SIMPLE_STABLE) += libsel4simple-stable
-else
-hello-3-nolibs-$(CONFIG_LIB_SEL4_SIMPLE_DEFAULT) += libsel4simple-default
-endif
+            libsel4muslcsys libsel4allocman libsel4platsupport
 
 hello-3-nolibs: kernel_elf $(hello-3-nolibs-y)
 

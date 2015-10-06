@@ -33,6 +33,18 @@ static uint64_t thread_2_stack[THREAD_2_STACK_SIZE];
 /* convenience function */
 extern void name_thread(seL4_CPtr tcb, char *name);
 
+/* returns a cap to an untyped with a size at least size_bytes, or -1 if none exists */
+seL4_CPtr get_untyped(seL4_BootInfo *info, int size_bytes) {
+
+    for (int i = info->untyped.start, idx = 0; i < info->untyped.end; ++i, ++idx) {
+        if (1<<info->untypedSizeBitsList[idx] >= size_bytes) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
 /* function to run in the new thread */
 void thread_2(void) {
     printf("thread_2: hallo wereld\n");
@@ -99,6 +111,7 @@ int main(void)
     /* TODO 1: Set tcb_cap to a free cap slot index.
      * hint: The bootinfo struct contains a range of free cap slot indices.
      */
+    tcb_cap = info->empty.start;
 
     seL4_CPtr untyped;
     /* TODO 2: Obtain a cap to an untyped which is large enough to contain a tcb.
@@ -109,6 +122,10 @@ int main(void)
      *         can be found in the bootinfo struct
      */
 
+    /* look up an untyped to retype into a tcb */
+    untyped = get_untyped(info, (1<<seL4_TCBBits));
+
+
     /* TODO 3: Retype the untyped into a tcb, storing a cap in tcb_cap
      *
      * hint 1: int seL4_Untyped_Retype(seL4_Untyped service, int type, int size_bits, seL4_CNode root, int node_index, int node_depth, int node_offset, int num_objects)
@@ -116,6 +133,16 @@ int main(void)
      * hint 3: use cspace_cap for the root cnode AND the cnode_index
      *         (bonus question: What property of the calling thread's cspace must hold for this to be ok?)
      */
+
+    /* create the tcb */
+    assert(!seL4_Untyped_Retype(untyped /* untyped cap */,
+                                seL4_TCBObject /* type */, 
+                                seL4_TCBBits /* size */, 
+                                cspace_cap /* root cnode cap */,
+                                cspace_cap /* destination cspace */,
+                                32 /* depth */,
+                                tcb_cap /* offset */,
+                                1 /* num objects */));
 
     /* initialise the new TCB */
     error = seL4_TCB_Configure(tcb_cap, seL4_CapNull, seL4_MaxPrio,
@@ -128,7 +155,6 @@ int main(void)
     uintptr_t thread_2_stack_top = (uintptr_t)thread_2_stack + sizeof(thread_2_stack);
     assert(thread_2_stack_top % (sizeof(seL4_Word) * 2) == 0);
     
-    seL4_UserContext regs;
     /* TODO 4: Set up regs to contain the desired stack pointer and instruction pointer
      * hint 1: libsel4/arch_include/x86/sel4/arch/types.h:
      *  ...
@@ -139,11 +165,22 @@ int main(void)
 
      */
 
+    /* set start up registers for the new thread: */
+    seL4_UserContext regs = {
+        .eip = (seL4_Word)thread_2,
+        .esp = (seL4_Word)thread_2_stack_top
+    };
+
     /* TODO 5: Write the registers in regs to the new thread
      *
      * hint 1: int seL4_TCB_WriteRegisters(seL4_TCB service, seL4_Bool resume_target, seL4_Uint8 arch_flags, seL4_Word count, seL4_UserContext *regs);
      * hint 2: the value of arch_flags is ignored on x86 and arm
      */
+
+    /* actually write the TCB registers.  we write 2 registers:
+     * instruction pointer is first, stack pointer is second. */
+    error = seL4_TCB_WriteRegisters(tcb_cap, 0, 0, 2, &regs);
+    assert(error == 0);
 
     /* start the new thread running */
     error = seL4_TCB_Resume(tcb_cap);
