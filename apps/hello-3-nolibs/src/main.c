@@ -159,11 +159,11 @@ int main(void)
      */
 
     /* decide on slots to use based on what is free */
-    seL4_CPtr tcb_cap = info->empty.start;
-    seL4_CPtr ipc_frame_cap = info->empty.start + 1;
-    ep_cap = info->empty.start + 2;
-    badged_ep_cap = info->empty.start + 3;
-    seL4_CPtr page_table_cap = info->empty.start + 4;
+    seL4_CPtr tcb_cap = ???;
+    seL4_CPtr ipc_frame_cap = ???;
+    ep_cap = ???;
+    badged_ep_cap = ???;
+    seL4_CPtr page_table_cap = ???;
 
     /* get an untyped to retype into all the objects we will need */
     seL4_CPtr untyped;
@@ -183,11 +183,6 @@ int main(void)
      *         of the object is "chipped off". For simplicity, find a cap to an untyped which is large enough
      *         to contain all required objects.
      */
-    untyped = get_untyped(info, (1<<seL4_TCBBits) +
-                                (1<<seL4_PageBits) +
-                                (1<<seL4_EndpointBits) +
-                                (1<<seL4_PageTableBits));
-    assert(untyped != -1);
     
     /* TODO 3: Using the untyped, create the required objects, storing their caps in the roottask's root cnode.
      *
@@ -195,10 +190,6 @@ int main(void)
      * hint 2: use a depth of 32
      * hint 3: use cspace_cap for the root cnode AND the cnode_index
      */
-   /* create required objects */
-    assert(!untyped_retype_root(untyped, seL4_TCBObject, seL4_TCBBits, cspace_cap, tcb_cap));
-    assert(!untyped_retype_root(untyped, seL4_IA32_4K, seL4_PageBits, cspace_cap, ipc_frame_cap));
-    assert(!untyped_retype_root(untyped, seL4_EndpointObject, seL4_EndpointBits, cspace_cap, ep_cap));
 
     /*
      * map the frame into the vspace at ipc_buffer_vaddr.
@@ -216,9 +207,6 @@ int main(void)
 
         /* TODO 4: Retype the untyped into page table (if this was done in TODO 3, ignore this). */
 
-        /* create and map a page table */
-        assert(!untyped_retype_root(untyped, seL4_IA32_PageTableObject, seL4_PageTableBits, cspace_cap, page_table_cap));
-        
         error = seL4_IA32_PageTable_Map(page_table_cap, pd_cap,
             ipc_buffer_vaddr, seL4_IA32_Default_VMAttributes);
         assert(error == 0);
@@ -236,11 +224,6 @@ int main(void)
     /* TODO 5: Mint a copy of the endpoint cap into our cspace, using the badge EP_BADGE
      * hint: int seL4_CNode_Mint(seL4_CNode service, seL4_Word dest_index, seL4_Uint8 dest_depth, seL4_CNode src_root, seL4_Word src_index, seL4_Uint8 src_depth, seL4_CapRights rights, seL4_CapData_t badge);
      */
-
-    /* create a copy of the endpoint cap with a badge (to use for sending) */
-    seL4_CNode_Mint(cspace_cap, badged_ep_cap, 32, cspace_cap, ep_cap, 32,
-        seL4_AllRights, seL4_CapData_Badge_new(EP_BADGE));
-
 
     /* initialise the new TCB */
     error = seL4_TCB_Configure(tcb_cap, seL4_CapNull, seL4_MaxPrio,
