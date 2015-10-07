@@ -135,14 +135,15 @@ int main(void)
      */
 
     /* create the tcb */
-    assert(!seL4_Untyped_Retype(untyped /* untyped cap */,
+    error = seL4_Untyped_Retype(untyped /* untyped cap */,
                                 seL4_TCBObject /* type */, 
                                 seL4_TCBBits /* size */, 
                                 cspace_cap /* root cnode cap */,
                                 cspace_cap /* destination cspace */,
                                 32 /* depth */,
                                 tcb_cap /* offset */,
-                                1 /* num objects */));
+                                1 /* num objects */);
+    assert(error == 0);
 
     /* initialise the new TCB */
     error = seL4_TCB_Configure(tcb_cap, seL4_CapNull, seL4_MaxPrio,

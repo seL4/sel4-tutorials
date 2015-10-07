@@ -196,9 +196,12 @@ int main(void)
      * hint 3: use cspace_cap for the root cnode AND the cnode_index
      */
    /* create required objects */
-    assert(!untyped_retype_root(untyped, seL4_TCBObject, seL4_TCBBits, cspace_cap, tcb_cap));
-    assert(!untyped_retype_root(untyped, seL4_IA32_4K, seL4_PageBits, cspace_cap, ipc_frame_cap));
-    assert(!untyped_retype_root(untyped, seL4_EndpointObject, seL4_EndpointBits, cspace_cap, ep_cap));
+    error = untyped_retype_root(untyped, seL4_TCBObject, seL4_TCBBits, cspace_cap, tcb_cap);
+    assert(error == 0);
+    error = untyped_retype_root(untyped, seL4_IA32_4K, seL4_PageBits, cspace_cap, ipc_frame_cap);
+    assert(error == 0);
+    error = untyped_retype_root(untyped, seL4_EndpointObject, seL4_EndpointBits, cspace_cap, ep_cap);
+    assert(error == 0);
 
     /*
      * map the frame into the vspace at ipc_buffer_vaddr.
@@ -217,7 +220,8 @@ int main(void)
         /* TODO 4: Retype the untyped into page table (if this was done in TODO 3, ignore this). */
 
         /* create and map a page table */
-        assert(!untyped_retype_root(untyped, seL4_IA32_PageTableObject, seL4_PageTableBits, cspace_cap, page_table_cap));
+        error = untyped_retype_root(untyped, seL4_IA32_PageTableObject, seL4_PageTableBits, cspace_cap, page_table_cap);
+        assert(error == 0);
         
         error = seL4_IA32_PageTable_Map(page_table_cap, pd_cap,
             ipc_buffer_vaddr, seL4_IA32_Default_VMAttributes);
