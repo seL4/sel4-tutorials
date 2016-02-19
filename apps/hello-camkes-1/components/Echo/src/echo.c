@@ -26,6 +26,6 @@
  * hint 4: so the function would be: hello_say_hello() 
  * hint 5: the CAmkES 'string' type maps to 'const char *' in C
  * hint 6: make the function print out a mesage using printf
- * hint 7: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+ * hint 7: look at https://github.com/seL4/camkes-tool/blob/2.0.0/docs/index.md#creating-an-application
  */
 

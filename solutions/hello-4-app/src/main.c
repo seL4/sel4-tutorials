@@ -41,8 +41,8 @@ int main(int argc, char **argv) {
      * @param dest The capability to be invoked.
      * @param msgInfo The messageinfo structure for the IPC.  This specifies information about the message to send (such as the number of message registers to send).
      * @return A seL4_MessageInfo_t structure.  This is information about the repy message.
-     * https://github.com/seL4/seL4/blob/master/libsel4/arch_include/x86/sel4/arch/syscalls.h#L242
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual.pdf 
+     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/arch_include/x86/sel4/arch/syscalls.h#L242
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-2.0.0.pdf
      *
      * hint 2: the endpoint cap is in slot EP_CPTR
      */

@@ -22,7 +22,8 @@ assembly {
         composition {
                 /* TODO: component instances */
                 /* hint 1: one hardware component, one driver component 
-                 * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+                 * hint 2: look at
+		 * https://github.com/seL4/camkes-tool/blob/2.0.0/docs/index.md#creating-an-application
                  */
                 component Timerbase timerbase;
 		component Timer timer;
@@ -32,7 +33,8 @@ assembly {
                 /* TODO: connections */
                 /* hint 1: use seL4HardwareMMIO to connect device memory
 		 * hint 2: use seL4HardwareInterrupt to connect interrupt
-                 * hint 3: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+                 * hint 3: look at
+		 * https://github.com/seL4/camkes-tool/blob/2.0.0/docs/index.md#creating-an-application
                  */
                connection seL4HardwareMMIO timer_mem(from timer.reg, to timerbase.reg);
                connection seL4HardwareInterrupt timer_irq(from timerbase.irq, to timer.irq);
@@ -44,7 +46,7 @@ assembly {
 	       /* TODO: hardware resources */
 	       /* hint 1: find out the device memory address and IRQ number from the hardware data sheet
                 * hint 2: look at
-		* https://github.com/seL4/camkes-tool/blob/master/docs/index.md#hardware-components
+		* https://github.com/seL4/camkes-tool/blob/2.0.0/docs/index.md#hardware-components
 		*/
                timerbase.reg_attributes = "0x53F98000:0x1000"; //device memory
                timerbase.irq_attributes	= 27;		       //Timer interrupt

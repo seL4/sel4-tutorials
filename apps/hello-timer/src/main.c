@@ -147,7 +147,7 @@ int main(void)
      * @param vka Pointer to vka interface.
      * @param result Structure for the Endpoint object.  This gets initialised.
      * @return 0 on success
-     * https://github.com/seL4/libsel4vka/blob/master/include/vka/object.h#L98
+     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4vka/include/vka/object.h#L110
      */
 
     /* TODO 2: call sel4platsupport library to get the default timer */
@@ -204,7 +204,7 @@ int main(void)
          * void sel4_timer_handle_single_irq(seL4_timer_t* timer);
 	 * @param device generic timer handler
 	 *
-	 * https://github.com/seL4/libplatsupport/blob/master/include/platsupport/timer.h#L146
+	 * https://github.com/seL4/util_libs/blob/master/libplatsupport/include/platsupport/timer.h#L146
 	 */
 
         count++;

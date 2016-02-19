@@ -207,7 +207,7 @@ int main(void)
      * map the frame into the vspace at ipc_buffer_vaddr.
      * To do this we first try to map it in to the root page directory.
      * If there is already a page table mapped in the appropriate slot in the
-     * page diretory where we can insert this frame, then this will succeed.
+     * page directory where we can insert this frame, then this will succeed.
      * Otherwise we first need to create a page table, and map it in to
      * the page`directory, before we can map the frame in.
      */

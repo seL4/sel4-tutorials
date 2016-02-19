@@ -33,19 +33,19 @@
 /* global environment variables */
 
 /* seL4_BootInfo defined in bootinfo.h
- * https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/bootinfo.h#L50 */
+ * https://github.com/seL4/seL4/blob/2.0.0/libsel4/include/sel4/bootinfo.h#L50 */
 seL4_BootInfo *info;
 
 /* simple_t defined in simple.h
- * https://github.com/seL4/libsel4simple/blob/master/include/simple/simple.h#L201 */
+ * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4simple/include/simple/simple.h#L201
 simple_t simple;
 
 /* vka_t defined in vka.h
- * https://github.com/seL4/libsel4vka/blob/master/include/vka/vka.h#L93 */
+ * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4vka/include/vka/vka.h#L95
 vka_t vka;
 
 /* allocaman_t defined in allocman.h
- * https://github.com/seL4/libsel4allocman/blob/master/include/allocman/allocman.h#L105 */
+ * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4allocman/include/allocman/allocman.h#L105
 allocman_t *allocman;
 
 /* static memory for the allocator to bootstrap with */
@@ -78,7 +78,7 @@ int main(void)
     /* give us a name: useful for debugging if the thread faults */
     /* seL4_CapInitThreadTCB is a cap pointer to the root task's initial TCB.
      * It is part of the root task's boot environment and defined in bootinfo.h from libsel4:
-     * https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/bootinfo.h#L20
+     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/include/sel4/bootinfo.h#L18
      */
     name_thread(seL4_CapInitThreadTCB, "hello-2");
 
@@ -86,7 +86,7 @@ int main(void)
     /* hint: seL4_GetBootInfo() 
      * seL4_BootInfo* seL4_GetBootInfo(void);
      * @return Pointer to the bootinfo, no failure.
-     * https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/bootinfo.h#L72 
+     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/include/sel4/bootinfo.h#L72
      */
     info = seL4_GetBootInfo();
 
@@ -95,7 +95,7 @@ int main(void)
      * void simple_default_init_bootinfo(simple_t *simple, seL4_BootInfo *bi);
      * @param simple Structure for the simple interface object. This gets initialised.
      * @param bi Pointer to the bootinfo describing what resources are available
-     * https://github.com/seL4/libsel4simple-default/blob/master/include/simple-default/simple-default.h#L18
+     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4simple-default/include/simple-default/simple-default.h#L18
      */
     simple_default_init_bootinfo(&simple, info);
 
@@ -103,8 +103,8 @@ int main(void)
     /* hint: simple_print()
      * void simple_print(simple_t *simple);
      * @param simple Pointer to simple interface.
-     * https://github.com/seL4/libsel4simple/blob/master/include/simple/simple.h#L199
-     * https://github.com/seL4/libsel4simple/blob/master/include/simple/simple.h#L343
+     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4simple/include/simple/simple.h#L199
+     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4simple/include/simple/simple.h#L343
      */ 
     simple_print(&simple);
 
@@ -115,7 +115,7 @@ int main(void)
      * @param pool_size Size of the initial memory pool. 
      * @param pool Initial memory pool. 
      * @return returns NULL on error
-     * https://github.com/seL4/libsel4allocman/blob/master/include/allocman/bootstrap.h#L172
+     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4allocman/include/allocman/bootstrap.h#L172
      */
     allocman = bootstrap_use_current_simple(&simple, ALLOCATOR_STATIC_POOL_SIZE, allocator_mem_pool);
     assert(allocman);
@@ -125,7 +125,7 @@ int main(void)
      * void allocman_make_vka(vka_t *vka, allocman_t *alloc);
      * @param vka Structure for the vka interface object.  This gets initialised.
      * @param alloc allocator to be used with this vka
-     * https://github.com/seL4/libsel4allocman/blob/master/include/allocman/vka.h#L24
+     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4allocman/include/allocman/vka.h#L24
      */
     allocman_make_vka(&vka, allocman);
 
@@ -134,7 +134,7 @@ int main(void)
      * seL4_CPtr simple_get_cnode(simple_t *simple);
      * @param simple Pointer to simple interface.
      * @return The cnode backing the simple interface. no failure. 
-     * https://github.com/seL4/libsel4simple/blob/master/include/simple/simple.h#L275
+     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4simple/include/simple/simple.h#L275
      */
     seL4_CPtr cspace_cap;
     cspace_cap = simple_get_cnode(&simple);
@@ -144,7 +144,7 @@ int main(void)
      * seL4_CPtr simple_get_pd(simple_t *simple);
      * @param simple Pointer to simple interface.
      * @return The vspace (PD) backing the simple interface. no failure.
-     * https://github.com/seL4/libsel4simple/blob/master/include/simple/simple.h#L293
+     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4simple/include/simple/simple.h#L293
      */
     seL4_CPtr pd_cap;
     pd_cap = simple_get_pd(&simple);
@@ -155,7 +155,7 @@ int main(void)
      * @param vka Pointer to vka interface.
      * @param result Structure for the TCB object.  This gets initialised.
      * @return 0 on success
-     * https://github.com/seL4/libsel4vka/blob/master/include/vka/object.h#L90
+     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4vka/include/vka/object.h#L101
      */
     vka_object_t tcb_object = {0};
     error = vka_alloc_tcb(&vka, &tcb_object);
@@ -175,8 +175,8 @@ int main(void)
      * @param bufferFrame Capability to a page containing the thread?s IPC buffer.
      * @return 0 on success. 
      * Note: this function is generated during build.  It is generated from the following definition: 
-     * https://github.com/seL4/seL4/blob/master/libsel4/include/interfaces/sel4.xml#L44
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual.pdf
+     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/include/interfaces/sel4.xml#L44
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-2.0.0.pdf
      * 
      * hint 2: use seL4_CapNull for the fault endpoint
      * hint 3: use seL4_NilData for cspace and vspace data
@@ -200,7 +200,7 @@ int main(void)
      * void sel4utils_set_instruction_pointer(seL4_UserContext *regs, seL4_Word value);
      * @param regs Data structure in which to set the instruction pointer value
      * @param value New instruction pointer value
-     * https://github.com/seL4/libsel4utils/blob/master/arch_include/x86/sel4utils/arch/util.h#L30
+     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4utils/arch_include/x86_64/sel4utils/arch/util.h#L28
      *
      * hint 2: we want the new thread to run the function "thread_2"
      */
@@ -215,7 +215,7 @@ int main(void)
      * void sel4utils_set_stack_pointer(seL4_UserContext *regs, seL4_Word value);
      * @param regs  Data structure in which to set the stack pointer value
      * @param value New stack pointer value
-     * https://github.com/seL4/libsel4utils/blob/master/arch_include/x86/sel4utils/arch/util.h#L42
+     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4utils/arch_include/x86_64/sel4utils/arch/util.h#L40
      * 
      * hint 2: remember the stack grows down!
      */
@@ -233,8 +233,8 @@ int main(void)
      * @return 0 on success
      *
      * Note: this function is generated during build.  It is generated from the following definition:
-     * https://github.com/seL4/seL4/blob/master/libsel4/include/interfaces/sel4.xml#L30
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual.pdf
+     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/include/interfaces/sel4.xml#L30
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-2.0.0.pdf
      */
     error = seL4_TCB_WriteRegisters(tcb_object.cptr, 0, 0, 2, &regs);
     assert(error == 0);
@@ -246,8 +246,8 @@ int main(void)
      * @return 0 on success
      *
      * Note: this function is generated during build.  It is generated from the following definition:
-     * https://github.com/seL4/seL4/blob/master/libsel4/include/interfaces/sel4.xml#L69
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual.pdf
+     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/include/interfaces/sel4.xml#L69
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-2.0.0.pdf
      */
     error = seL4_TCB_Resume(tcb_object.cptr);
     assert(error == 0);

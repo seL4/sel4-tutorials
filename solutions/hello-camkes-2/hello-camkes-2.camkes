@@ -27,7 +27,7 @@ assembly {
                 /* TODO 5: Event connections */
                 /* hint 1: connect each "emits" interface in a component to the "consumes" interface in the other
 		 * hint 2: use seL4Asynch as the connector
-                 * hint 3: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
+                 * hint 3: look at https://github.com/seL4/camkes-tool/blob/2.0.0/docs/index.md#an-example-of-events
                  */
 		connection seL4Asynch echo_event(from client.echo, to echo.echo);
 		connection seL4Asynch client_event(from echo.client, to client.client);
@@ -35,7 +35,7 @@ assembly {
                 /* TODO 6: Dataport connections */
                 /* hint 1: connect the corresponding dataport interfaces of the components to each other
 		 * hint 2: use seL4SharedData as the connector
-                 * hint 3: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-dataports
+                 * hint 3: look at https://github.com/seL4/camkes-tool/blob/2.0.0/docs/index.md#an-example-of-dataports
                  */
 		connection seL4SharedData data_conn(from client.d, to echo.d);
 		connection seL4SharedData typed_data_conn(from client.d_typed, to echo.d_typed);
