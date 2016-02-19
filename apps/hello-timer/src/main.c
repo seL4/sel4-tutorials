@@ -141,9 +141,9 @@ int main(void)
     error = sel4utils_spawn_process_v(&new_process, &vka, &vspace, 0, NULL, 1);
     assert(error == 0);
 
-    /* TODO 1: create an async endpoint for the timer interrupt */
-    /* hint: vka_alloc_async_endpoint()
-     * int vka_alloc_async_endpoint(vka_t *vka, vka_object_t *result)
+    /* TODO 1: create a notification endpoint for the timer interrupt */
+    /* hint: vka_alloc_notification()
+     * int vka_alloc_notification(vka_t *vka, vka_object_t *result)
      * @param vka Pointer to vka interface.
      * @param result Structure for the Endpoint object.  This gets initialised.
      * @return 0 on success
@@ -172,7 +172,7 @@ int main(void)
     seL4_Word msg;
 
     /* wait for a message */
-    tag = seL4_Wait(ep_cap_path.capPtr, &sender_badge);
+    tag = seL4_Recv(ep_cap_path.capPtr, &sender_badge);
 
     /* make sure it is what we expected */
     assert(sender_badge == EP_BADGE);
@@ -201,7 +201,7 @@ int main(void)
 	 * @param ns number of nanoseconds before firing the interrupt
 	 * @return 0 on success
 	 *
-         * void timer_handle_irq(pstimer_t* device);
+         * void sel4_timer_handle_single_irq(seL4_timer_t* timer);
 	 * @param device generic timer handler
 	 *
 	 * https://github.com/seL4/libplatsupport/blob/master/include/platsupport/timer.h#L146
@@ -218,7 +218,7 @@ int main(void)
     seL4_SetMR(0, msg);
 
     /* send the modified message back */
-    seL4_ReplyWait(ep_cap_path.capPtr, tag, &sender_badge);
+    seL4_ReplyRecv(ep_cap_path.capPtr, tag, &sender_badge);
 
     return 0;
 }
