@@ -33,19 +33,19 @@
 /* global environment variables */
 
 /* seL4_BootInfo defined in bootinfo.h
- * https://github.com/seL4/seL4/blob/2.0.0/libsel4/include/sel4/bootinfo.h#L50 */
+ * https://github.com/seL4/seL4/blob/3.0.0/libsel4/include/sel4/bootinfo.h#L51 */
 seL4_BootInfo *info;
 
 /* simple_t defined in simple.h
- * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4simple/include/simple/simple.h#L201
+ * https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4simple/include/simple/simple.h#L201 */
 simple_t simple;
 
 /* vka_t defined in vka.h
- * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4vka/include/vka/vka.h#L95
+ * https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4vka/include/vka/vka.h#L95 */
 vka_t vka;
 
 /* allocaman_t defined in allocman.h
- * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4allocman/include/allocman/allocman.h#L105
+ * https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4allocman/include/allocman/allocman.h#L105 */
 allocman_t *allocman;
 
 /* static memory for the allocator to bootstrap with */
@@ -77,7 +77,7 @@ int main(void)
     /* give us a name: useful for debugging if the thread faults */
     /* seL4_CapInitThreadTCB is a cap pointer to the root task's initial TCB.
      * It is part of the root task's boot environment and defined in bootinfo.h from libsel4:
-     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/include/sel4/bootinfo.h#L18
+     * https://github.com/seL4/seL4/blob/3.0.0/libsel4/include/sel4/bootinfo.h#L18
      */
     name_thread(seL4_CapInitThreadTCB, "hello-2");
 
@@ -85,7 +85,7 @@ int main(void)
     /* hint: seL4_GetBootInfo() 
      * seL4_BootInfo* seL4_GetBootInfo(void);
      * @return Pointer to the bootinfo, no failure.
-     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/include/sel4/bootinfo.h#L72
+     * https://github.com/seL4/seL4/blob/3.0.0/libsel4/include/sel4/bootinfo.h#L72
      */
 
     /* TODO 2: init simple */
@@ -93,25 +93,25 @@ int main(void)
      * void simple_default_init_bootinfo(simple_t *simple, seL4_BootInfo *bi);
      * @param simple Structure for the simple interface object. This gets initialised.
      * @param bi Pointer to the bootinfo describing what resources are available
-     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4simple-default/include/simple-default/simple-default.h#L18
+     * https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4simple-default/include/simple-default/simple-default.h#L18
      */
 
     /* TODO 3: print out bootinfo and other info about simple */
     /* hint: simple_print()
      * void simple_print(simple_t *simple);
      * @param simple Pointer to simple interface.
-     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4simple/include/simple/simple.h#L199
-     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4simple/include/simple/simple.h#L343
+     * https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4simple/include/simple/simple.h#L199
+     * https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4simple/include/simple/simple.h#L343
      */ 
 
     /* TODO 4: create an allocator */
-    /* hint: bootstrap_use_current_simple() 
+    /* hint: bootstrap_use_current_simple()
      * allocman_t *bootstrap_use_current_simple(simple_t *simple, uint32_t pool_size, char *pool);
      * @param simple Pointer to simple interface.
-     * @param pool_size Size of the initial memory pool. 
-     * @param pool Initial memory pool. 
+     * @param pool_size Size of the initial memory pool.
+     * @param pool Initial memory pool.
      * @return returns NULL on error
-     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4allocman/include/allocman/bootstrap.h#L172
+     * https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4allocman/include/allocman/bootstrap.h#L172
      */
 
     /* TODO 5: create a vka (interface for interacting with the underlying allocator) */
@@ -119,7 +119,7 @@ int main(void)
      * void allocman_make_vka(vka_t *vka, allocman_t *alloc);
      * @param vka Structure for the vka interface object.  This gets initialised.
      * @param alloc allocator to be used with this vka
-     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4allocman/include/allocman/vka.h#L24
+     * https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4allocman/include/allocman/vka.h#L24
      */
 
     /* TODO 6: get our cspace root cnode */
@@ -127,15 +127,15 @@ int main(void)
      * seL4_CPtr simple_get_cnode(simple_t *simple);
      * @param simple Pointer to simple interface.
      * @return The cnode backing the simple interface. no failure. 
-     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4simple/include/simple/simple.h#L275
+     * https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4simple/include/simple/simple.h#L275
      */
 
     /* TODO 7: get our vspace root page diretory */
-    /* hint: simple_get_pd() 
+    /* hint: simple_get_pd()
      * seL4_CPtr simple_get_pd(simple_t *simple);
      * @param simple Pointer to simple interface.
      * @return The vspace (PD) backing the simple interface. no failure.
-     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4simple/include/simple/simple.h#L293
+     * https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4simple/include/simple/simple.h#L293
      */
 
     /* TODO 8: create a new TCB */
@@ -144,7 +144,7 @@ int main(void)
      * @param vka Pointer to vka interface.
      * @param result Structure for the TCB object.  This gets initialised.
      * @return 0 on success
-     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4vka/include/vka/object.h#L101
+     * https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4vka/include/vka/object.h#L101
      */
 
     /* TODO 9: initialise the new TCB */
@@ -161,8 +161,8 @@ int main(void)
      * @param bufferFrame Capability to a page containing the thread?s IPC buffer.
      * @return 0 on success. 
      * Note: this function is generated during build.  It is generated from the following definition: 
-     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/include/interfaces/sel4.xml#L44
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-2.0.0.pdf
+     * https://github.com/seL4/seL4/blob/3.0.0/libsel4/include/interfaces/sel4.xml#L44
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      * 
      * hint 2: use seL4_CapNull for the fault endpoint
      * hint 3: use seL4_NilData for cspace and vspace data
@@ -183,7 +183,7 @@ int main(void)
      * void sel4utils_set_instruction_pointer(seL4_UserContext *regs, seL4_Word value);
      * @param regs Data structure in which to set the instruction pointer value
      * @param value New instruction pointer value
-     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4utils/arch_include/x86_64/sel4utils/arch/util.h#L28
+     * https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4utils/arch_include/x86_64/sel4utils/arch/util.h#L28
      *
      * hint 2: we want the new thread to run the function "thread_2"
      */
@@ -197,7 +197,7 @@ int main(void)
      * void sel4utils_set_stack_pointer(seL4_UserContext *regs, seL4_Word value);
      * @param regs  Data structure in which to set the stack pointer value
      * @param value New stack pointer value
-     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4utils/arch_include/x86_64/sel4utils/arch/util.h#L40
+     * https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4utils/arch_include/x86_64/sel4utils/arch/util.h#L40
      * 
      * hint 2: remember the stack grows down!
      */
@@ -214,8 +214,8 @@ int main(void)
      * @return 0 on success
      *
      * Note: this function is generated during build.  It is generated from the following definition:
-     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/include/interfaces/sel4.xml#L30
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-2.0.0.pdf
+     * https://github.com/seL4/seL4/blob/3.0.0/libsel4/include/interfaces/sel4.xml#L30
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      */
 
     /* TODO 14: start the new thread running */
@@ -225,8 +225,8 @@ int main(void)
      * @return 0 on success
      *
      * Note: this function is generated during build.  It is generated from the following definition:
-     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/include/interfaces/sel4.xml#L69
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-2.0.0.pdf
+     * https://github.com/seL4/seL4/blob/3.0.0/libsel4/include/interfaces/sel4.xml#L69
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      */
 
     /* we are done, say hello */

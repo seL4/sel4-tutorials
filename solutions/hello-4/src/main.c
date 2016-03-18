@@ -100,8 +100,8 @@ int main(void)
     * @param vka Initialised vka that this virtual memory allocator will use to allocate pages and pagetables. This allocator will never invoke free.
     * @param info seL4 boot info
     * @return 0 on succes.
-    * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4utils/include/sel4utils/vspace.h#L214
-    * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4utils/include/sel4utils/vspace.h#L172
+    * https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4utils/include/sel4utils/vspace.h#L214
+    * https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4utils/include/sel4utils/vspace.h#L172
     */
     error = sel4utils_bootstrap_vspace_with_bootinfo_leaky(&vspace,
         &data, simple_get_pd(&simple), &vka, info);
@@ -124,7 +124,7 @@ int main(void)
     * @param priority Priority to configure the process to run as.
     * @param image_name Name of the elf image to load from the cpio archive.
     * @return 0 on success, -1 on error.
-    * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4utils/include/sel4utils/process.h#L165
+    * https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4utils/include/sel4utils/process.h#L165
     *
     * hint 2: priority is in APP_PRIORITY and can be 0 to seL4_MaxPrio
     * hint 3: the elf image name is in APP_IMAGE_NAME
@@ -153,7 +153,7 @@ int main(void)
      * @param vka Vka interface to use for allocation of objects.
      * @param slot A cslot allocated by the cspace alloc function
      * @param res Pointer to a cspacepath struct to fill out
-     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4vka/include/vka/vka.h#L122
+     * https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4vka/include/vka/vka.h#L122
      *
      * hint 2: use the cslot of the endpoint allocated above
      */
@@ -169,7 +169,7 @@ int main(void)
      * @param rights The rights of the new cap
      * @param data Extra data for the new cap (e.g., the badge)
      * @return 0 on failure, otherwise the slot in the processes cspace.
-     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4utils/include/sel4utils/process.h#L227
+     * https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4utils/include/sel4utils/process.h#L227
      *
      * hint 2: for the rights, use seL4_AllRights
      * hint 3: for the badge use seL4_CapData_Badge_new()
@@ -181,7 +181,7 @@ int main(void)
      * The type definition and generated field access functions are defined in a generated file: 
      * build/x86/pc99/libsel4/include/sel4/types_gen.h
      * It is generated from the following definition:
-     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/include/sel4/types.bf#L30
+     * https://github.com/seL4/seL4/blob/3.0.0/libsel4/include/sel4/types_32.bf#L30
      * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-2.0.0.pdf
      * 
      * hint 4: for the badge value use EP_BADGE
@@ -200,7 +200,7 @@ int main(void)
      * @param argv A pointer to an array of strings in the current vspace.
      * @param resume 1 to start the process, 0 to leave suspended.
      * @return 0 on success, -1 on error.
-     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4utils/include/sel4utils/process.h#L161
+     * https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4utils/include/sel4utils/process.h#L161
      */
     error = sel4utils_spawn_process_v(&new_process, &vka, &vspace, 0, NULL, 1);
     assert(error == 0);
@@ -217,24 +217,24 @@ int main(void)
     seL4_Word msg;
 
     /* TODO 7: wait for a message */
-    /* hint 1: seL4_Wait() 
-     * seL4_MessageInfo_t seL4_Wait(seL4_CPtr src, seL4_Word* sender)
+    /* hint 1: seL4_Recv() 
+     * seL4_MessageInfo_t seL4_Recv(seL4_CPtr src, seL4_Word* sender)
      * @param src The capability to be invoked.
      * @param sender The badge of the endpoint capability that was invoked by the sender is written to this address.
      * @return A seL4_MessageInfo_t structure
-     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/arch_include/x86/sel4/arch/syscalls.h#L165
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-2.0.0.pdf
+     * https://github.com/seL4/seL4/blob/3.0.0/libsel4/sel4_arch_include/ia32/sel4/sel4_arch/syscalls.h#L164
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      *
      * hint 2: seL4_MessageInfo_t is generated during build.
      * The type definition and generated field access functions are defined in a generated file: 
      * build/x86/pc99/libsel4/include/sel4/types_gen.h
      * It is generated from the following definition:
-     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/include/sel4/types.bf#L35
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-2.0.0.pdf
+     * https://github.com/seL4/seL4/blob/3.0.0/libsel4/include/sel4/shared_types_32.bf#L15
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      *
      * hint 3: use the badged endpoint cap that you minted above
      */
-    tag = seL4_Wait(ep_cap_path.capPtr, &sender_badge);
+    tag = seL4_Recv(ep_cap_path.capPtr, &sender_badge);
 
     /* make sure it is what we expected */
     assert(sender_badge == EP_BADGE);
@@ -248,25 +248,25 @@ int main(void)
     seL4_SetMR(0, ~msg);
 
     /* TODO 8: send the modified message back */
-    /* hint 1: seL4_ReplyWait()
-     * seL4_MessageInfo_t seL4_ReplyWait(seL4_CPtr dest, seL4_MessageInfo_t msgInfo, seL4_Word *sender) 
+    /* hint 1: seL4_ReplyRecv()
+     * seL4_MessageInfo_t seL4_ReplyRecv(seL4_CPtr dest, seL4_MessageInfo_t msgInfo, seL4_Word *sender) 
      * @param dest The capability to be invoked.
      * @param msgInfo The messageinfo structure for the IPC.  This specifies information about the message to send (such as the number of message registers to send) as the Reply part.
      * @param sender The badge of the endpoint capability that was invoked by the sender is written to this address. This is a result of the Wait part.
      * @return A seL4_MessageInfo_t structure.  This is a result of the Wait part.
-     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/arch_include/x86/sel4/arch/syscalls.h#L324
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-2.0.0.pdf
+     * https://github.com/seL4/seL4/blob/3.0.0/libsel4/sel4_arch_include/ia32/sel4/sel4_arch/syscalls.h#L359
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      *
      * hint 2: seL4_MessageInfo_t is generated during build.
      * The type definition and generated field access functions are defined in a generated file: 
      * build/x86/pc99/libsel4/include/sel4/types_gen.h
      * It is generated from the following definition:
-     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/include/sel4/types.bf#L35
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-2.0.0.pdf
+     * https://github.com/seL4/seL4/blob/3.0.0/libsel4/include/sel4/shared_types_32.bf#L15
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      *
      * hint 3: use the badged endpoint cap that you used for Call 
      */
-    seL4_ReplyWait(ep_cap_path.capPtr, tag, &sender_badge);
+    seL4_ReplyRecv(ep_cap_path.capPtr, tag, &sender_badge);
 
     return 0;
 }

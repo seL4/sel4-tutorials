@@ -74,20 +74,20 @@ void thread_2(void) {
     printf("thread_2: hallo wereld\n");
 
     /* TODO 11: wait for a message to come in over the endpoint */
-    /* hint 1: seL4_Wait() 
-     * seL4_MessageInfo_t seL4_Wait(seL4_CPtr src, seL4_Word* sender)
+    /* hint 1: seL4_Recv() 
+     * seL4_MessageInfo_t seL4_Recv(seL4_CPtr src, seL4_Word* sender)
      * @param src The capability to be invoked.
      * @param sender The badge of the endpoint capability that was invoked by the sender is written to this address.
      * @return A seL4_MessageInfo_t structure
-     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/arch_include/x86/sel4/arch/syscalls.h#L165
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-2.0.0.pdf
+     * https://github.com/seL4/seL4/blob/3.0.0/libsel4/sel4_arch_include/aarch32/sel4/sel4_arch/syscalls.h#L207 
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      *
      * hint 2: seL4_MessageInfo_t is generated during build.
      * The type definition and generated field access functions are defined in a generated file: 
      * build/x86/pc99/libsel4/include/sel4/types_gen.h
      * It is generated from the following definition:
-     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/include/sel4/types.bf#L35
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-2.0.0.pdf
+     * https://github.com/seL4/seL4/blob/3.0.0/libsel4/include/sel4/shared_types_32.bf#L15
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      */
 
     /* TODO 12: make sure it is what we expected */
@@ -100,7 +100,7 @@ void thread_2(void) {
      * seL4_MessageInfo_get_length() is generated during build. It can be found in:
      * build/x86/pc99/libsel4/include/sel4/types_gen.h
      * It is generated from the following definition:
-     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/include/sel4/types.bf#L35
+     * https://github.com/seL4/seL4/blob/3.0.0/libsel4/include/sel4/shared_types_32.bf#L15 
      */ 
 
     /* TODO 13: get the message stored in the first message register */
@@ -108,8 +108,8 @@ void thread_2(void) {
      * seL4_Word seL4_GetMR(int i)
      * @param i The message register to retreive
      * @return The message register value
-     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/arch_include/x86/sel4/arch/functions.h#L33
-     * You can find out more about message registers in the API manual: http://sel4.systems/Info/Docs/seL4-manual-2.0.0.pdf
+     * https://github.com/seL4/seL4/blob/3.0.0/libsel4/arch_include/x86/sel4/arch/functions.h#L32
+     * You can find out more about message registers in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      */
 
     printf("thread_2: got a message %#x from %#x\n", msg, sender_badge);
@@ -122,26 +122,26 @@ void thread_2(void) {
      * void seL4_SetMR(int i, seL4_Word mr)
      * @param i The message register to write
      * @param mr The value of the message register
-     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/arch_include/x86/sel4/arch/functions.h#L41
-     * You can find out more about message registers in the API manual: http://sel4.systems/Info/Docs/seL4-manual-2.0.0.pdf
+     * https://github.com/seL4/seL4/blob/3.0.0/libsel4/arch_include/x86/sel4/arch/functions.h#L40
+     * You can find out more about message registers in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      */
 
     /* TODO 15: send the message back */
-    /* hint 1: seL4_ReplyWait()
-     * seL4_MessageInfo_t seL4_ReplyWait(seL4_CPtr dest, seL4_MessageInfo_t msgInfo, seL4_Word *sender) 
+    /* hint 1: seL4_ReplyRecv()
+     * seL4_MessageInfo_t seL4_ReplyRecv(seL4_CPtr dest, seL4_MessageInfo_t msgInfo, seL4_Word *sender) 
      * @param dest The capability to be invoked.
      * @param msgInfo The messageinfo structure for the IPC.  This specifies information about the message to send (such as the number of message registers to send) as the Reply part.
      * @param sender The badge of the endpoint capability that was invoked by the sender is written to this address.  This is a result of the Wait part.
      * @return A seL4_MessageInfo_t structure.  This is a result of the Wait part.
-     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/arch_include/x86/sel4/arch/syscalls.h#L324
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-2.0.0.pdf
+     * https://github.com/seL4/seL4/blob/3.0.0/libsel4/sel4_arch_include/ia32/sel4/sel4_arch/syscalls.h#L312 
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      *
      * hint 2: seL4_MessageInfo_t is generated during build.
      * The type definition and generated field access functions are defined in a generated file: 
      * build/x86/pc99/libsel4/include/sel4/types_gen.h
      * It is generated from the following definition:
-     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/include/sel4/types.bf#L35
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-2.0.0.pdf
+     * https://github.com/seL4/seL4/blob/3.0.0/libsel4/include/sel4/shared_types_32.bf#L15
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      */
 }
 
@@ -192,7 +192,7 @@ int main(void)
      * @param size_bits Frame size: 2^size_bits
      * @param result Structure for the Frame object.  This gets initialised.
      * @return 0 on success
-     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4vka/include/vka/object.h#L127
+     * https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4vka/include/vka/object.h#L127
      */
     vka_object_t ipc_frame_object;
 
@@ -210,10 +210,10 @@ int main(void)
     /* hint 1: seL4_ARCH_Page_Map()
      * The *ARCH* versions of seL4 sys calls are abstractions over the architecture provided by libsel4utils
      * this one is defined as:
-     * #define seL4_ARCH_Page_Map seL4_IA32_Page_Map
-     * in: https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4utils/arch_include/x86/sel4utils/arch/mapping.h#L14
+     * #define seL4_ARCH_Page_Map seL4_X86_Page_Map
+     * in: https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4vspace/arch_include/x86/vspace/arch/page.h#L23
      * The signature for the underlying function is:
-     * int seL4_IA32_Page_Map(seL4_IA32_Page service, seL4_IA32_PageDirectory pd, seL4_Word vaddr, seL4_CapRights rights, seL4_IA32_VMAttributes attr)
+     * int seL4_X86_Page_Map(seL4_X86_Page service, seL4_X86_PageDirectory pd, seL4_Word vaddr, seL4_CapRights rights, seL4_X86_VMAttributes attr)
      * @param service Capability to the page to map.
      * @param pd Capability to the VSpace which will contain the mapping.
      * @param vaddr Virtual address to map the page into.
@@ -222,8 +222,8 @@ int main(void)
      * @return 0 on success.
      *
      * Note: this function is generated during build.  It is generated from the following definition:
-     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/arch_include/x86/interfaces/sel4arch.xml#L52
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-2.0.0.pdf
+     * https://github.com/seL4/seL4/blob/3.0.0/libsel4/arch_include/x86/interfaces/sel4arch.xml#L42
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      *
      * hint 2: for the rights, use seL4_AllRights 
      * hint 3: for VM attributes use seL4_ARCH_Default_VMAttributes
@@ -237,17 +237,17 @@ int main(void)
 	 * @param vka Pointer to vka interface.
 	 * @param result Structure for the PageTable object.  This gets initialised.
 	 * @return 0 on success
-	 * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4vka/include/vka/object.h#L137
+	 * https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4vka/include/vka/object.h#L137
          */
 
         /* TODO 4: map the page table */
         /* hint 1: seL4_ARCH_PageTable_Map()
 	 * The *ARCH* versions of seL4 sys calls are abstractions over the architecture provided by libsel4utils
 	 * this one is defined as:
-	 * #define seL4_ARCH_PageTable_Map seL4_IA32_PageTable_Map
-	 * in: https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4utils/arch_include/x86/sel4utils/arch/mapping.h#L18
+	 * #define seL4_ARCH_PageTable_Map seL4_X86_PageTable_Map
+         * https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4vspace/arch_include/x86/vspace/arch/page.h#L27
 	 * The signature for the underlying function is:
-	 * int seL4_IA32_PageTable_Map(seL4_IA32_PageTable service, seL4_IA32_PageDirectory pd, seL4_Word vaddr, seL4_IA32_VMAttributes attr)
+	 * int seL4_X86_PageTable_Map(seL4_X86_PageTable service, seL4_X86_PageDirectory pd, seL4_Word vaddr, seL4_X86_VMAttributes attr)
 	 * @param service Capability to the page table to map.
 	 * @param pd Capability to the VSpace which will contain the mapping.
 	 * @param vaddr Virtual address to map the page table into.
@@ -256,8 +256,8 @@ int main(void)
 	 * @return 0 on success.
 	 *
 	 * Note: this function is generated during build.  It is generated from the following definition:
-	 * https://github.com/seL4/seL4/blob/2.0.0/libsel4/arch_include/x86/interfaces/sel4arch.xml#L37
-	 * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-2.0.0.pdf
+   * https://github.com/seL4/seL4/blob/3.0.0/libsel4/arch_include/x86/interfaces/sel4arch.xml#L33
+	 * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
 	 * 
          * hint 2: for VM attributes use seL4_ARCH_Default_VMAttributes
          */
@@ -279,7 +279,7 @@ int main(void)
      * @param vka Pointer to vka interface.
      * @param result Structure for the Endpoint object.  This gets initialised.
      * @return 0 on success
-     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4vka/include/vka/object.h#L105
+     * https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4vka/include/vka/object.h#L105
      */
 
     /* TODO 7: make a badged copy of it in our cspace. This copy will be used to send 
@@ -293,7 +293,7 @@ int main(void)
      * @param[in] badge The badge for the minted cap. 
      * @return 0 on success
      * 
-     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4vka/include/vka/object_capops.h#L41
+     * https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4vka/include/vka/object_capops.h#L41
      *
      * hint 2: for the rights, use seL4_AllRights
      * hint 3: for the badge use seL4_CapData_Badge_new()
@@ -305,8 +305,8 @@ int main(void)
      * The type definition and generated field access functions are defined in a generated file: 
      * build/x86/pc99/libsel4/include/sel4/types_gen.h
      * It is generated from the following definition:
-     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/include/sel4/types.bf#L30
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-2.0.0.pdf
+     * https://github.com/seL4/seL4/blob/3.0.0/libsel4/include/sel4/types_32.bf#L30
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      * 
      * hint 4: for the badge use EP_BADGE
      */
@@ -367,7 +367,7 @@ int main(void)
      * seL4_MessageInfo_new() is generated during build. It can be found in:
      * build/x86/pc99/libsel4/include/sel4/types_gen.h
      * It is generated from the following definition:
-     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/include/sel4/types.bf#L35
+     * https://github.com/seL4/seL4/blob/3.0.0/libsel4/include/sel4/shared_types_32.bf
      *
      * hint 2: use 0 for the first 3 fields.
      * hint 3: send only 1 message register of data
@@ -376,8 +376,8 @@ int main(void)
      * void seL4_SetMR(int i, seL4_Word mr)
      * @param i The message register to write
      * @param mr The value of the message register
-     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/arch_include/x86/sel4/arch/functions.h#L41
-     * You can find out more about message registers in the API manual: http://sel4.systems/Info/Docs/seL4-manual-2.0.0.pdf
+     * https://github.com/seL4/seL4/blob/3.0.0/libsel4/arch_include/x86/sel4/arch/functions.h#L40
+     * You can find out more about message registers in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      *
      * hint 5: send MSG_DATA
      */
@@ -388,15 +388,15 @@ int main(void)
      * @param dest The capability to be invoked.
      * @param msgInfo The messageinfo structure for the IPC.  This specifies information about the message to send (such as the number of message registers to send).
      * @return A seL4_MessageInfo_t structure.  This is information about the repy message.
-     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/arch_include/x86/sel4/arch/syscalls.h#L242
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-2.0.0.pdf
+     * https://github.com/seL4/seL4/blob/3.0.0/libsel4/sel4_arch_include/ia32/sel4/sel4_arch/syscalls.h#L237
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      *
      * hint 2: seL4_MessageInfo_t is generated during build.
      * The type definition and generated field access functions are defined in a generated file: 
      * build/x86/pc99/libsel4/include/sel4/types_gen.h
      * It is generated from the following definition:
-     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/include/sel4/types.bf#L35
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-2.0.0.pdf
+     * https://github.com/seL4/seL4/blob/3.0.0/libsel4/include/sel4/shared_types_32.bf#L15
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      */
 
     /* TODO 10: get the reply message */
@@ -404,8 +404,8 @@ int main(void)
      * seL4_Word seL4_GetMR(int i)
      * @param i The message register to retreive
      * @return The message register value
-     * https://github.com/seL4/seL4/blob/2.0.0/libsel4/arch_include/x86/sel4/arch/functions.h#L33
-     * You can find out more about message registers in the API manual: http://sel4.systems/Info/Docs/seL4-manual-2.0.0.pdf
+     * https://github.com/seL4/seL4/blob/3.0.0/libsel4/sel4_arch_include/ia32/sel4/sel4_arch/syscalls.h#L237
+     * You can find out more about message registers in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      */
 
     /* check that we got the expected repy */
