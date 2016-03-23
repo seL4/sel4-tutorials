@@ -44,7 +44,7 @@ void epit_irq_callback(void *_ UNUSED)
     /* hint 1: use the function <IRQ interface name>_reg_callback()
      * hint 2: register the function "epit_irq_callback"
      * hint 3: pass NULL as the extra argument to the callback
-     * hint 4: look at https://github.com/seL4/camkes-tool/blob/2.0.0/docs/index.md#an-example-of-events
+     * hint 4: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-events
      */
     irq_reg_callback(epit_irq_callback, NULL);
 }
@@ -74,7 +74,7 @@ void hello__init()
     /* hint 1: use the function <IRQ interface name>_reg_callback()
      * hint 2: register the function "epit_irq_callback"
      * hint 3: pass NULL as the extra argument to the callback
-     * hint 4: look at https://github.com/seL4/camkes-tool/blob/2.0.0/docs/index.md#an-example-of-events
+     * hint 4: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-events
      */
     irq_reg_callback(epit_irq_callback, NULL);
 }
@@ -87,7 +87,7 @@ void hello__init()
  * hint 4: so the function would be: hello_sleep() 
  * hint 5: the CAmkES 'int' type maps to 'int' in C
  * hint 6: call platsupport library function to set up the timer
- * hint 7: look at https://github.com/seL4/camkes-tool/blob/2.0.0/docs/index.md#creating-an-application
+ * hint 7: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#creating-an-application
  */
 void hello_sleep(int sec)
 {

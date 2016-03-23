@@ -147,7 +147,7 @@ int main(void)
      * @param vka Pointer to vka interface.
      * @param result Structure for the Endpoint object.  This gets initialised.
      * @return 0 on success
-     * https://github.com/seL4/seL4_libs/blob/2.0.x-compatible/libsel4vka/include/vka/object.h#L110
+     * https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4vka/include/vka/object.h#L110
      */
 
     /* TODO 2: call sel4platsupport library to get the default timer */

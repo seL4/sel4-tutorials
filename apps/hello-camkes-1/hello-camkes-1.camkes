@@ -22,12 +22,12 @@ assembly {
         composition {
                 /* TODO 1: component instances */
                 /* hint 1: one Client compoent, one Echo component 
-                 * hint 2: look at https://github.com/seL4/camkes-tool/blob/2.0.0/docs/index.md#creating-an-application
+                 * hint 2: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#creating-an-application
                  */
 
                 /* TODO 2: connections */
                 /* hint 1: use seL4RPCCall as the connector (or you could use seL4RPC if you prefer)
-                 * hint 2: look at https://github.com/seL4/camkes-tool/blob/2.0.0/docs/index.md#creating-an-application
+                 * hint 2: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#creating-an-application
                  */
         }
 }

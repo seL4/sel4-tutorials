@@ -172,7 +172,7 @@ int main(void)
      * build/x86/pc99/libsel4/include/sel4/types_gen.h
      * It is generated from the following definition:
      * https://github.com/seL4/seL4/blob/3.0.0/libsel4/include/sel4/types_32.bf#L30
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-2.0.0.pdf
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      * 
      * hint 4: for the badge value use EP_BADGE
      */
