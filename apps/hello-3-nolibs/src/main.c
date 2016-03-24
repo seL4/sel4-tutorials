@@ -53,7 +53,6 @@ void print_bootinfo(seL4_BootInfo *info) {
     printf("Shared frames     0x%08x 0x%08x\n", info->sharedFrames.start, info->sharedFrames.end);
     printf("User image frames 0x%08x 0x%08x\n", info->userImageFrames.start,
             info->userImageFrames.end);
-    printf("User image PTs    0x%08x 0x%08x\n", info->userImagePTs.start, info->userImagePTs.end);
     printf("Untypeds          0x%08x 0x%08x\n", info->untyped.start, info->untyped.end);
 
     printf("\n--- Untyped Details ---\n");
@@ -84,7 +83,7 @@ void thread_2(void) {
     printf("thread_2: hallo wereld\n");
 
     /* wait for a message to come in over the endpoint */
-    tag = seL4_Wait(ep_cap, &sender_badge);
+    tag = seL4_Recv(ep_cap, &sender_badge);
 
     /* make sure it is what we expected */
     assert(sender_badge == EP_BADGE);
@@ -96,7 +95,7 @@ void thread_2(void) {
 
     /* modify the message and send it back */
     seL4_SetMR(0, ~msg);
-    seL4_ReplyWait(ep_cap, tag, &sender_badge);
+    seL4_ReplyRecv(ep_cap, tag, &sender_badge);
 }
 
 
