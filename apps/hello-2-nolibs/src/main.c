@@ -20,6 +20,7 @@
 #include <stdint.h>
 
 #include <sel4/sel4.h>
+#include <sel4debug/debug.h>
 
 /* global environment variables */
 seL4_BootInfo *info;
@@ -39,39 +40,6 @@ void thread_2(void) {
     while(1);
 }
 
-/* copied from libsimple */
-void print_bootinfo(seL4_BootInfo *info) {
-    /* Parse boot info from kernel. */
-    printf("Node ID: %d (of %d)\n",info->nodeID, info->numNodes);
-    printf("initThreadCNode size: %d slots\n", (1 << info->initThreadCNodeSizeBits) );
-
-    printf("\n--- Capability Details ---\n");
-    printf("Type              Start      End\n");
-    printf("Empty             0x%08x 0x%08x\n", info->empty.start, info->empty.end);
-    printf("Shared frames     0x%08x 0x%08x\n", info->sharedFrames.start, info->sharedFrames.end);
-    printf("User image frames 0x%08x 0x%08x\n", info->userImageFrames.start,
-            info->userImageFrames.end);
-    printf("Untypeds          0x%08x 0x%08x\n", info->untyped.start, info->untyped.end);
-
-    printf("\n--- Untyped Details ---\n");
-    printf("Untyped Slot       Paddr      Bits\n");
-    for (int i = 0; i < info->untyped.end-info->untyped.start; i++) {
-        printf("%3d     0x%08x 0x%08x %d\n", i, info->untyped.start+i, info->untypedPaddrList[i],
-                info->untypedSizeBitsList[i]);
-    }
-
-    printf("\n--- Device Regions: %d ---\n", info->numDeviceRegions);
-    printf("Device Addr     Size Start      End\n");
-    for (int i = 0; i < info->numDeviceRegions; i++) {
-        printf("%2d 0x%08x %d 0x%08x 0x%08x\n", i,
-                                                info->deviceRegions[i].basePaddr,
-                                                info->deviceRegions[i].frameSizeBits,
-                                                info->deviceRegions[i].frames.start,
-                                                info->deviceRegions[i].frames.end);
-    }
-
-}
-
 int main(void)
 {
     int error;
@@ -83,7 +51,7 @@ int main(void)
     info = seL4_GetBootInfo();
 
     /* print out bootinfo */
-    print_bootinfo(info);
+    debug_print_bootinfo(info);
 
     /* get our cspace root cnode */
     seL4_CPtr cspace_cap;

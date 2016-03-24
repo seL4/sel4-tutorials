@@ -11,7 +11,7 @@
 menuconfig APP_HELLO_3_NOLIBS
     bool "seL4 Hello World tutorial - v3 with no libraries"
     default n
-    depends on LIB_SEL4 && (LIB_MUSL_C || LIB_SEL4_C)
+    depends on LIB_SEL4 && (LIB_MUSL_C || LIB_SEL4_C) && LIB_SEL4_DEBUG
     help
        Simple example of how to use the seL4 API and libraries - version 3. 
 
