@@ -51,7 +51,6 @@ void print_bootinfo(seL4_BootInfo *info) {
     printf("Shared frames     0x%08x 0x%08x\n", info->sharedFrames.start, info->sharedFrames.end);
     printf("User image frames 0x%08x 0x%08x\n", info->userImageFrames.start,
             info->userImageFrames.end);
-    printf("User image PTs    0x%08x 0x%08x\n", info->userImagePTs.start, info->userImagePTs.end);
     printf("Untypeds          0x%08x 0x%08x\n", info->untyped.start, info->untyped.end);
 
     printf("\n--- Untyped Details ---\n");
