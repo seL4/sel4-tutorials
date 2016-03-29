@@ -169,19 +169,19 @@ int main(void)
      */
     seL4_Word ipc_buffer_vaddr;
     ipc_buffer_vaddr = IPCBUF_VADDR;
-    error = seL4_IA32_Page_Map(ipc_frame_cap, pd_cap, ipc_buffer_vaddr,
-        seL4_AllRights, seL4_IA32_Default_VMAttributes);
+    error = seL4_X86_Page_Map(ipc_frame_cap, pd_cap, ipc_buffer_vaddr,
+        seL4_AllRights, seL4_X86_Default_VMAttributes);
     if (error != 0) {
 
         /* TODO 4: Retype the untyped into page table (if this was done in TODO 3, ignore this). */
 
-        error = seL4_IA32_PageTable_Map(page_table_cap, pd_cap,
-            ipc_buffer_vaddr, seL4_IA32_Default_VMAttributes);
+        error = seL4_X86_PageTable_Map(page_table_cap, pd_cap,
+            ipc_buffer_vaddr, seL4_X86_Default_VMAttributes);
         assert(error == 0);
 
         /* then map the frame in */
-        error = seL4_IA32_Page_Map(ipc_frame_cap, pd_cap,
-            ipc_buffer_vaddr, seL4_AllRights, seL4_IA32_Default_VMAttributes);
+        error = seL4_X86_Page_Map(ipc_frame_cap, pd_cap,
+            ipc_buffer_vaddr, seL4_AllRights, seL4_X86_Default_VMAttributes);
         assert(error == 0);
     }
 
