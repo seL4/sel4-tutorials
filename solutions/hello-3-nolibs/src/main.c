@@ -166,7 +166,7 @@ int main(void)
    /* create required objects */
     error = untyped_retype_root(untyped, seL4_TCBObject, seL4_TCBBits, cspace_cap, tcb_cap);
     assert(error == 0);
-    error = untyped_retype_root(untyped, seL4_IA32_4K, seL4_PageBits, cspace_cap, ipc_frame_cap);
+    error = untyped_retype_root(untyped, seL4_X86_4K, seL4_PageBits, cspace_cap, ipc_frame_cap);
     assert(error == 0);
     error = untyped_retype_root(untyped, seL4_EndpointObject, seL4_EndpointBits, cspace_cap, ep_cap);
     assert(error == 0);
@@ -181,23 +181,23 @@ int main(void)
      */
     seL4_Word ipc_buffer_vaddr;
     ipc_buffer_vaddr = IPCBUF_VADDR;
-    error = seL4_IA32_Page_Map(ipc_frame_cap, pd_cap, ipc_buffer_vaddr,
-        seL4_AllRights, seL4_IA32_Default_VMAttributes);
+    error = seL4_X86_Page_Map(ipc_frame_cap, pd_cap, ipc_buffer_vaddr,
+        seL4_AllRights, seL4_X86_Default_VMAttributes);
     if (error != 0) {
 
         /* TODO 4: Retype the untyped into page table (if this was done in TODO 3, ignore this). */
 
         /* create and map a page table */
-        error = untyped_retype_root(untyped, seL4_IA32_PageTableObject, seL4_PageTableBits, cspace_cap, page_table_cap);
+        error = untyped_retype_root(untyped, seL4_X86_PageTableObject, seL4_PageTableBits, cspace_cap, page_table_cap);
         assert(error == 0);
         
-        error = seL4_IA32_PageTable_Map(page_table_cap, pd_cap,
-            ipc_buffer_vaddr, seL4_IA32_Default_VMAttributes);
+        error = seL4_X86_PageTable_Map(page_table_cap, pd_cap,
+            ipc_buffer_vaddr, seL4_X86_Default_VMAttributes);
         assert(error == 0);
 
         /* then map the frame in */
-        error = seL4_IA32_Page_Map(ipc_frame_cap, pd_cap,
-            ipc_buffer_vaddr, seL4_AllRights, seL4_IA32_Default_VMAttributes);
+        error = seL4_X86_Page_Map(ipc_frame_cap, pd_cap,
+            ipc_buffer_vaddr, seL4_AllRights, seL4_X86_Default_VMAttributes);
         assert(error == 0);
     }
 
