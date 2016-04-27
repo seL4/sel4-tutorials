@@ -59,7 +59,10 @@ def app_names(arch, system):
     pattern = re.compile("^%s_(.*)_defconfig" % arch)
     for config in os.listdir(system_build_config_dir):
         matches = pattern.match(config)
-        if matches is not None:
+        if matches is None:
+            print("Ignoring incompatible build config %s" % config)
+        else:
+            print("Using build config %s" % config)
             app_name = matches.group(1)
             yield app_name
 
@@ -104,6 +107,8 @@ def run_arch_tests(arch, system):
     """
     Builds and runs all tests for a given architecture for a given system
     """
+
+    print("\nRunning %s tutorial tests for %s architecture..." % (system, arch))
 
     for app in app_names(arch, system):
         print("<testcase classname='sel4tutorials' name='%s_%s_%s'>" % (arch, system, app))
