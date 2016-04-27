@@ -13,6 +13,7 @@
 # completion text.
 
 import sys, os, argparse, re, pexpect, subprocess, tempfile
+import xml.sax.saxutils
 
 # this assumes this script is in a directory inside the tutorial directory
 TUTORIAL_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
@@ -46,9 +47,6 @@ FAILURE_TEXT = [
 ]
 
 ARCHITECTURES = ['arm', 'ia32']
-
-def escape_xml(string):
-    return string.replace('<', '&lt;').replace('>', '&gt;')
 
 def app_names(arch, system):
     """
@@ -97,7 +95,7 @@ def run_single_test(arch, system, app):
         print("<failure type='failure'>")
         # print the log file's contents to help debug the failure
         temp_file.seek(0)
-        print(escape_xml(temp_file.read()))
+        print(xml.sax.saxutils.escape(temp_file.read()))
         print("</failure>")
 
 def run_arch_tests(arch, system):
