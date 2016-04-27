@@ -98,6 +98,8 @@ def run_single_test(arch, system, app):
         print(xml.sax.saxutils.escape(temp_file.read()))
         print("</failure>")
 
+    temp_file.close()
+
 def run_arch_tests(arch, system):
     """
     Builds and runs all tests for a given architecture for a given system
