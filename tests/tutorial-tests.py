@@ -12,7 +12,7 @@
 # Builds and runs all tutorial solutions, comparing output with expected
 # completion text.
 
-import sys, os, argparse, re, pexpect, subprocess, tempfile
+import sys, os, argparse, re, pexpect, subprocess, tempfile, logging
 import xml.sax.saxutils
 
 # this assumes this script is in a directory inside the tutorial directory
@@ -60,9 +60,9 @@ def app_names(arch, system):
     for config in os.listdir(system_build_config_dir):
         matches = pattern.match(config)
         if matches is None:
-            print("Ignoring incompatible build config %s" % config)
+            logging.info("Ignoring incompatible build config %s" % config)
         else:
-            print("Using build config %s" % config)
+            logging.info("Using build config %s" % config)
             app_name = matches.group(1)
             yield app_name
 
@@ -86,6 +86,7 @@ def run_single_test(arch, system, app):
     # run the test, storting output in a temporary file
     temp_file = tempfile.NamedTemporaryFile(delete=True)
     command = '%s %s' % (arch_test_script(arch), app)
+    logging.info("Running command: %s" % command)
     test = pexpect.spawn(command, cwd=TOP_LEVEL_DIR)
     test.logfile = temp_file
     result = test.expect([completion_text] + FAILURE_TEXT, timeout=TIMEOUT)
@@ -93,7 +94,7 @@ def run_single_test(arch, system, app):
     # result is the index in the completion text list corresponding to the
     # text that was produced
     if result == 0:
-        print("Success!")
+        logging.info("Success!")
     else:
         print("<failure type='failure'>")
         # print the log file's contents to help debug the failure
@@ -108,7 +109,7 @@ def run_arch_tests(arch, system):
     Builds and runs all tests for a given architecture for a given system
     """
 
-    print("\nRunning %s tutorial tests for %s architecture..." % (system, arch))
+    logging.info("\nRunning %s tutorial tests for %s architecture..." % (system, arch))
 
     for app in app_names(arch, system):
         print("<testcase classname='sel4tutorials' name='%s_%s_%s'>" % (arch, system, app))
@@ -126,14 +127,33 @@ def run_tests(system):
         run_arch_tests(arch, system)
     print('</testsuite>')
 
+def set_log_level(args):
+    """
+    Set the log level for the script from command line arguments
+    """
+
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG)
+    elif args.quiet:
+        logging.basicConfig(level=logging.ERROR)
+    else:
+        logging.basicConfig(level=logging.INFO)
+
 def main():
     parser = argparse.ArgumentParser(
                 description="Runs all tests for sel4 tutorials or camkes tutorials")
 
     parser.add_argument('system', choices=['sel4', 'camkes'],
                         help="which set of solutions to test")
+    parser.add_argument('--verbose', action='store_true',
+                        help="Output everything including debug info")
+    parser.add_argument('--quiet', action='store_true',
+                        help="Supress output except for junit xml")
 
     args = parser.parse_args()
+
+    set_log_level(args)
+
     run_tests(args.system)
 
 if __name__ == '__main__':
