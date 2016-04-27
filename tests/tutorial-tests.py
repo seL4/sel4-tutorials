@@ -41,12 +41,19 @@ COMPLETION = {
 }
 
 # List of strings whose appearence in test output indicates test failure
-FAILURE_TEXT = [
+FAILURE_TEXTS = [
     pexpect.EOF,
+    pexpect.TIMEOUT,
     "Ignoring call to sys_exit_group"
 ]
 
 ARCHITECTURES = ['arm', 'ia32']
+
+def print_pexpect_failure(failure):
+    if failure == pexpect.EOF:
+        print "EOF received before completion text"
+    elif failure == pexpect.TIMEOUT:
+        print "Test timed out"
 
 def app_names(arch, system):
     """
@@ -89,7 +96,8 @@ def run_single_test(arch, system, app, timeout):
     logging.info("Running command: %s" % command)
     test = pexpect.spawn(command, cwd=TOP_LEVEL_DIR)
     test.logfile = temp_file
-    result = test.expect([completion_text] + FAILURE_TEXT, timeout=timeout)
+    expect_strings = [completion_text] + FAILURE_TEXTS
+    result = test.expect(expect_strings, timeout=timeout)
 
     # result is the index in the completion text list corresponding to the
     # text that was produced
@@ -100,6 +108,7 @@ def run_single_test(arch, system, app, timeout):
         # print the log file's contents to help debug the failure
         temp_file.seek(0)
         print(xml.sax.saxutils.escape(temp_file.read()))
+        print_pexpect_failure(expect_strings[result])
         print("</failure>")
 
     temp_file.close()
