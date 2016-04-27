@@ -20,7 +20,7 @@ TUTORIAL_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 TOP_LEVEL_DIR = os.path.realpath(os.path.join(TUTORIAL_DIR, "..", ".."))
 
 # timeout per test in seconds
-TIMEOUT = 1800
+DEFAULT_TIMEOUT = 1800
 
 # Completion text for each test
 COMPLETION = {
@@ -69,7 +69,7 @@ def app_names(arch, system):
 def arch_test_script(arch):
     return "%s/run-%s.sh" % (TUTORIAL_DIR, arch)
 
-def run_single_test(arch, system, app):
+def run_single_test(arch, system, app, timeout):
     """
     Builds and runs the solution to a given tutorial application for a given
     architecture for a given system, checking that the result matches the
@@ -89,7 +89,7 @@ def run_single_test(arch, system, app):
     logging.info("Running command: %s" % command)
     test = pexpect.spawn(command, cwd=TOP_LEVEL_DIR)
     test.logfile = temp_file
-    result = test.expect([completion_text] + FAILURE_TEXT, timeout=TIMEOUT)
+    result = test.expect([completion_text] + FAILURE_TEXT, timeout=timeout)
 
     # result is the index in the completion text list corresponding to the
     # text that was produced
@@ -104,7 +104,7 @@ def run_single_test(arch, system, app):
 
     temp_file.close()
 
-def run_arch_tests(arch, system):
+def run_arch_tests(arch, system, timeout):
     """
     Builds and runs all tests for a given architecture for a given system
     """
@@ -113,18 +113,18 @@ def run_arch_tests(arch, system):
 
     for app in app_names(arch, system):
         print("<testcase classname='sel4tutorials' name='%s_%s_%s'>" % (arch, system, app))
-        run_single_test(arch, system, app)
+        run_single_test(arch, system, app, timeout)
         print("</testcase>")
 
 
-def run_tests(system):
+def run_tests(system, timeout):
     """
     Builds and runs all tests for all architectures for a given system
     """
 
     print('<testsuite>')
     for arch in ARCHITECTURES:
-        run_arch_tests(arch, system)
+        run_arch_tests(arch, system, timeout)
     print('</testsuite>')
 
 def set_log_level(args):
@@ -149,12 +149,13 @@ def main():
                         help="Output everything including debug info")
     parser.add_argument('--quiet', action='store_true',
                         help="Supress output except for junit xml")
+    parser.add_argument('--timeout', type=int, default=DEFAULT_TIMEOUT)
 
     args = parser.parse_args()
 
     set_log_level(args)
 
-    run_tests(args.system)
+    run_tests(args.system, args.timeout)
 
 if __name__ == '__main__':
     sys.exit(main())
