@@ -86,7 +86,7 @@ def run_single_test(arch, system, app):
     # run the test, storting output in a temporary file
     temp_file = tempfile.NamedTemporaryFile(delete=True)
     command = '%s %s' % (arch_test_script(arch), app)
-    test = pexpect.spawn(command)
+    test = pexpect.spawn(command, cwd=TOP_LEVEL_DIR)
     test.logfile = temp_file
     result = test.expect([completion_text] + FAILURE_TEXT, timeout=TIMEOUT)
 
