@@ -84,7 +84,11 @@ def run_single_test(arch, system, app, timeout):
     """
 
     full_name = "%s_%s_%s" % (arch, system, app)
-    completion_text = COMPLETION[full_name]
+    try:
+        completion_text = COMPLETION[full_name]
+    except KeyError:
+        logging.error("No completion text provided for %s." % full_name)
+        sys.exit(1)
 
     # clean everything before each test
     make_mrproper = subprocess.Popen(['make', 'mrproper'], cwd=TOP_LEVEL_DIR)
