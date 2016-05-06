@@ -12,10 +12,14 @@
  * seL4 tutorial part 4: application to be run in a process
  */
 
+#define SEL4_ZF_LOG_ON
+
 #include <stdio.h>
 #include <assert.h>
 
 #include <sel4/sel4.h>
+
+#include <utils/zf_log.h>
 
 /* constants */
 #define EP_CPTR 0x3 // where the cap for the endpoint was placed.
@@ -49,9 +53,13 @@ int main(int argc, char **argv) {
     tag = seL4_Call(EP_CPTR, tag);
 
     /* check that we got the expected repy */
-    assert(seL4_MessageInfo_get_length(tag) == 1);
+    ZF_LOGF_ON(seL4_MessageInfo_get_length(tag) != 1,
+        "Length of the data send from main thread was not what was expected.\n"
+        "\tHow many registers did you set with seL4_SetMR, within the main thread?\n");
+
     msg = seL4_GetMR(0);
-    assert(msg == ~MSG_DATA);
+    ZF_LOGF_ON(msg != ~MSG_DATA,
+        "Response data from main thread's content was not what was expected.\n");
 
     printf("process_2: got a reply: %#x\n", msg);
 

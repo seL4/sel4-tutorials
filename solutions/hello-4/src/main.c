@@ -12,6 +12,7 @@
  * seL4 tutorial part 4: create a new process and IPC with it
  */
 
+#define SEL4_ZF_LOG_ON
 
 /* Include Kconfig variables. */
 #include <autoconf.h>
@@ -35,6 +36,8 @@
 #include <sel4utils/vspace.h>
 #include <sel4utils/mapping.h>
 #include <sel4utils/process.h>
+
+#include <utils/zf_log.h>
 
 /* constants */
 #define EP_BADGE 0x61 // arbitrary (but unique) number for a badge
@@ -71,7 +74,8 @@ int main(void)
 {
     UNUSED int error;
 
-    /* give us a name: useful for debugging if the thread faults */
+    /* Set up logging and give us a name: useful for debugging if the thread faults */
+    zf_log_set_tag_prefix("hello-4:");
     name_thread(seL4_CapInitThreadTCB, "hello-4");
 
     /* get boot info */
@@ -86,7 +90,9 @@ int main(void)
     /* create an allocator */
     allocman = bootstrap_use_current_simple(&simple, ALLOCATOR_STATIC_POOL_SIZE,
         allocator_mem_pool);
-    assert(allocman);
+    ZF_LOGF_ON(allocman == NULL, "Failed to initialize alloc manager.\n"
+        "\tMemory pool sufficiently sized?\n"
+        "\tMemory pool pointer valid?\n");
 
     /* create a vka (interface for interacting with the underlying allocator) */
     allocman_make_vka(&vka, allocman);
@@ -105,13 +111,18 @@ int main(void)
     */
     error = sel4utils_bootstrap_vspace_with_bootinfo_leaky(&vspace,
         &data, simple_get_pd(&simple), &vka, info);
+    ZF_LOGF_ONERR(error, "Failed to prepare our VSpace for use.\n"
+        "\tsel4utils_bootstrap_vspace_with_bootinfo reserves important vaddresses.\n"
+        "\tIts failure means we can't safely use our vaddrspace.\n"
+        "\tIf this fails, ask someone to review the tutorial code.\n");
 
     /* fill the allocator with virtual memory */
     void *vaddr;
     UNUSED reservation_t virtual_reservation;
     virtual_reservation = vspace_reserve_range(&vspace,
         ALLOCATOR_VIRTUAL_POOL_SIZE, seL4_AllRights, 1, &vaddr);
-    assert(virtual_reservation.res);
+    ZF_LOGF_ON(virtual_reservation.res == NULL, "Failed to reserve a chunk of memory.\n"
+        "\tIf this fails, ask someone to review the tutorial code.\n");
     bootstrap_configure_virtual_pool(allocman, vaddr,
         ALLOCATOR_VIRTUAL_POOL_SIZE, simple_get_pd(&simple));
 
@@ -132,7 +143,10 @@ int main(void)
     sel4utils_process_t new_process;
     error = sel4utils_configure_process(&new_process, &vka, &vspace,
         APP_PRIORITY, APP_IMAGE_NAME);
-    assert(error == 0);
+    ZF_LOGF_ONERR(error, "Failed to spawn a new thread.\n"
+        "\tsel4utils_configure_process expands an ELF file into our VSpace.\n"
+        "\tBe sure you've properly configured a VSpace manager using sel4utils_bootstrap_vspace_with_bootinfo.\n"
+        "\tBe sure you've passed the correct component name for the sub-app!\n");
 
     /* TODO 3: give the new process's thread a name */
     name_thread(new_process.thread.tcb.cptr, "hello-4: process_2");
@@ -140,7 +154,7 @@ int main(void)
     /* create an endpoint */
     vka_object_t ep_object = {0};
     error = vka_alloc_endpoint(&vka, &ep_object);
-    assert(error == 0);
+    ZF_LOGF_ONERR(error, "Failed to allocate new endpoint object.\n");
 
     /*
      * make a badged endpoint in the new process's cspace.  This copy 
@@ -188,7 +202,8 @@ int main(void)
      */
     new_ep_cap = sel4utils_mint_cap_to_process(&new_process, ep_cap_path,
         seL4_AllRights, seL4_CapData_Badge_new(EP_BADGE));
-    assert(new_ep_cap != 0);
+    ZF_LOGF_ON(new_ep_cap == 0, "Failed to mint a badged copy of the IPC endpoint into the new thread's CSpace.\n"
+        "\tsel4utils_mint_cap_to_process takes a cspacepath_t: double check what you passed.\n");
 
     /* TODO 6: spawn the process */
     /* hint 1: sel4utils_spawn_process_v() 
@@ -203,7 +218,10 @@ int main(void)
      * https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4utils/include/sel4utils/process.h#L161
      */
     error = sel4utils_spawn_process_v(&new_process, &vka, &vspace, 0, NULL, 1);
-    assert(error == 0);
+    ZF_LOGF_ONERR(error, "Failed to spawn and start the new thread.\n"
+        "\tVerify: the new thread is being executed in the main thread's VSpace.\n"
+        "\tIn this case, the CSpaces are different, but the VSpaces are the same.\n"
+        "\tDouble check your vspace_t argument.\n");
 
     /* we are done, say hello */
     printf("main: hello world\n");
@@ -237,8 +255,13 @@ int main(void)
     tag = seL4_Recv(ep_cap_path.capPtr, &sender_badge);
 
     /* make sure it is what we expected */
-    assert(sender_badge == EP_BADGE);
-    assert(seL4_MessageInfo_get_length(tag) == 1);
+    ZF_LOGF_ON(sender_badge != EP_BADGE,
+        "The badge we received from the sub-app didn't match our expectation.\n");
+
+    ZF_LOGF_ON(seL4_MessageInfo_get_length(tag) != 1,
+        "Response data from the sub-app was not the length expected.\n"
+        "\tHow many registers did you set with seL4_SetMR within the sub-app?\n");
+
 
     /* get the message stored in the first message register */
     msg = seL4_GetMR(0);

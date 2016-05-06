@@ -12,6 +12,8 @@
  * seL4 tutorial part 2: create and run a new thread
  */
 
+#define SEL4_ZF_LOG_ON
+
 /* Include Kconfig variables. */
 #include <autoconf.h>
 
@@ -29,6 +31,7 @@
 #include <allocman/bootstrap.h>
 #include <allocman/vka.h>
 
+#include <utils/zf_log.h>
 
 /* global environment variables */
 
@@ -75,11 +78,12 @@ int main(void)
 {
     UNUSED int error;
 
-    /* give us a name: useful for debugging if the thread faults */
+    /* Set up logging and give us a name: useful for debugging if the thread faults */
     /* seL4_CapInitThreadTCB is a cap pointer to the root task's initial TCB.
      * It is part of the root task's boot environment and defined in bootinfo.h from libsel4:
      * https://github.com/seL4/seL4/blob/3.0.0/libsel4/include/sel4/bootinfo.h#L18
      */
+    zf_log_set_tag_prefix("hello-2:");
     name_thread(seL4_CapInitThreadTCB, "hello-2");
 
     /* TODO 1: get boot info */
@@ -118,7 +122,9 @@ int main(void)
      * https://github.com/seL4/seL4_libs/blob/3.0.x-compatible/libsel4allocman/include/allocman/bootstrap.h#L172
      */
     allocman = bootstrap_use_current_simple(&simple, ALLOCATOR_STATIC_POOL_SIZE, allocator_mem_pool);
-    assert(allocman);
+    ZF_LOGF_ON(allocman == NULL, "Failed to initialize alloc manager.\n"
+        "\tMemory pool sufficiently sized?\n"
+        "\tMemory pool pointer valid?\n");
 
     /* TODO 5: create a vka (interface for interacting with the underlying allocator) */
     /* hint: allocman_make_vka() 
@@ -159,7 +165,8 @@ int main(void)
      */
     vka_object_t tcb_object = {0};
     error = vka_alloc_tcb(&vka, &tcb_object);
-    assert(error == 0);
+    ZF_LOGF_ONERR(error, "Failed to allocate new TCB.\n"
+        "\tVKA given sufficient bootstrap memory?");
 
     /* TODO 9: initialise the new TCB */
     /* hint 1: seL4_TCB_Configure()
@@ -183,7 +190,10 @@ int main(void)
      * hint 4: we don't need an IPC buffer frame or address yet 
      */
     error = seL4_TCB_Configure(tcb_object.cptr, seL4_CapNull, seL4_MaxPrio, cspace_cap, seL4_NilData, pd_cap, seL4_NilData, 0, 0);
-    assert(error == 0);
+    ZF_LOGF_ONERR(error, "Failed to configure the new TCB object.\n"
+        "\tWe're running the new thread with the main thread's CSpace.\n"
+        "\tWe're running the new thread in the main thread's VSpace.\n"
+        "\tWe will not be executing any IPC in this app.\n");
 
     /* TODO 10: give the new thread a name */
     /* hint: we've done thread naming before */
@@ -207,8 +217,14 @@ int main(void)
     sel4utils_set_instruction_pointer(&regs, (seL4_Word)thread_2);
 
     /* check that stack is aligned correctly */
+    const int stack_alignment_requirement = sizeof(seL4_Word) * 2;
     uintptr_t thread_2_stack_top = (uintptr_t)thread_2_stack + sizeof(thread_2_stack);
-    assert(thread_2_stack_top % (sizeof(seL4_Word) * 2) == 0);
+
+    ZF_LOGF_ON(thread_2_stack_top % (stack_alignment_requirement) != 0,
+        "Stack top isn't aligned correctly to a %dB boundary.\n"
+        "\tDouble check to ensure you're not trampling, and if sure, ask for \n"
+        "\tsomeone to review the tutorial code.",
+        stack_alignment_requirement);
 
     /* TODO 12: set stack pointer for the new thread */
     /* hint 1: sel4utils_set_stack_pointer()
@@ -237,7 +253,8 @@ int main(void)
      * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      */
     error = seL4_TCB_WriteRegisters(tcb_object.cptr, 0, 0, 2, &regs);
-    assert(error == 0);
+    ZF_LOGF_ONERR(error, "Failed to write the new thread's register set.\n"
+        "\tDid you write the correct number of registers? See arg4.\n");
 
     /* TODO 14: start the new thread running */
     /* hint: seL4_TCB_Resume()
@@ -250,7 +267,7 @@ int main(void)
      * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      */
     error = seL4_TCB_Resume(tcb_object.cptr);
-    assert(error == 0);
+    ZF_LOGF_ONERR(error, "Failed to start new thread.\n");
 
     /* we are done, say hello */
     printf("main: hello world\n");
