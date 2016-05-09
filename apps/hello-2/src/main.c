@@ -12,6 +12,8 @@
  * seL4 tutorial part 2: create and run a new thread
  */
 
+#define SEL4_ZF_LOG_ON
+
 /* Include Kconfig variables. */
 #include <autoconf.h>
 
@@ -29,6 +31,7 @@
 #include <allocman/bootstrap.h>
 #include <allocman/vka.h>
 
+#include <utils/zf_log.h>
 
 /* global environment variables */
 

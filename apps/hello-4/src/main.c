@@ -12,6 +12,7 @@
  * seL4 tutorial part 4: create a new process and IPC with it
  */
 
+#define SEL4_ZF_LOG_ON
 
 /* Include Kconfig variables. */
 #include <autoconf.h>
@@ -35,6 +36,8 @@
 #include <sel4utils/vspace.h>
 #include <sel4utils/mapping.h>
 #include <sel4utils/process.h>
+
+#include <utils/zf_log.h>
 
 /* constants */
 #define EP_BADGE 0x61 // arbitrary (but unique) number for a badge

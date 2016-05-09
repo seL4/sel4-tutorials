@@ -12,6 +12,8 @@
  * seL4 tutorial part 3: IPC between 2 threads
  */
 
+#define SEL4_ZF_LOG_ON
+
 /* Include Kconfig variables. */
 #include <autoconf.h>
 
@@ -36,6 +38,7 @@
 #include <sel4utils/vspace.h>
 #include <sel4utils/mapping.h>
 
+#include <utils/zf_log.h>
 
 /* constants */
 #define IPCBUF_FRAME_SIZE_BITS 12 // use a 4K frame for the IPC buffer
