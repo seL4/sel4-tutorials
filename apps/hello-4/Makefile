@@ -32,13 +32,7 @@ LIBS = c sel4 sel4muslcsys \
        sel4platsupport \
        sel4utils \
        cpio elf \
-       utils
-
-ifdef CONFIG_KERNEL_STABLE
-LIBS += sel4simple-stable
-else
-LIBS += sel4simple-default
-endif
+       utils sel4simple-default sel4debug
 
 # extra cflags 
 CFLAGS += -Werror -g

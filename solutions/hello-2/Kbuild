@@ -15,13 +15,6 @@ hello-2-y = common libsel4 libmuslc \
             libsel4muslcsys \
             libsel4simple libsel4vka libsel4allocman \
             libsel4platsupport \
-            libutils
-
-# set up correct simple lib for our kernel
-ifdef CONFIG_KERNEL_STABLE
-hello-2-$(CONFIG_LIB_SEL4_SIMPLE_STABLE) += libsel4simple-stable
-else
-hello-2-$(CONFIG_LIB_SEL4_SIMPLE_DEFAULT) += libsel4simple-default
-endif
+            libutils libsel4simple-default libsel4debug
 
 hello-2: kernel_elf $(hello-2-y)

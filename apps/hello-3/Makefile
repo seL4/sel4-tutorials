@@ -27,13 +27,7 @@ ASMFILES += $(patsubst $(SOURCE_DIR)/%,%,$(wildcard $(SOURCE_DIR)/src/plat/${PLA
 LIBS = c sel4 sel4muslcsys \
        sel4simple sel4vka sel4allocman sel4vspace \
        sel4platsupport \
-       utils
-
-ifdef CONFIG_KERNEL_STABLE
-LIBS += sel4simple-stable
-else
-LIBS += sel4simple-default
-endif
+       utils sel4simple-default sel4debug
 
 # extra cflags 
 CFLAGS += -Werror -g

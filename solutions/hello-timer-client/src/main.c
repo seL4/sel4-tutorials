@@ -16,9 +16,10 @@
 #include <assert.h>
 
 #include <sel4/sel4.h>
+#include <sel4utils/process.h>
 
 /* constants */
-#define EP_CPTR 0x3 // where the cap for the endpoint was placed.
+#define EP_CPTR SEL4UTILS_FIRST_FREE // where the cap for the endpoint was placed.
 #define MSG_DATA 0x2 //  arbitrary data to send
 
 int main(int argc, char **argv) {

@@ -14,17 +14,10 @@ apps-$(CONFIG_APP_HELLO_4) += hello-4
 hello-4-y = common libsel4 libmuslc \
             libsel4muslcsys \
             libsel4simple libsel4vka libsel4allocman libsel4vspace \
-	    libsel4platsupport \
+            libsel4platsupport \
             libsel4utils \
             libcpio libelf \
-            libutils
-
-# set up correct simple lib for our kernel
-ifdef CONFIG_KERNEL_STABLE
-hello-4-$(CONFIG_LIB_SEL4_SIMPLE_STABLE) += libsel4simple-stable
-else
-hello-4-$(CONFIG_LIB_SEL4_SIMPLE_DEFAULT) += libsel4simple-default
-endif
+            libutils libsel4simple-default libsel4debug
 
 # add the companion app as a component so that we can elf load it
 hello-4-components-y += hello-4-app

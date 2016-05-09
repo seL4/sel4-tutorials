@@ -222,7 +222,6 @@ int main(void)
             "\tWe are inserting a new page table into the top-level table.\n"
             "\tPass a capability to the new page table, and not for example, the IPC buffer frame vaddr.\n");
 
-
         /* then map the frame in */
         error = seL4_X86_Page_Map(ipc_frame_cap, pd_cap,
             ipc_buffer_vaddr, seL4_AllRights, seL4_X86_Default_VMAttributes);
