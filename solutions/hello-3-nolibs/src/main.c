@@ -166,8 +166,7 @@ int main(void)
                                 (1<<seL4_EndpointBits) +
                                 (1<<seL4_PageTableBits));
     ZF_LOGF_ON(untyped == -1, "Failed to find an untyped which could hold %d bytes.\n"
-        "\tIf you encounter this problem, give your virtual machine more memory.\n"
-        "\fIf the problem persists, ask someone to review the tutorial code.\n",
+        "\tIf you encounter this problem, ask someone to review the tutorial code.\n",
         (1<<seL4_TCBBits) +
         (1<<seL4_PageBits) +
         (1<<seL4_EndpointBits) +
@@ -182,13 +181,13 @@ int main(void)
    /* create required objects */
     error = untyped_retype_root(untyped, seL4_TCBObject, seL4_TCBBits, cspace_cap, tcb_cap);
     ZF_LOGF_ONERR(error, "Failed to retype our chosen untyped into a TCB child object.\n"
-        "\tTry increasing the memory in your virtual machine.\n");
+        "\tAsk someone to review the tutorial code.\n");
     error = untyped_retype_root(untyped, seL4_X86_4K, seL4_PageBits, cspace_cap, ipc_frame_cap);
     ZF_LOGF_ONERR(error, "Failed to retype our chosen untyped into a page object.\n"
-        "\tTry increasing the memory in your virtual machine.\n");
+        "\tAsk someone to review the tutorial code.\n");
     error = untyped_retype_root(untyped, seL4_EndpointObject, seL4_EndpointBits, cspace_cap, ep_cap);
     ZF_LOGF_ONERR(error, "Failed to retype our chosen untyped into an Endpoint child object.\n"
-        "\tTry increasing the memory in your virtual machine.\n");
+        "\tAsk someone to review the tutorial code.\n");
 
     /*
      * map the frame into the vspace at ipc_buffer_vaddr.
@@ -196,16 +195,15 @@ int main(void)
      * If there is already a page table mapped in the appropriate slot in the
      * page directory where we can insert this frame, then this will succeed.
      * Otherwise we first need to create a page table, and map it in to
-     * the page`directory, before we can map the frame in.
-     */
+     * the page directory, before we can map the frame in.
+     *
+	 * It is normal for this function call to fail. Proceed to the next step
+	 * where you'll be led to allocate a new empty page table.
+	 */
     seL4_Word ipc_buffer_vaddr;
     ipc_buffer_vaddr = IPCBUF_VADDR;
     error = seL4_X86_Page_Map(ipc_frame_cap, pd_cap, ipc_buffer_vaddr,
         seL4_AllRights, seL4_X86_Default_VMAttributes);
-
-    ZF_LOGI_ONERR(error, "No page tables with free slots.\n"
-        "\tNeed to map our new page table into the VSpace.\n"
-        "\tIt is normal for this to fail.\n");
 
     if (error != 0) {
 
@@ -214,7 +212,7 @@ int main(void)
         /* create and map a page table */
         error = untyped_retype_root(untyped, seL4_X86_PageTableObject, seL4_PageTableBits, cspace_cap, page_table_cap);
         ZF_LOGF_ONERR(error, "Failed to retype an object into a page table.\n"
-            "Try increasing the memory in your virtual machine.\n");
+            "Re-examine your arguments -- check the solution files if you're unable to get it.\n");
         
         error = seL4_X86_PageTable_Map(page_table_cap, pd_cap,
             ipc_buffer_vaddr, seL4_X86_Default_VMAttributes);

@@ -247,13 +247,13 @@ int main(void)
      *
      * hint 2: for the rights, use seL4_AllRights
      * hint 3: for VM attributes use seL4_ARCH_Default_VMAttributes
+     * Hint 4: It is normal for this function call to fail. That means there are
+     *	no page tables with free slots -- proceed to the next step where you'll
+     *	be led to allocate a new empty page table and map it into the VSpace,
+     *	before trying again.
      */
     error = seL4_ARCH_Page_Map(ipc_frame_object.cptr, pd_cap, ipc_buffer_vaddr,
         seL4_AllRights, seL4_ARCH_Default_VMAttributes);
-
-    ZF_LOGI_ONERR(error, "No page tables with free slots.\n"
-        "\tNeed to allocate and map a new page table into the VSpace.\n"
-        "\tIt is normal for this to fail.\n");
 
     if (error != 0) {
         /* TODO 3: create a page table */
@@ -295,7 +295,6 @@ int main(void)
             "\tWe are inserting a new page table into the top-level table.\n"
             "\tPass a capability to the new page table, and not for example, the IPC buffer frame vaddr.\n")
 
-
         /* TODO 5: then map the frame in */
         /* hint 1: use seL4_ARCH_Page_Map() as above
          * hint 2: for the rights, use seL4_AllRights
@@ -304,6 +303,7 @@ int main(void)
         error = seL4_ARCH_Page_Map(ipc_frame_object.cptr, pd_cap,
             ipc_buffer_vaddr, seL4_AllRights, seL4_ARCH_Default_VMAttributes);
         ZF_LOGF_ONERR(error, "Failed again to map the IPC buffer frame into the VSpace.\n"
+			"\t(It's not supposed to fail.)\n"
             "\tPass a capability to the IPC buffer's physical frame.\n"
             "\tRevisit the first seL4_ARCH_Page_Map call above and double-check your arguments.\n");
     }
