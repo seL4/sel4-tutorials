@@ -14,6 +14,7 @@ apps-$(CONFIG_APP_HELLO_1) += hello-1
 hello-1-y = common libsel4 libmuslc \
             libsel4muslcsys \
             libsel4platsupport \
-            libutils
+            libutils \
+            libsel4debug
 
 hello-1: kernel_elf $(hello-1-y)

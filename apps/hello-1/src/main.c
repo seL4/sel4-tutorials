@@ -15,7 +15,9 @@
 
 #include <stdio.h>
 
+#include <utils/zf_log.h>
+#include <sel4utils/sel4_zf_logif.h>
+
 /* TODO 1: add a main function to print a message */
 /* hint: printf */
-
 

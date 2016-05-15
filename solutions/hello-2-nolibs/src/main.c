@@ -22,6 +22,9 @@
 #include <sel4/sel4.h>
 #include <sel4debug/debug.h>
 
+#include <utils/zf_log.h>
+#include <sel4utils/sel4_zf_logif.h>
+
 /* global environment variables */
 seL4_BootInfo *info;
 
@@ -56,7 +59,8 @@ int main(void)
 {
     int error;
 
-    /* give us a name: useful for debugging if the thread faults */
+    /* Set up logging and give us a name: useful for debugging if the thread faults */
+    zf_log_set_tag_prefix("hello-2:");
     name_thread(seL4_CapInitThreadTCB, "hello-2");
 
     /* get boot info */
@@ -110,18 +114,26 @@ int main(void)
                                 32 /* depth */,
                                 tcb_cap /* offset */,
                                 1 /* num objects */);
-    assert(error == 0);
+    ZF_LOGF_IFERR(error, "Failed to allocate a TCB object.\n"
+        "\tDid you find an untyped capability to retype?\n"
+        "\tDid you find a free capability slot for the new child capability that will be generated?\n");
 
     /* initialise the new TCB */
     error = seL4_TCB_Configure(tcb_cap, seL4_CapNull, seL4_MaxPrio,
         cspace_cap, seL4_NilData, pd_cap, seL4_NilData, 0, 0);
-    assert(error == 0);
+    ZF_LOGF_IFERR(error, "Failed to configure TCB object.\n"
+        "\tWe're spawning the new thread in the root thread's CSpace.\n"
+        "\tWe're spawning the new thread in the root thread's VSpace.\n");
 
     /* give the new thread a name */
     name_thread(tcb_cap, "hello-2: thread_2");
 
+    const int stack_alignment_requirement = sizeof(seL4_Word) * 2;
     uintptr_t thread_2_stack_top = (uintptr_t)thread_2_stack + sizeof(thread_2_stack);
-    assert(thread_2_stack_top % (sizeof(seL4_Word) * 2) == 0);
+    ZF_LOGF_IF(thread_2_stack_top % (stack_alignment_requirement) != 0,
+        "Stack top isn't aligned correctly to a %dB boundary.\n"
+        "\tDouble check to ensure you're not trampling.",
+        stack_alignment_requirement);
     
     /* TODO 4: Set up regs to contain the desired stack pointer and instruction pointer
      * hint 1: libsel4/arch_include/x86/sel4/arch/types.h:
@@ -148,15 +160,15 @@ int main(void)
     /* actually write the TCB registers.  we write 2 registers:
      * instruction pointer is first, stack pointer is second. */
     error = seL4_TCB_WriteRegisters(tcb_cap, 0, 0, 2, &regs);
-    assert(error == 0);
+    ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
+        "\tDid you write the correct number of registers? See arg4.\n");
 
     /* start the new thread running */
     error = seL4_TCB_Resume(tcb_cap);
-    assert(error == 0);
+    ZF_LOGF_IFERR(error, "Failed to start new thread.\n");
 
     /* we are done, say hello */
     printf("main: hello world\n");
 
     return 0;
 }
-

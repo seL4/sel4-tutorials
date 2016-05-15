@@ -23,6 +23,9 @@
 #include <sel4/types_gen.h>
 #include <sel4debug/debug.h>
 
+#include <utils/zf_log.h>
+#include <sel4utils/sel4_zf_logif.h>
+
 /* constants */
 #define IPCBUF_FRAME_SIZE_BITS 12 // use a 4K frame for the IPC buffer
 #define IPCBUF_VADDR 0x7000000 // arbitrary (but free) address for IPC buffer
@@ -55,8 +58,13 @@ void thread_2(void) {
     tag = seL4_Recv(ep_cap, &sender_badge);
 
     /* make sure it is what we expected */
-    assert(sender_badge == EP_BADGE);
-    assert(seL4_MessageInfo_get_length(tag) == 1);
+    ZF_LOGF_IF(sender_badge != EP_BADGE,
+        "Badge on the endpoint was not what was expected.\n");
+
+    ZF_LOGF_IF(seL4_MessageInfo_get_length(tag) != 1,
+        "Length of the data send from root thread was not what was expected.\n"
+        "\tHow many registers did you set with seL4_SetMR, within the root thread?\n");
+
 
     /* get the message stored in the first message register */
     msg = seL4_GetMR(0);
@@ -100,7 +108,8 @@ int main(void)
 {
     int error;
 
-    /* give us a name: useful for debugging if the thread faults */
+    /* Set up logging and give us a name: useful for debugging if the thread faults */
+    zf_log_set_tag_prefix("hello-3:");
     name_thread(seL4_CapInitThreadTCB, "hello-3");
 
     /* get boot info */
@@ -155,7 +164,11 @@ int main(void)
                                 (1<<seL4_PageBits) +
                                 (1<<seL4_EndpointBits) +
                                 (1<<seL4_PageTableBits));
-    assert(untyped != -1);
+    ZF_LOGF_IF(untyped == -1, "Failed to find an untyped which could hold %d bytes.\n",
+        (1<<seL4_TCBBits) +
+        (1<<seL4_PageBits) +
+        (1<<seL4_EndpointBits) +
+        (1<<seL4_PageTableBits));
     
     /* TODO 3: Using the untyped, create the required objects, storing their caps in the roottask's root cnode.
      *
@@ -165,11 +178,11 @@ int main(void)
      */
    /* create required objects */
     error = untyped_retype_root(untyped, seL4_TCBObject, seL4_TCBBits, cspace_cap, tcb_cap);
-    assert(error == 0);
+    ZF_LOGF_IFERR(error, "Failed to retype our chosen untyped into a TCB child object.\n");
     error = untyped_retype_root(untyped, seL4_X86_4K, seL4_PageBits, cspace_cap, ipc_frame_cap);
-    assert(error == 0);
+    ZF_LOGF_IFERR(error, "Failed to retype our chosen untyped into a page object.\n");
     error = untyped_retype_root(untyped, seL4_EndpointObject, seL4_EndpointBits, cspace_cap, ep_cap);
-    assert(error == 0);
+    ZF_LOGF_IFERR(error, "Failed to retype our chosen untyped into an Endpoint child object.\n");
 
     /*
      * map the frame into the vspace at ipc_buffer_vaddr.
@@ -177,8 +190,11 @@ int main(void)
      * If there is already a page table mapped in the appropriate slot in the
      * page directory where we can insert this frame, then this will succeed.
      * Otherwise we first need to create a page table, and map it in to
-     * the page`directory, before we can map the frame in.
-     */
+     * the page directory, before we can map the frame in.
+     *
+	 * It is normal for this function call to fail. Proceed to the next step
+	 * where you'll be led to allocate a new empty page table.
+	 */
     seL4_Word ipc_buffer_vaddr;
     ipc_buffer_vaddr = IPCBUF_VADDR;
     error = seL4_X86_Page_Map(ipc_frame_cap, pd_cap, ipc_buffer_vaddr,
@@ -189,16 +205,21 @@ int main(void)
 
         /* create and map a page table */
         error = untyped_retype_root(untyped, seL4_X86_PageTableObject, seL4_PageTableBits, cspace_cap, page_table_cap);
-        assert(error == 0);
+        ZF_LOGF_IFERR(error, "Failed to retype an object into a page table.\n"
+            "Re-examine your arguments -- check the solution files if you're unable to get it.\n");
         
         error = seL4_X86_PageTable_Map(page_table_cap, pd_cap,
             ipc_buffer_vaddr, seL4_X86_Default_VMAttributes);
-        assert(error == 0);
+        ZF_LOGF_IFERR(error, "Failed to map page table into VSpace.\n"
+            "\tWe are inserting a new page table into the top-level table.\n"
+            "\tPass a capability to the new page table, and not for example, the IPC buffer frame vaddr.\n");
 
         /* then map the frame in */
         error = seL4_X86_Page_Map(ipc_frame_cap, pd_cap,
             ipc_buffer_vaddr, seL4_AllRights, seL4_X86_Default_VMAttributes);
-        assert(error == 0);
+        ZF_LOGF_IFERR(error, "Failed again to map the IPC buffer frame into the VSpace.\n"
+            "\tPass a capability to the IPC buffer's physical frame.\n"
+            "\tRevisit the first seL4_ARCH_Page_Map call above and double-check your arguments.\n");
     }
 
     /* set the IPC buffer's virtual address in a field of the IPC buffer */
@@ -218,7 +239,9 @@ int main(void)
     error = seL4_TCB_Configure(tcb_cap, seL4_CapNull, seL4_MaxPrio,
         cspace_cap, seL4_NilData, pd_cap, seL4_NilData,
         ipc_buffer_vaddr, ipc_frame_cap);
-    assert(error == 0);
+    ZF_LOGF_IFERR(error, "Failed to configure the new TCB object.\n"
+        "\tWe're running the new thread with the root thread's CSpace.\n"
+        "\tWe're running the new thread in the root thread's VSpace.\n");
 
     /* give the new thread a name */
     name_thread(tcb_cap, "hello-3: thread_2");
@@ -227,8 +250,12 @@ int main(void)
     size_t regs_size = sizeof(seL4_UserContext) / sizeof(seL4_Word);
 
     /* check that stack is aligned correctly */
+    const int stack_alignment_requirement = sizeof(seL4_Word) * 2;
     uintptr_t thread_2_stack_top = (uintptr_t)thread_2_stack + sizeof(thread_2_stack);
-    assert(thread_2_stack_top % (sizeof(seL4_Word) * 2) == 0);
+    ZF_LOGF_IF(thread_2_stack_top % (stack_alignment_requirement) != 0,
+        "Stack top isn't aligned correctly to a %dB boundary.\n"
+        "\tDouble check to ensure you're not trampling.",
+        stack_alignment_requirement);
 
     /* set instruction pointer, stack pointer and gs register (used for thread local storage) */
     seL4_UserContext regs = {
@@ -239,11 +266,12 @@ int main(void)
 
     /* actually write the TCB registers. */
     error = seL4_TCB_WriteRegisters(tcb_cap, 0, 0, regs_size, &regs);
-    assert(error == 0);
+    ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
+        "\tDid you write the correct number of registers? See arg4.\n");
 
     /* start the new thread running */
     error = seL4_TCB_Resume(tcb_cap);
-    assert(error == 0);
+    ZF_LOGF_IFERR(error, "Failed to start new thread.\n");
 
     /* we are done, say hello */
     printf("main: hello world\n");
@@ -263,12 +291,15 @@ int main(void)
     tag = seL4_Call(badged_ep_cap, tag);
 
     /* check that we got the expected repy */
-    assert(seL4_MessageInfo_get_length(tag) == 1);
+    ZF_LOGF_IF(seL4_MessageInfo_get_length(tag) != 1,
+        "Response data from thread_2 was not the length expected.\n"
+        "\tHow many registers did you set with seL4_SetMR within thread_2?\n");
+
     msg = seL4_GetMR(0);
-    assert(msg == ~MSG_DATA);
+    ZF_LOGF_IF(msg != ~MSG_DATA,
+        "Response data from thread_2's content was not what was expected.\n");
 
     printf("main: got a reply: %#x\n", msg);
 
     return 0;
 }
-

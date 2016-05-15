@@ -28,6 +28,10 @@ To get a copy of the CAmkES exercise code and all libraries and tools needed to 
         repo init -u http://github.com/sel4-projects/sel4-tutorials-manifest -m camkes-tutorials.xml
         repo sync 
 
+### Reporting issues or bugs in the tutorials:
+Please report any issues you find in the tutorials (bugs, outdated API calls, etc) by filing an issue on the public github repository:
+https://github.com/SEL4PROJ/sel4-tutorials/issues
+
 # Documentation
 
 ## Tutorial Slides
