@@ -19,6 +19,6 @@ LDFLAGS += -u __vsyscall_ptr
 CFILES :=  $(patsubst $(SOURCE_DIR)/%,%,$(wildcard $(SOURCE_DIR)/src/*.c))
 
 # Libraries
-LIBS := c sel4 sel4muslcsys utils sel4debug
+LIBS := c sel4 sel4muslcsys utils sel4utils sel4debug
 
 include $(SEL4_COMMON)/common.mk

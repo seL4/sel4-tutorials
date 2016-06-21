@@ -26,7 +26,7 @@ ASMFILES += $(patsubst $(SOURCE_DIR)/%,%,$(wildcard $(SOURCE_DIR)/src/plat/${PLA
 # Libraries required to build the target
 LIBS = c sel4 sel4muslcsys \
        sel4allocman sel4platsupport \
-       utils sel4debug
+       utils sel4utils sel4debug
 
 # extra cflags 
 CFLAGS += -g

@@ -12,7 +12,8 @@ apps-$(CONFIG_APP_HELLO_3_NOLIBS) += hello-3-nolibs
 
 # list of libraries the app needs to build
 hello-3-nolibs-y = common libsel4 libmuslc \
-            libsel4muslcsys libsel4allocman libsel4platsupport libsel4debug
+            libsel4muslcsys libsel4allocman libsel4platsupport libsel4utils \
+            libsel4debug
 
 hello-3-nolibs: kernel_elf $(hello-3-nolibs-y)
 

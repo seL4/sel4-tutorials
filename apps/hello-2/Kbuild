@@ -15,6 +15,6 @@ hello-2-y = common libsel4 libmuslc \
             libsel4muslcsys \
             libsel4simple libsel4vka libsel4allocman \
             libsel4platsupport \
-            libutils libsel4simple-default libsel4debug
+            libutils libsel4simple-default libsel4utils libsel4debug
 
 hello-2: kernel_elf $(hello-2-y)
