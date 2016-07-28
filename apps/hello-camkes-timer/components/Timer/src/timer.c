@@ -43,7 +43,7 @@ void epit_irq_callback(void *_ UNUSED)
     /* hint 1: use the function <IRQ interface name>_reg_callback()
      * hint 2: register the function "epit_irq_callback"
      * hint 3: pass NULL as the extra argument to the callback
-     * hint 4: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-events
+     * hint 4: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
      */
 }
 
@@ -70,7 +70,7 @@ void hello__init()
     /* hint 1: use the function <IRQ interface name>_reg_callback()
      * hint 2: register the function "epit_irq_callback"
      * hint 3: pass NULL as the extra argument to the callback
-     * hint 4: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-events
+     * hint 4: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
      */
 }
 
