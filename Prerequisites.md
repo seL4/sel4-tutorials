@@ -29,14 +29,15 @@ First of all we assume that you are running Linux.  We typically use some flavou
     export PATH=/opt/ghc/7.8.4/bin:/opt/cabal/1.22/bin:$PATH
  
     cabal update
-    cabal install MissingH
+    cabal install base-compat-0.9.0
+    cabal install MissingH-1.3.0.2
     cabal install data-ordlist
     cabal install split
     cabal install mtl
 
     sudo apt-get install -y qemu-system-arm qemu-system-x86
 
-    sudo apt-get install -y realpath libxml2-utils
+    sudo apt-get install -y libxml2-utils
 
     sudo apt-get install -y git phablet-tools
 
@@ -114,7 +115,8 @@ These don't get installed in the default spot, so add them to the path too.
     export PATH=/opt/ghc/7.8.4/bin:/opt/cabal/1.22/bin:$PATH
  
     cabal update
-    cabal install MissingH
+    cabal install base-compat-0.9.0
+    cabal install MissingH-1.3.0.2
     cabal install data-ordlist
     cabal install split
     cabal install mtl 
@@ -129,6 +131,6 @@ These don't get installed in the default spot, so add them to the path too.
 
 ### various other libraries
 
-    sudo apt-get install realpath libxml2-utils
+    sudo apt-get install libxml2-utils
 	
 
