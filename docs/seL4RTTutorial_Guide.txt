@@ -1,0 +1,29 @@
+### Server 1 ###
+
+TODO 1: Explain that you can give a scheduling context while making the thread,
+		but you can also bind it after. For this tutorial we bind after, the next
+		one binds on configure.
+
+TODO 2: Might have to reiterate that TCB != SC
+
+TODO 3: Pretty straightforward, make sure they set budget = period to keep it
+		simple for now, and pick a reasonable number (100 seems to work fine).
+
+TODO 4: After they've done this one, explain that they have an active server,
+		same as the seL4 tutorial. They can try run it in QEMU.
+		Note that there will be an error at runtime since the first reply
+		in the server, ignore this for now
+
+Rest should be straightforward.
+
+If you have time, once interesting thing to show is with the ReplyRecv in the
+server. After the whole thing is working, split up the reply and recv into
+two invocations (seL4_Reply and seL4_Recv) and explain that it doesn't work,
+since the server reliquishes its SC before it can wait on the endpoint.
+
+### Server 2 ###
+
+The code being written is mostly a repeat of the previous one, but everything is
+active here. The most important part is to change the budget / period parameters
+and see the different results. Some examples are provided at the top of the file
+(TODO 4).
