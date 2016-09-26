@@ -41,7 +41,7 @@ extern void name_thread(seL4_CPtr tcb, char *name);
 seL4_CPtr get_untyped(seL4_BootInfo *info, int size_bytes) {
 
     for (int i = info->untyped.start, idx = 0; i < info->untyped.end; ++i, ++idx) {
-        if (1<<info->untypedSizeBitsList[idx] >= size_bytes) {
+        if (1<<info->untypedList[idx].sizeBits >= size_bytes) {
             return i;
         }
     }
