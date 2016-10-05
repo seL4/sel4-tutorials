@@ -187,7 +187,7 @@ int main(void)
      * hint 3: use seL4_NilData for cspace and vspace data
      * hint 4: we don't need an IPC buffer frame or address yet
      */
-    error = seL4_TCB_Configure(tcb_object.cptr, seL4_CapNull, seL4_MaxPrio, cspace_cap, seL4_NilData, pd_cap, seL4_NilData, 0, 0);
+    error = seL4_TCB_Configure(tcb_object.cptr, seL4_CapNull, seL4_PrioProps_new(seL4_MaxPrio, seL4_MaxPrio), cspace_cap, seL4_NilData, pd_cap, seL4_NilData, 0, 0);
     ZF_LOGF_IFERR(error, "Failed to configure the new TCB object.\n"
         "\tWe're running the new thread with the root thread's CSpace.\n"
         "\tWe're running the new thread in the root thread's VSpace.\n"
