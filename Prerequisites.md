@@ -12,7 +12,7 @@ First of all we assume that you are running Linux.  We typically use some flavou
     sudo apt-get install -y python-software-properties
     sudo apt-get update
 
-    sudo apt-get install -y build-essential realpath 
+    sudo apt-get install -y build-essential realpath
     sudo apt-get install -y gcc-multilib ccache ncurses-dev
     sudo apt-get install -y gcc-arm-linux-gnueabi
     sudo apt-get install -y gcc-arm-none-eabi
@@ -21,9 +21,9 @@ First of all we assume that you are running Linux.  We typically use some flavou
     sudo pip install --upgrade pip
     sudo pip install pyelftools
 
-    sudo add-apt-repository -y ppa:hvr/ghc         
+    sudo add-apt-repository -y ppa:hvr/ghc
     sudo apt-get update
-    sudo apt-get install -y ghc-7.8.4 cabal-install-1.22 
+    sudo apt-get install -y ghc-7.8.4 cabal-install-1.22
 
     echo export PATH=/opt/ghc/7.8.4/bin:/opt/cabal/1.22/bin:\$PATH >> ~/.bashrc
     export PATH=/opt/ghc/7.8.4/bin:/opt/cabal/1.22/bin:$PATH
@@ -107,9 +107,9 @@ Building and running seL4 and CAmkES reguires:
 We need a newer version of Haskell than available from Ubuntu, so we specify the exact version of Hsakell and Cabal that we need.
 These don't get installed in the default spot, so add them to the path too.
 
-    sudo add-apt-repository -y ppa:hvr/ghc              
+    sudo add-apt-repository -y ppa:hvr/ghc
     sudo apt-get update
-    sudo apt-get install -y ghc-7.8.4 cabal-install-1.22 
+    sudo apt-get install -y ghc-7.8.4 cabal-install-1.22
 
     echo export PATH=/opt/ghc/7.8.4/bin:/opt/cabal/1.22/bin:\$PATH >> ~/.bashrc
     export PATH=/opt/ghc/7.8.4/bin:/opt/cabal/1.22/bin:$PATH
@@ -119,7 +119,7 @@ These don't get installed in the default spot, so add them to the path too.
     cabal install MissingH-1.3.0.2
     cabal install data-ordlist
     cabal install split
-    cabal install mtl 
+    cabal install mtl
 
 ### qemu
 
