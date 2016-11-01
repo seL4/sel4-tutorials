@@ -257,11 +257,11 @@ int main(void)
         "\tDouble check to ensure you're not trampling.",
         stack_alignment_requirement);
 
-    /* set instruction pointer, stack pointer and gs register (used for thread local storage) */
+    /* set instruction pointer, stack pointer and fs register (used for IPC buffer) */
     seL4_UserContext regs = {
         .eip = (seL4_Word)thread_2,
         .esp = (seL4_Word)thread_2_stack_top,
-        .gs = IPCBUF_GDT_SELECTOR
+        .fs = IPCBUF_GDT_SELECTOR
     };
 
     /* actually write the TCB registers. */

@@ -388,8 +388,8 @@ int main(void)
     /* set stack pointer for the new thread. remember the stack grows down */
     sel4utils_set_stack_pointer(&regs, thread_2_stack_top);
 
-    /* set the gs register for thread local storage */
-    regs.gs = IPCBUF_GDT_SELECTOR;
+    /* set the fs register for IPC buffer */
+    regs.fs = IPCBUF_GDT_SELECTOR;
 
     /* actually write the TCB registers. */
     error = seL4_TCB_WriteRegisters(tcb_object.cptr, 0, 0, regs_size, &regs);
