@@ -35,7 +35,7 @@
 /* global environment variables */
 
 /* seL4_BootInfo defined in bootinfo.h
- * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#Globals_links:
+ * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#Globals_links: */
 seL4_BootInfo *info;
 
 /* simple_t defined in simple.h
