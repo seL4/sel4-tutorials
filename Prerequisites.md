@@ -4,7 +4,7 @@ Before building and running seL4-based systems you must have several prerequisit
 
 ## Linux
 
-First of all we assume that you are running Linux.  We typically use some flavour of Ubuntu or other Debian-based system.  You could try using other Unix systems (including Mac OS) but your mileage may vary.  The following instructions assume Ubuntu version 16.04 (Xenial Xerus) or greater on a 64-bit machine.
+First of all we assume that you are running Linux.  We typically use some flavour of Ubuntu or other Debian-based system.  You could try using other Unix systems (including Mac OS) but your mileage may vary.  The following instructions assume Ubuntu version 16.04 (Xenial Xerus) or greater on a 64-bit machine. Note that the commands starting with `apt-get` must be run as root.
 
 # Quick-Start
 
