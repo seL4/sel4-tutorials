@@ -51,9 +51,9 @@ ARCHITECTURES = ['arm', 'ia32']
 
 def print_pexpect_failure(failure):
     if failure == pexpect.EOF:
-        print "EOF received before completion text"
+        print("EOF received before completion text")
     elif failure == pexpect.TIMEOUT:
-        print "Test timed out"
+        print("Test timed out")
 
 def app_names(arch, system):
     """
