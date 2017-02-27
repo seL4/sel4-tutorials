@@ -11,6 +11,9 @@
 # @TAG(D61_BSD)
 #
 
+# Script for building and running tutorials
+# This file can be executed by itself, or used as a module by other scripts.
+
 import re
 import os
 import sys
