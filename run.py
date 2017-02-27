@@ -53,24 +53,32 @@ BUILD_CONFIG_PAT = r'(?P<prefix>%s)_(?P<name>.*)_defconfig' % "|".join(ARCHS)
 BUILD_CONFIG_RE = re.compile(BUILD_CONFIG_PAT)
 
 def get_project_root():
+    '''Returns the path to the root directory of this project'''
     script_dir = os.path.dirname(os.path.realpath(__file__))
     # assume default location of this project in projects/sel4-tutorials
     return os.path.join(script_dir, '..', '..')
 
 def get_config_dir():
+    '''Returns the path to the "configs" dir inside the root directory of this project'''
     return os.path.realpath(os.path.join(get_project_root(), 'configs'))
 
 def list_configs():
+    '''Lists names of build config files'''
     return os.listdir(get_config_dir())
 
 def list_names():
+    '''Lists names of apps'''
     return set(name for name, _, _ in map(config_file_to_info, list_configs()))
 
 def list_names_for_target(target_arch, target_plat):
+    '''Lists names of apps for which there exist a build config for a specified
+       architecture and platform
+    '''
     return (name for name, arch, plat in map(config_file_to_info, list_configs())
             if arch == target_arch and plat == target_plat)
 
 def config_file_to_info(filename):
+    '''Returns a (name, arch, plat) tuple fora given build config file name'''
     m = BUILD_CONFIG_RE.match(filename)
     if m is not None:
         prefix = m.group('prefix')
@@ -80,12 +88,17 @@ def config_file_to_info(filename):
         raise Exception("unrecognized build config %s" % filename)
 
 def info_to_config_file(arch, plat, name):
+    '''Returns a build config file name for a given (name, arch, plat) tuple'''
     if plat == 'sabre':
         return 'sabre_%s_defconfig' # XXX special case for sabre platform
 
     return '%s_%s_defconfig' % (arch, name)
 
 def check_config(arch, plat, name):
+    '''Returns True if a given arch, plat, name corresponds to an existing
+       build config file. Otherwise returns false and prints a list of
+       valid names.
+    '''
     names = list(list_names_for_target(arch, plat))
 
     if name not in names:
@@ -96,6 +109,9 @@ def check_config(arch, plat, name):
     return True
 
 def get_tutorial_type():
+    '''Returns a string identifying which tutorial environment we are currently
+       in, based on the config dir symlink.
+    '''
     config_path = get_config_dir()
     config_path_end = os.path.split(config_path)[-1]
     if config_path_end == 'configs-camkes':
@@ -124,12 +140,14 @@ def make_parser():
     return parser
 
 def build(arch, plat, name, jobs):
+    '''Builds the specified tutorial'''
     subprocess.call(['make', 'clean'])
     subprocess.call(['make', info_to_config_file(arch, plat, name)])
     subprocess.call(['make', 'silentoldconfig'])
     subprocess.call(['make', '-j%d' % jobs])
 
 def get_qemu_image_args(arch, plat, name):
+    '''Return a list of arguments for qemu to specify which image to run'''
 
     if get_tutorial_type() == 'CAmkES':
         app_image = 'images/capdl-loader-experimental-image-%s-%s' % (arch, plat)
@@ -142,6 +160,8 @@ def get_qemu_image_args(arch, plat, name):
         return ['-kernel', app_image]
 
 def run(arch, plat, name):
+    '''Runs the specified app in qemu'''
+
     qemu = PLAT_TO_QEMU_BIN[plat]
     qemu_args = PLAT_TO_QEMU_ARGS[plat]
 
