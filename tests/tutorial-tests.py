@@ -74,7 +74,7 @@ def app_names(arch, system):
             yield app_name
 
 def arch_test_script(arch):
-    return "%s/run-%s.sh" % (TUTORIAL_DIR, arch)
+    return "%s/run-%s.py" % (TUTORIAL_DIR, arch)
 
 def run_single_test(arch, system, app, timeout):
     """
