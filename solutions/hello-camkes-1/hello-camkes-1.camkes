@@ -33,7 +33,6 @@ assembly {
          * hint 2: look at
          * https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#creating-an-application
          */
-        // connection seL4RPC hello_con(from client.hello, to echo.hello);
         connection seL4RPCCall hello_con(from client.hello, to echo.hello);
     }
 }
