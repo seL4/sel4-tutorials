@@ -21,17 +21,15 @@ import argparse
 import subprocess
 
 ARCHS = ['ia32', 'arm']
-PLATS = ['pc99', 'imx31', 'sabre']
+PLATS = ['pc99', 'imx31']
 
 CONFIG_PREFIX_TO_ARCH = {
     'ia32': 'ia32',
     'arm': 'arm',
-    'sabre': 'arm',
 }
 CONFIG_PREFIX_TO_PLAT = {
     'ia32': 'pc99',
     'arm': 'imx31',
-    'sabre': 'sabre',
 }
 ARCH_TO_DEFAULT_PLAT = {
     'ia32': 'pc99',
@@ -40,13 +38,10 @@ ARCH_TO_DEFAULT_PLAT = {
 PLAT_TO_QEMU_BIN = {
     'pc99': 'qemu-system-i386',
     'imx31': 'qemu-system-arm',
-    'sabre': 'qemu-system-arm',
 }
 PLAT_TO_QEMU_ARGS = {
     'pc99': ['-nographic', '-m', '512', '-cpu', 'Haswell'],
     'imx31': ['-nographic', '-M', 'kzm'],
-    'sabre': ['-nographic', '-M', 'sabrelite', '-machine', 'sabrelite', '-m', 'size=1024M',
-              '-serial', 'null', '-serial', 'mon:stdio', '-'],
 }
 
 BUILD_CONFIG_PAT = r'(?P<prefix>%s)_(?P<name>.*)_defconfig' % "|".join(ARCHS)
@@ -89,9 +84,6 @@ def config_file_to_info(filename):
 
 def info_to_config_file(arch, plat, name):
     '''Returns a build config file name for a given (name, arch, plat) tuple'''
-    if plat == 'sabre':
-        return 'sabre_%s_defconfig' # XXX special case for sabre platform
-
     return '%s_%s_defconfig' % (arch, name)
 
 def check_config(arch, plat, name):
@@ -118,8 +110,6 @@ def get_tutorial_type():
         return 'CAmkES'
     elif config_path_end == 'configs-sel4':
         return 'seL4'
-    elif config_path_end == 'configs-sel4-rt':
-        return 'seL4-rt'
     else:
         raise Exception("unexpected build config path: %s" % config_path)
 
