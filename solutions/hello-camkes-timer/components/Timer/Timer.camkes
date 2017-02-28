@@ -11,7 +11,7 @@
 /*
  * Advanced CAmkES tutorial: device driver.
  */
-import "../../interfaces/timer.idl4";
+import "../../interfaces/timer.camkes";
 
 component Timerbase{
     hardware;

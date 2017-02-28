@@ -12,7 +12,7 @@
  * CAmkES tutorial part 1: components with RPC. Client part.
  */
 
-import "../../interfaces/timer.idl4";
+import "../../interfaces/timer.camkes";
 
 component Client {
     control;

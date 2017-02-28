@@ -81,7 +81,7 @@ void hello__init() {
 /* hint 1: the name of the function to implement is a composition of an interface name and a function name:
  * i.e.: <interface>_<function>
  * hint 2: the interfaces available are defined by the component, e.g. in components/Timer/Timer.camkes
- * hint 3: the function name is defined by the interface definition, e.g. in interfaces/timer.idl4
+ * hint 3: the function name is defined by the interface definition, e.g. in interfaces/timer.camkes
  * hint 4: so the function would be: hello_sleep()
  * hint 5: the CAmkES 'int' type maps to 'int' in C
  * hint 6: call platsupport library function to set up the timer

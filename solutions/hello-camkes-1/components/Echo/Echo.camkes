@@ -12,7 +12,7 @@
  * CAmkES tutorial part 1: components with RPC. Server part.
  */
 
-import "../../interfaces/HelloSimple.idl4";
+import "../../interfaces/HelloSimple.camkes";
 
 component Echo {
     provides HelloSimple hello;
