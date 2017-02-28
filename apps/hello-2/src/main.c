@@ -58,7 +58,7 @@ UNUSED static char allocator_mem_pool[ALLOCATOR_STATIC_POOL_SIZE];
 #define THREAD_2_STACK_SIZE 512
 static uint64_t thread_2_stack[THREAD_2_STACK_SIZE];
 
-/* convenience function in util.c: 
+/* convenience function in util.c:
  * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#Globals_links:
  */
 extern void name_thread(seL4_CPtr tcb, char *name);
@@ -69,11 +69,10 @@ void thread_2(void) {
     /* hint: printf() */
 
     /* never exit */
-    while(1);
+    while (1);
 }
 
-int main(void)
-{
+int main(void) {
     UNUSED int error;
 
     /* give us a name: useful for debugging if the thread faults */
@@ -92,7 +91,7 @@ int main(void)
      */
 
     /* TODO 2: init simple */
-    /* hint: simple_default_init_bootinfo() 
+    /* hint: simple_default_init_bootinfo()
      * void simple_default_init_bootinfo(simple_t *simple, seL4_BootInfo *bi);
      * @param simple Structure for the simple interface object. This gets initialised.
      * @param bi Pointer to the bootinfo describing what resources are available
@@ -104,7 +103,7 @@ int main(void)
      * void simple_print(simple_t *simple);
      * @param simple Pointer to simple interface.
      * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TODO_3:
-     */ 
+     */
 
     /* TODO 4: create an allocator */
     /* hint: bootstrap_use_current_simple()
@@ -116,8 +115,8 @@ int main(void)
      * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TODO_4:
      */
     ZF_LOGF_IF(allocman == NULL, "Failed to initialize alloc manager.\n"
-        "\tMemory pool sufficiently sized?\n"
-        "\tMemory pool pointer valid?\n");
+               "\tMemory pool sufficiently sized?\n"
+               "\tMemory pool pointer valid?\n");
 
     /* TODO 5: create a vka (interface for interacting with the underlying allocator) */
     /* hint: allocman_make_vka()
@@ -152,7 +151,7 @@ int main(void)
      * https://wiki.sel4.systems/seL4%20Tutorial%202#TODO_8:
      */
     ZF_LOGF_IFERR(error, "Failed to allocate new TCB.\n"
-        "\tVKA given sufficient bootstrap memory?");
+                  "\tVKA given sufficient bootstrap memory?");
 
     /* TODO 9: initialise the new TCB */
     /* hint 1: seL4_TCB_Configure()
@@ -176,9 +175,9 @@ int main(void)
      * hint 4: we don't need an IPC buffer frame or address yet
      */
     ZF_LOGF_IFERR(error, "Failed to configure the new TCB object.\n"
-        "\tWe're running the new thread with the root thread's CSpace.\n"
-        "\tWe're running the new thread in the root thread's VSpace.\n"
-        "\tWe will not be executing any IPC in this app.\n");
+                  "\tWe're running the new thread with the root thread's CSpace.\n"
+                  "\tWe're running the new thread in the root thread's VSpace.\n"
+                  "\tWe will not be executing any IPC in this app.\n");
 
     /* TODO 10: give the new thread a name */
     /* hint: we've done thread naming before */
@@ -203,9 +202,9 @@ int main(void)
     const int stack_alignment_requirement = sizeof(seL4_Word) * 2;
     uintptr_t thread_2_stack_top = (uintptr_t)thread_2_stack + sizeof(thread_2_stack);
     ZF_LOGF_IF(thread_2_stack_top % (stack_alignment_requirement) != 0,
-        "Stack top isn't aligned correctly to a %dB boundary.\n"
-        "\tDouble check to ensure you're not trampling.",
-        stack_alignment_requirement);
+               "Stack top isn't aligned correctly to a %dB boundary.\n"
+               "\tDouble check to ensure you're not trampling.",
+               stack_alignment_requirement);
 
     /* TODO 12: set stack pointer for the new thread */
     /* hint 1: sel4utils_set_stack_pointer()
@@ -233,7 +232,7 @@ int main(void)
      * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      */
     ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
-        "\tDid you write the correct number of registers? See arg4.\n");
+                  "\tDid you write the correct number of registers? See arg4.\n");
 
     /* TODO 14: start the new thread running */
     /* hint: seL4_TCB_Resume()

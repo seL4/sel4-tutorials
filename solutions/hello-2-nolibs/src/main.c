@@ -41,7 +41,7 @@ extern void name_thread(seL4_CPtr tcb, char *name);
 seL4_CPtr get_untyped(seL4_BootInfo *info, int size_bytes) {
 
     for (int i = info->untyped.start, idx = 0; i < info->untyped.end; ++i, ++idx) {
-        if (1<<info->untypedList[idx].sizeBits >= size_bytes) {
+        if (1 << info->untypedList[idx].sizeBits >= size_bytes) {
             return i;
         }
     }
@@ -52,11 +52,10 @@ seL4_CPtr get_untyped(seL4_BootInfo *info, int size_bytes) {
 /* function to run in the new thread */
 void thread_2(void) {
     printf("thread_2: hallo wereld\n");
-    while(1);
+    while (1);
 }
 
-int main(void)
-{
+int main(void) {
     int error;
 
     /* Set up logging and give us a name: useful for debugging if the thread faults */
@@ -94,7 +93,7 @@ int main(void)
      */
 
     /* look up an untyped to retype into a tcb */
-    untyped = get_untyped(info, (1<<seL4_TCBBits));
+    untyped = get_untyped(info, (1 << seL4_TCBBits));
 
 
     /* TODO 3: Retype the untyped into a tcb, storing a cap in tcb_cap
@@ -107,23 +106,23 @@ int main(void)
 
     /* create the tcb */
     error = seL4_Untyped_Retype(untyped /* untyped cap */,
-                                seL4_TCBObject /* type */, 
-                                seL4_TCBBits /* size */, 
+                                seL4_TCBObject /* type */,
+                                seL4_TCBBits /* size */,
                                 cspace_cap /* root cnode cap */,
                                 cspace_cap /* destination cspace */,
                                 32 /* depth */,
                                 tcb_cap /* offset */,
                                 1 /* num objects */);
     ZF_LOGF_IFERR(error, "Failed to allocate a TCB object.\n"
-        "\tDid you find an untyped capability to retype?\n"
-        "\tDid you find a free capability slot for the new child capability that will be generated?\n");
+                  "\tDid you find an untyped capability to retype?\n"
+                  "\tDid you find a free capability slot for the new child capability that will be generated?\n");
 
     /* initialise the new TCB */
     error = seL4_TCB_Configure(tcb_cap, seL4_CapNull, seL4_PrioProps_new(seL4_MaxPrio, seL4_MaxPrio),
-        cspace_cap, seL4_NilData, pd_cap, seL4_NilData, 0, 0);
+                               cspace_cap, seL4_NilData, pd_cap, seL4_NilData, 0, 0);
     ZF_LOGF_IFERR(error, "Failed to configure TCB object.\n"
-        "\tWe're spawning the new thread in the root thread's CSpace.\n"
-        "\tWe're spawning the new thread in the root thread's VSpace.\n");
+                  "\tWe're spawning the new thread in the root thread's CSpace.\n"
+                  "\tWe're spawning the new thread in the root thread's VSpace.\n");
 
     /* give the new thread a name */
     name_thread(tcb_cap, "hello-2: thread_2");
@@ -131,10 +130,10 @@ int main(void)
     const int stack_alignment_requirement = sizeof(seL4_Word) * 2;
     uintptr_t thread_2_stack_top = (uintptr_t)thread_2_stack + sizeof(thread_2_stack);
     ZF_LOGF_IF(thread_2_stack_top % (stack_alignment_requirement) != 0,
-        "Stack top isn't aligned correctly to a %dB boundary.\n"
-        "\tDouble check to ensure you're not trampling.",
-        stack_alignment_requirement);
-    
+               "Stack top isn't aligned correctly to a %dB boundary.\n"
+               "\tDouble check to ensure you're not trampling.",
+               stack_alignment_requirement);
+
     /* TODO 4: Set up regs to contain the desired stack pointer and instruction pointer
      * hint 1: libsel4/arch_include/x86/sel4/arch/types.h:
      *  ...
@@ -161,7 +160,7 @@ int main(void)
      * instruction pointer is first, stack pointer is second. */
     error = seL4_TCB_WriteRegisters(tcb_cap, 0, 0, 2, &regs);
     ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
-        "\tDid you write the correct number of registers? See arg4.\n");
+                  "\tDid you write the correct number of registers? See arg4.\n");
 
     /* start the new thread running */
     error = seL4_TCB_Resume(tcb_cap);

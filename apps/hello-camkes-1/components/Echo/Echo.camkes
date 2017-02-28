@@ -15,6 +15,6 @@
 import "../../interfaces/HelloSimple.idl4";
 
 component Echo {
-        provides HelloSimple hello;
+    provides HelloSimple hello;
 }
 

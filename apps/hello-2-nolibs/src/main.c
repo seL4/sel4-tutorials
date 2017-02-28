@@ -40,11 +40,10 @@ extern void name_thread(seL4_CPtr tcb, char *name);
 /* function to run in the new thread */
 void thread_2(void) {
     printf("thread_2: hallo wereld\n");
-    while(1);
+    while (1);
 }
 
-int main(void)
-{
+int main(void) {
     int error;
 
     /* Set up logging and give us a name: useful for debugging if the thread faults */
@@ -89,26 +88,26 @@ int main(void)
      */
 
     ZF_LOGF_IFERR(error, "Failed to allocate a TCB object.\n"
-        "\tDid you find an untyped capability to retype?\n"
-        "\tDid you find a free capability slot for the new child capability that will be generated?\n");
- 
+                  "\tDid you find an untyped capability to retype?\n"
+                  "\tDid you find a free capability slot for the new child capability that will be generated?\n");
+
     /* initialise the new TCB */
     error = seL4_TCB_Configure(tcb_cap, seL4_CapNull, seL4_MaxPrio,
-        cspace_cap, seL4_NilData, pd_cap, seL4_NilData, 0, 0);
+                               cspace_cap, seL4_NilData, pd_cap, seL4_NilData, 0, 0);
     ZF_LOGF_IFERR(error, "Failed to configure TCB object.\n"
-        "\tWe're spawning the new thread in the root thread's CSpace.\n"
-        "\tWe're spawning the new thread in the root thread's VSpace.\n");
- 
+                  "\tWe're spawning the new thread in the root thread's CSpace.\n"
+                  "\tWe're spawning the new thread in the root thread's VSpace.\n");
+
     /* give the new thread a name */
     name_thread(tcb_cap, "hello-2: thread_2");
 
     const int stack_alignment_requirement = sizeof(seL4_Word) * 2;
     uintptr_t thread_2_stack_top = (uintptr_t)thread_2_stack + sizeof(thread_2_stack);
     ZF_LOGF_IF(thread_2_stack_top % (stack_alignment_requirement) != 0,
-        "Stack top isn't aligned correctly to a %dB boundary.\n"
-        "\tDouble check to ensure you're not trampling.",
-        stack_alignment_requirement);
-    
+               "Stack top isn't aligned correctly to a %dB boundary.\n"
+               "\tDouble check to ensure you're not trampling.",
+               stack_alignment_requirement);
+
     seL4_UserContext regs;
     /* TODO 4: Set up regs to contain the desired stack pointer and instruction pointer
      * hint 1: libsel4/arch_include/x86/sel4/arch/types.h:
@@ -126,7 +125,7 @@ int main(void)
      * hint 2: the value of arch_flags is ignored on x86 and arm
      */
     ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
-        "\tDid you write the correct number of registers? See arg4.\n");
+                  "\tDid you write the correct number of registers? See arg4.\n");
 
     /* start the new thread running */
     error = seL4_TCB_Resume(tcb_cap);

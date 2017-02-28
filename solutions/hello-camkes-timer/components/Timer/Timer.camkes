@@ -11,19 +11,19 @@
 /*
  * Advanced CAmkES tutorial: device driver.
  */
-import "../../interfaces/timer.idl4"; 
+import "../../interfaces/timer.idl4";
 
 component Timerbase{
-	hardware;
-	dataport Buf reg;
-	emits DataAvailable irq;
+    hardware;
+    dataport Buf reg;
+    emits DataAvailable irq;
 }
 
 component Timer {
-        dataport Buf 		reg;
-        consumes DataAvailable  irq;
+    dataport Buf         reg;
+    consumes DataAvailable  irq;
 
-    	provides timer_inf 	hello;
-	has semaphore           sem;
+    provides timer_inf     hello;
+    has semaphore           sem;
 }
 

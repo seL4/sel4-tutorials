@@ -54,12 +54,12 @@ int main(int argc, char **argv) {
 
     /* check that we got the expected repy */
     ZF_LOGF_IF(seL4_MessageInfo_get_length(tag) != 1,
-        "Length of the data send from root thread was not what was expected.\n"
-        "\tHow many registers did you set with seL4_SetMR, within the root thread?\n");
+               "Length of the data send from root thread was not what was expected.\n"
+               "\tHow many registers did you set with seL4_SetMR, within the root thread?\n");
 
     msg = seL4_GetMR(0);
     ZF_LOGF_IF(msg != ~MSG_DATA,
-        "Unexpected response from root thread.\n");
+               "Unexpected response from root thread.\n");
 
     printf("process_2: got a reply: %#x\n", msg);
 

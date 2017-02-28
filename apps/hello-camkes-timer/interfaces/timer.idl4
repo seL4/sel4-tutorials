@@ -9,5 +9,5 @@
  */
 
 procedure timer_inf {
-	void sleep(in int sec);
+    void sleep(in int sec);
 };

@@ -1,18 +1,18 @@
 ### Server 1 ###
 
 TODO 1: Explain that you can give a scheduling context while making the thread,
-		but you can also bind it after. For this tutorial we bind after, the next
-		one binds on configure.
+        but you can also bind it after. For this tutorial we bind after, the next
+        one binds on configure.
 
 TODO 2: Might have to reiterate that TCB != SC
 
 TODO 3: Pretty straightforward, make sure they set budget = period to keep it
-		simple for now, and pick a reasonable number (100 seems to work fine).
+        simple for now, and pick a reasonable number (100 seems to work fine).
 
 TODO 4: After they've done this one, explain that they have an active server,
-		same as the seL4 tutorial. They can try run it in QEMU.
-		Note that there will be an error at runtime since the first reply
-		in the server, ignore this for now
+        same as the seL4 tutorial. They can try run it in QEMU.
+        Note that there will be an error at runtime since the first reply
+        in the server, ignore this for now
 
 Rest should be straightforward.
 

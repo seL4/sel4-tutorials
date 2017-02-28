@@ -31,11 +31,11 @@ void uppercase(char *str) {
 
 void callback_handler_2(void *a);
 
-/* this callback handler is meant to be invoked when the first event 
+/* this callback handler is meant to be invoked when the first event
  * arrives on the "consumes" event interface.
- * Note: the callback handler must be explicitly registered before the 
- * callback will be invoked.  
- * Also the registration is one-shot only, if it wants to be invoked 
+ * Note: the callback handler must be explicitly registered before the
+ * callback will be invoked.
+ * Also the registration is one-shot only, if it wants to be invoked
  * when a new event arrives then it must re-register itself.  Or it can
  * also register a different handler.
  */
@@ -76,11 +76,11 @@ void callback_handler_1(void *a) {
      */
 }
 
-/* this callback handler is meant to be invoked the second time an event 
+/* this callback handler is meant to be invoked the second time an event
  * arrives on the "consumes" event interface.
- * Note: the callback handler must be explicitly registered before the 
- * callback will be invoked.  
- * Also the registration is one-shot only, if it wants to be invoked 
+ * Note: the callback handler must be explicitly registered before the
+ * callback will be invoked.
+ * Also the registration is one-shot only, if it wants to be invoked
  * when a new event arrives then it must re-register itself.  Or it can
  * also register a different handler.
  */

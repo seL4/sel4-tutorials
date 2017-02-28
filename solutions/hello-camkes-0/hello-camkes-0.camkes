@@ -16,8 +16,8 @@
 import "components/Client/Client.camkes";
 
 assembly {
-        composition {
-		component Client client;
-        }
+    composition {
+        component Client client;
+    }
 }
 

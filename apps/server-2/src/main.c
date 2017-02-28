@@ -175,8 +175,8 @@ int main(void) {
     /* create an allocator */
     allocman = bootstrap_use_current_simple(&simple, ALLOCATOR_STATIC_POOL_SIZE, allocator_mem_pool);
     ZF_LOGF_IF(allocman == NULL, "Failed to initialize alloc manager.\n"
-        "\tMemory pool sufficiently sized?\n"
-        "\tMemory pool pointer valid?\n");
+               "\tMemory pool sufficiently sized?\n"
+               "\tMemory pool pointer valid?\n");
 
     /* create a vka (interface for interacting with the underlying allocator) */
     allocman_make_vka(&vka, allocman);
@@ -195,7 +195,7 @@ int main(void) {
     error = vka_alloc_tcb(&vka, &tcb_object1);
     error |= vka_alloc_tcb(&vka, &tcb_object2);
     ZF_LOGF_IFERR(error, "Failed to allocate new TCB.\n"
-        "\tVKA given sufficient bootstrap memory?");
+                  "\tVKA given sufficient bootstrap memory?");
 
     /* Create an endpoint */
     error = vka_alloc_endpoint(&vka, &ep_object);
@@ -211,8 +211,8 @@ int main(void) {
     error = vka_alloc_frame(&vka, IPCBUF_FRAME_SIZE_BITS, &ipc_frame_object1);
     error = vka_alloc_frame(&vka, IPCBUF_FRAME_SIZE_BITS, &ipc_frame_object2);
     ZF_LOGF_IFERR(error, "Failed to alloc a frame for the IPC buffer.\n"
-        "\tThe frame size is not the number of bytes, but an exponent.\n"
-        "\tNB: This frame is not an immediately usable, virtually mapped page.\n")
+                  "\tThe frame size is not the number of bytes, but an exponent.\n"
+                  "\tNB: This frame is not an immediately usable, virtually mapped page.\n")
     /*
      * map the frame into the vspace at ipc_buffer_vaddr.
      * To do this we first try to map it in to the root page directory.
@@ -225,9 +225,9 @@ int main(void) {
     seL4_Word ipc_buffer_vaddr2 = IPCBUF2_VADDR;
     /* Try to map the frame the first time  */
     error = seL4_ARCH_Page_Map(ipc_frame_object1.cptr, pd_cap, ipc_buffer_vaddr1,
-        seL4_AllRights, seL4_ARCH_Default_VMAttributes);
+                               seL4_AllRights, seL4_ARCH_Default_VMAttributes);
     error |= seL4_ARCH_Page_Map(ipc_frame_object2.cptr, pd_cap, ipc_buffer_vaddr2,
-        seL4_AllRights, seL4_ARCH_Default_VMAttributes);
+                                seL4_AllRights, seL4_ARCH_Default_VMAttributes);
     if (error != 0) {
         /* Create a page table */
         vka_object_t pt_object1;
@@ -237,23 +237,23 @@ int main(void) {
         ZF_LOGF_IFERR(error, "Failed to allocate new page table.\n");
 
         /* Map the page table */
-    	error = seL4_ARCH_PageTable_Map(pt_object1.cptr, pd_cap,
-            ipc_buffer_vaddr1, seL4_ARCH_Default_VMAttributes);
+        error = seL4_ARCH_PageTable_Map(pt_object1.cptr, pd_cap,
+                                        ipc_buffer_vaddr1, seL4_ARCH_Default_VMAttributes);
         error |= seL4_ARCH_PageTable_Map(pt_object2.cptr, pd_cap,
-            ipc_buffer_vaddr2, seL4_ARCH_Default_VMAttributes);
+                                         ipc_buffer_vaddr2, seL4_ARCH_Default_VMAttributes);
         ZF_LOGF_IFERR(error, "Failed to map page table into VSpace.\n"
-            "\tWe are inserting a new page table into the top-level table.\n"
-            "\tPass a capability to the new page table, and not for example, the IPC buffer frame vaddr.\n")
+                      "\tWe are inserting a new page table into the top-level table.\n"
+                      "\tPass a capability to the new page table, and not for example, the IPC buffer frame vaddr.\n")
 
         /* then map the frame in */
         error = seL4_ARCH_Page_Map(ipc_frame_object1.cptr, pd_cap,
-            ipc_buffer_vaddr1, seL4_AllRights, seL4_ARCH_Default_VMAttributes);
+                                   ipc_buffer_vaddr1, seL4_AllRights, seL4_ARCH_Default_VMAttributes);
         error |= seL4_ARCH_Page_Map(ipc_frame_object2.cptr, pd_cap,
-            ipc_buffer_vaddr2, seL4_AllRights, seL4_ARCH_Default_VMAttributes);
+                                    ipc_buffer_vaddr2, seL4_AllRights, seL4_ARCH_Default_VMAttributes);
         ZF_LOGF_IFERR(error, "Failed again to map the IPC buffer frame into the VSpace.\n"
-			"\t(It's not supposed to fail.)\n"
-            "\tPass a capability to the IPC buffer's physical frame.\n"
-            "\tRevisit the first seL4_ARCH_Page_Map call above and double-check your arguments.\n");
+                      "\t(It's not supposed to fail.)\n"
+                      "\tPass a capability to the IPC buffer's physical frame.\n"
+                      "\tRevisit the first seL4_ARCH_Page_Map call above and double-check your arguments.\n");
     }
 
     /* set the IPC buffer's virtual address in a field of the IPC buffer */
@@ -264,11 +264,11 @@ int main(void) {
 
     /* TODO 1: Create 2 caps to store 2 sched contexts */
     /* hint 1: vka_alloc_sched_context */
-    
+
     /* TODO 2: initialise the scheduling contexts */
     /* hint 1: seL4_SchedControl_Configure */
     /* hint 2: simple_get_sched_ctrl */
-    
+
     /* TODO 3: initialise the new TCBs */
     /* hint 1: seL4_TCB_Configure() */
 
@@ -291,13 +291,13 @@ int main(void) {
     uintptr_t thread_2_stack_top = (uintptr_t)thread_2_stack + sizeof(thread_2_stack);
 
     ZF_LOGF_IF(thread_1_stack_top % (stack_alignment_requirement) != 0,
-        "Stack top isn't aligned correctly to a %dB boundary.\n"
-        "\tDouble check to ensure you're not trampling.",
-        stack_alignment_requirement);
+               "Stack top isn't aligned correctly to a %dB boundary.\n"
+               "\tDouble check to ensure you're not trampling.",
+               stack_alignment_requirement);
     ZF_LOGF_IF(thread_2_stack_top % (stack_alignment_requirement) != 0,
-        "Stack top isn't aligned correctly to a %dB boundary.\n"
-        "\tDouble check to ensure you're not trampling.",
-        stack_alignment_requirement);
+               "Stack top isn't aligned correctly to a %dB boundary.\n"
+               "\tDouble check to ensure you're not trampling.",
+               stack_alignment_requirement);
 
     /* set stack pointer for the new thread. remember the stack grows down */
     sel4utils_set_stack_pointer(&regs1, thread_1_stack_top);
@@ -307,7 +307,7 @@ int main(void) {
     error = seL4_TCB_WriteRegisters(tcb_object1.cptr, 0, 0, regs_size, &regs1);
     error |= seL4_TCB_WriteRegisters(tcb_object2.cptr, 0, 0, regs_size, &regs2);
     ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
-        "\tDid you write the correct number of registers? See arg4.\n");
+                  "\tDid you write the correct number of registers? See arg4.\n");
 
     /* start the new thread running */
     error = seL4_TCB_Resume(tcb_object1.cptr);

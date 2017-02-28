@@ -83,18 +83,18 @@ void server(void) {
     seL4_MessageInfo_t msg = seL4_MessageInfo_new(0, 0, 0, 0);
     printf("server: finished init\n");
     /* TODO 5: Make this server passive */
-    /* This will be done by unbinding the scheduling context once we are done 
+    /* This will be done by unbinding the scheduling context once we are done
        with initialisation. For the initialiser to do this, we must tell it
        the server is finished with init */
     /* hint 1: seL4_SignalRecv */
-    
+
     /*  We are now ready */
     printf("server: hello world\n");
     while (1) {
         seL4_ReplyRecv(ep_object.cptr, msg, NULL);
         printf("server: Received IPC, data %08X\n", seL4_GetMR(0));
     }
-    
+
 }
 
 
@@ -118,8 +118,8 @@ int main(void) {
     /* create an allocator */
     allocman = bootstrap_use_current_simple(&simple, ALLOCATOR_STATIC_POOL_SIZE,        allocator_mem_pool);
     ZF_LOGF_IF(allocman == NULL, "Failed to initialize alloc manager.\n"
-        "\tMemory pool sufficiently sized?\n"
-        "\tMemory pool pointer valid?\n");
+               "\tMemory pool sufficiently sized?\n"
+               "\tMemory pool pointer valid?\n");
 
     /* create a vka (interface for interacting with the underlying allocator) */
     allocman_make_vka(&vka, allocman);
@@ -136,7 +136,7 @@ int main(void) {
     vka_object_t tcb_object = {0};
     error = vka_alloc_tcb(&vka, &tcb_object);
     ZF_LOGF_IFERR(error, "Failed to allocate new TCB.\n"
-        "\tVKA given sufficient bootstrap memory?");
+                  "\tVKA given sufficient bootstrap memory?");
 
     /*
      * create and map an ipc buffer:
@@ -146,8 +146,8 @@ int main(void) {
     vka_object_t ipc_frame_object;
     error = vka_alloc_frame(&vka, IPCBUF_FRAME_SIZE_BITS, &ipc_frame_object);
     ZF_LOGF_IFERR(error, "Failed to alloc a frame for the IPC buffer.\n"
-        "\tThe frame size is not the number of bytes, but an exponent.\n"
-        "\tNB: This frame is not an immediately usable, virtually mapped page.\n")
+                  "\tThe frame size is not the number of bytes, but an exponent.\n"
+                  "\tNB: This frame is not an immediately usable, virtually mapped page.\n")
     /*
      * map the frame into the vspace at ipc_buffer_vaddr.
      * To do this we first try to map it in to the root page directory.
@@ -160,7 +160,7 @@ int main(void) {
 
     /* Try to map the frame the first time  */
     error = seL4_ARCH_Page_Map(ipc_frame_object.cptr, pd_cap, ipc_buffer_vaddr,
-        seL4_AllRights, seL4_ARCH_Default_VMAttributes);
+                               seL4_AllRights, seL4_ARCH_Default_VMAttributes);
 
     if (error != 0) {
         /* Create a page table */
@@ -169,19 +169,19 @@ int main(void) {
         ZF_LOGF_IFERR(error, "Failed to allocate new page table.\n");
 
         /* Map the page table */
-    	error = seL4_ARCH_PageTable_Map(pt_object.cptr, pd_cap,
-            ipc_buffer_vaddr, seL4_ARCH_Default_VMAttributes);
+        error = seL4_ARCH_PageTable_Map(pt_object.cptr, pd_cap,
+                                        ipc_buffer_vaddr, seL4_ARCH_Default_VMAttributes);
         ZF_LOGF_IFERR(error, "Failed to map page table into VSpace.\n"
-            "\tWe are inserting a new page table into the top-level table.\n"
-            "\tPass a capability to the new page table, and not for example, the IPC buffer frame vaddr.\n")
+                      "\tWe are inserting a new page table into the top-level table.\n"
+                      "\tPass a capability to the new page table, and not for example, the IPC buffer frame vaddr.\n")
 
         /* then map the frame in */
         error = seL4_ARCH_Page_Map(ipc_frame_object.cptr, pd_cap,
-            ipc_buffer_vaddr, seL4_AllRights, seL4_ARCH_Default_VMAttributes);
+                                   ipc_buffer_vaddr, seL4_AllRights, seL4_ARCH_Default_VMAttributes);
         ZF_LOGF_IFERR(error, "Failed again to map the IPC buffer frame into the VSpace.\n"
-			"\t(It's not supposed to fail.)\n"
-            "\tPass a capability to the IPC buffer's physical frame.\n"
-            "\tRevisit the first seL4_ARCH_Page_Map call above and double-check your arguments.\n");
+                      "\t(It's not supposed to fail.)\n"
+                      "\tPass a capability to the IPC buffer's physical frame.\n"
+                      "\tRevisit the first seL4_ARCH_Page_Map call above and double-check your arguments.\n");
     }
 
     /* set the IPC buffer's virtual address in a field of the IPC buffer */
@@ -196,15 +196,15 @@ int main(void) {
      * an IPC message to the original cap */
 
     error = vka_mint_object(&vka, &ep_object, &ep_cap_path, seL4_AllRights,
-        seL4_CapData_Badge_new(EP_BADGE));
+                            seL4_CapData_Badge_new(EP_BADGE));
     ZF_LOGF_IFERR(error, "Failed to mint new badged copy of IPC endpoint.\n"
-        "\tseL4_Mint is the backend for vka_mint_object.\n"
-        "\tseL4_Mint is simply being used here to create a badged copy of the same IPC endpoint.\n"
-        "\tThink of a badge in this case as an IPC context cookie.\n");
+                  "\tseL4_Mint is the backend for vka_mint_object.\n"
+                  "\tseL4_Mint is simply being used here to create a badged copy of the same IPC endpoint.\n"
+                  "\tThink of a badge in this case as an IPC context cookie.\n");
 
     /* TODO 1: initialise the new TCB */
-    /* hint 1: seL4_TCB_Configure() 
-       There are a couple of new arguments, namely sched_context, 
+    /* hint 1: seL4_TCB_Configure()
+       There are a couple of new arguments, namely sched_context,
        prio and timeout_fault_ep */
     /* hint 2: seL4_Prio_new() */
     /* hint 3: You can initialise a TCB with a null scheduling context */
@@ -216,7 +216,7 @@ int main(void) {
     /* hint 1: seL4_SchedControl_Configure */
     /* hint 2: simple_get_sched_ctrl */
 
-    
+
     /* TODO 4: Bind the scheduling context */
     /* hint 1: seL4_SchedContext_Bind */
     /* You now have an active server, try running it */
@@ -238,9 +238,9 @@ int main(void) {
     uintptr_t server_stack_top = (uintptr_t)server_stack + sizeof(server_stack);
 
     ZF_LOGF_IF(server_stack_top % (stack_alignment_requirement) != 0,
-        "Stack top isn't aligned correctly to a %dB boundary.\n"
-        "\tDouble check to ensure you're not trampling.",
-        stack_alignment_requirement);
+               "Stack top isn't aligned correctly to a %dB boundary.\n"
+               "\tDouble check to ensure you're not trampling.",
+               stack_alignment_requirement);
 
     /* set stack pointer for the new thread. remember the stack grows down */
     sel4utils_set_stack_pointer(&regs, server_stack_top);
@@ -248,7 +248,7 @@ int main(void) {
     /* actually write the TCB registers. */
     error = seL4_TCB_WriteRegisters(tcb_object.cptr, 0, 0, regs_size, &regs);
     ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
-        "\tDid you write the correct number of registers? See arg4.\n");
+                  "\tDid you write the correct number of registers? See arg4.\n");
 
     /* start the new thread running */
     error = seL4_TCB_Resume(tcb_object.cptr);

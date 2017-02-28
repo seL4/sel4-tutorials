@@ -59,10 +59,10 @@ void thread_2(void) {
 
     /* make sure it is what we expected */
     ZF_LOGF_IF(sender_badge != EP_BADGE,
-        "Badge on the endpoint was not what was expected.\n");
+               "Badge on the endpoint was not what was expected.\n");
     ZF_LOGF_IF(seL4_MessageInfo_get_length(tag) != 1,
-        "Length of the data send from root thread was not what was expected.\n"
-        "\tHow many registers did you set with seL4_SetMR, within the root thread?\n");
+               "Length of the data send from root thread was not what was expected.\n"
+               "\tHow many registers did you set with seL4_SetMR, within the root thread?\n");
 
     /* get the message stored in the first message register */
     msg = seL4_GetMR(0);
@@ -78,8 +78,8 @@ void thread_2(void) {
 seL4_CPtr get_untyped(seL4_BootInfo *info, int size_bytes) {
 
     for (int i = info->untyped.start, idx = 0; i < info->untyped.end; ++i, ++idx) {
-        
-        if (1<<info->untypedSizeBitsList[idx] >= size_bytes) {
+
+        if (1 << info->untypedSizeBitsList[idx] >= size_bytes) {
             return i;
         }
     }
@@ -93,17 +93,16 @@ seL4_CPtr get_untyped(seL4_BootInfo *info, int size_bytes) {
  */
 int untyped_retype_root(seL4_CPtr untyped, seL4_ObjectType type, int size_bits, seL4_CPtr root_cnode, seL4_CPtr slot) {
     return seL4_Untyped_Retype(untyped /* untyped cap */,
-                                type /* type */, 
-                                size_bits /* size */, 
-                                root_cnode /* root cnode cap */,
-                                root_cnode /* destination cspace */,
-                                32 /* depth */,
-                                slot /* offset */,
-                                1 /* num objects */);
+                               type /* type */,
+                               size_bits /* size */,
+                               root_cnode /* root cnode cap */,
+                               root_cnode /* destination cspace */,
+                               32 /* depth */,
+                               slot /* offset */,
+                               1 /* num objects */);
 }
 
-int main(void)
-{
+int main(void) {
     int error;
 
     /* Set up logging and give us a name: useful for debugging if the thread faults */
@@ -134,11 +133,11 @@ int main(void)
      */
 
     /* decide on slots to use based on what is free */
-    seL4_CPtr tcb_cap = ???;
-    seL4_CPtr ipc_frame_cap = ???;
-    ep_cap = ???;
-    badged_ep_cap = ???;
-    seL4_CPtr page_table_cap = ???;
+    seL4_CPtr tcb_cap = ?? ?;
+    seL4_CPtr ipc_frame_cap = ?? ?;
+    ep_cap = ?? ?;
+    badged_ep_cap = ?? ?;
+    seL4_CPtr page_table_cap = ?? ?;
 
     /* get an untyped to retype into all the objects we will need */
     seL4_CPtr untyped;
@@ -159,11 +158,11 @@ int main(void)
      *         to contain all required objects.
      */
     ZF_LOGF_IF(untyped == -1, "Failed to find an untyped which could hold %d bytes.\n",
-        (1<<seL4_TCBBits) +
-        (1<<seL4_PageBits) +
-        (1<<seL4_EndpointBits) +
-        (1<<seL4_PageTableBits));
-    
+               (1 << seL4_TCBBits) +
+               (1 << seL4_PageBits) +
+               (1 << seL4_EndpointBits) +
+               (1 << seL4_PageTableBits));
+
     /* TODO 3: Using the untyped, create the required objects, storing their caps in the roottask's root cnode.
      *
      * hint 1: int seL4_Untyped_Retype(seL4_Untyped service, int type, int size_bits, seL4_CNode root, int node_index, int node_depth, int node_offset, int num_objects)
@@ -171,7 +170,7 @@ int main(void)
      * hint 3: use cspace_cap for the root cnode AND the cnode_index
      */
     ZF_LOGF_IFERR(error, "Failed to retype our chosen untyped into a TCB child object.\n");
- 
+
     ZF_LOGF_IFERR(error, "Failed to retype our chosen untyped into a page object.\n");
 
     ZF_LOGF_IFERR(error, "Failed to retype our chosen untyped into an Endpoint child object.\n");
@@ -187,25 +186,25 @@ int main(void)
     seL4_Word ipc_buffer_vaddr;
     ipc_buffer_vaddr = IPCBUF_VADDR;
     error = seL4_X86_Page_Map(ipc_frame_cap, pd_cap, ipc_buffer_vaddr,
-        seL4_AllRights, seL4_X86_Default_VMAttributes);
+                              seL4_AllRights, seL4_X86_Default_VMAttributes);
     if (error != 0) {
 
         /* TODO 4: Retype the untyped into page table (if this was done in TODO 3, ignore this). */
         ZF_LOGF_IFERR(error, "Failed to retype an object into a page table.\n"
-            "Re-examine your arguments -- check the solution files if you're unable to get it.\n");
+                      "Re-examine your arguments -- check the solution files if you're unable to get it.\n");
 
         error = seL4_X86_PageTable_Map(page_table_cap, pd_cap,
-            ipc_buffer_vaddr, seL4_X86_Default_VMAttributes);
+                                       ipc_buffer_vaddr, seL4_X86_Default_VMAttributes);
         ZF_LOGF_IFERR(error, "Failed to map page table into VSpace.\n"
-            "\tWe are inserting a new page table into the top-level table.\n"
-            "\tPass a capability to the new page table, and not for example, the IPC buffer frame vaddr.\n");
+                      "\tWe are inserting a new page table into the top-level table.\n"
+                      "\tPass a capability to the new page table, and not for example, the IPC buffer frame vaddr.\n");
 
         /* then map the frame in */
         error = seL4_X86_Page_Map(ipc_frame_cap, pd_cap,
-            ipc_buffer_vaddr, seL4_AllRights, seL4_X86_Default_VMAttributes);
+                                  ipc_buffer_vaddr, seL4_AllRights, seL4_X86_Default_VMAttributes);
         ZF_LOGF_IFERR(error, "Failed again to map the IPC buffer frame into the VSpace.\n"
-            "\tPass a capability to the IPC buffer's physical frame.\n"
-            "\tRevisit the first seL4_ARCH_Page_Map call above and double-check your arguments.\n");
+                      "\tPass a capability to the IPC buffer's physical frame.\n"
+                      "\tRevisit the first seL4_ARCH_Page_Map call above and double-check your arguments.\n");
     }
 
     /* set the IPC buffer's virtual address in a field of the IPC buffer */
@@ -218,11 +217,11 @@ int main(void)
 
     /* initialise the new TCB */
     error = seL4_TCB_Configure(tcb_cap, seL4_CapNull, seL4_MaxPrio,
-        cspace_cap, seL4_NilData, pd_cap, seL4_NilData,
-        ipc_buffer_vaddr, ipc_frame_cap);
+                               cspace_cap, seL4_NilData, pd_cap, seL4_NilData,
+                               ipc_buffer_vaddr, ipc_frame_cap);
     ZF_LOGF_IFERR(error, "Failed to configure the new TCB object.\n"
-        "\tWe're running the new thread with the root thread's CSpace.\n"
-        "\tWe're running the new thread in the root thread's VSpace.\n");
+                  "\tWe're running the new thread with the root thread's CSpace.\n"
+                  "\tWe're running the new thread in the root thread's VSpace.\n");
 
     /* give the new thread a name */
     name_thread(tcb_cap, "hello-3: thread_2");
@@ -234,9 +233,9 @@ int main(void)
     const int stack_alignment_requirement = sizeof(seL4_Word) * 2;
     uintptr_t thread_2_stack_top = (uintptr_t)thread_2_stack + sizeof(thread_2_stack);
     ZF_LOGF_IF(thread_2_stack_top % (stack_alignment_requirement) != 0,
-        "Stack top isn't aligned correctly to a %dB boundary.\n"
-        "\tDouble check to ensure you're not trampling.",
-        stack_alignment_requirement);
+               "Stack top isn't aligned correctly to a %dB boundary.\n"
+               "\tDouble check to ensure you're not trampling.",
+               stack_alignment_requirement);
 
     /* set instruction pointer, stack pointer and gs register (used for thread local storage) */
     seL4_UserContext regs = {
@@ -248,7 +247,7 @@ int main(void)
     /* actually write the TCB registers. */
     error = seL4_TCB_WriteRegisters(tcb_cap, 0, 0, regs_size, &regs);
     ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
-        "\tDid you write the correct number of registers? See arg4.\n");
+                  "\tDid you write the correct number of registers? See arg4.\n");
 
     /* start the new thread running */
     error = seL4_TCB_Resume(tcb_cap);
@@ -273,11 +272,11 @@ int main(void)
 
     /* check that we got the expected repy */
     ZF_LOGF_IF(seL4_MessageInfo_get_length(tag) != 1,
-        "Response data from thread_2 was not the length expected.\n"
-        "\tHow many registers did you set with seL4_SetMR within thread_2?\n");
+               "Response data from thread_2 was not the length expected.\n"
+               "\tHow many registers did you set with seL4_SetMR within thread_2?\n");
     msg = seL4_GetMR(0);
     ZF_LOGF_IF(msg != ~MSG_DATA,
-        "Response data from thread_2's content was not what was expected.\n");
+               "Response data from thread_2's content was not what was expected.\n");
 
     printf("main: got a reply: %#x\n", msg);
 

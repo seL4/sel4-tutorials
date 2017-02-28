@@ -70,8 +70,7 @@ UNUSED static int thread_2_stack[THREAD_2_STACK_SIZE];
 /* convenience function */
 extern void name_thread(seL4_CPtr tcb, char *name);
 
-int main(void)
-{
+int main(void) {
     UNUSED int error;
 
     /* Set up logging and give us a name: useful for debugging if the thread faults */
@@ -89,56 +88,56 @@ int main(void)
 
     /* create an allocator */
     allocman = bootstrap_use_current_simple(&simple, ALLOCATOR_STATIC_POOL_SIZE,
-        allocator_mem_pool);
+                                            allocator_mem_pool);
     ZF_LOGF_IF(allocman == NULL, "Failed to initialize allocator.\n"
-        "\tMemory pool sufficiently sized?\n"
-        "\tMemory pool pointer valid?\n");
+               "\tMemory pool sufficiently sized?\n"
+               "\tMemory pool pointer valid?\n");
 
     /* create a vka (interface for interacting with the underlying allocator) */
     allocman_make_vka(&vka, allocman);
 
-   /* TODO 1: create a vspace object to manage our vspace */
-   /* hint 1: sel4utils_bootstrap_vspace_with_bootinfo_leaky()
-    * int sel4utils_bootstrap_vspace_with_bootinfo_leaky(vspace_t *vspace, sel4utils_alloc_data_t *data, seL4_CPtr page_directory, vka_t *vka, seL4_BootInfo *info)
-    * @param vspace Uninitialised vspace struct to populate.
-    * @param data Uninitialised vspace data struct to populate.
-    * @param page_directory Page directory for the new vspace.
-    * @param vka Initialised vka that this virtual memory allocator will use to allocate pages and pagetables. This allocator will never invoke free.
-    * @param info seL4 boot info
-    * @return 0 on succes.
-    * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%204#TODO_1:
-    */
+    /* TODO 1: create a vspace object to manage our vspace */
+    /* hint 1: sel4utils_bootstrap_vspace_with_bootinfo_leaky()
+     * int sel4utils_bootstrap_vspace_with_bootinfo_leaky(vspace_t *vspace, sel4utils_alloc_data_t *data, seL4_CPtr page_directory, vka_t *vka, seL4_BootInfo *info)
+     * @param vspace Uninitialised vspace struct to populate.
+     * @param data Uninitialised vspace data struct to populate.
+     * @param page_directory Page directory for the new vspace.
+     * @param vka Initialised vka that this virtual memory allocator will use to allocate pages and pagetables. This allocator will never invoke free.
+     * @param info seL4 boot info
+     * @return 0 on succes.
+     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%204#TODO_1:
+     */
     ZF_LOGF_IFERR(error, "Failed to prepare root thread's VSpace for use.\n"
-        "\tsel4utils_bootstrap_vspace_with_bootinfo reserves important vaddresses.\n"
-        "\tIts failure means we can't safely use our vaddrspace.\n");
+                  "\tsel4utils_bootstrap_vspace_with_bootinfo reserves important vaddresses.\n"
+                  "\tIts failure means we can't safely use our vaddrspace.\n");
 
     /* fill the allocator with virtual memory */
     void *vaddr;
     UNUSED reservation_t virtual_reservation;
     virtual_reservation = vspace_reserve_range(&vspace,
-        ALLOCATOR_VIRTUAL_POOL_SIZE, seL4_AllRights, 1, &vaddr);
+                                               ALLOCATOR_VIRTUAL_POOL_SIZE, seL4_AllRights, 1, &vaddr);
     ZF_LOGF_IF(virtual_reservation.res == NULL, "Failed to reserve a chunk of memory.\n");
     bootstrap_configure_virtual_pool(allocman, vaddr,
-        ALLOCATOR_VIRTUAL_POOL_SIZE, simple_get_pd(&simple));
+                                     ALLOCATOR_VIRTUAL_POOL_SIZE, simple_get_pd(&simple));
 
-   /* TODO 2: use sel4utils to make a new process */
-   /* hint 1: sel4utils_configure_process()
-    * int sel4utils_configure_process(sel4utils_process_t *process, vka_t *vka, vspace_t *vspace, uint8_t priority, char *image_name);
-    * @param process Uninitialised process struct.
-    * @param vka Allocator to use to allocate objects.
-    * @param vspace Vspace allocator for the current vspace.
-    * @param priority Priority to configure the process to run as.
-    * @param image_name Name of the elf image to load from the cpio archive.
-    * @return 0 on success, -1 on error.
-    * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%204#TODO_2:
-    *
-    * hint 2: priority is in APP_PRIORITY and can be 0 to seL4_MaxPrio
-    * hint 3: the elf image name is in APP_IMAGE_NAME
-    */
+    /* TODO 2: use sel4utils to make a new process */
+    /* hint 1: sel4utils_configure_process()
+     * int sel4utils_configure_process(sel4utils_process_t *process, vka_t *vka, vspace_t *vspace, uint8_t priority, char *image_name);
+     * @param process Uninitialised process struct.
+     * @param vka Allocator to use to allocate objects.
+     * @param vspace Vspace allocator for the current vspace.
+     * @param priority Priority to configure the process to run as.
+     * @param image_name Name of the elf image to load from the cpio archive.
+     * @return 0 on success, -1 on error.
+     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%204#TODO_2:
+     *
+     * hint 2: priority is in APP_PRIORITY and can be 0 to seL4_MaxPrio
+     * hint 3: the elf image name is in APP_IMAGE_NAME
+     */
     ZF_LOGF_IFERR(error, "Failed to spawn a new thread.\n"
-        "\tsel4utils_configure_process expands an ELF file into our VSpace.\n"
-        "\tBe sure you've properly configured a VSpace manager using sel4utils_bootstrap_vspace_with_bootinfo.\n"
-        "\tBe sure you've passed the correct component name for the new process!\n");
+                  "\tsel4utils_configure_process expands an ELF file into our VSpace.\n"
+                  "\tBe sure you've properly configured a VSpace manager using sel4utils_bootstrap_vspace_with_bootinfo.\n"
+                  "\tBe sure you've passed the correct component name for the new process!\n");
 
     /* TODO 3: give the new process's thread a name */
 
@@ -148,7 +147,7 @@ int main(void)
     ZF_LOGF_IFERR(error, "Failed to allocate new endpoint object.\n");
 
     /*
-     * make a badged endpoint in the new process's cspace.  This copy 
+     * make a badged endpoint in the new process's cspace.  This copy
      * will be used to send an IPC to the original cap
      */
 
@@ -189,7 +188,7 @@ int main(void)
      * hint 4: for the badge value use EP_BADGE
      */
     ZF_LOGF_IF(new_ep_cap == 0, "Failed to mint a badged copy of the IPC endpoint into the new thread's CSpace.\n"
-        "\tsel4utils_mint_cap_to_process takes a cspacepath_t: double check what you passed.\n");
+               "\tsel4utils_mint_cap_to_process takes a cspacepath_t: double check what you passed.\n");
 
     /* TODO 6: spawn the process */
     /* hint 1: sel4utils_spawn_process_v()
@@ -204,9 +203,9 @@ int main(void)
      * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%204#TODO_6:
      */
     ZF_LOGF_IFERR(error, "Failed to spawn and start the new thread.\n"
-        "\tVerify: the new thread is being executed in the root thread's VSpace.\n"
-        "\tIn this case, the CSpaces are different, but the VSpaces are the same.\n"
-        "\tDouble check your vspace_t argument.\n");
+                  "\tVerify: the new thread is being executed in the root thread's VSpace.\n"
+                  "\tIn this case, the CSpaces are different, but the VSpaces are the same.\n"
+                  "\tDouble check your vspace_t argument.\n");
 
     /* we are done, say hello */
     printf("main: hello world\n");
@@ -240,10 +239,10 @@ int main(void)
 
     /* make sure it is what we expected */
     ZF_LOGF_IF(sender_badge != EP_BADGE,
-        "The badge we received from the new thread didn't match our expectation.\n");
+               "The badge we received from the new thread didn't match our expectation.\n");
     ZF_LOGF_IF(seL4_MessageInfo_get_length(tag) != 1,
-        "Response data from the new process was not the length expected.\n"
-        "\tHow many registers did you set with seL4_SetMR within the new process?\n");
+               "Response data from the new process was not the length expected.\n"
+               "\tHow many registers did you set with seL4_SetMR within the new process?\n");
 
     /* get the message stored in the first message register */
     msg = seL4_GetMR(0);

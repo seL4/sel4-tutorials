@@ -106,11 +106,11 @@ void thread_2(void) {
      * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_12:
      */
     ZF_LOGF_IF(sender_badge != EP_BADGE,
-        "Badge on the endpoint was not what was expected.\n");
+               "Badge on the endpoint was not what was expected.\n");
 
     ZF_LOGF_IF(seL4_MessageInfo_get_length(tag) != 1,
-        "Length of the data send from root thread was not what was expected.\n"
-        "\tHow many registers did you set with seL4_SetMR, within the root thread?\n");
+               "Length of the data send from root thread was not what was expected.\n"
+               "\tHow many registers did you set with seL4_SetMR, within the root thread?\n");
 
     /* TODO 13: get the message stored in the first message register */
     /* hint: seL4_GetMR()
@@ -157,8 +157,7 @@ void thread_2(void) {
     seL4_ReplyRecv(ep_object.cptr, tag, &sender_badge);
 }
 
-int main(void)
-{
+int main(void) {
     UNUSED int error;
 
     /* Set up logging and give us a name: useful for debugging if the thread faults */
@@ -177,8 +176,8 @@ int main(void)
     /* create an allocator */
     allocman = bootstrap_use_current_simple(&simple, ALLOCATOR_STATIC_POOL_SIZE,        allocator_mem_pool);
     ZF_LOGF_IF(allocman == NULL, "Failed to initialize alloc manager.\n"
-        "\tMemory pool sufficiently sized?\n"
-        "\tMemory pool pointer valid?\n");
+               "\tMemory pool sufficiently sized?\n"
+               "\tMemory pool pointer valid?\n");
 
     /* create a vka (interface for interacting with the underlying allocator) */
     allocman_make_vka(&vka, allocman);
@@ -195,7 +194,7 @@ int main(void)
     vka_object_t tcb_object = {0};
     error = vka_alloc_tcb(&vka, &tcb_object);
     ZF_LOGF_IFERR(error, "Failed to allocate new TCB.\n"
-        "\tVKA given sufficient bootstrap memory?");
+                  "\tVKA given sufficient bootstrap memory?");
 
     /*
      * create and map an ipc buffer:
@@ -213,8 +212,8 @@ int main(void)
     vka_object_t ipc_frame_object;
     error = vka_alloc_frame(&vka, IPCBUF_FRAME_SIZE_BITS, &ipc_frame_object);
     ZF_LOGF_IFERR(error, "Failed to alloc a frame for the IPC buffer.\n"
-        "\tThe frame size is not the number of bytes, but an exponent.\n"
-        "\tNB: This frame is not an immediately usable, virtually mapped page.\n")
+                  "\tThe frame size is not the number of bytes, but an exponent.\n"
+                  "\tNB: This frame is not an immediately usable, virtually mapped page.\n")
     /*
      * map the frame into the vspace at ipc_buffer_vaddr.
      * To do this we first try to map it in to the root page directory.
@@ -247,21 +246,21 @@ int main(void)
      * hint 2: for the rights, use seL4_AllRights
      * hint 3: for VM attributes use seL4_ARCH_Default_VMAttributes
      * Hint 4: It is normal for this function call to fail. That means there are
-     *	no page tables with free slots -- proceed to the next step where you'll
-     *	be led to allocate a new empty page table and map it into the VSpace,
-     *	before trying again.
+     *    no page tables with free slots -- proceed to the next step where you'll
+     *    be led to allocate a new empty page table and map it into the VSpace,
+     *    before trying again.
      */
     error = seL4_ARCH_Page_Map(ipc_frame_object.cptr, pd_cap, ipc_buffer_vaddr,
-        seL4_AllRights, seL4_ARCH_Default_VMAttributes);
+                               seL4_AllRights, seL4_ARCH_Default_VMAttributes);
 
     if (error != 0) {
         /* TODO 3: create a page table */
         /* hint: vka_alloc_page_table()
-		 * int vka_alloc_page_table(vka_t *vka, vka_object_t *result)
-		 * @param vka Pointer to vka interface.
-		 * @param result Structure for the PageTable object.  This gets initialised.
-		 * @return 0 on success
-		 * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_3:
+         * int vka_alloc_page_table(vka_t *vka, vka_object_t *result)
+         * @param vka Pointer to vka interface.
+         * @param result Structure for the PageTable object.  This gets initialised.
+         * @return 0 on success
+         * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_3:
          */
         vka_object_t pt_object;
         error =  vka_alloc_page_table(&vka, &pt_object);
@@ -269,30 +268,30 @@ int main(void)
 
         /* TODO 4: map the page table */
         /* hint 1: seL4_ARCH_PageTable_Map()
-		 * The *ARCH* versions of seL4 sys calls are abstractions over the architecture provided by libsel4utils
-		 * this one is defined as:
-		 * #define seL4_ARCH_PageTable_Map seL4_X86_PageTable_Map
+         * The *ARCH* versions of seL4 sys calls are abstractions over the architecture provided by libsel4utils
+         * this one is defined as:
+         * #define seL4_ARCH_PageTable_Map seL4_X86_PageTable_Map
          * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_4:
-		 * The signature for the underlying function is:
-		 * int seL4_X86_PageTable_Map(seL4_X86_PageTable service, seL4_X86_PageDirectory pd, seL4_Word vaddr, seL4_X86_VMAttributes attr)
-		 * @param service Capability to the page table to map.
-		 * @param pd Capability to the VSpace which will contain the mapping.
-		 * @param vaddr Virtual address to map the page table into.
-		 * @param rights Rights for the mapping.
-		 * @param attr VM Attributes for the mapping.
-		 * @return 0 on success.
-		 *
-		 * Note: this function is generated during build.  It is generated from the following definition:
+         * The signature for the underlying function is:
+         * int seL4_X86_PageTable_Map(seL4_X86_PageTable service, seL4_X86_PageDirectory pd, seL4_Word vaddr, seL4_X86_VMAttributes attr)
+         * @param service Capability to the page table to map.
+         * @param pd Capability to the VSpace which will contain the mapping.
+         * @param vaddr Virtual address to map the page table into.
+         * @param rights Rights for the mapping.
+         * @param attr VM Attributes for the mapping.
+         * @return 0 on success.
+         *
+         * Note: this function is generated during build.  It is generated from the following definition:
          * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_4:
-		 * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
-		 *
+         * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
+         *
          * hint 2: for VM attributes use seL4_ARCH_Default_VMAttributes
          */
-    	error = seL4_ARCH_PageTable_Map(pt_object.cptr, pd_cap,
-            ipc_buffer_vaddr, seL4_ARCH_Default_VMAttributes);
+        error = seL4_ARCH_PageTable_Map(pt_object.cptr, pd_cap,
+                                        ipc_buffer_vaddr, seL4_ARCH_Default_VMAttributes);
         ZF_LOGF_IFERR(error, "Failed to map page table into VSpace.\n"
-            "\tWe are inserting a new page table into the top-level table.\n"
-            "\tPass a capability to the new page table, and not for example, the IPC buffer frame vaddr.\n")
+                      "\tWe are inserting a new page table into the top-level table.\n"
+                      "\tPass a capability to the new page table, and not for example, the IPC buffer frame vaddr.\n")
 
         /* TODO 5: then map the frame in */
         /* hint 1: use seL4_ARCH_Page_Map() as above
@@ -300,11 +299,11 @@ int main(void)
          * hint 3: for VM attributes use seL4_ARCH_Default_VMAttributes
          */
         error = seL4_ARCH_Page_Map(ipc_frame_object.cptr, pd_cap,
-            ipc_buffer_vaddr, seL4_AllRights, seL4_ARCH_Default_VMAttributes);
+                                   ipc_buffer_vaddr, seL4_AllRights, seL4_ARCH_Default_VMAttributes);
         ZF_LOGF_IFERR(error, "Failed again to map the IPC buffer frame into the VSpace.\n"
-			"\t(It's not supposed to fail.)\n"
-            "\tPass a capability to the IPC buffer's physical frame.\n"
-            "\tRevisit the first seL4_ARCH_Page_Map call above and double-check your arguments.\n");
+                      "\t(It's not supposed to fail.)\n"
+                      "\tPass a capability to the IPC buffer's physical frame.\n"
+                      "\tRevisit the first seL4_ARCH_Page_Map call above and double-check your arguments.\n");
     }
 
     /* set the IPC buffer's virtual address in a field of the IPC buffer */
@@ -351,19 +350,19 @@ int main(void)
      * hint 4: for the badge use EP_BADGE
      */
     error = vka_mint_object(&vka, &ep_object, &ep_cap_path, seL4_AllRights,
-        seL4_CapData_Badge_new(EP_BADGE));
+                            seL4_CapData_Badge_new(EP_BADGE));
     ZF_LOGF_IFERR(error, "Failed to mint new badged copy of IPC endpoint.\n"
-        "\tseL4_Mint is the backend for vka_mint_object.\n"
-        "\tseL4_Mint is simply being used here to create a badged copy of the same IPC endpoint.\n"
-        "\tThink of a badge in this case as an IPC context cookie.\n");
+                  "\tseL4_Mint is the backend for vka_mint_object.\n"
+                  "\tseL4_Mint is simply being used here to create a badged copy of the same IPC endpoint.\n"
+                  "\tThink of a badge in this case as an IPC context cookie.\n");
 
     /* initialise the new TCB */
     error = seL4_TCB_Configure(tcb_object.cptr, seL4_CapNull, seL4_PrioProps_new(seL4_MaxPrio, seL4_MaxPrio),
-        cspace_cap, seL4_NilData, pd_cap, seL4_NilData,
-        ipc_buffer_vaddr, ipc_frame_object.cptr);
+                               cspace_cap, seL4_NilData, pd_cap, seL4_NilData,
+                               ipc_buffer_vaddr, ipc_frame_object.cptr);
     ZF_LOGF_IFERR(error, "Failed to configure the new TCB object.\n"
-        "\tWe're running the new thread with the root thread's CSpace.\n"
-        "\tWe're running the new thread in the root thread's VSpace.\n");
+                  "\tWe're running the new thread with the root thread's CSpace.\n"
+                  "\tWe're running the new thread in the root thread's VSpace.\n");
 
 
     /* give the new thread a name */
@@ -381,9 +380,9 @@ int main(void)
     uintptr_t thread_2_stack_top = (uintptr_t)thread_2_stack + sizeof(thread_2_stack);
 
     ZF_LOGF_IF(thread_2_stack_top % (stack_alignment_requirement) != 0,
-        "Stack top isn't aligned correctly to a %dB boundary.\n"
-        "\tDouble check to ensure you're not trampling.",
-        stack_alignment_requirement);
+               "Stack top isn't aligned correctly to a %dB boundary.\n"
+               "\tDouble check to ensure you're not trampling.",
+               stack_alignment_requirement);
 
     /* set stack pointer for the new thread. remember the stack grows down */
     sel4utils_set_stack_pointer(&regs, thread_2_stack_top);
@@ -394,7 +393,7 @@ int main(void)
     /* actually write the TCB registers. */
     error = seL4_TCB_WriteRegisters(tcb_object.cptr, 0, 0, regs_size, &regs);
     ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
-        "\tDid you write the correct number of registers? See arg4.\n");
+                  "\tDid you write the correct number of registers? See arg4.\n");
 
     /* start the new thread running */
     error = seL4_TCB_Resume(tcb_object.cptr);
@@ -469,11 +468,11 @@ int main(void)
 
     /* check that we got the expected repy */
     ZF_LOGF_IF(seL4_MessageInfo_get_length(tag) != 1,
-        "Response data from thread_2 was not the length expected.\n"
-        "\tHow many registers did you set with seL4_SetMR within thread_2?\n");
+               "Response data from thread_2 was not the length expected.\n"
+               "\tHow many registers did you set with seL4_SetMR within thread_2?\n");
 
     ZF_LOGF_IF(msg != ~MSG_DATA,
-        "Response data from thread_2's content was not what was expected.\n");
+               "Response data from thread_2's content was not what was expected.\n");
 
     printf("main: got a reply: %#x\n", msg);
 

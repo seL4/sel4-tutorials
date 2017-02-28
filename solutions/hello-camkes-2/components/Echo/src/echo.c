@@ -31,11 +31,11 @@ void uppercase(char *str) {
 
 void callback_handler_2(void *a);
 
-/* this callback handler is meant to be invoked when the first event 
+/* this callback handler is meant to be invoked when the first event
  * arrives on the "consumes" event interface.
- * Note: the callback handler must be explicitly registered before the 
- * callback will be invoked.  
- * Also the registration is one-shot only, if it wants to be invoked 
+ * Note: the callback handler must be explicitly registered before the
+ * callback will be invoked.
+ * Also the registration is one-shot only, if it wants to be invoked
  * when a new event arrives then it must re-register itself.  Or it can
  * also register a different handler.
  */
@@ -49,10 +49,10 @@ void callback_handler_1(void *a) {
      * hint 5: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-dataports
      */
     int *n = (int*)d;
-    char *str = (char*)(n+1);
+    char *str = (char*)(n + 1);
     for (int i = 0; i < *n; i++) {
-    	printf("%s: saying (%p): \"%s\"\n", get_instance_name(), str, str);
-	str += strlen(str) + 1;
+        printf("%s: saying (%p): \"%s\"\n", get_instance_name(), str, str);
+        str += strlen(str) + 1;
     }
 
     /* TODO 20: put a modified copy of the data from the untyped dataport into the typed dataport */
@@ -69,11 +69,11 @@ void callback_handler_1(void *a) {
      * hint 9: you could combine this TODO with the previous one in a single loop if you want
      */
     n = (int*)d;
-    str = (char*)(n+1);
-    for (int i = 0, j = *n-1; i < *n; i++, j--) {
-	strncpy(d_typed->str[j], str, STR_LEN);
-	uppercase(d_typed->str[j]);
-	str += strlen(str) + 1;
+    str = (char*)(n + 1);
+    for (int i = 0, j = *n - 1; i < *n; i++, j--) {
+        strncpy(d_typed->str[j], str, STR_LEN);
+        uppercase(d_typed->str[j]);
+        str += strlen(str) + 1;
     }
     d_typed->n = *n;
 
@@ -92,11 +92,11 @@ void callback_handler_1(void *a) {
     client_emit();
 }
 
-/* this callback handler is meant to be invoked the second time an event 
+/* this callback handler is meant to be invoked the second time an event
  * arrives on the "consumes" event interface.
- * Note: the callback handler must be explicitly registered before the 
- * callback will be invoked.  
- * Also the registration is one-shot only, if it wants to be invoked 
+ * Note: the callback handler must be explicitly registered before the
+ * callback will be invoked.
+ * Also the registration is one-shot only, if it wants to be invoked
  * when a new event arrives then it must re-register itself.  Or it can
  * also register a different handler.
  */
@@ -117,7 +117,7 @@ void callback_handler_2(void *a) {
      */
     char *str;
     for (int i = 0; i < d_ptrs->n; i++) {
-	str = dataport_unwrap_ptr(d_ptrs->ptr[i]);
+        str = dataport_unwrap_ptr(d_ptrs->ptr[i]);
         printf("%s: dptr saying (%p): \"%s\"\n", get_instance_name(), str, str);
     }
 

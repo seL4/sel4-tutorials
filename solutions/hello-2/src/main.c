@@ -70,11 +70,10 @@ void thread_2(void) {
     printf("thread_2: hallo wereld\n");
 
     /* never exit */
-    while(1);
+    while (1);
 }
 
-int main(void)
-{
+int main(void) {
     UNUSED int error;
 
     /* Set up logging and give us a name: useful for debugging if the thread faults */
@@ -121,8 +120,8 @@ int main(void)
      */
     allocman = bootstrap_use_current_simple(&simple, ALLOCATOR_STATIC_POOL_SIZE, allocator_mem_pool);
     ZF_LOGF_IF(allocman == NULL, "Failed to initialize alloc manager.\n"
-        "\tMemory pool sufficiently sized?\n"
-        "\tMemory pool pointer valid?\n");
+               "\tMemory pool sufficiently sized?\n"
+               "\tMemory pool pointer valid?\n");
 
     /* TODO 5: create a vka (interface for interacting with the underlying allocator) */
     /* hint: allocman_make_vka()
@@ -164,7 +163,7 @@ int main(void)
     vka_object_t tcb_object = {0};
     error = vka_alloc_tcb(&vka, &tcb_object);
     ZF_LOGF_IFERR(error, "Failed to allocate new TCB.\n"
-        "\tVKA given sufficient bootstrap memory?");
+                  "\tVKA given sufficient bootstrap memory?");
 
     /* TODO 9: initialise the new TCB */
     /* hint 1: seL4_TCB_Configure()
@@ -189,9 +188,9 @@ int main(void)
      */
     error = seL4_TCB_Configure(tcb_object.cptr, seL4_CapNull, seL4_PrioProps_new(seL4_MaxPrio, seL4_MaxPrio), cspace_cap, seL4_NilData, pd_cap, seL4_NilData, 0, 0);
     ZF_LOGF_IFERR(error, "Failed to configure the new TCB object.\n"
-        "\tWe're running the new thread with the root thread's CSpace.\n"
-        "\tWe're running the new thread in the root thread's VSpace.\n"
-        "\tWe will not be executing any IPC in this app.\n");
+                  "\tWe're running the new thread with the root thread's CSpace.\n"
+                  "\tWe're running the new thread in the root thread's VSpace.\n"
+                  "\tWe will not be executing any IPC in this app.\n");
 
     /* TODO 10: give the new thread a name */
     /* hint: we've done thread naming before */
@@ -218,9 +217,9 @@ int main(void)
     const int stack_alignment_requirement = sizeof(seL4_Word) * 2;
     uintptr_t thread_2_stack_top = (uintptr_t)thread_2_stack + sizeof(thread_2_stack);
     ZF_LOGF_IF(thread_2_stack_top % (stack_alignment_requirement) != 0,
-        "Stack top isn't aligned correctly to a %dB boundary.\n"
-        "\tDouble check to ensure you're not trampling.",
-        stack_alignment_requirement);
+               "Stack top isn't aligned correctly to a %dB boundary.\n"
+               "\tDouble check to ensure you're not trampling.",
+               stack_alignment_requirement);
 
     /* TODO 12: set stack pointer for the new thread */
     /* hint 1: sel4utils_set_stack_pointer()
@@ -250,7 +249,7 @@ int main(void)
      */
     error = seL4_TCB_WriteRegisters(tcb_object.cptr, 0, 0, 2, &regs);
     ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
-        "\tDid you write the correct number of registers? See arg4.\n");
+                  "\tDid you write the correct number of registers? See arg4.\n");
 
     /* TODO 14: start the new thread running */
     /* hint: seL4_TCB_Resume()

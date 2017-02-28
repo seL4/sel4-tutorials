@@ -27,7 +27,7 @@ int run(void) {
      * i.e.: <interface>_<function>
      * hint 2: the interfaces available are defined by the component, e.g. in components/Client/Client.camkes
      * hint 3: the function name is defined by the interface definition, e.g. in interfaces/HelloSimple.idl4
-     * hint 4: so the function would be:  hello_say_hello() 
+     * hint 4: so the function would be:  hello_say_hello()
      * hint 5: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
      */
 

@@ -15,7 +15,7 @@
 import "../../interfaces/HelloSimple.idl4";
 
 component Client {
-        control;
-        uses HelloSimple hello;
+    control;
+    uses HelloSimple hello;
 }
 
