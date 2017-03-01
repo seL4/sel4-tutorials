@@ -184,7 +184,7 @@ def run(arch, plat, name):
 def setup_logger():
     logger = logging.getLogger(__name__)
     ch = logging.StreamHandler()
-    formatter = logging.Formatter('%(levelname)s: %(message)s')
+    formatter = logging.Formatter('%(message)s')
     ch.setFormatter(formatter)
     logger.addHandler(ch)
     logger.setLevel(logging.INFO)
