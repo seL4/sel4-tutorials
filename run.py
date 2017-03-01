@@ -14,14 +14,13 @@
 # Script for building and running tutorials
 # This file can be executed by itself, or used as a module by other scripts.
 
-import re
 import os
 import sys
 import argparse
 import sh
 import logging
 
-ARCHS = ['ia32', 'arm']
+import common
 
 logger = logging.getLogger(__name__)
 
@@ -48,22 +47,9 @@ PLAT_TO_QEMU_ARGS = {
     'imx31': ['-nographic', '-M', 'kzm'],
 }
 
-BUILD_CONFIG_PAT = r'(?P<prefix>%s)_(?P<name>.*)_defconfig' % "|".join(ARCHS)
-BUILD_CONFIG_RE = re.compile(BUILD_CONFIG_PAT)
-
-def get_project_root():
-    '''Returns the path to the root directory of this project'''
-    script_dir = os.path.dirname(os.path.realpath(__file__))
-    # assume default location of this project in projects/sel4-tutorials
-    return os.path.join(script_dir, '..', '..')
-
-def get_config_dir():
-    '''Returns the path to the "configs" dir inside the root directory of this project'''
-    return os.path.realpath(os.path.join(get_project_root(), 'configs'))
-
 def list_configs():
     '''Lists names of build config files'''
-    return os.listdir(get_config_dir())
+    return os.listdir(common.get_config_dir())
 
 def list_names():
     '''Lists names of apps'''
@@ -78,17 +64,12 @@ def list_names_for_target(target_arch, target_plat):
 
 def config_file_to_info(filename):
     '''Returns a (name, arch, plat) tuple fora given build config file name'''
-    m = BUILD_CONFIG_RE.match(filename)
-    if m is not None:
-        prefix = m.group('prefix')
-        name = m.group('name')
-        return (name, CONFIG_PREFIX_TO_ARCH[prefix], CONFIG_PREFIX_TO_PLAT[prefix])
-    else:
-        raise Exception("unrecognized build config %s" % filename)
+    prefix, name = common.config_filename_to_parts(filename)
+    return name, CONFIG_PREFIX_TO_ARCH[prefix], CONFIG_PREFIX_TO_PLAT[prefix]
 
-def info_to_config_file(arch, plat, name):
+def arch_to_config_file(arch, name):
     '''Returns a build config file name for a given (name, arch, plat) tuple'''
-    return '%s_%s_defconfig' % (arch, name)
+    return common.config_filename_from_parts(arch, name)
 
 def check_config(arch, plat, name):
     '''Returns True if a given arch, plat, name corresponds to an existing
@@ -116,28 +97,15 @@ def check_config(arch, plat, name):
 
     return True
 
-def get_tutorial_type():
-    '''Returns a string identifying which tutorial environment we are currently
-       in, based on the config dir symlink.
-    '''
-    config_path = get_config_dir()
-    config_path_end = os.path.split(config_path)[-1]
-    if config_path_end == 'configs-camkes':
-        return 'CAmkES'
-    elif config_path_end == 'configs-sel4':
-        return 'seL4'
-    else:
-        raise Exception("unexpected build config path: %s" % config_path)
-
 def make_parser():
     '''Creates a parser for the tutorial runner. The arch agrument is a string
        specifying the architecture. Valid architecture strings are "ia32" and "arm".
     '''
     names = list_names()
-    parser = argparse.ArgumentParser(description='%s Tutorial Runner' % get_tutorial_type())
+    parser = argparse.ArgumentParser(description='%s Tutorial Runner' % common.get_tutorial_type())
     parser.add_argument('name', type=str, help='name of tutorial to run', choices=list(names))
     parser.add_argument('-a', '--arch', dest='arch', type=str,
-                        help='architecture to build for and emulate', choices=ARCHS, required=True)
+                        help='architecture to build for and emulate', choices=common.ARCHS, required=True)
     parser.add_argument('-j', '--jobs', dest='jobs', type=int,
                         help='number of jobs to use while building', default=1)
     parser.add_argument('-p', '--plat', dest='plat', type=str,
@@ -160,7 +128,7 @@ def build(arch, plat, name, jobs):
 def get_qemu_image_args(arch, plat, name):
     '''Return a list of arguments for qemu to specify which image to run'''
 
-    if get_tutorial_type() == 'CAmkES':
+    if common.get_tutorial_type() == 'CAmkES':
         app_image = 'images/capdl-loader-experimental-image-%s-%s' % (arch, plat)
     else:
         app_image = 'images/%s-image-%s-%s' % (name, arch, plat)
