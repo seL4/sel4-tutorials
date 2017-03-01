@@ -98,8 +98,20 @@ def check_config(arch, plat, name):
     names = list(list_names_for_target(arch, plat))
 
     if name not in names:
-        logger.error("No tutorial named \"%s\" for %s/%s. Valid tutorials: %s" %
-              (name, arch, plat, ", ".join(names)))
+        logger.error("No tutorial named \"%s\" for %s/%s." % (name, arch, plat))
+        logger.error("Tutorials for %s/%s: %s" % (arch, plat, ", ".join(names)))
+
+        archs_with_tutorial = []
+        for a in ARCHS:
+            if a != arch:
+                other_plat = ARCH_TO_DEFAULT_PLAT[a]
+                other_names = list(list_names_for_target(a, other_plat))
+                if name in other_names:
+                    archs_with_tutorial.append(a)
+
+        logger.error("Architectures with \"%s\" tutorial: %s" % \
+            (name, ", ".join(archs_with_tutorial)))
+
         return False
 
     return True
