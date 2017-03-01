@@ -18,7 +18,7 @@ import re
 import os
 import sys
 import argparse
-import subprocess
+import sh
 import logging
 
 ARCHS = ['ia32', 'arm']
@@ -145,12 +145,17 @@ def make_parser():
 
     return parser
 
+def runcmd(cmd, *args):
+    '''Run a command using sh, logging the output'''
+    for line in getattr(sh, cmd)(*args, _err_to_out=True, _iter=True):
+        logger.info(line.rstrip())
+
 def build(arch, plat, name, jobs):
     '''Builds the specified tutorial'''
-    subprocess.call(['make', 'clean'])
-    subprocess.call(['make', info_to_config_file(arch, plat, name)])
-    subprocess.call(['make', 'silentoldconfig'])
-    subprocess.call(['make', '-j%d' % jobs])
+    runcmd('make', 'clean')
+    runcmd('make', arch_to_config_file(arch, name))
+    runcmd('make', 'silentoldconfig')
+    runcmd('make', '-j%d' % jobs)
 
 def get_qemu_image_args(arch, plat, name):
     '''Return a list of arguments for qemu to specify which image to run'''
@@ -171,7 +176,10 @@ def run(arch, plat, name):
     qemu = PLAT_TO_QEMU_BIN[plat]
     qemu_args = PLAT_TO_QEMU_ARGS[plat]
 
-    subprocess.call([qemu] + qemu_args + get_qemu_image_args(arch, plat, name))
+    try:
+        runcmd(qemu, *(qemu_args + get_qemu_image_args(arch, plat, name)))
+    except sh.CommandNotFound:
+        raise Exception("%s is not installed" % qemu)
 
 def setup_logger():
     logger = logging.getLogger(__name__)
