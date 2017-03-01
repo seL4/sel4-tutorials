@@ -19,8 +19,12 @@ import os
 import sys
 import argparse
 import subprocess
+import logging
 
 ARCHS = ['ia32', 'arm']
+
+logger = logging.getLogger(__name__)
+
 PLATS = ['pc99', 'imx31']
 
 CONFIG_PREFIX_TO_ARCH = {
@@ -94,7 +98,7 @@ def check_config(arch, plat, name):
     names = list(list_names_for_target(arch, plat))
 
     if name not in names:
-        print("No tutorial named \"%s\" for %s/%s. Valid tutorials: %s" %
+        logger.error("No tutorial named \"%s\" for %s/%s. Valid tutorials: %s" %
               (name, arch, plat, ", ".join(names)))
         return False
 
@@ -157,7 +161,16 @@ def run(arch, plat, name):
 
     subprocess.call([qemu] + qemu_args + get_qemu_image_args(arch, plat, name))
 
+def setup_logger():
+    logger = logging.getLogger(__name__)
+    ch = logging.StreamHandler()
+    formatter = logging.Formatter('%(levelname)s: %(message)s')
+    ch.setFormatter(formatter)
+    logger.addHandler(ch)
+    logger.setLevel(logging.INFO)
+
 def main(argv):
+    setup_logger()
     args = make_parser().parse_args(argv)
 
     if args.plat is None:
