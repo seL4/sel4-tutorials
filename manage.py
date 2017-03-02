@@ -75,8 +75,7 @@ class Environment(object):
         self.tutorial_dir = common.get_tutorial_dir()
         self.build_config_parent_dir = os.path.realpath(
             os.path.join(self.tutorial_dir, 'build-config'))
-        self.project_root_dir = os.path.realpath(
-            os.path.join(self.tutorial_dir, '..', '..'))
+        self.project_root_dir = common.get_project_root()
         self.app_dir = os.path.realpath(
             os.path.join(self.tutorial_dir, 'solutions'))
 
