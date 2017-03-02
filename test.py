@@ -15,9 +15,12 @@
 import sys, os, argparse, re, pexpect, subprocess, tempfile, logging
 import xml.sax.saxutils
 
+import manage
+import common
+
 # this assumes this script is in a directory inside the tutorial directory
-TUTORIAL_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-TOP_LEVEL_DIR = os.path.realpath(os.path.join(TUTORIAL_DIR, "..", ".."))
+TUTORIAL_DIR = common.get_tutorial_dir()
+TOP_LEVEL_DIR = common.get_project_root()
 
 # timeout per test in seconds
 DEFAULT_TIMEOUT = 1800
@@ -130,14 +133,17 @@ def run_arch_tests(arch, system, timeout):
         print("</testcase>")
 
 
-def run_tests(system, timeout):
+def run_tests(timeout):
     """
     Builds and runs all tests for all architectures for a given system
     """
 
     print('<testsuite>')
-    for arch in ARCHITECTURES:
-        run_arch_tests(arch, system, timeout)
+    for system in ['sel4', 'camkes']:
+        manage.main(['env', system])
+        manage.main(['solution'])
+        for arch in ARCHITECTURES:
+            run_arch_tests(arch, system, timeout)
     print('</testsuite>')
 
 def set_log_level(args):
@@ -156,8 +162,6 @@ def main():
     parser = argparse.ArgumentParser(
                 description="Runs all tests for sel4 tutorials or camkes tutorials")
 
-    parser.add_argument('system', choices=['sel4', 'camkes'],
-                        help="which set of solutions to test")
     parser.add_argument('--verbose', action='store_true',
                         help="Output everything including debug info")
     parser.add_argument('--quiet', action='store_true',
@@ -168,7 +172,7 @@ def main():
 
     set_log_level(args)
 
-    run_tests(args.system, args.timeout)
+    run_tests(args.timeout)
 
 if __name__ == '__main__':
     sys.exit(main())
