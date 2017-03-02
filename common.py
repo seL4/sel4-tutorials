@@ -13,6 +13,7 @@
 
 import re
 import os
+import logging
 
 ARCHS = ['ia32', 'arm']
 
@@ -51,6 +52,10 @@ def get_tutorial_type():
        in, based on the config dir symlink.
     '''
     config_path = get_config_dir()
+
+    if not os.path.isdir(config_path):
+        return None
+
     config_path_end = os.path.split(config_path)[-1]
     if config_path_end == 'configs-camkes':
         return 'CAmkES'
@@ -58,3 +63,11 @@ def get_tutorial_type():
         return 'seL4'
     else:
         raise Exception("unexpected build config path: %s" % config_path)
+
+def setup_logger(name):
+    logger = logging.getLogger(name)
+    ch = logging.StreamHandler()
+    formatter = logging.Formatter('%(message)s')
+    ch.setFormatter(formatter)
+    logger.addHandler(ch)
+    logger.setLevel(logging.INFO)

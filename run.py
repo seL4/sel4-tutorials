@@ -149,16 +149,8 @@ def run(arch, plat, name):
     except sh.CommandNotFound:
         raise Exception("%s is not installed" % qemu)
 
-def setup_logger():
-    logger = logging.getLogger(__name__)
-    ch = logging.StreamHandler()
-    formatter = logging.Formatter('%(message)s')
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
-    logger.setLevel(logging.INFO)
-
 def main(argv):
-    setup_logger()
+    common.setup_logger(__name__)
     args = make_parser().parse_args(argv)
 
     if args.plat is None:
