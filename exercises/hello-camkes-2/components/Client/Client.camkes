@@ -1,0 +1,36 @@
+/*
+ * Copyright 2015, NICTA
+ *
+ * This software may be distributed and modified according to the terms of
+ * the BSD 2-Clause license. Note that NO WARRANTY is provided.
+ * See "LICENSE_BSD2.txt" for details.
+ *
+ * @TAG(NICTA_BSD)
+ */
+
+/*
+ * CAmkES tutorial part 2: events and dataports
+ */
+
+component Client {
+    /* include definitions of typedefs for the dataports */
+    include "str_buf.h";
+
+    /* this component has a control thread */
+    control;
+
+    /* TODO 1: the event interfaces */
+    /* hint 1: specify 2 interfaces: one "emits" and one "consumes"
+     * hint 2: you can use an arbitrary string as the interface type (it doesn't get used)
+     * hint 3: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-events
+     */
+
+
+    /* TODO 2: the dataport interfaces */
+    /* hint 1: specify 3 interfaces: one of type "Buf", one of type "str_buf_t" and one of type "ptr_buf_t"
+     * hint 2: for the definition of these types see "str_buf.h":
+     *     https://github.com/seL4-projects/sel4-tutorials/blob/master/apps/hello-camkes-2/include/str_buf.h
+     * hint 2: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-dataports
+     */
+
+}

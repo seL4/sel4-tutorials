@@ -1,0 +1,20 @@
+#
+# Copyright 2015, NICTA
+#
+# This software may be distributed and modified according to the terms of
+# the BSD 2-Clause license. Note that NO WARRANTY is provided.
+# See "LICENSE_BSD2.txt" for details.
+#
+# @TAG(NICTA_BSD)
+#
+
+menuconfig APP_HELLO_3
+    bool "seL4 Hello World tutorial - v3"
+    default n
+    depends on LIB_SEL4 && (LIB_MUSL_C || LIB_SEL4_C) && LIB_SEL4_SIMPLE && \
+               LIB_SEL4_VKA && LIB_SEL4_ALLOCMAN && LIB_SEL4_VSPACE && \
+               LIB_SEL4_PLAT_SUPPORT && LIB_UTILS && LIB_SEL4_SIMPLE_DEFAULT && \
+               LIB_SEL4_DEBUG
+    help
+       Simple example of how to use the seL4 API and libraries - version 3. 
+

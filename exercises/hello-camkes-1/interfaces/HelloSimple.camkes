@@ -1,0 +1,22 @@
+/*
+ * Copyright 2015, NICTA
+ *
+ * This software may be distributed and modified according to the terms of
+ * the BSD 2-Clause license. Note that NO WARRANTY is provided.
+ * See "LICENSE_BSD2.txt" for details.
+ *
+ * @TAG(NICTA_BSD)
+ */
+
+/*
+ * CAmkES tutorial part 1: components with RPC.
+ */
+
+/* Simple RPC interface */
+procedure HelloSimple {
+    /* TODO 3: RPC functions */
+    /* hint 1: define at least one function that takes a string as input parameter. call it say_hello. no return value
+     * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+     */
+
+};
