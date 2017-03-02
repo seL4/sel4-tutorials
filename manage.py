@@ -77,7 +77,7 @@ class Environment(object):
             os.path.join(self.tutorial_dir, 'build-config'))
         self.project_root_dir = common.get_project_root()
         self.app_dir = os.path.realpath(
-            os.path.join(self.tutorial_dir, 'solutions'))
+            os.path.join(self.tutorial_dir, 'templates'))
 
         self.tutorial_dir_rel = os.path.relpath(self.tutorial_dir, self.project_root_dir)
         self.build_config_parent_dir_rel = os.path.relpath(self.build_config_parent_dir,
@@ -284,7 +284,7 @@ def handle_publish(git_uri, branch_name='master'):
         shutil.copyfile(src, dst)
 
     template_ctx = TemplateCtx()
-    template_dir = os.path.join(tutorial_dir, 'solutions')
+    template_dir = os.path.join(tutorial_dir, 'templates')
     solution_dir = os.path.join(temp_dir, 'solutions')
     exercise_dir = os.path.join(temp_dir, 'exercises')
 
