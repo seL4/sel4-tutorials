@@ -21,9 +21,10 @@
 /* TODO 1: add a main function to print a message */
 /* hint: printf */
 
+/*- if solution -*/
 int main(void) {
     printf("hello world\n");
 
     return 0;
 }
-
+/*- endif -*/

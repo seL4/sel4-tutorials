@@ -30,8 +30,10 @@ int run(void) {
      * hint 4: so the function would be:  hello_say_hello()
      * hint 5: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#creating-an-application
      */
+/*- if solution -*/
     char *shello = "hello world";
     hello_say_hello(shello);
+/*- endif -*/
 
     printf("After the client\n");
     return 0;

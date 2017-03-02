@@ -34,7 +34,9 @@ void epit_irq_callback(void *_ UNUSED) {
      * @param irq    Timer's interrupt number
      * https://github.com/seL4/util_libs/blob/master/libplatsupport/include/platsupport/timer.h#L159
      */
+/*- if solution -*/
     timer_handle_irq(timer_drv, EPIT2_INTERRUPT);
+/*- endif -*/
 
     /* Signal the RPC interface. */
     sem_post();
@@ -45,7 +47,9 @@ void epit_irq_callback(void *_ UNUSED) {
      * hint 3: pass NULL as the extra argument to the callback
      * hint 4: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-events
      */
+/*- if solution -*/
     irq_reg_callback(epit_irq_callback, NULL);
+/*- endif -*/
 }
 
 void hello__init() {
@@ -65,8 +69,10 @@ void hello__init() {
      * @return timer handler
      * https://github.com/seL4/util_libs/blob/master/libplatsupport/mach_include/imx/platsupport/mach/epit.h#L28
      */
+/*- if solution -*/
     timer_drv = epit_get_timer(&config);
     assert(timer_drv);
+/*- endif -*/
 
     /* TODO: register the first callback handler for this interface */
     /* hint 1: use the function <IRQ interface name>_reg_callback()
@@ -74,7 +80,9 @@ void hello__init() {
      * hint 3: pass NULL as the extra argument to the callback
      * hint 4: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-events
      */
+/*- if solution -*/
     irq_reg_callback(epit_irq_callback, NULL);
+/*- endif -*/
 }
 
 /* TODO: implement the RPC function. */
@@ -95,7 +103,9 @@ void hello_sleep(int sec) {
      * @return 0 on success
      * https://github.com/seL4/util_libs/blob/master/libplatsupport/include/platsupport/timer.h#L146
      */
+/*- if solution -*/
     timer_oneshot_relative(timer_drv, sec * NS_IN_SECOND);
+/*- endif -*/
 
     /* Wait for the timeout interrupt */
     sem_wait();

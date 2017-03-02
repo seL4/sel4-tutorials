@@ -50,7 +50,9 @@ int main(int argc, char **argv) {
      *
      * hint 2: the endpoint cap is in slot EP_CPTR
      */
+/*- if solution -*/
     tag = seL4_Call(EP_CPTR, tag);
+/*- endif -*/
 
     /* check that we got the expected repy */
     ZF_LOGF_IF(seL4_MessageInfo_get_length(tag) != 1,

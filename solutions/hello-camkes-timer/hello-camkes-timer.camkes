@@ -25,8 +25,10 @@ assembly {
          * hint 2: look at
          * https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#creating-an-application
          */
+/*- if solution -*/
         component Timerbase timerbase;
         component Timer timer;
+/*- endif -*/
 
         component Client client;
 
@@ -36,8 +38,10 @@ assembly {
          * hint 3: look at
          * https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#creating-an-application
          */
+/*- if solution -*/
         connection seL4HardwareMMIO timer_mem(from timer.reg, to timerbase.reg);
         connection seL4HardwareInterrupt timer_irq(from timerbase.irq, to timer.irq);
+/*- endif -*/
 
         /* timer interface connection */
         connection seL4RPCCall hello_timer(from client.hello, to timer.hello);
@@ -48,8 +52,10 @@ assembly {
          * hint 2: look at
          * https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#hardware-components
          */
+/*- if solution -*/
         timerbase.reg_attributes = "0x53F98000:0x1000"; //device memory
         timerbase.irq_attributes    = 27;               //Timer interrupt
+/*- endif -*/
 
         /* assign an initial value to semaphore */
         timer.sem_value = 0;

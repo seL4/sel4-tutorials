@@ -107,8 +107,10 @@ int main(void) {
      * @return 0 on succes.
      * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%204#TODO_1:
      */
+/*- if solution -*/
     error = sel4utils_bootstrap_vspace_with_bootinfo_leaky(&vspace,
                                                            &data, simple_get_pd(&simple), &vka, info);
+/*- endif -*/
     ZF_LOGF_IFERR(error, "Failed to prepare root thread's VSpace for use.\n"
                   "\tsel4utils_bootstrap_vspace_with_bootinfo reserves important vaddresses.\n"
                   "\tIts failure means we can't safely use our vaddrspace.\n");
@@ -136,16 +138,20 @@ int main(void) {
      * hint 2: priority is in APP_PRIORITY and can be 0 to seL4_MaxPrio
      * hint 3: the elf image name is in APP_IMAGE_NAME
      */
+/*- if solution -*/
     sel4utils_process_t new_process;
     error = sel4utils_configure_process(&new_process, &vka, &vspace,
                                         APP_PRIORITY, APP_IMAGE_NAME);
+/*- endif -*/
     ZF_LOGF_IFERR(error, "Failed to spawn a new thread.\n"
                   "\tsel4utils_configure_process expands an ELF file into our VSpace.\n"
                   "\tBe sure you've properly configured a VSpace manager using sel4utils_bootstrap_vspace_with_bootinfo.\n"
                   "\tBe sure you've passed the correct component name for the new thread!\n");
 
     /* TODO 3: give the new process's thread a name */
+/*- if solution -*/
     name_thread(new_process.thread.tcb.cptr, "hello-4: process_2");
+/*- endif -*/
 
     /* create an endpoint */
     vka_object_t ep_object = {0};
@@ -167,9 +173,11 @@ int main(void) {
      *
      * hint 2: use the cslot of the endpoint allocated above
      */
+/*- if solution -*/
     cspacepath_t ep_cap_path;
     seL4_CPtr new_ep_cap;
     vka_cspace_make_path(&vka, ep_object.cptr, &ep_cap_path);
+/*- endif -*/
 
     /* TODO 5: copy the endpont cap and add a badge to the new cap */
     /* hint 1: sel4utils_mint_cap_to_process()
@@ -196,8 +204,10 @@ int main(void) {
      *
      * hint 4: for the badge value use EP_BADGE
      */
+/*- if solution -*/
     new_ep_cap = sel4utils_mint_cap_to_process(&new_process, ep_cap_path,
                                                seL4_AllRights, seL4_CapData_Badge_new(EP_BADGE));
+/*- endif -*/
     ZF_LOGF_IF(new_ep_cap == 0, "Failed to mint a badged copy of the IPC endpoint into the new thread's CSpace.\n"
                "\tsel4utils_mint_cap_to_process takes a cspacepath_t: double check what you passed.\n");
 
@@ -215,7 +225,9 @@ int main(void) {
      * @return 0 on success, -1 on error.
      * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%204#TODO_6:
      */
+/*- if solution -*/
     error = sel4utils_spawn_process_v(&new_process, &vka, &vspace, 0, NULL, 1);
+/*- endif -*/
     ZF_LOGF_IFERR(error, "Failed to spawn and start the new thread.\n"
                   "\tVerify: the new thread is being executed in the root thread's VSpace.\n"
                   "\tIn this case, the CSpaces are different, but the VSpaces are the same.\n"
@@ -250,7 +262,9 @@ int main(void) {
      *
      * hint 3: use the badged endpoint cap that you minted above
      */
+/*- if solution -*/
     tag = seL4_Recv(ep_cap_path.capPtr, &sender_badge);
+/*- endif -*/
 
     /* make sure it is what we expected */
     ZF_LOGF_IF(sender_badge != EP_BADGE,
@@ -287,7 +301,9 @@ int main(void) {
      *
      * hint 3: use the badged endpoint cap that you used for Call
      */
+/*- if solution -*/
     seL4_ReplyRecv(ep_cap_path.capPtr, tag, &sender_badge);
+/*- endif -*/
 
     return 0;
 }

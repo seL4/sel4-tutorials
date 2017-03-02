@@ -18,6 +18,8 @@ procedure HelloSimple {
     /* hint 1: define at least one function that takes a string as input parameter. call it say_hello. no return value
      * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
      */
+/*- if solution -*/
     void say_hello(in string str);
+/*- endif -*/
 };
 

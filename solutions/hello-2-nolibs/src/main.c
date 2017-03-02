@@ -81,7 +81,9 @@ int main(void) {
     /* TODO 1: Set tcb_cap to a free cap slot index.
      * hint: The bootinfo struct contains a range of free cap slot indices.
      */
+/*- if solution -*/
     tcb_cap = info->empty.start;
+/*- endif -*/
 
     seL4_CPtr untyped;
     /* TODO 2: Obtain a cap to an untyped which is large enough to contain a tcb.
@@ -92,8 +94,10 @@ int main(void) {
      *         can be found in the bootinfo struct
      */
 
+/*- if solution -*/
     /* look up an untyped to retype into a tcb */
     untyped = get_untyped(info, (1 << seL4_TCBBits));
+/*- endif -*/
 
 
     /* TODO 3: Retype the untyped into a tcb, storing a cap in tcb_cap
@@ -104,6 +108,7 @@ int main(void) {
      *         (bonus question: What property of the calling thread's cspace must hold for this to be ok?)
      */
 
+/*- if solution -*/
     /* create the tcb */
     error = seL4_Untyped_Retype(untyped /* untyped cap */,
                                 seL4_TCBObject /* type */,
@@ -113,6 +118,7 @@ int main(void) {
                                 32 /* depth */,
                                 tcb_cap /* offset */,
                                 1 /* num objects */);
+/*- endif -*/
     ZF_LOGF_IFERR(error, "Failed to allocate a TCB object.\n"
                   "\tDid you find an untyped capability to retype?\n"
                   "\tDid you find a free capability slot for the new child capability that will be generated?\n");
@@ -144,11 +150,13 @@ int main(void) {
 
      */
 
+/*- if solution -*/
     /* set start up registers for the new thread: */
     seL4_UserContext regs = {
         .eip = (seL4_Word)thread_2,
         .esp = (seL4_Word)thread_2_stack_top
     };
+/*- endif -*/
 
     /* TODO 5: Write the registers in regs to the new thread
      *
@@ -156,9 +164,11 @@ int main(void) {
      * hint 2: the value of arch_flags is ignored on x86 and arm
      */
 
+/*- if solution -*/
     /* actually write the TCB registers.  we write 2 registers:
      * instruction pointer is first, stack pointer is second. */
     error = seL4_TCB_WriteRegisters(tcb_cap, 0, 0, 2, &regs);
+/*- endif -*/
     ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
                   "\tDid you write the correct number of registers? See arg4.\n");
 

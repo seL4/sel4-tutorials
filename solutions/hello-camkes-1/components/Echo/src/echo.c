@@ -28,7 +28,9 @@
  * hint 6: make the function print out a mesage using printf
  * hint 7: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#creating-an-application
  */
+/*- if solution -*/
 void hello_say_hello(const char *str) {
     printf("Component %s saying: %s\n", get_instance_name(), str);
 }
+/*- endif -*/
 

@@ -135,11 +135,19 @@ int main(void) {
      */
 
     /* decide on slots to use based on what is free */
+/*- if solution -*/
     seL4_CPtr tcb_cap = info->empty.start;
     seL4_CPtr ipc_frame_cap = info->empty.start + 1;
     ep_cap = info->empty.start + 2;
     badged_ep_cap = info->empty.start + 3;
     seL4_CPtr page_table_cap = info->empty.start + 4;
+/*- else -*/
+    seL4_CPtr tcb_cap = ?? ?;
+    seL4_CPtr ipc_frame_cap = ?? ?;
+    ep_cap = ?? ?;
+    badged_ep_cap = ?? ?;
+    seL4_CPtr page_table_cap = ?? ?;
+/*- endif -*/
 
     /* get an untyped to retype into all the objects we will need */
     seL4_CPtr untyped;
@@ -159,10 +167,12 @@ int main(void) {
      *         of the object is "chipped off". For simplicity, find a cap to an untyped which is large enough
      *         to contain all required objects.
      */
+/*- if solution -*/
     untyped = get_untyped(info, (1 << seL4_TCBBits) +
                           (1 << seL4_PageBits) +
                           (1 << seL4_EndpointBits) +
                           (1 << seL4_PageTableBits));
+/*- endif -*/
     ZF_LOGF_IF(untyped == -1, "Failed to find an untyped which could hold %d bytes.\n",
                (1 << seL4_TCBBits) +
                (1 << seL4_PageBits) +
@@ -176,11 +186,17 @@ int main(void) {
      * hint 3: use cspace_cap for the root cnode AND the cnode_index
      */
     /* create required objects */
+/*- if solution -*/
     error = untyped_retype_root(untyped, seL4_TCBObject, seL4_TCBBits, cspace_cap, tcb_cap);
+/*- endif -*/
     ZF_LOGF_IFERR(error, "Failed to retype our chosen untyped into a TCB child object.\n");
+/*- if solution -*/
     error = untyped_retype_root(untyped, seL4_X86_4K, seL4_PageBits, cspace_cap, ipc_frame_cap);
+/*- endif -*/
     ZF_LOGF_IFERR(error, "Failed to retype our chosen untyped into a page object.\n");
+/*- if solution -*/
     error = untyped_retype_root(untyped, seL4_EndpointObject, seL4_EndpointBits, cspace_cap, ep_cap);
+/*- endif -*/
     ZF_LOGF_IFERR(error, "Failed to retype our chosen untyped into an Endpoint child object.\n");
 
     /*
@@ -202,8 +218,10 @@ int main(void) {
 
         /* TODO 4: Retype the untyped into page table (if this was done in TODO 3, ignore this). */
 
+/*- if solution -*/
         /* create and map a page table */
         error = untyped_retype_root(untyped, seL4_X86_PageTableObject, seL4_PageTableBits, cspace_cap, page_table_cap);
+/*- endif -*/
         ZF_LOGF_IFERR(error, "Failed to retype an object into a page table.\n"
                       "Re-examine your arguments -- check the solution files if you're unable to get it.\n");
 
@@ -229,9 +247,11 @@ int main(void) {
      * hint: int seL4_CNode_Mint(seL4_CNode service, seL4_Word dest_index, seL4_Uint8 dest_depth, seL4_CNode src_root, seL4_Word src_index, seL4_Uint8 src_depth, seL4_CapRights rights, seL4_CapData_t badge);
      */
 
+/*- if solution -*/
     /* create a copy of the endpoint cap with a badge (to use for sending) */
     seL4_CNode_Mint(cspace_cap, badged_ep_cap, 32, cspace_cap, ep_cap, 32,
                     seL4_AllRights, seL4_CapData_Badge_new(EP_BADGE));
+/*- endif -*/
 
 
     /* initialise the new TCB */

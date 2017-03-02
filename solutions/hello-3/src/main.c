@@ -91,7 +91,9 @@ void thread_2(void) {
      * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_11:
      * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      */
+/*- if solution -*/
     tag = seL4_Recv(ep_object.cptr, &sender_badge);
+/*- endif -*/
 
     /* TODO 12: make sure it is what we expected */
     /* hint 1: check the badge. is it EP_BADGE?
@@ -105,12 +107,14 @@ void thread_2(void) {
      * It is generated from the following definition:
      * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_12:
      */
+/*- if solution -*/
     ZF_LOGF_IF(sender_badge != EP_BADGE,
                "Badge on the endpoint was not what was expected.\n");
 
     ZF_LOGF_IF(seL4_MessageInfo_get_length(tag) != 1,
                "Length of the data send from root thread was not what was expected.\n"
                "\tHow many registers did you set with seL4_SetMR, within the root thread?\n");
+/*- endif -*/
 
     /* TODO 13: get the message stored in the first message register */
     /* hint: seL4_GetMR()
@@ -120,7 +124,9 @@ void thread_2(void) {
      * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_13:
      * You can find out more about message registers in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      */
+/*- if solution -*/
     msg = seL4_GetMR(0);
+/*- endif -*/
 
     printf("thread_2: got a message %#x from %#x\n", msg, sender_badge);
 
@@ -135,7 +141,9 @@ void thread_2(void) {
      * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_14:
      * You can find out more about message registers in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      */
+/*- if solution -*/
     seL4_SetMR(0, msg);
+/*- endif -*/
 
     /* TODO 15: send the message back */
     /* hint 1: seL4_ReplyRecv()
@@ -154,7 +162,9 @@ void thread_2(void) {
      * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_15:
      * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      */
+/*- if solution -*/
     seL4_ReplyRecv(ep_object.cptr, tag, &sender_badge);
+/*- endif -*/
 }
 
 int main(void) {
@@ -210,10 +220,12 @@ int main(void) {
      * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_1:
      */
     vka_object_t ipc_frame_object;
+/*- if solution -*/
     error = vka_alloc_frame(&vka, IPCBUF_FRAME_SIZE_BITS, &ipc_frame_object);
     ZF_LOGF_IFERR(error, "Failed to alloc a frame for the IPC buffer.\n"
                   "\tThe frame size is not the number of bytes, but an exponent.\n"
                   "\tNB: This frame is not an immediately usable, virtually mapped page.\n")
+/*- endif -*/
     /*
      * map the frame into the vspace at ipc_buffer_vaddr.
      * To do this we first try to map it in to the root page directory.
@@ -250,8 +262,10 @@ int main(void) {
      *    be led to allocate a new empty page table and map it into the VSpace,
      *    before trying again.
      */
+/*- if solution -*/
     error = seL4_ARCH_Page_Map(ipc_frame_object.cptr, pd_cap, ipc_buffer_vaddr,
                                seL4_AllRights, seL4_ARCH_Default_VMAttributes);
+/*- endif -*/
 
     if (error != 0) {
         /* TODO 3: create a page table */
@@ -262,8 +276,10 @@ int main(void) {
          * @return 0 on success
          * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_3:
          */
+/*- if solution -*/
         vka_object_t pt_object;
         error =  vka_alloc_page_table(&vka, &pt_object);
+/*- endif -*/
         ZF_LOGF_IFERR(error, "Failed to allocate new page table.\n");
 
         /* TODO 4: map the page table */
@@ -287,8 +303,10 @@ int main(void) {
          *
          * hint 2: for VM attributes use seL4_ARCH_Default_VMAttributes
          */
+/*- if solution -*/
         error = seL4_ARCH_PageTable_Map(pt_object.cptr, pd_cap,
                                         ipc_buffer_vaddr, seL4_ARCH_Default_VMAttributes);
+/*- endif -*/
         ZF_LOGF_IFERR(error, "Failed to map page table into VSpace.\n"
                       "\tWe are inserting a new page table into the top-level table.\n"
                       "\tPass a capability to the new page table, and not for example, the IPC buffer frame vaddr.\n")
@@ -298,8 +316,10 @@ int main(void) {
          * hint 2: for the rights, use seL4_AllRights
          * hint 3: for VM attributes use seL4_ARCH_Default_VMAttributes
          */
+/*- if solution -*/
         error = seL4_ARCH_Page_Map(ipc_frame_object.cptr, pd_cap,
                                    ipc_buffer_vaddr, seL4_AllRights, seL4_ARCH_Default_VMAttributes);
+/*- endif -*/
         ZF_LOGF_IFERR(error, "Failed again to map the IPC buffer frame into the VSpace.\n"
                       "\t(It's not supposed to fail.)\n"
                       "\tPass a capability to the IPC buffer's physical frame.\n"
@@ -318,7 +338,9 @@ int main(void) {
      * @return 0 on success
      * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_6:
      */
+/*- if solution -*/
     error = vka_alloc_endpoint(&vka, &ep_object);
+/*- endif -*/
     ZF_LOGF_IFERR(error, "Failed to allocate new endpoint object.\n");
 
     /* TODO 7: make a badged copy of it in our cspace. This copy will be used to send
@@ -349,8 +371,10 @@ int main(void) {
      *
      * hint 4: for the badge use EP_BADGE
      */
+/*- if solution -*/
     error = vka_mint_object(&vka, &ep_object, &ep_cap_path, seL4_AllRights,
                             seL4_CapData_Badge_new(EP_BADGE));
+/*- endif -*/
     ZF_LOGF_IFERR(error, "Failed to mint new badged copy of IPC endpoint.\n"
                   "\tseL4_Mint is the backend for vka_mint_object.\n"
                   "\tseL4_Mint is simply being used here to create a badged copy of the same IPC endpoint.\n"
@@ -435,8 +459,10 @@ int main(void) {
      *
      * hint 5: send MSG_DATA
      */
+/*- if solution -*/
     tag = seL4_MessageInfo_new(0, 0, 0, 1);
     seL4_SetMR(0, MSG_DATA);
+/*- endif -*/
 
     /* TODO 9: send and wait for a reply. */
     /* hint: seL4_Call()
@@ -454,7 +480,9 @@ int main(void) {
      * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_9:
      * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      */
+/*- if solution -*/
     tag = seL4_Call(ep_cap_path.capPtr, tag);
+/*- endif -*/
 
     /* TODO 10: get the reply message */
     /* hint: seL4_GetMR()
@@ -464,7 +492,9 @@ int main(void) {
      * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_10:
      * You can find out more about message registers in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      */
+/*- if solution -*/
     msg = seL4_GetMR(0);
+/*- endif -*/
 
     /* check that we got the expected repy */
     ZF_LOGF_IF(seL4_MessageInfo_get_length(tag) != 1,

@@ -148,9 +148,11 @@ int main(void) {
      * @return 0 on success
      * https://github.com/seL4/libsel4vka/blob/master/include/vka/object.h#L98
      */
+/*- if solution -*/
     vka_object_t aep_object = {0};
     error = vka_alloc_notification(&vka, &aep_object);
     assert(error == 0);
+/*- endif -*/
 
     /* TODO 2: call sel4platsupport library to get the default timer */
     /* hint: sel4platsupport_get_default_timer
@@ -161,8 +163,10 @@ int main(void) {
      * @param aep Async endpoint to receive the interrupt
      * @return Pointer to timer structure
      */
+/*- if solution -*/
     timer = sel4platsupport_get_default_timer(&vka, &vspace, &simple, aep_object.cptr);
     assert(timer != NULL);
+/*- endif -*/
 
     /* we are done, say hello */
     printf("main: hello world\n");
@@ -210,9 +214,11 @@ int main(void) {
          *
          * https://github.com/seL4/util_libs/blob/master/libplatsupport/include/platsupport/timer.h#L146
          */
+/*- if solution -*/
         timer_oneshot_relative(timer->timer, 1000 * 1000);
         seL4_Wait(aep_object.cptr, &sender);
         sel4_timer_handle_single_irq(timer);
+/*- endif -*/
         count++;
         if (count == 1000 * msg) {
             break;

@@ -35,6 +35,7 @@ int run(void) {
      * hint 4: then copy all the strings from "s_arr" to the dataport.
      * hint 5: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-dataports
      */
+/*- if solution -*/
     int *n = (int*)d;
     *n = NUM_STRINGS;
     char *str = (char*)(n + 1);
@@ -42,18 +43,23 @@ int run(void) {
         strcpy(str, s_arr[i]);
         str += strlen(str) + 1;
     }
+/*- endif -*/
 
     /* TODO 10: emit event to signal that the data is available */
     /* hint 1: use the function <interface_name>.emit
      * hint 2: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-events
      */
+/*- if solution -*/
     echo_emit();
+/*- endif -*/
 
     /* TODO 11: wait to get an event back signalling that the reply data is avaialble */
     /* hint 1: use the function <interface_name>.wait
      * hint 2: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-events
      */
+/*- if solution -*/
     client_wait();
+/*- endif -*/
 
     /* TODO 12: read the reply data from a typed dataport */
     /* hint 1: use the "str_buf_t" dataport as defined in the Client.camkes file
@@ -65,9 +71,11 @@ int run(void) {
      * hint 5: print out the specified number of strings from the "str" field
      * hint 6: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-dataports
      */
+/*- if solution -*/
     for (int i = 0; i < d_typed->n; i++) {
         printf("%s: string %d (%p): \"%s\"\n", get_instance_name(), i, d_typed->str[i], d_typed->str[i]);
     }
+/*- endif -*/
 
     /* TODO 13: send the data over again, this time using two dataports, one
      * untyped dataport containing the data, and one typed dataport containing
@@ -84,6 +92,7 @@ int run(void) {
      * hint 8: the dataport pointers should point into the untyped dataport
      * hint 9: for more information about dataport pointers see: https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md
      */
+/*- if solution -*/
     d_ptrs->n = NUM_STRINGS;
     str = (char*)d;
     for (int i = 0; i < NUM_STRINGS; i++) {
@@ -91,14 +100,19 @@ int run(void) {
         d_ptrs->ptr[i] = dataport_wrap_ptr(str);
         str += strlen(str) + 1;
     }
+/*- endif -*/
 
     /* TODO 14: emit event to signal that the data is available */
     /* hint 1: we've already done this before */
+/*- if solution -*/
     echo_emit();
+/*- endif -*/
 
     /* TODO 15: wait to get an event back signalling that data has been read */
     /* hint 1: we've already done this before */
+/*- if solution -*/
     client_wait();
+/*- endif -*/
 
     printf("%s: the next instruction will cause a vm fault due to permissions\n", get_instance_name());
 
@@ -106,7 +120,9 @@ int run(void) {
      * When we try to write to a read-only dataport, we will get a VM fault.
      */
     /* hint 1: try to assign a value to a field of the "str_buf_t" dataport */
+/*- if solution -*/
     d_typed->n = 0;
+/*- endif -*/
 
     return 0;
 }
