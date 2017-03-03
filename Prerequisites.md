@@ -14,6 +14,7 @@ First of all we assume that you are running Linux.  We typically use some flavou
 
     pip install six tempita ply plyplus pyelftools orderedset jinja2
 
+    # Required for CAmkES only
     curl -sSL https://get.haskellstack.org/ | sh
 ```
 
@@ -88,7 +89,7 @@ Building and running seL4 and CAmkES reguires:
     pip install six tempita ply plyplus pyelftools orderedset jinja2
 ```
 
-### Haskell Stack
+### Haskell Stack (required for CAmkES only)
 
 Haskell stack is a tool for managing ghc versions and haskell packages.
 Learn more on their [website](https://haskellstack.org).
