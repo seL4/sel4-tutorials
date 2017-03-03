@@ -135,7 +135,7 @@ def run_arch_tests(arch, system, timeout):
 
 def run_tests(timeout):
     """
-    Builds and runs all tests for all architectures for a given system
+    Builds and runs all tests for all architectures for all systems
     """
 
     print('<testsuite>')
@@ -144,6 +144,16 @@ def run_tests(timeout):
         manage.main(['solution'])
         for arch in ARCHITECTURES:
             run_arch_tests(arch, system, timeout)
+    print('</testsuite>')
+
+def run_system_tests(system, timeout):
+    """
+    Builds and runs all tests for all architectures for a given system
+    """
+
+    print('<testsuite>')
+    for arch in ARCHITECTURES:
+        run_arch_tests(arch, system, timeout)
     print('</testsuite>')
 
 def set_log_level(args):
@@ -167,12 +177,16 @@ def main():
     parser.add_argument('--quiet', action='store_true',
                         help="Supress output except for junit xml")
     parser.add_argument('--timeout', type=int, default=DEFAULT_TIMEOUT)
+    parser.add_argument('--system', type=str)
 
     args = parser.parse_args()
 
     set_log_level(args)
 
-    run_tests(args.timeout)
+    if args.system is None:
+        run_tests(args.timeout)
+    else:
+        run_system_tests(args.system, args.timeout)
 
 if __name__ == '__main__':
     sys.exit(main())
