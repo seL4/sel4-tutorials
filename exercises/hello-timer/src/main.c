@@ -37,6 +37,7 @@
 #include <sel4utils/process.h>
 
 #include <sel4platsupport/timer.h>
+#include <sel4platsupport/bootinfo.h>
 #include <platsupport/plat/timer.h>
 
 /* constants */
@@ -74,11 +75,12 @@ extern void name_thread(seL4_CPtr tcb, char *name);
 int main(void) {
     UNUSED int error;
 
+    /* get boot info */
+    info = platsupport_get_bootinfo();
+    ZF_LOGF_IF(info == NULL, "Failed to get bootinfo.");
+
     /* give us a name: useful for debugging if the thread faults */
     name_thread(seL4_CapInitThreadTCB, "hello-timer");
-
-    /* get boot info */
-    info = seL4_GetBootInfo();
 
     /* init simple */
     simple_default_init_bootinfo(&simple, info);

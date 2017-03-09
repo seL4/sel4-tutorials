@@ -39,6 +39,8 @@
 #include <utils/zf_log.h>
 #include <sel4utils/sel4_zf_logif.h>
 
+#include <sel4platsupport/bootinfo.h>
+
 /* constants */
 #define IPCBUF_FRAME_SIZE_BITS 12 // use a 4K frame for the IPC buffer
 #define IPCBUF_VADDR 0x7000000 // arbitrary (but free) address for IPC buffer
@@ -155,12 +157,13 @@ void thread_2(void) {
 int main(void) {
     UNUSED int error;
 
+    /* get boot info */
+    info = platsupport_get_bootinfo();
+    ZF_LOGF_IF(info == NULL, "Failed to get bootinfo.");
+
     /* Set up logging and give us a name: useful for debugging if the thread faults */
     zf_log_set_tag_prefix("hello-3:");
     name_thread(seL4_CapInitThreadTCB, "hello-3");
-
-    /* get boot info */
-    info = seL4_GetBootInfo();
 
     /* init simple */
     simple_default_init_bootinfo(&simple, info);

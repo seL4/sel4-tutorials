@@ -39,6 +39,8 @@
 #include <utils/zf_log.h>
 #include <sel4utils/sel4_zf_logif.h>
 
+#include <sel4platsupport/bootinfo.h>
+
 /* constants */
 #define EP_BADGE 0x61 // arbitrary (but unique) number for a badge
 #define MSG_DATA 0x6161 // arbitrary data to send
@@ -73,12 +75,13 @@ extern void name_thread(seL4_CPtr tcb, char *name);
 int main(void) {
     UNUSED int error;
 
+    /* get boot info */
+    info = platsupport_get_bootinfo();
+    ZF_LOGF_IF(info == NULL, "Failed to get bootinfo.");
+
     /* Set up logging and give us a name: useful for debugging if the thread faults */
     zf_log_set_tag_prefix("hello-4:");
     name_thread(seL4_CapInitThreadTCB, "hello-4");
-
-    /* get boot info */
-    info = seL4_GetBootInfo();
 
     /* init simple */
     simple_default_init_bootinfo(&simple, info);
