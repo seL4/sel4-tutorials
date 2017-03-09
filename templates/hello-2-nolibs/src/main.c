@@ -16,6 +16,7 @@
 #include <autoconf.h>
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
 #include <stdint.h>
 
@@ -55,15 +56,30 @@ void thread_2(void) {
     while (1);
 }
 
+/* funtion returns address of bootinfo struct */
+seL4_BootInfo * get_bootinfo(void) {
+    char *bootinfo_addr_str = getenv("bootinfo");
+    ZF_LOGF_IF(bootinfo_addr_str == NULL, "Missing bootinfo environment variable");
+
+    void *bootinfo;
+    if (sscanf(bootinfo_addr_str, "%p", &bootinfo) != 1) {
+        ZF_LOGF("bootinfo environment value '%s' was not valid.", bootinfo_addr_str);
+    }
+
+    return (seL4_BootInfo*)bootinfo;
+}
+
 int main(void) {
     int error;
+
+    /* get boot info */
+    info = get_bootinfo();
+    seL4_SetUserData((seL4_Word)info->ipcBuffer);
 
     /* Set up logging and give us a name: useful for debugging if the thread faults */
     zf_log_set_tag_prefix("hello-2:");
     name_thread(seL4_CapInitThreadTCB, "hello-2");
 
-    /* get boot info */
-    info = seL4_GetBootInfo();
 
     /* print out bootinfo */
     debug_print_bootinfo(info);

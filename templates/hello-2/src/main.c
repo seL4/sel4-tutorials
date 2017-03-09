@@ -32,6 +32,8 @@
 #include <utils/zf_log.h>
 #include <sel4utils/sel4_zf_logif.h>
 
+#include <sel4platsupport/bootinfo.h>
+
 /* global environment variables */
 
 /* seL4_BootInfo defined in bootinfo.h
@@ -77,6 +79,17 @@ void thread_2(void) {
 int main(void) {
     UNUSED int error;
 
+    /* TODO 1: get boot info */
+    /* hint: platsupport_get_bootinfo()
+     * seL4_BootInfo* platsupport_get_bootinfo(void);
+     * @return Pointer to the bootinfo, NULL on failure
+     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TODO_1:
+     */
+/*- if solution -*/
+    info = platsupport_get_bootinfo();
+    ZF_LOGF_IF(info == NULL, "Failed to get bootinfo.");
+/*- endif -*/
+
     /* Set up logging and give us a name: useful for debugging if the thread faults */
     /* seL4_CapInitThreadTCB is a cap pointer to the root task's initial TCB.
      * It is part of the root task's boot environment and defined in bootinfo.h from libsel4:
@@ -84,16 +97,6 @@ int main(void) {
      */
     zf_log_set_tag_prefix("hello-2:");
     name_thread(seL4_CapInitThreadTCB, "hello-2");
-
-    /* TODO 1: get boot info */
-    /* hint: seL4_GetBootInfo()
-     * seL4_BootInfo* seL4_GetBootInfo(void);
-     * @return Pointer to the bootinfo, no failure.
-     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TODO_1:
-     */
-/*- if solution -*/
-    info = seL4_GetBootInfo();
-/*- endif -*/
 
     /* TODO 2: init simple */
     /* hint: simple_default_init_bootinfo()
