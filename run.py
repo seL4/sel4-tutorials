@@ -17,9 +17,9 @@
 import os
 import sys
 import argparse
-import sh
 import logging
 
+import sh
 import common
 
 logger = logging.getLogger(__name__)
