@@ -120,10 +120,12 @@ def runcmd(cmd, *args):
 
 def build(arch, plat, name, jobs):
     '''Builds the specified tutorial'''
-    runcmd('make', 'clean')
-    runcmd('make', arch_to_config_file(arch, name))
-    runcmd('make', 'silentoldconfig')
-    runcmd('make', '-j%d' % jobs)
+    make = sh.make.bake(_out=sys.stdout, _err=sys.stderr)
+
+    make.clean()
+    make(arch_to_config_file(arch, name))
+    make.silentoldconfig()
+    make('-j%d' % jobs)
 
 def get_qemu_image_args(arch, plat, name):
     '''Return a list of arguments for qemu to specify which image to run'''
