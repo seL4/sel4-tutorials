@@ -18,6 +18,7 @@ import os
 import sys
 import argparse
 import logging
+import subprocess
 
 import sh
 import common
@@ -147,8 +148,9 @@ def run(arch, plat, name):
     qemu_args = PLAT_TO_QEMU_ARGS[plat]
 
     try:
-        runcmd(qemu, *(qemu_args + get_qemu_image_args(arch, plat, name)))
-    except sh.CommandNotFound:
+        subprocess.call([qemu] + qemu_args + get_qemu_image_args(arch, plat, name),
+                        stdout=sys.stdout, stderr=sys.stderr)
+    except OSError:
         raise Exception("%s is not installed" % qemu)
 
 def main(argv):
