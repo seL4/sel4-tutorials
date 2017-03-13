@@ -114,11 +114,6 @@ def make_parser():
 
     return parser
 
-def runcmd(cmd, *args):
-    '''Run a command using sh, logging the output'''
-    for line in getattr(sh, cmd)(*args, _err_to_out=True, _iter=True):
-        logger.info(line.rstrip())
-
 def build(arch, plat, name, jobs):
     '''Builds the specified tutorial'''
     make = sh.make.bake(_out=sys.stdout, _err=sys.stderr)
