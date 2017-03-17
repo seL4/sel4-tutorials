@@ -84,7 +84,7 @@ def check_config(arch, plat, name):
         logger.error("Tutorials for %s/%s: %s" % (arch, plat, ", ".join(names)))
 
         archs_with_tutorial = []
-        for a in ARCHS:
+        for a in common.ARCHS:
             if a != arch:
                 other_plat = ARCH_TO_DEFAULT_PLAT[a]
                 other_names = list(list_names_for_target(a, other_plat))
