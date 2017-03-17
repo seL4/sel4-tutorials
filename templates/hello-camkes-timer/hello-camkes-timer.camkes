@@ -53,8 +53,9 @@ assembly {
          * https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#hardware-components
          */
 /*- if solution -*/
-        timerbase.reg_attributes = "0x53F98000:0x1000"; //device memory
-        timerbase.irq_attributes    = 27;               //Timer interrupt
+        timerbase.reg_paddr = 0x53F98000;   // paddr of mmio registers
+        timerbase.reg_size = 0x1000;        // size of mmio registers
+        timerbase.irq_irq_number = 27;      // timer irq number
 /*- endif -*/
 
         /* assign an initial value to semaphore */

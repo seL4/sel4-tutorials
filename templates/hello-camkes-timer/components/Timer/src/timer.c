@@ -13,7 +13,7 @@
 #include <platsupport/mach/epit.h>
 #include <platsupport/timer.h>
 
-#include <Timer.h>
+#include <camkes.h>
 
 #define NS_IN_SECOND 1000000000ULL
 
@@ -27,7 +27,7 @@ pstimer_t *timer_drv = NULL;
  * when a new interrupt arrives then it must re-register itself.  Or it can
  * also register a different handler.
  */
-void epit_irq_callback(void *_ UNUSED) {
+void irq_handle(void) {
     /* TODO: call the platsupport library to handle the interrupt. */
     /* hint: void timer_handle_irq(pstimer_t* device, uint32_t irq)
      * @param device Structure for the timer device driver.
@@ -41,14 +41,11 @@ void epit_irq_callback(void *_ UNUSED) {
     /* Signal the RPC interface. */
     sem_post();
 
-    /* TODO: register the second callback for this event. */
-    /* hint 1: use the function <IRQ interface name>_reg_callback()
-     * hint 2: register the function "epit_irq_callback"
-     * hint 3: pass NULL as the extra argument to the callback
-     * hint 4: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-events
+    /* TODO: acknowledge the interrupt */
+    /* hint 1: use the function <IRQ interface name>_acknowledge()
      */
 /*- if solution -*/
-    irq_reg_callback(epit_irq_callback, NULL);
+    irq_acknowledge();
 /*- endif -*/
 }
 
@@ -72,16 +69,6 @@ void hello__init() {
 /*- if solution -*/
     timer_drv = epit_get_timer(&config);
     assert(timer_drv);
-/*- endif -*/
-
-    /* TODO: register the first callback handler for this interface */
-    /* hint 1: use the function <IRQ interface name>_reg_callback()
-     * hint 2: register the function "epit_irq_callback"
-     * hint 3: pass NULL as the extra argument to the callback
-     * hint 4: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-events
-     */
-/*- if solution -*/
-    irq_reg_callback(epit_irq_callback, NULL);
 /*- endif -*/
 }
 
