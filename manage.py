@@ -100,6 +100,9 @@ class Environment(object):
         self.local_exercise_dir = os.path.realpath(
             os.path.join(self.project_root_dir, 'apps%s-exercises' % self.suffix))
 
+        self.local_template_dir = os.path.realpath(
+            os.path.join(self.project_root_dir, 'apps%s-templates' % self.suffix))
+
         self.local_solution_dir_rel = os.path.relpath(
             self.app_dir, self.local_solution_dir)
 
@@ -148,6 +151,12 @@ class Environment(object):
             dest = os.path.join(self.local_exercise_dir, name)
             yield source, dest
 
+    def list_template_links(self):
+        for name in self.list_app_names():
+            source = os.path.join(self.app_dir, name)
+            dest = os.path.join(self.local_template_dir, name)
+            yield source, dest
+
     def create_build_symlinks(self):
         for source_path, link_path in self.list_build_symlinks():
             try:
@@ -187,6 +196,20 @@ class Environment(object):
         except OSError:
             logger.info("Exercises dir already present: %s" % self.local_exercise_dir)
 
+    def create_local_templates(self):
+        try:
+            os.mkdir(self.local_template_dir)
+            logger.info("Creating templates dir: %s" % self.local_template_dir)
+
+            for source, dest in self.list_template_links():
+                logger.info("Linking template: %s" % dest)
+                os.symlink(source, dest)
+
+            self.symlink_extra_apps(self.local_template_dir)
+
+        except OSError:
+            logger.info("Templates dir already present: %s" % self.local_template_dir)
+
     def try_remove_app_symlink(self):
         try:
             os.remove(self.local_app_symlink)
@@ -204,10 +227,21 @@ class Environment(object):
         os.symlink(self.local_exercise_dir, self.local_app_symlink)
         logger.info("Creating app symlink: %s -> %s" % (self.local_app_symlink, self.local_exercise_dir))
 
+    def link_templates(self):
+        '''Symlinks the tutorial templates directly into the apps directory
+           to allow for development/debugging without needing to re-instantiate
+           the templates. This works because template code is inside c comments,
+           so the templates themselves are buildable/runnable, and behave like
+           the tutorial solutions.'''
+        self.try_remove_app_symlink()
+        os.symlink(self.local_template_dir, self.local_app_symlink)
+        logger.info("Creating app symlink: %s -> %s" % (self.local_app_symlink, self.app_dir))
+
     def setup(self):
         self.create_build_symlinks()
         self.create_local_solutions()
         self.create_local_exercises()
+        self.create_local_templates()
 
     def currently_is_exercise(self):
         return os.path.realpath(self.local_app_symlink) == self.local_exercise_dir
@@ -336,6 +370,12 @@ def handle_solution():
     except AttributeError:
         logger.error("Environment not set up. Run `%s env {%s}`" % (__file__, "|".join(ENVS.keys())))
 
+def handle_template():
+    try:
+        get_env().link_templates()
+    except AttributeError:
+        logger.error("Environment not set up. Run `%s env {%s}`" % (__file__, "|".join(ENVS.keys())))
+
 def handle_run(arch, name, jobs="1"):
     run.main([name, '--arch', arch, '--jobs', jobs])
 
@@ -352,6 +392,7 @@ HANDLERS = {
     "env": handle_env,
     "exercise": handle_exercise,
     "solution": handle_solution,
+    "template": handle_template,
     "run": handle_run,
     "status": handle_status,
     "publish": handle_publish,
