@@ -12,6 +12,7 @@
 
 #include <platsupport/mach/epit.h>
 #include <platsupport/timer.h>
+#include <sel4utils/sel4_zf_logif.h>
 
 #include <camkes.h>
 
@@ -28,6 +29,8 @@ pstimer_t *timer_drv = NULL;
  * also register a different handler.
  */
 void irq_handle(void) {
+    int error;
+
     /* TODO: call the platsupport library to handle the interrupt. */
     /* hint: void timer_handle_irq(pstimer_t* device, uint32_t irq)
      * @param device Structure for the timer device driver.
@@ -39,13 +42,15 @@ void irq_handle(void) {
 /*- endif -*/
 
     /* Signal the RPC interface. */
-    sem_post();
+    error = sem_post();
+    ZF_LOGF_IF(error != 0, "Failed to post to semaphore");
 
     /* TODO: acknowledge the interrupt */
     /* hint 1: use the function <IRQ interface name>_acknowledge()
      */
 /*- if solution -*/
-    irq_acknowledge();
+    error = irq_acknowledge();
+    ZF_LOGF_IF(error != 0, "Failed to acknowledge interrupt");
 /*- endif -*/
 }
 
@@ -95,6 +100,7 @@ void hello_sleep(int sec) {
 /*- endif -*/
 
     /* Wait for the timeout interrupt */
-    sem_wait();
+    int error = sem_wait();
+    ZF_LOGF_IF(error != 0, "Failed to wait on semaphore");
 }
 
