@@ -170,7 +170,7 @@ class Environment(object):
             self.symlink_extra_apps(self.local_solution_dir)
 
         except OSError:
-            logger.info("Solution dir already present: %s" % self.local_exercise_dir)
+            logger.info("Solution dir already present: %s" % self.local_solution_dir)
 
 
     def create_local_exercises(self):
