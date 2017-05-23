@@ -1,48 +1,77 @@
-# sel4-tutorials
-Various tutorials for using seL4, its libraries, and CAmkES.
+Tutorial Development
+====================
 
-## Prerequisites
-Download the prerequisites for building and running the tutorial code following the [instructions](Prerequisites.md).
+# Environment Management
 
-### Virtual Machine Image
-You can also download a [VirtualBox virtual machine appliance](http://ts.data61.csiro.au/Downloads/sel4_tut_v3_lubuntu_16_041-v2.ova)([md5](http://ts.data61.csiro.au/Downloads/sel4_tut_v3_lubuntu_16_041-v2.md5)) (3GB, based on Lubuntu 16.04.1 with all the seL4 tutorial prerequisites installed).
+This repo contains multiple tutorials, and for each tutorial there is a solution
+and exercise. At any point the build system can only understand a single element
+of {{seL4-tutorials, CAmkES-tutorials} x {solutions, exercises}}. To help manage
+the various combinations that are possible, a script "manage.py" is provided. It
+facilitates switching between seL4 and CAmkES tutorial environments, and between
+exercises and solutions. Additionally, it can tell you which combination you are
+currently working on.
 
-This appliance is based on [VirtualBox 5.1.2](https://www.virtualbox.org/wiki/Downloads).  
-You may also need to install the appropriate [VirtualBox extensions](http://download.virtualbox.org/virtualbox/5.1.2/Oracle_VM_VirtualBox_Extension_Pack-5.1.2-108956.vbox-extpack).
+Here's an example of typical workflow:
 
-## Tutorial Code
-The tutorial exercises are available in [`apps`](apps).
-This directory contains partially completed code and comments on how to complete it.  Sample solutions are available in [`solutions`](solutions).
+```bash
+# starting from a fresh checkout
 
-To get a copy of the seL4 API and library exercise code and all libraries and tools needed to build and run it do the following:
+# query your environment
+$ ./manage.py status
+Environment not set up. Run `./manage.py env {sel4|camkes}`
 
-        mkdir sel4-tutorials
-        cd sel4-tutorials
-        repo init -u http://github.com/sel4-projects/sel4-tutorials-manifest -m sel4-tutorials.xml
-        repo sync 
+# switch to camkes environment
+$ ./manage.py env camkes
 
-To get a copy of the CAmkES exercise code and all libraries and tools needed to build and run it do the following:
+# query again
+$ ./manage.py status
+camkes exercise
 
-        mkdir camkes-tutorials
-        cd camkes-tutorials
-        repo init -u http://github.com/sel4-projects/sel4-tutorials-manifest -m camkes-tutorials.xml
-        repo sync 
+# apps directory contains camkes exercise apps
+$ ls apps
+capdl-loader-experimental  hello-camkes-0  hello-camkes-1  hello-camkes-2  hello-camkes-timer
 
-### Reporting issues or bugs in the tutorials:
-Please report any issues you find in the tutorials (bugs, outdated API calls, etc) by filing an issue on the public github repository:
-https://github.com/SEL4PROJ/sel4-tutorials/issues
+# switch to sel4 environment
+$ ./manage.py env sel4
 
-# Documentation
+# apps directory now contains sel4 exercise apps
+$ ls apps
+hello-1  hello-2  hello-2-nolibs  hello-3  hello-3-nolibs  hello-4  hello-4-app  hello-timer  hello-timer-client
 
-## Tutorial Slides
-The slides used for the tutorial are available in [`docs`](docs).
+# switch to solution
+$ ./manage.py solution
 
-## seL4 Manual
-The seL4 manual lives in the kernel source in the [`manual`](https://github.com/seL4/seL4/tree/master/manual) directory.
-To generate a PDF go into that directory and type `make`.
-You will need to have LaTeX installed to build it.
+$ ./manage.py status
+sel4 solution
 
-We've also included a pre-generated PDF version in [`docs/manual.pdf'](docs/manual.pdf)
+# switch back to exercises
+$ ./manage.py exercise
 
-## CAmkES Documentation
-CAmkES documentation lives in the camkes-tool repository in [docs/index.md](https://github.com/seL4/camkes-tool/blob/master/docs/index.md).
+$ ./manage.py status
+sel4 exercise
+```
+
+# Running Tutorials
+
+The "manage.py" script can be used to run tutorials in the current environment.
+Use the command `./manage.py run ARCH NAME` where `ARCH` is the name of an
+architecture (currently either `ia32` or `arm`) and `NAME` is the name of an app
+in the current `apps` directory.
+
+# Publishing Tutorials
+
+Tutorial files contain jinja template comments that allow the solution-specific
+parts of files to be omitted from exercises. This prevents us from having to
+maintain a solution and exercise version of each file. To simplify the tutorials
+that people consume, we will present a version of the tutorials with separate
+files for solutions and exercises. This version of the tutorials is generated
+using the "manage.py" script.
+
+After making changes to the tutorial templates (but not necessarily commiting
+them), run `./manage.py publish REMOTE [BRANCH]`, specifying the remote and
+branch of a static tutorial repository (a repository where tutorials have
+separate exercise and solution files). The repository will be cloned in a
+temporary directory, and the current changes to the templates will be applied to
+the exercises and solutions in the newly-cloned repository. You will be dropped
+into a shell in the newly-cloned repository, from which you can stage, commit
+and push.

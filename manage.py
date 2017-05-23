@@ -301,7 +301,7 @@ def handle_publish(git_uri, branch_name='master'):
 
     # copy dirs/files that can be copied literally
     DIRS_TO_COPY = ['docs', 'build-config']
-    FILES_TO_COPY = ['LICENSE_BSD2.txt', 'Prerequisites.md', 'README.md']
+    FILES_TO_COPY = ['LICENSE_BSD2.txt', 'Prerequisites.md']
 
     tutorial_dir = common.get_tutorial_dir()
 
@@ -316,6 +316,12 @@ def handle_publish(git_uri, branch_name='master'):
         dst = os.path.join(temp_dir, f)
         logger.info("Copying file: %s -> %s" % (src, dst))
         shutil.copyfile(src, dst)
+
+    # copy the readme and rename
+    src = os.path.join('README-tutorials.md', tutorial_dir)
+    dst = os.path.join('README.md', temp_dir)
+    logger.info("Copying file: %s -> %s" % (src, dst))
+    shutil.copyfile(src, dst)
 
     template_ctx = TemplateCtx()
     template_dir = os.path.join(tutorial_dir, 'templates')
