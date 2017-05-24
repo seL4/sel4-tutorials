@@ -111,11 +111,12 @@ def add_arguments(parser):
     parser.add_argument('-p', '--plat', dest='plat', type=str,
                         help='platform to build for and emulate', choices=PLATS)
 
+def process_output(line):
+    print(line.rstrip())
 
 def build(arch, plat, name, jobs):
     '''Builds the specified tutorial'''
-    make = sh.make.bake(_out=sys.stdout, _err=sys.stderr)
-
+    make = sh.make.bake(_out=process_output, _err=process_output)
     make.clean()
     make(arch_to_config_file(arch, name))
     make.silentoldconfig()
@@ -141,8 +142,10 @@ def run(arch, plat, name):
     qemu_args = PLAT_TO_QEMU_ARGS[plat]
 
     try:
-        subprocess.call([qemu] + qemu_args + get_qemu_image_args(arch, plat, name),
-                        stdout=sys.stdout, stderr=sys.stderr)
+        proc = subprocess.Popen([qemu] + qemu_args + get_qemu_image_args(arch, plat, name),
+                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+        while proc.poll() is None:
+            print(proc.stdout.readline().decode(sys.stdout.encoding).rstrip())
     except OSError:
         raise Exception("%s is not installed" % qemu)
 
