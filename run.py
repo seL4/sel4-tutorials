@@ -98,12 +98,11 @@ def check_config(arch, plat, name):
 
     return True
 
-def make_parser():
-    '''Creates a parser for the tutorial runner. The arch agrument is a string
-       specifying the architecture. Valid architecture strings are "ia32" and "arm".
-    '''
+def get_description():
+    return '%s Tutorial Runner' % common.get_tutorial_type()
+
+def add_arguments(parser):
     names = list_names()
-    parser = argparse.ArgumentParser(description='%s Tutorial Runner' % common.get_tutorial_type())
     parser.add_argument('name', type=str, help='name of tutorial to run', choices=list(names))
     parser.add_argument('-a', '--arch', dest='arch', type=str,
                         help='architecture to build for and emulate', choices=common.ARCHS, required=True)
@@ -112,7 +111,6 @@ def make_parser():
     parser.add_argument('-p', '--plat', dest='plat', type=str,
                         help='platform to build for and emulate', choices=PLATS)
 
-    return parser
 
 def build(arch, plat, name, jobs):
     '''Builds the specified tutorial'''
@@ -148,10 +146,12 @@ def run(arch, plat, name):
     except OSError:
         raise Exception("%s is not installed" % qemu)
 
-def main(argv):
-    common.setup_logger(__name__)
-    args = make_parser().parse_args(argv)
+def make_parser():
+    parser = argparse.ArgumentParser(description=get_description())
+    add_arguments(parser)
+    return parser
 
+def handle_run(args):
     if args.plat is None:
         args.plat = ARCH_TO_DEFAULT_PLAT[args.arch]
 
@@ -159,8 +159,22 @@ def main(argv):
         return -1
 
     build(args.arch, args.plat, args.name, args.jobs)
-
     run(args.arch, args.plat, args.name)
+
+def add_sub_parser_run(subparsers):
+    '''Creates a parser for the tutorial runner. The arch agrument is a string
+       specifying the architecture. Valid architecture strings are "ia32" and "arm".
+    '''
+    parser = subparsers.add_parser('run', description=get_description(), help='run the tutorials in the current environment')
+    add_arguments(parser)
+    parser.set_defaults(func=handle_run)
+    return parser
+
+
+def main(argv):
+    common.setup_logger(__name__)
+    args = make_parser().parse_args(argv)
+    handle_run(args)
 
     return 0
 

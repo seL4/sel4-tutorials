@@ -264,13 +264,6 @@ class CamkesEnvironment(Environment):
         rel = os.path.relpath(capdl_loader_path, path)
         os.symlink(rel, os.path.join(path, 'capdl-loader-experimental'))
 
-def make_parser():
-    parser = argparse.ArgumentParser(description='Environment manager for seL4/CAmkES tutorials')
-
-    parser.add_argument('commands', type=str, help='Valid commands: %s' % ", ".join(HANDLERS.keys()), nargs='*')
-
-    return parser
-
 def get_env():
     '''Determine environment by examining existing symlinks'''
     tutorial_type = common.get_tutorial_type()
@@ -281,7 +274,9 @@ def get_env():
     elif tutorial_type == 'seL4':
         return Sel4Environment()
 
-def handle_publish(git_uri, branch_name='master'):
+def handle_publish(args):
+    git_uri = args.git
+    branch_name = args.branch
     temp_dir = tempfile.mkdtemp(prefix='sel4-tutorials-')
     logger.info("Temporary directory created at: %s" % temp_dir)
     atexit.register(shutil.rmtree, temp_dir)
@@ -349,43 +344,54 @@ ENVS = {
     'camkes': CamkesEnvironment,
 }
 
-def handle_env(env_name):
-    try:
-        old = get_env()
-        new = ENVS[env_name]()
-        new.setup()
-        if old is None:
+def handle_env(args):
+    old = get_env()
+    new = ENVS[args.ENV]()
+    new.setup()
+    if old is None:
+        new.link_exercises()
+    else:
+        if old.currently_is_exercise():
             new.link_exercises()
         else:
-            if old.currently_is_exercise():
-                new.link_exercises()
-            else:
-                new.link_solutions()
-    except KeyError:
-        logger.error("No such environment %s. Valid environments: %s" % (env_name, ", ".join(ENVS.keys())))
+            new.link_solutions()
 
-def handle_exercise():
+def add_sub_parser_env(subparsers):
+    parser = subparsers.add_parser('env', help='Choose the tutorials environment')
+    parser.add_argument('ENV', type=str, choices=list(ENVS))
+    parser.set_defaults(func=handle_env)
+
+def handle_exercise(args):
     try:
         get_env().link_exercises()
     except AttributeError:
         logger.error("Environment not set up. `Run %s env {%s}`" % (__file__, "|".join(ENVS.keys())))
 
-def handle_solution():
+def add_sub_parser_excercise(subparsers):
+    parser = subparsers.add_parser('exercise', help='Switch the apps directory to show the tutorial exercises')
+    parser.set_defaults(func=handle_exercise)
+
+def handle_solution(args):
     try:
         get_env().link_solutions()
     except AttributeError:
         logger.error("Environment not set up. Run `%s env {%s}`" % (__file__, "|".join(ENVS.keys())))
 
-def handle_template():
+def add_sub_parser_solution(subparsers):
+    parser = subparsers.add_parser('solution', help='Switch the apps directory to show the tutorial solutions')
+    parser.set_defaults(func=handle_solution)
+
+def handle_template(args):
     try:
         get_env().link_templates()
     except AttributeError:
         logger.error("Environment not set up. Run `%s env {%s}`" % (__file__, "|".join(ENVS.keys())))
 
-def handle_run(arch, name, jobs="1"):
-    run.main([name, '--arch', arch, '--jobs', jobs])
+def add_sub_parser_template(subparsers):
+    parser = subparsers.add_parser('template', help='Switch the apps directory to show the tutorial templates')
+    parser.set_defaults(func=handle_template)
 
-def handle_status():
+def handle_status(args):
     try:
         env = get_env()
         name = env.name
@@ -394,33 +400,51 @@ def handle_status():
     except AttributeError:
         logger.error("Environment not set up. Run `%s env {%s}`" % (__file__, "|".join(ENVS.keys())))
 
-HANDLERS = {
-    "env": handle_env,
-    "exercise": handle_exercise,
-    "solution": handle_solution,
-    "template": handle_template,
-    "run": handle_run,
-    "status": handle_status,
-    "publish": handle_publish,
-}
+def add_sub_parser_status(subparsers):
+    parser = subparsers.add_parser('status', help='Show the status of current environment')
+    parser.set_defaults(func=handle_status)
 
-def run_command(command):
-    try:
-        # invoke the handler on the remaining arguments
-        HANDLERS[command[0]](*command[1:])
-    except KeyError:
-        logger.error("Invalid command: %s. Valid commands: %s" % (command[0], ", ".join(HANDLERS.keys())))
+def add_sub_parser_publish(subparsers):
+    parser = subparsers.add_parser('publish', help='Publish the tutorials to a git repo')
+    parser.add_argument('git', help='Git repo to publish to', type=str)
+    parser.add_argument('branch', help='Branch to publish', type=str, default='master')
+    parser.set_defaults(func=handle_publish)
+
+def make_parser():
+    parser = argparse.ArgumentParser(description='Environment manager for seL4/CAmkES tutorials')
+
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('-v','--verbose', action='store_true')
+    group.add_argument('-q', '--quiet', action='store_true')
+    subparsers = parser.add_subparsers(title='subcommands', description='Valid subcommands',
+            help='For additional help, type \'manage SUBCOMMAND -h\'\n', dest='command')
+    subparsers.required = True
+
+    # add subparsers for each command
+    add_sub_parser_env(subparsers)
+    add_sub_parser_excercise(subparsers)
+    add_sub_parser_solution(subparsers)
+    add_sub_parser_template(subparsers)
+    run.add_sub_parser_run(subparsers)
+    add_sub_parser_status(subparsers)
+    add_sub_parser_publish(subparsers)
+
+    return parser
+
 
 def main(argv):
     common.setup_logger(__name__)
 
     args = make_parser().parse_args(argv)
 
-    if len(args.commands) == 0:
-        logger.error("Valid commands: %s" % ", ".join(HANDLERS.keys()))
-        return -1
+    if args.verbose:
+        logger.setLevel(logging.DEBUG)
+    elif args.quiet:
+        logger.setLevel(logging.ERROR)
 
-    run_command(args.commands)
+    # invoke the handler on the remaining arguments
+    args.func(args)
+
 
 if __name__ == '__main__':
     try:
