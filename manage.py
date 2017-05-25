@@ -246,6 +246,12 @@ class Environment(object):
     def currently_is_exercise(self):
         return os.path.realpath(self.local_app_symlink) == self.local_exercise_dir
 
+    def currently_is_solutions(self):
+        return os.path.realpath(self.local_app_symlink) == self.local_solution_dir
+
+    def currently_is_templates(self):
+        return os.path.realpath(self.local_app_symlink) == self.local_template_dir
+
 class Sel4Environment(Environment):
     def __init__(self):
         super(Sel4Environment, self).__init__('sel4')
@@ -396,6 +402,15 @@ def handle_status(args):
         env = get_env()
         name = env.name
         mode = "exercise" if env.currently_is_exercise() else "solution"
+        if env.currently_is_exercise():
+            mode = "link_exercises"
+        elif env.currently_is_solutions():
+            mode = "solutions"
+        elif env.currently_is_templates():
+            mode = "templates"
+        else:
+            mode = "???"
+
         logger.info("%s %s" % (name, mode))
     except AttributeError:
         logger.error("Environment not set up. Run `%s env {%s}`" % (__file__, "|".join(ENVS.keys())))
