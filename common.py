@@ -13,6 +13,7 @@
 
 import re
 import os
+import sys
 import logging
 
 ARCHS = ['ia32', 'arm']
@@ -66,8 +67,8 @@ def get_tutorial_type():
 
 def setup_logger(name):
     logger = logging.getLogger(name)
-    ch = logging.StreamHandler()
+    ch = logging.StreamHandler(sys.stdout)
     formatter = logging.Formatter('%(message)s')
     ch.setFormatter(formatter)
     logger.addHandler(ch)
-    logger.setLevel(logging.INFO)
+    return logger

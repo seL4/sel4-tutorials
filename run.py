@@ -23,7 +23,7 @@ import subprocess
 import sh
 import common
 
-logger = logging.getLogger(__name__)
+logger = common.setup_logger(__name__)
 
 PLATS = ['pc99', 'imx31']
 
@@ -117,9 +117,14 @@ def process_output(line):
 def build(arch, plat, name, jobs):
     '''Builds the specified tutorial'''
     make = sh.make.bake(_out=process_output, _err=process_output)
+    logger.info('make clean')
     make.clean()
-    make(arch_to_config_file(arch, name))
+    config = arch_to_config_file(arch, name)
+    logger.info('make ' + config)
+    make(config)
+    logger.info('make silentoldconfig')
     make.silentoldconfig()
+    logger.info('make -j' + str(jobs))
     make('-j%d' % jobs)
 
 def get_qemu_image_args(arch, plat, name):
@@ -142,6 +147,9 @@ def run(arch, plat, name):
     qemu_args = PLAT_TO_QEMU_ARGS[plat]
 
     try:
+
+        logger.info(' '.join([qemu] + qemu_args + get_qemu_image_args(arch, plat, name)))
+        logger.info('Ctrl+A X to quit')
         proc = subprocess.Popen([qemu] + qemu_args + get_qemu_image_args(arch, plat, name),
                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
         while proc.poll() is None:
@@ -154,7 +162,8 @@ def make_parser():
     add_arguments(parser)
     return parser
 
-def handle_run(args):
+def handle_run(args, loglevel=logging.INFO):
+    logger.setLevel(loglevel)
     if args.plat is None:
         args.plat = ARCH_TO_DEFAULT_PLAT[args.arch]
 
@@ -175,7 +184,6 @@ def add_sub_parser_run(subparsers):
 
 
 def main(argv):
-    common.setup_logger(__name__)
     args = make_parser().parse_args(argv)
     handle_run(args)
 
