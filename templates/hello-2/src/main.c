@@ -48,7 +48,7 @@ simple_t simple;
  * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#Globals_links: */
 vka_t vka;
 
-/* allocaman_t defined in allocman.h
+/* allocman_t defined in allocman.h
  * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#Globals_links: */
 allocman_t *allocman;
 
