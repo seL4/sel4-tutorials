@@ -450,7 +450,6 @@ def make_parser():
 
 
 def main(argv):
-    common.setup_logger(__name__)
 
     args = make_parser().parse_args(argv)
 
