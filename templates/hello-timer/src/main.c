@@ -217,7 +217,7 @@ int main(void) {
          * https://github.com/seL4/util_libs/blob/master/libplatsupport/include/platsupport/timer.h#L146
          */
 /*- if solution -*/
-        timer_oneshot_relative(timer->timer, 1000 * 1000);
+        timer_oneshot_relative(timer->timer, NS_IN_MS);
         seL4_Wait(aep_object.cptr, &sender);
         sel4_timer_handle_single_irq(timer);
 /*- endif -*/
