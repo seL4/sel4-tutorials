@@ -159,11 +159,11 @@ int main(void) {
     badged_ep_cap = info->empty.start + 3;
     seL4_CPtr page_table_cap = info->empty.start + 4;
 /*- else -*/
-    seL4_CPtr tcb_cap = ?? ?;
-    seL4_CPtr ipc_frame_cap = ?? ?;
-    ep_cap = ?? ?;
-    badged_ep_cap = ?? ?;
-    seL4_CPtr page_table_cap = ?? ?;
+    //seL4_CPtr tcb_cap = ??;
+    //seL4_CPtr ipc_frame_cap = ??;
+    //ep_cap = ??;
+    //badged_ep_cap = ??;
+    //seL4_CPtr page_table_cap = ??;
 /*- endif -*/
 
     /* get an untyped to retype into all the objects we will need */
