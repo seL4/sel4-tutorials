@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #include <sel4/sel4.h>
 #include <sel4/types_gen.h>
