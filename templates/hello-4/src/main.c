@@ -36,6 +36,7 @@
 #include <sel4utils/mapping.h>
 #include <sel4utils/process.h>
 
+#include <utils/arith.h>
 #include <utils/zf_log.h>
 #include <sel4utils/sel4_zf_logif.h>
 
@@ -56,11 +57,11 @@ allocman_t *allocman;
 vspace_t vspace;
 
 /* static memory for the allocator to bootstrap with */
-#define ALLOCATOR_STATIC_POOL_SIZE ((1 << seL4_PageBits) * 10)
+#define ALLOCATOR_STATIC_POOL_SIZE (BIT(seL4_PageBits) * 10)
 UNUSED static char allocator_mem_pool[ALLOCATOR_STATIC_POOL_SIZE];
 
 /* dimensions of virtual memory for the allocator to use */
-#define ALLOCATOR_VIRTUAL_POOL_SIZE ((1 << seL4_PageBits) * 100)
+#define ALLOCATOR_VIRTUAL_POOL_SIZE (BIT(seL4_PageBits) * 100)
 
 /* static memory for virtual memory bootstrapping */
 UNUSED static sel4utils_alloc_data_t data;

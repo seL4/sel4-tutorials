@@ -23,6 +23,7 @@
 #include <sel4/sel4.h>
 #include <sel4debug/debug.h>
 
+#include <utils/arith.h>
 #include <utils/zf_log.h>
 #include <sel4utils/sel4_zf_logif.h>
 
@@ -42,7 +43,7 @@ extern void name_thread(seL4_CPtr tcb, char *name);
 seL4_CPtr get_untyped(seL4_BootInfo *info, int size_bytes) {
 
     for (int i = info->untyped.start, idx = 0; i < info->untyped.end; ++i, ++idx) {
-        if (1 << info->untypedList[idx].sizeBits >= size_bytes) {
+        if (BIT(info->untypedList[idx].sizeBits) >= size_bytes) {
             return i;
         }
     }
@@ -112,7 +113,7 @@ int main(void) {
 
 /*- if solution -*/
     /* look up an untyped to retype into a tcb */
-    untyped = get_untyped(info, (1 << seL4_TCBBits));
+    untyped = get_untyped(info, BIT(seL4_TCBBits));
 /*- endif -*/
 
 

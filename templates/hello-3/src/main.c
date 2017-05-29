@@ -36,6 +36,7 @@
 #include <sel4utils/vspace.h>
 #include <sel4utils/mapping.h>
 
+#include <utils/arith.h>
 #include <utils/zf_log.h>
 #include <sel4utils/sel4_zf_logif.h>
 
@@ -59,7 +60,7 @@ vka_object_t ep_object;
 cspacepath_t ep_cap_path;
 
 /* static memory for the allocator to bootstrap with */
-#define ALLOCATOR_STATIC_POOL_SIZE ((1 << seL4_PageBits) * 10)
+#define ALLOCATOR_STATIC_POOL_SIZE (BIT(seL4_PageBits) * 10)
 UNUSED static char allocator_mem_pool[ALLOCATOR_STATIC_POOL_SIZE];
 
 /* stack for the new thread */

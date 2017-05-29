@@ -23,6 +23,7 @@
 #include <sel4/types_gen.h>
 #include <sel4debug/debug.h>
 
+#include <utils/arith.h>
 #include <utils/zf_log.h>
 #include <sel4utils/sel4_zf_logif.h>
 
@@ -81,7 +82,7 @@ seL4_CPtr get_untyped(seL4_BootInfo *info, int size_bytes) {
 
     for (int i = info->untyped.start, idx = 0; i < info->untyped.end; ++i, ++idx) {
 
-        if (1 << info->untypedList[idx].sizeBits >= size_bytes) {
+        if (BIT(info->untypedList[idx].sizeBits) >= size_bytes) {
             return i;
         }
     }
@@ -182,17 +183,17 @@ int main(void) {
      *         of the object is "chipped off". For simplicity, find a cap to an untyped which is large enough
      *         to contain all required objects.
      */
+    seL4_Word size;
 /*- if solution -*/
-    untyped = get_untyped(info, (1 << seL4_TCBBits) +
-                          (1 << seL4_PageBits) +
-                          (1 << seL4_EndpointBits) +
-                          (1 << seL4_PageTableBits));
+    size = BIT(seL4_TCBBits) +
+           BIT(seL4_MinSchedContextBits) +
+           BIT(seL4_PageBits) +
+           BIT(seL4_EndpointBits) +
+           BIT(seL4_ReplyBits) +
+           BIT(seL4_PageTableBits);
+    untyped = get_untyped(info, size);
 /*- endif -*/
-    ZF_LOGF_IF(untyped == -1, "Failed to find an untyped which could hold %d bytes.\n",
-               (1 << seL4_TCBBits) +
-               (1 << seL4_PageBits) +
-               (1 << seL4_EndpointBits) +
-               (1 << seL4_PageTableBits));
+    ZF_LOGF_IF(untyped == -1, "Failed to find an untyped which could hold %zu bytes.\n", size)
 
     /* TASK 3: Using the untyped, create the required objects, storing their caps in the roottask's root cnode.
      *
