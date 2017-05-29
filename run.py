@@ -25,7 +25,7 @@ import common
 
 logger = common.setup_logger(__name__)
 
-PLATS = ['pc99', 'imx31']
+PLATS = ['pc99', 'imx31', 'imx6']
 
 CONFIG_PREFIX_TO_ARCH = {
     'ia32': 'ia32',
@@ -42,9 +42,11 @@ ARCH_TO_DEFAULT_PLAT = {
 PLAT_TO_QEMU_BIN = {
     'pc99': 'qemu-system-i386',
     'imx31': 'qemu-system-arm',
+    'imx6': 'qemu-system-arm',
 }
 PLAT_TO_QEMU_ARGS = {
     'pc99': ['-nographic', '-m', '512', '-cpu', 'Haswell'],
+    'imx6': ['-nographic', '-M', 'sabrelite'],
     'imx31': ['-nographic', '-M', 'kzm'],
 }
 
