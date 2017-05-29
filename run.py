@@ -81,7 +81,7 @@ def check_config(arch, plat, name):
     '''
     names = list(list_names_for_target(arch, plat))
 
-    if name not in names:
+    if name not in names and name != 'all':
         logger.error("No tutorial named \"%s\" for %s/%s." % (name, arch, plat))
         logger.error("Tutorials for %s/%s: %s" % (arch, plat, ", ".join(names)))
 
@@ -105,7 +105,7 @@ def get_description():
 
 def add_arguments(parser):
     names = list_names()
-    parser.add_argument('name', type=str, help='name of tutorial to run', choices=list(names))
+    parser.add_argument('name', type=str, help='name of tutorial to run', choices=list(names)+['all'])
     parser.add_argument('-a', '--arch', dest='arch', type=str,
                         help='architecture to build for and emulate', choices=common.ARCHS, required=True)
     parser.add_argument('-j', '--jobs', dest='jobs', type=int,
@@ -172,8 +172,13 @@ def handle_run(args, loglevel=logging.INFO):
     if not check_config(args.arch, args.plat, args.name):
         return -1
 
-    build(args.arch, args.plat, args.name, args.jobs)
-    run(args.arch, args.plat, args.name)
+    if args.name == 'all':
+        for name in list_names():
+            build(args.arch, args.plat, name, args.jobs)
+            run(args.arch, args.plat, name)
+    else:
+        build(args.arch, args.plat, args.name, args.jobs)
+        run(args.arch, args.plat, args.name)
 
 def add_sub_parser_run(subparsers):
     '''Creates a parser for the tutorial runner. The arch agrument is a string
