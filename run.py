@@ -151,7 +151,7 @@ def run(arch, plat, name):
         logger.info(' '.join([qemu] + qemu_args + get_qemu_image_args(arch, plat, name)))
         logger.info('Ctrl+A X to quit')
         proc = subprocess.Popen([qemu] + qemu_args + get_qemu_image_args(arch, plat, name),
-                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         while proc.poll() is None:
             print(proc.stdout.readline().decode(sys.stdout.encoding).rstrip())
     except OSError:
