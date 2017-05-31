@@ -14,7 +14,7 @@
 
 /* Simple RPC interface */
 procedure HelloSimple {
-    /* TODO 3: RPC functions */
+    /* TASK 3: RPC functions */
     /* hint 1: define at least one function that takes a string as input parameter. call it say_hello. no return value
      * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
      */

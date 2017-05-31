@@ -140,7 +140,7 @@ int main(void) {
     seL4_CPtr pd_cap;
     pd_cap = seL4_CapInitThreadPD;
 
-    /* TODO 1: Find free cap slots for the caps to the:
+    /* TASK 1: Find free cap slots for the caps to the:
      *  - tcb
      *  - ipc frame
      *  - endpoint
@@ -167,7 +167,7 @@ int main(void) {
     /* get an untyped to retype into all the objects we will need */
     seL4_CPtr untyped;
 
-    /* TODO 2: Obtain a cap to an untyped which is large enough to contain:
+    /* TASK 2: Obtain a cap to an untyped which is large enough to contain:
      *  - tcb
      *  - ipc frame
      *  - endpoint
@@ -194,7 +194,7 @@ int main(void) {
                (1 << seL4_EndpointBits) +
                (1 << seL4_PageTableBits));
 
-    /* TODO 3: Using the untyped, create the required objects, storing their caps in the roottask's root cnode.
+    /* TASK 3: Using the untyped, create the required objects, storing their caps in the roottask's root cnode.
      *
      * hint 1: int seL4_Untyped_Retype(seL4_Untyped service, int type, int size_bits, seL4_CNode root, int node_index, int node_depth, int node_offset, int num_objects)
      * hint 2: use a depth of 32
@@ -231,7 +231,7 @@ int main(void) {
                               seL4_AllRights, seL4_X86_Default_VMAttributes);
     if (error != 0) {
 
-        /* TODO 4: Retype the untyped into page table (if this was done in TODO 3, ignore this). */
+        /* TASK 4: Retype the untyped into page table (if this was done in TASK 3, ignore this). */
 
 /*- if solution -*/
         /* create and map a page table */
@@ -258,7 +258,7 @@ int main(void) {
     seL4_IPCBuffer *ipcbuf = (seL4_IPCBuffer*)ipc_buffer_vaddr;
     ipcbuf->userData = ipc_buffer_vaddr;
 
-    /* TODO 5: Mint a copy of the endpoint cap into our cspace, using the badge EP_BADGE
+    /* TASK 5: Mint a copy of the endpoint cap into our cspace, using the badge EP_BADGE
      * hint: int seL4_CNode_Mint(seL4_CNode service, seL4_Word dest_index, seL4_Uint8 dest_depth, seL4_CNode src_root, seL4_Word src_index, seL4_Uint8 src_depth, seL4_CapRights rights, seL4_CapData_t badge);
      */
 

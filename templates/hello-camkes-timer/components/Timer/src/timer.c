@@ -31,7 +31,7 @@ pstimer_t *timer_drv = NULL;
 void irq_handle(void) {
     int error;
 
-    /* TODO: call the platsupport library to handle the interrupt. */
+    /* TASK: call the platsupport library to handle the interrupt. */
     /* hint: void timer_handle_irq(pstimer_t* device, uint32_t irq)
      * @param device Structure for the timer device driver.
      * @param irq    Timer's interrupt number
@@ -45,7 +45,7 @@ void irq_handle(void) {
     error = sem_post();
     ZF_LOGF_IF(error != 0, "Failed to post to semaphore");
 
-    /* TODO: acknowledge the interrupt */
+    /* TASK: acknowledge the interrupt */
     /* hint 1: use the function <IRQ interface name>_acknowledge()
      */
 /*- if solution -*/
@@ -65,7 +65,7 @@ void hello__init() {
     config.irq = EPIT2_INTERRUPT;
     config.prescaler = 0;
 
-    /* TODO: call platsupport library to get the timer handler */
+    /* TASK: call platsupport library to get the timer handler */
     /* hint: pstimer_t *epit_get_timer(epit_config_t *config);
      * @param config timer configuration structure
      * @return timer handler
@@ -77,7 +77,7 @@ void hello__init() {
 /*- endif -*/
 }
 
-/* TODO: implement the RPC function. */
+/* TASK: implement the RPC function. */
 /* hint 1: the name of the function to implement is a composition of an interface name and a function name:
  * i.e.: <interface>_<function>
  * hint 2: the interfaces available are defined by the component, e.g. in components/Timer/Timer.camkes
@@ -88,7 +88,7 @@ void hello__init() {
  * hint 7: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#creating-an-application
  */
 void hello_sleep(int sec) {
-    /* TODO: call platsupport library function to set up the timer */
+    /* TASK: call platsupport library function to set up the timer */
     /* hint: int timer_oneshot_relative(pstimer_t* device, uint64_t ns)
      * @param device timer handler
      * @param ns     timeout in nanoseconds

@@ -142,7 +142,7 @@ int main(void) {
     error = sel4utils_spawn_process_v(&new_process, &vka, &vspace, 0, NULL, 1);
     assert(error == 0);
 
-    /* TODO 1: create a notification endpoint for the timer interrupt */
+    /* TASK 1: create a notification endpoint for the timer interrupt */
     /* hint: vka_alloc_notification()
      * int vka_alloc_notification(vka_t *vka, vka_object_t *result)
      * @param vka Pointer to vka interface.
@@ -156,7 +156,7 @@ int main(void) {
     assert(error == 0);
 /*- endif -*/
 
-    /* TODO 2: call sel4platsupport library to get the default timer */
+    /* TASK 2: call sel4platsupport library to get the default timer */
     /* hint: sel4platsupport_get_default_timer
      * seL4_timer_t * sel4platsupport_get_default_timer(vka_t *vka, vspace_t *vspace, simple_t *simple, seL4_CPtr aep);
      * @param vka Pointer to vka interface
@@ -201,7 +201,7 @@ int main(void) {
      */
     int count = 0;
     while (1) {
-        /* TODO 3: wait for the timeout */
+        /* TASK 3: wait for the timeout */
         /* hint 1: set timeout to 1 millisecond
          * hint 2: wait for the incoming interrupt
          * hint 3: handle the interrupt

@@ -41,7 +41,7 @@ void callback_handler_2(void *a);
  * also register a different handler.
  */
 void callback_handler_1(void *a) {
-    /* TODO 19: read some data from the untyped dataport */
+    /* TASK 19: read some data from the untyped dataport */
     /* hint 1: use the "Buf" dataport as defined in the Echo.camkes file
      * hint 2: to access the dataport use the interface name as defined in Echo.camkes.
      * For example if you defined it as "dataport Buf d" then you would use "d" to refer to the dataport in C.
@@ -58,7 +58,7 @@ void callback_handler_1(void *a) {
     }
 /*- endif -*/
 
-    /* TODO 20: put a modified copy of the data from the untyped dataport into the typed dataport */
+    /* TASK 20: put a modified copy of the data from the untyped dataport into the typed dataport */
     /* hint 1: modify each string by making it upper case, use the function "uppercase"
      * hint 2: read from the "Buf" dataport as above
      * hint 3: write to the "str_buf_t" dataport as defined in the Echo.camkes file
@@ -69,7 +69,7 @@ void callback_handler_1(void *a) {
      * hint 6: use the "n" field to specify the number of strings in the dataport
      * hint 7: copy the specified number of strings from the "Buf" dataport to the "str" field
      * hint 8: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-dataports
-     * hint 9: you could combine this TODO with the previous one in a single loop if you want
+     * hint 9: you could combine this TASK with the previous one in a single loop if you want
      */
 /*- if solution -*/
     n = (int*)d;
@@ -82,7 +82,7 @@ void callback_handler_1(void *a) {
     d_typed->n = *n;
 /*- endif -*/
 
-    /* TODO 21: register the second callback for this event. */
+    /* TASK 21: register the second callback for this event. */
     /* hint 1: use the function <interface name>_reg_callback()
      * hint 2: register the function "callback_handler_2"
      * hint 3: pass NULL as the extra argument to the callback
@@ -93,7 +93,7 @@ void callback_handler_1(void *a) {
     ZF_LOGF_IF(error != 0, "Failed to register callback");
 /*- endif -*/
 
-    /* TODO 22: notify the client that there is new data available for it */
+    /* TASK 22: notify the client that there is new data available for it */
     /* hint 1: use the function <interface_name>.emit
      * hint 2: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-events
      */
@@ -111,7 +111,7 @@ void callback_handler_1(void *a) {
  * also register a different handler.
  */
 void callback_handler_2(void *a) {
-    /* TODO 23: read some data from the dataports. specifically:
+    /* TASK 23: read some data from the dataports. specifically:
      * read a dataport pointer from one of the typed dataports, then use
      * that pointer to access data in the untyped dataport.
      */
@@ -133,7 +133,7 @@ void callback_handler_2(void *a) {
     }
 /*- endif -*/
 
-    /* TODO 24: register the original callback handler for this event */
+    /* TASK 24: register the original callback handler for this event */
     /* hint 1: use the function <interface name>_reg_callback()
      * hint 2: register the function "callback_handler_1"
      * hint 3: pass NULL as the extra argument to the callback
@@ -144,7 +144,7 @@ void callback_handler_2(void *a) {
     ZF_LOGF_IF(error != 0, "Failed to register callback");
 /*- endif -*/
 
-    /* TODO 25: notify the client that we are done reading the data */
+    /* TASK 25: notify the client that we are done reading the data */
     /* hint 1: use the function <interface_name>.emit
      * hint 2: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-events
      */
@@ -155,12 +155,12 @@ void callback_handler_2(void *a) {
 
 /* this function is invoked to initialise the echo event interface before it
  * becomes active. */
-/* TODO 17: replace "echo" with the actual name of the "consumes" event interface */
+/* TASK 17: replace "echo" with the actual name of the "consumes" event interface */
 /* hint 1: use the interface name as defined in Echo.camkes.
  * For example if you defined it as "consumes TheEvent c_event" then you would use "c_event".
  */
 void echo__init(void) {
-    /* TODO 18: register the first callback handler for this interface */
+    /* TASK 18: register the first callback handler for this interface */
     /* hint 1: use the function <interface name>_reg_callback()
      * hint 2: register the function "callback_handler_1"
      * hint 3: pass NULL as the extra argument to the callback

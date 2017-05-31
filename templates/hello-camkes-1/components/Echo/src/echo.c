@@ -18,7 +18,7 @@
 /* generated header for our component */
 #include <camkes.h>
 
-/* TODO 5: implement the RPC function. */
+/* TASK 5: implement the RPC function. */
 /* hint 1: the name of the function to implement is a composition of an interface name and a function name:
  * i.e.: <interface>_<function>
  * hint 2: the interfaces available are defined by the component, e.g. in components/Echo/Echo.camkes
