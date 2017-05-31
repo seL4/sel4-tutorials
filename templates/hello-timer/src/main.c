@@ -151,22 +151,22 @@ int main(void) {
      * https://github.com/seL4/libsel4vka/blob/master/include/vka/object.h#L98
      */
 /*- if solution -*/
-    vka_object_t aep_object = {0};
-    error = vka_alloc_notification(&vka, &aep_object);
+    vka_object_t ntfn_object = {0};
+    error = vka_alloc_notification(&vka, &ntfn_object);
     assert(error == 0);
 /*- endif -*/
 
     /* TASK 2: call sel4platsupport library to get the default timer */
     /* hint: sel4platsupport_get_default_timer
-     * seL4_timer_t * sel4platsupport_get_default_timer(vka_t *vka, vspace_t *vspace, simple_t *simple, seL4_CPtr aep);
+     * seL4_timer_t * sel4platsupport_get_default_timer(vka_t *vka, vspace_t *vspace, simple_t *simple, seL4_CPtr ntfn);
      * @param vka Pointer to vka interface
      * @param vspace Pointer to vspace interface
      * @param simple Pointer to simple interface
-     * @param aep Async endpoint to receive the interrupt
+     * @param ntfn Notification object to receive the interrupt
      * @return Pointer to timer structure
      */
 /*- if solution -*/
-    timer = sel4platsupport_get_default_timer(&vka, &vspace, &simple, aep_object.cptr);
+    timer = sel4platsupport_get_default_timer(&vka, &vspace, &simple, ntfn_object.cptr);
     assert(timer != NULL);
 /*- endif -*/
 
@@ -218,7 +218,7 @@ int main(void) {
          */
 /*- if solution -*/
         timer_oneshot_relative(timer->timer, NS_IN_MS);
-        seL4_Wait(aep_object.cptr, &sender);
+        seL4_Wait(ntfn_object.cptr, &sender);
         sel4_timer_handle_single_irq(timer);
 /*- endif -*/
         count++;
