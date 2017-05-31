@@ -161,16 +161,16 @@ class Environment(object):
         for source_path, link_path in self.list_build_symlinks():
             try:
                 os.remove(link_path)
-                logger.info("Removing old symlink: %s", link_path)
+                logger.debug("Removing old symlink: %s", link_path)
             except OSError:
                 pass
-            logger.info("Creating symlink: %s -> %s", link_path, source_path)
+            logger.debug("Creating symlink: %s -> %s", link_path, source_path)
             os.symlink(source_path, link_path)
 
     def create_local_solutions(self):
         try:
             os.mkdir(self.local_solution_dir)
-            logger.info("Creating solutions dir: %s" % self.local_solution_dir)
+            logger.debug("Creating solutions dir: %s" % self.local_solution_dir)
 
             for source, dest in self.list_solution_copies():
                 logger.info("Instantiating solution: %s" % dest)
@@ -179,13 +179,13 @@ class Environment(object):
             self.symlink_extra_apps(self.local_solution_dir)
 
         except OSError:
-            logger.info("Solution dir already present: %s" % self.local_solution_dir)
+            logger.debug("Solution dir already present: %s" % self.local_solution_dir)
 
 
     def create_local_exercises(self):
         try:
             os.mkdir(self.local_exercise_dir)
-            logger.info("Creating exercises dir: %s" % self.local_exercise_dir)
+            logger.debug("Creating exercises dir: %s" % self.local_exercise_dir)
 
             for source, dest in self.list_exercise_copies():
                 logger.info("Instantiating exercise: %s" % dest)
@@ -194,12 +194,12 @@ class Environment(object):
             self.symlink_extra_apps(self.local_exercise_dir)
 
         except OSError:
-            logger.info("Exercises dir already present: %s" % self.local_exercise_dir)
+            logger.debug("Exercises dir already present: %s" % self.local_exercise_dir)
 
     def create_local_templates(self):
         try:
             os.mkdir(self.local_template_dir)
-            logger.info("Creating templates dir: %s" % self.local_template_dir)
+            logger.debug("Creating templates dir: %s" % self.local_template_dir)
 
             for source, dest in self.list_template_links():
                 logger.info("Linking template: %s" % dest)
@@ -208,24 +208,24 @@ class Environment(object):
             self.symlink_extra_apps(self.local_template_dir)
 
         except OSError:
-            logger.info("Templates dir already present: %s" % self.local_template_dir)
+            logger.debug("Templates dir already present: %s" % self.local_template_dir)
 
     def try_remove_app_symlink(self):
         try:
             os.remove(self.local_app_symlink)
-            logger.info("Removing old symlink: %s" % self.local_app_symlink)
+            logger.debug("Removing old symlink: %s" % self.local_app_symlink)
         except:
             pass
 
     def link_solutions(self):
         self.try_remove_app_symlink()
         os.symlink(self.local_solution_dir, self.local_app_symlink)
-        logger.info("Creating app symlink: %s -> %s" % (self.local_app_symlink, self.local_exercise_dir))
+        logger.debug("Creating app symlink: %s -> %s" % (self.local_app_symlink, self.local_exercise_dir))
 
     def link_exercises(self):
         self.try_remove_app_symlink()
         os.symlink(self.local_exercise_dir, self.local_app_symlink)
-        logger.info("Creating app symlink: %s -> %s" % (self.local_app_symlink, self.local_exercise_dir))
+        logger.debug("Creating app symlink: %s -> %s" % (self.local_app_symlink, self.local_exercise_dir))
 
     def link_templates(self):
         '''Symlinks the tutorial templates directly into the apps directory
@@ -235,7 +235,7 @@ class Environment(object):
            the tutorial solutions.'''
         self.try_remove_app_symlink()
         os.symlink(self.local_template_dir, self.local_app_symlink)
-        logger.info("Creating app symlink: %s -> %s" % (self.local_app_symlink, self.app_dir))
+        logger.debug("Creating app symlink: %s -> %s" % (self.local_app_symlink, self.app_dir))
 
     def setup(self):
         self.create_build_symlinks()
@@ -294,7 +294,7 @@ def handle_publish(args):
     git.fetch('origin')
     git.checkout('%s' % branch_name)
 
-    logger.info("Removing existing repository files")
+    logger.debug("Removing existing repository files")
     for f in os.listdir(temp_dir):
         if f != '.git':
             path = os.path.join(temp_dir, f)
@@ -456,7 +456,9 @@ def main(argv):
     if args.verbose:
         logger.setLevel(logging.DEBUG)
     elif args.quiet:
-        logger.setLevel(logging.ERROR)
+        logger.setLevel(logging.CRITICAL)
+    else:
+        logger.setLevel(logging.INFO)
 
     # invoke the handler on the remaining arguments
     args.func(args)
