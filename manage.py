@@ -181,6 +181,14 @@ class Environment(object):
         except OSError:
             logger.debug("Solution dir already present: %s" % self.local_solution_dir)
 
+    def reset(self):
+        try:
+            shutil.rmtree(self.local_solution_dir)
+            shutil.rmtree(self.local_exercise_dir)
+            shutil.rmtree(self.local_template_dir)
+            os.remove(self.local_app_symlink)
+        except OSError:
+           pass
 
     def create_local_exercises(self):
         try:
@@ -350,19 +358,22 @@ ENVS = {
     'camkes': CamkesEnvironment,
 }
 
-def handle_env(args):
-    old = get_env()
-    new = ENVS[args.ENV]()
+def env(new_env_name, is_template=False, is_solutions=False):
+    new = ENVS[new_env_name]()
     new.setup()
-    if old is not None:
-        if old.currently_is_exercise():
-            new.link_exercises()
-        elif old.currently_is_solutions():
-            new.link_solutions()
-        elif old.currently_is_templates():
-            new.link_templates()
+    if is_template:
+        new.link_templates()
+    elif is_solutions:
+        new.link_solutions()
     else:
         new.link_exercises()
+
+def handle_env(args):
+    old = get_env()
+    if old is not None:
+        env(args.ENV, old.currently_is_solutions(), old.currently_is_templates())
+    else:
+        env(args.ENV)
 
 def add_sub_parser_env(subparsers):
     parser = subparsers.add_parser('env', help='Choose the tutorials environment')
@@ -399,19 +410,31 @@ def add_sub_parser_template(subparsers):
     parser = subparsers.add_parser('template', help='Switch the apps directory to show the tutorial templates')
     parser.set_defaults(func=handle_template)
 
+def handle_reset(args):
+    # record these states before we reset as reset deletes the symlink used
+    # to determine the current state of the enviroment
+    template = get_env().currently_is_templates()
+    solutions = get_env().currently_is_solutions()
+    get_env().reset()
+    env(get_env().name, is_solutions=solutions, is_template=template)
+
+def add_sub_parser_reset(subparsers):
+    parser = subparsers.add_parser('reset', help='Reset the environmenti by regenerating from templates')
+    parser.set_defaults(func=handle_reset)
+
 def handle_status(args):
     try:
         env = get_env()
         name = env.name
         mode = "exercise" if env.currently_is_exercise() else "solution"
         if env.currently_is_exercise():
-            mode = "link_exercises"
+            mode = "exercises"
         elif env.currently_is_solutions():
             mode = "solutions"
         elif env.currently_is_templates():
             mode = "templates"
         else:
-            mode = "???"
+            mode = "no mode set"
 
         logger.info("%s %s" % (name, mode))
     except AttributeError:
@@ -445,6 +468,7 @@ def make_parser():
     run.add_sub_parser_run(subparsers)
     add_sub_parser_status(subparsers)
     add_sub_parser_publish(subparsers)
+    add_sub_parser_reset(subparsers)
 
     return parser
 
