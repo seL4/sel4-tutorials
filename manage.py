@@ -25,7 +25,7 @@ import sh
 import common
 import run
 
-logger = logging.getLogger(__name__)
+logger = common.setup_logger(__name__)
 
 class TemplateCtx(object):
     def __init__(self):
