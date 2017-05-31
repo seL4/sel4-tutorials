@@ -354,10 +354,15 @@ def handle_env(args):
     old = get_env()
     new = ENVS[args.ENV]()
     new.setup()
-    if old is None or old.currently_is_exercise():
-        new.link_exercises()
+    if old is not None:
+        if old.currently_is_exercise():
+            new.link_exercises()
+        elif old.currently_is_solutions():
+            new.link_solutions()
+        elif old.currently_is_templates():
+            new.link_templates()
     else:
-        new.link_solutions()
+        new.link_exercises()
 
 def add_sub_parser_env(subparsers):
     parser = subparsers.add_parser('env', help='Choose the tutorials environment')
