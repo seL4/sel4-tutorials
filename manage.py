@@ -298,9 +298,15 @@ def handle_publish(args):
     git = sh.git.bake('-C', temp_dir, _out=sys.stdout)
     git.init()
 
+    logger.info('git add origin %s', git_uri)
     git.remote.add('origin', git_uri)
+    logger.info('git fetch origin')
     git.fetch('origin')
-    git.checkout('%s' % branch_name)
+
+    logger.info('git checkout %s' % branch_name)
+    if git.checkout('%s' % branch_name, _ok_code=[0,1]).exit_code == 1:
+        logger.critical('Branch %s does not exist' % branch_name)
+        return
 
     logger.debug("Removing existing repository files")
     for f in os.listdir(temp_dir):
