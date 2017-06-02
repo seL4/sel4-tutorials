@@ -333,8 +333,8 @@ def handle_publish(args):
         shutil.copyfile(src, dst)
 
     # copy the readme and rename
-    src = os.path.join('README-tutorials.md', tutorial_dir)
-    dst = os.path.join('README.md', temp_dir)
+    src = os.path.join(tutorial_dir, 'README-tutorials.md')
+    dst = os.path.join(temp_dir, 'README.md')
     logger.info("Copying file: %s -> %s" % (src, dst))
     shutil.copyfile(src, dst)
 
