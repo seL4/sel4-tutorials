@@ -1,11 +1,13 @@
 /*
- * Copyright 2015, NICTA
+ * Copyright 2017, Data61
+ * Commonwealth Scientific and Industrial Research Organisation (CSIRO)
+ * ABN 41 687 119 230.
  *
  * This software may be distributed and modified according to the terms of
  * the BSD 2-Clause license. Note that NO WARRANTY is provided.
  * See "LICENSE_BSD2.txt" for details.
  *
- * @TAG(NICTA_BSD)
+ * @TAG(DATA61_BSD)
  */
 
 /*
@@ -39,13 +41,13 @@ int main(int argc, char **argv) {
     tag = seL4_MessageInfo_new(0, 0, 0, 1);
     seL4_SetMR(0, MSG_DATA);
 
-    /* TODO 9: send and wait for a reply */
+    /* TASK 9: send and wait for a reply */
     /* hint 1: seL4_Call()
      * seL4_MessageInfo_t seL4_Call(seL4_CPtr dest, seL4_MessageInfo_t msgInfo)
      * @param dest The capability to be invoked.
      * @param msgInfo The messageinfo structure for the IPC.  This specifies information about the message to send (such as the number of message registers to send).
      * @return A seL4_MessageInfo_t structure.  This is information about the repy message.
-     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%204#TODO_9:
+     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%204#TASK_9:
      * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      *
      * hint 2: the endpoint cap is in slot EP_CPTR
