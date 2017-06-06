@@ -189,10 +189,8 @@ int main(void) {
     seL4_Word size;
 /*- if solution -*/
     size = BIT(seL4_TCBBits) +
-           BIT(seL4_MinSchedContextBits) +
            BIT(seL4_PageBits) +
            BIT(seL4_EndpointBits) +
-           BIT(seL4_ReplyBits) +
            BIT(seL4_PageTableBits);
     untyped = get_untyped(info, size);
 /*- endif -*/
