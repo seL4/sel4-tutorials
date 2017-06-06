@@ -38,11 +38,11 @@ COMPLETION = {
     "ia32_sel4_hello-timer": "timer client wakes up: got the current timer tick:",
     "arm_camkes_hello-camkes-0": "Hello CAmkES World",
     "arm_camkes_hello-camkes-1": "Component echo saying: hello world",
-    "arm_camkes_hello-camkes-2": "Caught cap fault in send phase at address 0x0",
+    "arm_camkes_hello-camkes-2": "FAULT HANDLER: data fault from client.control",
     "arm_camkes_hello-camkes-timer": "After the client: wakeup",
     "ia32_camkes_hello-camkes-0": "Hello CAmkES World",
     "ia32_camkes_hello-camkes-1": "Component echo saying: hello world",
-    "ia32_camkes_hello-camkes-2": "Caught cap fault in send phase at address 0x0"
+    "ia32_camkes_hello-camkes-2": "FAULT HANDLER: data fault from client.control"
 }
 
 # List of strings whose appearence in test output indicates test failure
