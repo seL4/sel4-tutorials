@@ -1,22 +1,19 @@
 /*
- * Copyright 2017, Data61
- * Commonwealth Scientific and Industrial Research Organisation (CSIRO)
- * ABN 41 687 119 230.
+ * Copyright 2014, NICTA
  *
  * This software may be distributed and modified according to the terms of
- * the BSD 2-Clause license. Note that NO WARRANTY is provided.
- * See "LICENSE_BSD2.txt" for details.
+ * the GNU General Public License version 2. Note that NO WARRANTY is provided.
+ * See "LICENSE_GPLv2.txt" for details.
  *
- * @TAG(DATA61_BSD)
+ * @TAG(NICTA_GPL)
  */
 
 #include <stdio.h>
 
 #include <platsupport/mach/epit.h>
 #include <platsupport/timer.h>
-#include <sel4utils/sel4_zf_logif.h>
 
-#include <camkes.h>
+#include <Timer.h>
 
 #define NS_IN_SECOND 1000000000ULL
 
@@ -30,10 +27,8 @@ pstimer_t *timer_drv = NULL;
  * when a new interrupt arrives then it must re-register itself.  Or it can
  * also register a different handler.
  */
-void irq_handle(void) {
-    int error;
-
-    /* TASK: call the platsupport library to handle the interrupt. */
+void epit_irq_callback(void *_ UNUSED) {
+    /* TODO: call the platsupport library to handle the interrupt. */
     /* hint: void timer_handle_irq(pstimer_t* device, uint32_t irq)
      * @param device Structure for the timer device driver.
      * @param irq    Timer's interrupt number
@@ -42,11 +37,13 @@ void irq_handle(void) {
 
 
     /* Signal the RPC interface. */
-    error = sem_post();
-    ZF_LOGF_IF(error != 0, "Failed to post to semaphore");
+    sem_post();
 
-    /* TASK: acknowledge the interrupt */
-    /* hint 1: use the function <IRQ interface name>_acknowledge()
+    /* TODO: register the second callback for this event. */
+    /* hint 1: use the function <IRQ interface name>_reg_callback()
+     * hint 2: register the function "epit_irq_callback"
+     * hint 3: pass NULL as the extra argument to the callback
+     * hint 4: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-events
      */
 
 }
@@ -62,16 +59,24 @@ void hello__init() {
     config.irq = EPIT2_INTERRUPT;
     config.prescaler = 0;
 
-    /* TASK: call platsupport library to get the timer handler */
+    /* TODO: call platsupport library to get the timer handler */
     /* hint: pstimer_t *epit_get_timer(epit_config_t *config);
      * @param config timer configuration structure
      * @return timer handler
      * https://github.com/seL4/util_libs/blob/master/libplatsupport/mach_include/imx/platsupport/mach/epit.h#L28
      */
 
+
+    /* TODO: register the first callback handler for this interface */
+    /* hint 1: use the function <IRQ interface name>_reg_callback()
+     * hint 2: register the function "epit_irq_callback"
+     * hint 3: pass NULL as the extra argument to the callback
+     * hint 4: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-events
+     */
+
 }
 
-/* TASK: implement the RPC function. */
+/* TODO: implement the RPC function. */
 /* hint 1: the name of the function to implement is a composition of an interface name and a function name:
  * i.e.: <interface>_<function>
  * hint 2: the interfaces available are defined by the component, e.g. in components/Timer/Timer.camkes
@@ -82,7 +87,7 @@ void hello__init() {
  * hint 7: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#creating-an-application
  */
 void hello_sleep(int sec) {
-    /* TASK: call platsupport library function to set up the timer */
+    /* TODO: call platsupport library function to set up the timer */
     /* hint: int timer_oneshot_relative(pstimer_t* device, uint64_t ns)
      * @param device timer handler
      * @param ns     timeout in nanoseconds
@@ -92,6 +97,5 @@ void hello_sleep(int sec) {
 
 
     /* Wait for the timeout interrupt */
-    int error = sem_wait();
-    ZF_LOGF_IF(error != 0, "Failed to wait on semaphore");
+    sem_wait();
 }

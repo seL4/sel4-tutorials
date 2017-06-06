@@ -1,13 +1,11 @@
 /*
- * Copyright 2017, Data61
- * Commonwealth Scientific and Industrial Research Organisation (CSIRO)
- * ABN 41 687 119 230.
+ * Copyright 2015, NICTA
  *
  * This software may be distributed and modified according to the terms of
  * the BSD 2-Clause license. Note that NO WARRANTY is provided.
  * See "LICENSE_BSD2.txt" for details.
  *
- * @TAG(DATA61_BSD)
+ * @TAG(NICTA_BSD)
  */
 
 /*
@@ -26,17 +24,17 @@ assembly {
         component Client client;
         component Echo echo;
 
-        /* TASK 5: Event connections */
+        /* TODO 5: Event connections */
         /* hint 1: connect each "emits" interface in a component to the "consumes" interface in the other
          * hint 2: use seL4Asynch as the connector
          * hint 3: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-events
          */
 
-        connection seL4Notification echo_event(from client.echo, to echo.echo);
-        connection seL4Notification client_event(from echo.client, to client.client);
+        connection seL4Asynch echo_event(from client.echo, to echo.echo);
+        connection seL4Asynch client_event(from echo.client, to client.client);
 
 
-        /* TASK 6: Dataport connections */
+        /* TODO 6: Dataport connections */
         /* hint 1: connect the corresponding dataport interfaces of the components to each other
          * hint 2: use seL4SharedData as the connector
          * hint 3: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-dataports
@@ -49,7 +47,7 @@ assembly {
 
     }
     configuration {
-        /* TASK 7: set component priorities */
+        /* TODO 7: set component priorities */
         /* hint 1: component priority is specified as an attribute with the name <component name>.priority
          * hint 2: the highest priority is represented by 255, the lowest by 0
          */
@@ -58,17 +56,17 @@ assembly {
         echo.priority = 254;
 
 
-        /* TASK 8: restrict access to dataports */
+        /* TODO 8: restrict access to dataports */
         /* hint 1: use attributes <connection name>.to_access and <connection name>.from_access
          * hint 2: appropriate values for the to_access and from_access attributes are: "R" or "W"
          * hint 4: make the "Buf" dataport read only for the Echo component
          * hint 3: make the "str_buf_t" dataport read only for the Client component
          */
 
-        echo.d_access = "R";
-        client.d_access = "W";
-        echo.d_typed_access = "W";
-        client.d_typed_access = "R";
+        data_conn.to_access = "R";
+        data_conn.from_access = "W";
+        typed_data_conn.to_access = "W";
+        typed_data_conn.from_access = "R";
 
     }
 }

@@ -1,13 +1,11 @@
 /*
- * Copyright 2017, Data61
- * Commonwealth Scientific and Industrial Research Organisation (CSIRO)
- * ABN 41 687 119 230.
+ * Copyright 2015, NICTA
  *
  * This software may be distributed and modified according to the terms of
  * the BSD 2-Clause license. Note that NO WARRANTY is provided.
  * See "LICENSE_BSD2.txt" for details.
  *
- * @TAG(DATA61_BSD)
+ * @TAG(NICTA_BSD)
  */
 
 /*
@@ -20,7 +18,7 @@
 /* generated header for our component */
 #include <camkes.h>
 
-/* TASK 5: implement the RPC function. */
+/* TODO 5: implement the RPC function. */
 /* hint 1: the name of the function to implement is a composition of an interface name and a function name:
  * i.e.: <interface>_<function>
  * hint 2: the interfaces available are defined by the component, e.g. in components/Echo/Echo.camkes

@@ -1,13 +1,11 @@
 /*
- * Copyright 2017, Data61
- * Commonwealth Scientific and Industrial Research Organisation (CSIRO)
- * ABN 41 687 119 230.
+ * Copyright 2015, NICTA
  *
  * This software may be distributed and modified according to the terms of
  * the BSD 2-Clause license. Note that NO WARRANTY is provided.
  * See "LICENSE_BSD2.txt" for details.
  *
- * @TAG(DATA61_BSD)
+ * @TAG(NICTA_BSD)
  */
 
 /*
@@ -25,7 +23,6 @@
 #include <sel4/sel4.h>
 #include <sel4debug/debug.h>
 
-#include <utils/arith.h>
 #include <utils/zf_log.h>
 #include <sel4utils/sel4_zf_logif.h>
 
@@ -45,7 +42,7 @@ extern void name_thread(seL4_CPtr tcb, char *name);
 seL4_CPtr get_untyped(seL4_BootInfo *info, int size_bytes) {
 
     for (int i = info->untyped.start, idx = 0; i < info->untyped.end; ++i, ++idx) {
-        if (BIT(info->untypedList[idx].sizeBits) >= size_bytes) {
+        if (1 << info->untypedList[idx].sizeBits >= size_bytes) {
             return i;
         }
     }
@@ -97,7 +94,7 @@ int main(void) {
     pd_cap = seL4_CapInitThreadPD;
 
     seL4_CPtr tcb_cap;
-    /* TASK 1: Set tcb_cap to a free cap slot index.
+    /* TODO 1: Set tcb_cap to a free cap slot index.
      * hint: The bootinfo struct contains a range of free cap slot indices.
      */
 
@@ -105,7 +102,7 @@ int main(void) {
 
 
     seL4_CPtr untyped;
-    /* TASK 2: Obtain a cap to an untyped which is large enough to contain a tcb.
+    /* TODO 2: Obtain a cap to an untyped which is large enough to contain a tcb.
      *
      * hint 1: determine the size of a tcb object.
      *         (look in libs/libsel4/arch_include/x86/sel4/arch/types.h)
@@ -115,11 +112,11 @@ int main(void) {
 
 
     /* look up an untyped to retype into a tcb */
-    untyped = get_untyped(info, BIT(seL4_TCBBits));
+    untyped = get_untyped(info, (1 << seL4_TCBBits));
 
 
 
-    /* TASK 3: Retype the untyped into a tcb, storing a cap in tcb_cap
+    /* TODO 3: Retype the untyped into a tcb, storing a cap in tcb_cap
      *
      * hint 1: int seL4_Untyped_Retype(seL4_Untyped service, int type, int size_bits, seL4_CNode root, int node_index, int node_depth, int node_offset, int num_objects)
      * hint 2: use a depth of 32
@@ -159,7 +156,7 @@ int main(void) {
                "\tDouble check to ensure you're not trampling.",
                stack_alignment_requirement);
 
-    /* TASK 4: Set up regs to contain the desired stack pointer and instruction pointer
+    /* TODO 4: Set up regs to contain the desired stack pointer and instruction pointer
      * hint 1: libsel4/arch_include/x86/sel4/arch/types.h:
      *  ...
         typedef struct seL4_UserContext_ {
@@ -177,7 +174,7 @@ int main(void) {
     };
 
 
-    /* TASK 5: Write the registers in regs to the new thread
+    /* TODO 5: Write the registers in regs to the new thread
      *
      * hint 1: int seL4_TCB_WriteRegisters(seL4_TCB service, seL4_Bool resume_target, seL4_Uint8 arch_flags, seL4_Word count, seL4_UserContext *regs);
      * hint 2: the value of arch_flags is ignored on x86 and arm

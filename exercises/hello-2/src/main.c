@@ -1,13 +1,11 @@
 /*
- * Copyright 2017, Data61
- * Commonwealth Scientific and Industrial Research Organisation (CSIRO)
- * ABN 41 687 119 230.
+ * Copyright 2015, NICTA
  *
  * This software may be distributed and modified according to the terms of
  * the BSD 2-Clause license. Note that NO WARRANTY is provided.
  * See "LICENSE_BSD2.txt" for details.
  *
- * @TAG(DATA61_BSD)
+ * @TAG(NICTA_BSD)
  */
 
 /*
@@ -31,7 +29,6 @@
 #include <allocman/bootstrap.h>
 #include <allocman/vka.h>
 
-#include <utils/arith.h>
 #include <utils/zf_log.h>
 #include <sel4utils/sel4_zf_logif.h>
 
@@ -51,12 +48,12 @@ simple_t simple;
  * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#Globals_links: */
 vka_t vka;
 
-/* allocman_t defined in allocman.h
+/* allocaman_t defined in allocman.h
  * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#Globals_links: */
 allocman_t *allocman;
 
 /* static memory for the allocator to bootstrap with */
-#define ALLOCATOR_STATIC_POOL_SIZE (BIT(seL4_PageBits) * 10)
+#define ALLOCATOR_STATIC_POOL_SIZE ((1 << seL4_PageBits) * 10)
 UNUSED static char allocator_mem_pool[ALLOCATOR_STATIC_POOL_SIZE];
 
 /* stack for the new thread */
@@ -70,7 +67,7 @@ extern void name_thread(seL4_CPtr tcb, char *name);
 
 /* function to run in the new thread */
 void thread_2(void) {
-    /* TASK 15: print something */
+    /* TODO 15: print something */
     /* hint: printf() */
 
     /* never exit */
@@ -80,11 +77,11 @@ void thread_2(void) {
 int main(void) {
     UNUSED int error;
 
-    /* TASK 1: get boot info */
+    /* TODO 1: get boot info */
     /* hint: platsupport_get_bootinfo()
      * seL4_BootInfo* platsupport_get_bootinfo(void);
      * @return Pointer to the bootinfo, NULL on failure
-     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TASK_1:
+     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TODO_1:
      */
 
 
@@ -96,77 +93,77 @@ int main(void) {
     zf_log_set_tag_prefix("hello-2:");
     name_thread(seL4_CapInitThreadTCB, "hello-2");
 
-    /* TASK 2: init simple */
+    /* TODO 2: init simple */
     /* hint: simple_default_init_bootinfo()
      * void simple_default_init_bootinfo(simple_t *simple, seL4_BootInfo *bi);
      * @param simple Structure for the simple interface object. This gets initialised.
      * @param bi Pointer to the bootinfo describing what resources are available
-     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TASK_2:
+     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TODO_2:
      */
 
 
-    /* TASK 3: print out bootinfo and other info about simple */
+    /* TODO 3: print out bootinfo and other info about simple */
     /* hint: simple_print()
      * void simple_print(simple_t *simple);
      * @param simple Pointer to simple interface.
-     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TASK_3:
+     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TODO_3:
      */
 
 
-    /* TASK 4: create an allocator */
+    /* TODO 4: create an allocator */
     /* hint: bootstrap_use_current_simple()
      * allocman_t *bootstrap_use_current_simple(simple_t *simple, uint32_t pool_size, char *pool);
      * @param simple Pointer to simple interface.
      * @param pool_size Size of the initial memory pool.
      * @param pool Initial memory pool.
      * @return returns NULL on error
-     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TASK_4:
+     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TODO_4:
      */
 
     ZF_LOGF_IF(allocman == NULL, "Failed to initialize alloc manager.\n"
                "\tMemory pool sufficiently sized?\n"
                "\tMemory pool pointer valid?\n");
 
-    /* TASK 5: create a vka (interface for interacting with the underlying allocator) */
+    /* TODO 5: create a vka (interface for interacting with the underlying allocator) */
     /* hint: allocman_make_vka()
      * void allocman_make_vka(vka_t *vka, allocman_t *alloc);
      * @param vka Structure for the vka interface object.  This gets initialised.
      * @param alloc allocator to be used with this vka
-     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TASK_5:
+     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TODO_5:
      */
 
 
-    /* TASK 6: get our cspace root cnode */
+    /* TODO 6: get our cspace root cnode */
     /* hint: simple_get_cnode()
      * seL4_CPtr simple_get_cnode(simple_t *simple);
      * @param simple Pointer to simple interface.
      * @return The cnode backing the simple interface. no failure.
-     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TASK_6:
+     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TODO_6:
      */
 
 
-    /* TASK 7: get our vspace root page diretory */
+    /* TODO 7: get our vspace root page diretory */
     /* hint: simple_get_pd()
      * seL4_CPtr simple_get_pd(simple_t *simple);
      * @param simple Pointer to simple interface.
      * @return The vspace (PD) backing the simple interface. no failure.
-     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TASK_7:
+     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TODO_7:
      */
 
 
-    /* TASK 8: create a new TCB */
+    /* TODO 8: create a new TCB */
     /* hint: vka_alloc_tcb()
      * int vka_alloc_tcb(vka_t *vka, vka_object_t *result);
      * @param vka Pointer to vka interface.
      * @param result Structure for the TCB object.  This gets initialised.
      * @return 0 on success
-     * https://wiki.sel4.systems/seL4%20Tutorial%202#TASK_8:
+     * https://wiki.sel4.systems/seL4%20Tutorial%202#TODO_8:
      */
 
     ZF_LOGF_IFERR(error, "Failed to allocate new TCB.\n"
                   "\tVKA given sufficient bootstrap memory?");
 
-    /* TASK 9: initialise the new TCB */
+    /* TODO 9: initialise the new TCB */
     /* hint 1: seL4_TCB_Configure()
      * int seL4_TCB_Configure(seL4_TCB service, seL4_Word fault_ep, seL4_Uint8 priority, seL4_CNode cspace_root, seL4_CapData_t cspace_root_data, seL4_CNode vspace_root, seL4_CapData_t vspace_root_data, seL4_Word buffer, seL4_CPtr bufferFrame)
      * @param service Capability to the TCB which is being operated on.
@@ -180,7 +177,7 @@ int main(void) {
      * @param bufferFrame Capability to a page containing the thread?s IPC buffer.
      * @return 0 on success.
      * Note: this function is generated during build.  It is generated from the following definition:
-     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TASK_9:
+     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TODO_9:
      * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      *
      * hint 2: use seL4_CapNull for the fault endpoint
@@ -193,7 +190,7 @@ int main(void) {
                   "\tWe're running the new thread in the root thread's VSpace.\n"
                   "\tWe will not be executing any IPC in this app.\n");
 
-    /* TASK 10: give the new thread a name */
+    /* TODO 10: give the new thread a name */
     /* hint: we've done thread naming before */
 
 
@@ -203,12 +200,12 @@ int main(void) {
 
     seL4_UserContext regs = {0};
 
-    /* TASK 11: set instruction pointer where the thread shoud start running */
+    /* TODO 11: set instruction pointer where the thread shoud start running */
     /* hint 1: sel4utils_set_instruction_pointer()
      * void sel4utils_set_instruction_pointer(seL4_UserContext *regs, seL4_Word value);
      * @param regs Data structure in which to set the instruction pointer value
      * @param value New instruction pointer value
-     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TASK_11:
+     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TODO_11:
      *
      * hint 2: we want the new thread to run the function "thread_2"
      */
@@ -222,18 +219,18 @@ int main(void) {
                "\tDouble check to ensure you're not trampling.",
                stack_alignment_requirement);
 
-    /* TASK 12: set stack pointer for the new thread */
+    /* TODO 12: set stack pointer for the new thread */
     /* hint 1: sel4utils_set_stack_pointer()
      * void sel4utils_set_stack_pointer(seL4_UserContext *regs, seL4_Word value);
      * @param regs  Data structure in which to set the stack pointer value
      * @param value New stack pointer value
-     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TASK_12:
+     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TODO_12:
      *
      * hint 2: remember the stack grows down!
      */
 
 
-    /* TASK 13: actually write the TCB registers.  We write 2 registers:
+    /* TODO 13: actually write the TCB registers.  We write 2 registers:
      * instruction pointer is first, stack pointer is second. */
     /* hint: seL4_TCB_WriteRegisters()
      * int seL4_TCB_WriteRegisters(seL4_TCB service, seL4_Bool resume_target, seL4_Uint8 arch_flags, seL4_Word count, seL4_UserContext *regs)
@@ -245,21 +242,21 @@ int main(void) {
      * @return 0 on success
      *
      * Note: this function is generated during build.  It is generated from the following definition:
-     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TASK_13:
+     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TODO_13:
      * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      */
 
     ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
                   "\tDid you write the correct number of registers? See arg4.\n");
 
-    /* TASK 14: start the new thread running */
+    /* TODO 14: start the new thread running */
     /* hint: seL4_TCB_Resume()
      * int seL4_TCB_Resume(seL4_TCB service)
      * @param service Capability to the TCB which is being operated on.
      * @return 0 on success
      *
      * Note: this function is generated during build.  It is generated from the following definition:
-     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TASK_14:
+     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TODO_14:
      * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      */
 

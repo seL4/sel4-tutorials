@@ -1,13 +1,11 @@
 /*
- * Copyright 2017, Data61
- * Commonwealth Scientific and Industrial Research Organisation (CSIRO)
- * ABN 41 687 119 230.
+ * Copyright 2015, NICTA
  *
  * This software may be distributed and modified according to the terms of
  * the BSD 2-Clause license. Note that NO WARRANTY is provided.
  * See "LICENSE_BSD2.txt" for details.
  *
- * @TAG(DATA61_BSD)
+ * @TAG(NICTA_BSD)
  */
 
 /*
@@ -22,7 +20,7 @@ import "components/Timer/Timer.camkes";
 
 assembly {
     composition {
-        /* TASK: component instances */
+        /* TODO: component instances */
         /* hint 1: one hardware component, one driver component
          * hint 2: look at
          * https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#creating-an-application
@@ -34,7 +32,7 @@ assembly {
 
         component Client client;
 
-        /* TASK: connections */
+        /* TODO: connections */
         /* hint 1: use seL4HardwareMMIO to connect device memory
          * hint 2: use seL4HardwareInterrupt to connect interrupt
          * hint 3: look at
@@ -49,15 +47,14 @@ assembly {
         connection seL4RPCCall hello_timer(from client.hello, to timer.hello);
     }
     configuration {
-        /* TASK: hardware resources */
+        /* TODO: hardware resources */
         /* hint 1: find out the device memory address and IRQ number from the hardware data sheet
          * hint 2: look at
          * https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#hardware-components
          */
 
-        timerbase.reg_paddr = 0x53F98000;   // paddr of mmio registers
-        timerbase.reg_size = 0x1000;        // size of mmio registers
-        timerbase.irq_irq_number = 27;      // timer irq number
+        timerbase.reg_attributes = "0x53F98000:0x1000"; //device memory
+        timerbase.irq_attributes    = 27;               //Timer interrupt
 
 
         /* assign an initial value to semaphore */

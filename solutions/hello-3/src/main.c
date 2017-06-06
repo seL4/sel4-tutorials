@@ -1,13 +1,11 @@
 /*
- * Copyright 2017, Data61
- * Commonwealth Scientific and Industrial Research Organisation (CSIRO)
- * ABN 41 687 119 230.
+ * Copyright 2015, NICTA
  *
  * This software may be distributed and modified according to the terms of
  * the BSD 2-Clause license. Note that NO WARRANTY is provided.
  * See "LICENSE_BSD2.txt" for details.
  *
- * @TAG(DATA61_BSD)
+ * @TAG(NICTA_BSD)
  */
 
 /*
@@ -38,7 +36,6 @@
 #include <sel4utils/vspace.h>
 #include <sel4utils/mapping.h>
 
-#include <utils/arith.h>
 #include <utils/zf_log.h>
 #include <sel4utils/sel4_zf_logif.h>
 
@@ -62,7 +59,7 @@ vka_object_t ep_object;
 cspacepath_t ep_cap_path;
 
 /* static memory for the allocator to bootstrap with */
-#define ALLOCATOR_STATIC_POOL_SIZE (BIT(seL4_PageBits) * 10)
+#define ALLOCATOR_STATIC_POOL_SIZE ((1 << seL4_PageBits) * 10)
 UNUSED static char allocator_mem_pool[ALLOCATOR_STATIC_POOL_SIZE];
 
 /* stack for the new thread */
@@ -80,27 +77,27 @@ void thread_2(void) {
 
     printf("thread_2: hallo wereld\n");
 
-    /* TASK 11: wait for a message to come in over the endpoint */
+    /* TODO 11: wait for a message to come in over the endpoint */
     /* hint 1: seL4_Recv()
      * seL4_MessageInfo_t seL4_Recv(seL4_CPtr src, seL4_Word* sender)
      * @param src The capability to be invoked.
      * @param sender The badge of the endpoint capability that was invoked by the sender is written to this address.
      * @return A seL4_MessageInfo_t structure
-     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TASK_11:
+     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_11:
      * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      *
      * hint 2: seL4_MessageInfo_t is generated during build.
      * The type definition and generated field access functions are defined in a generated file:
      * build/x86/pc99/libsel4/include/sel4/types_gen.h
      * It is generated from the following definition:
-     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TASK_11:
+     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_11:
      * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      */
 
     tag = seL4_Recv(ep_object.cptr, &sender_badge);
 
 
-    /* TASK 12: make sure it is what we expected */
+    /* TODO 12: make sure it is what we expected */
     /* hint 1: check the badge. is it EP_BADGE?
      * hint 2: we are expecting only 1 message register
      * hint 3: seL4_MessageInfo_get_length()
@@ -110,7 +107,7 @@ void thread_2(void) {
      * seL4_MessageInfo_get_length() is generated during build. It can be found in:
      * build/x86/pc99/libsel4/include/sel4/types_gen.h
      * It is generated from the following definition:
-     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TASK_12:
+     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_12:
      */
 
     ZF_LOGF_IF(sender_badge != EP_BADGE,
@@ -121,12 +118,12 @@ void thread_2(void) {
                "\tHow many registers did you set with seL4_SetMR, within the root thread?\n");
 
 
-    /* TASK 13: get the message stored in the first message register */
+    /* TODO 13: get the message stored in the first message register */
     /* hint: seL4_GetMR()
      * seL4_Word seL4_GetMR(int i)
      * @param i The message register to retreive
      * @return The message register value
-     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TASK_13:
+     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_13:
      * You can find out more about message registers in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      */
 
@@ -138,33 +135,33 @@ void thread_2(void) {
     /* modify the message */
     msg = ~msg;
 
-    /* TASK 14: copy the modified message back into the message register */
+    /* TODO 14: copy the modified message back into the message register */
     /* hint: seL4_SetMR()
      * void seL4_SetMR(int i, seL4_Word mr)
      * @param i The message register to write
      * @param mr The value of the message register
-     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TASK_14:
+     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_14:
      * You can find out more about message registers in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      */
 
     seL4_SetMR(0, msg);
 
 
-    /* TASK 15: send the message back */
+    /* TODO 15: send the message back */
     /* hint 1: seL4_ReplyRecv()
      * seL4_MessageInfo_t seL4_ReplyRecv(seL4_CPtr dest, seL4_MessageInfo_t msgInfo, seL4_Word *sender)
      * @param dest The capability to be invoked.
      * @param msgInfo The messageinfo structure for the IPC.  This specifies information about the message to send (such as the number of message registers to send) as the Reply part.
      * @param sender The badge of the endpoint capability that was invoked by the sender is written to this address.  This is a result of the Wait part.
      * @return A seL4_MessageInfo_t structure.  This is a result of the Wait part.
-     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TASK_15:
+     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_15:
      * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      *
      * hint 2: seL4_MessageInfo_t is generated during build.
      * The type definition and generated field access functions are defined in a generated file:
      * build/x86/pc99/libsel4/include/sel4/types_gen.h
      * It is generated from the following definition:
-     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TASK_15:
+     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_15:
      * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      */
 
@@ -216,14 +213,14 @@ int main(void) {
      * create and map an ipc buffer:
      */
 
-    /* TASK 1: get a frame cap for the ipc buffer */
+    /* TODO 1: get a frame cap for the ipc buffer */
     /* hint: vka_alloc_frame()
      * int vka_alloc_frame(vka_t *vka, uint32_t size_bits, vka_object_t *result)
      * @param vka Pointer to vka interface.
      * @param size_bits Frame size: 2^size_bits
      * @param result Structure for the Frame object.  This gets initialised.
      * @return 0 on success
-     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TASK_1:
+     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_1:
      */
     vka_object_t ipc_frame_object;
 
@@ -242,12 +239,12 @@ int main(void) {
 
     seL4_Word ipc_buffer_vaddr = IPCBUF_VADDR;
 
-    /* TASK 2: try to map the frame the first time  */
+    /* TODO 2: try to map the frame the first time  */
     /* hint 1: seL4_ARCH_Page_Map()
      * The *ARCH* versions of seL4 sys calls are abstractions over the architecture provided by libsel4utils
      * this one is defined as:
      * #define seL4_ARCH_Page_Map seL4_X86_Page_Map
-     * in: Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TASK_2:
+     * in: Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_2:
      * The signature for the underlying function is:
      * int seL4_X86_Page_Map(seL4_X86_Page service, seL4_X86_PageDirectory pd, seL4_Word vaddr, seL4_CapRights rights, seL4_X86_VMAttributes attr)
      * @param service Capability to the page to map.
@@ -258,7 +255,7 @@ int main(void) {
      * @return 0 on success.
      *
      * Note: this function is generated during build.  It is generated from the following definition:
-     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TASK_2:
+     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_2:
      * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      *
      * hint 2: for the rights, use seL4_AllRights
@@ -274,13 +271,13 @@ int main(void) {
 
 
     if (error != 0) {
-        /* TASK 3: create a page table */
+        /* TODO 3: create a page table */
         /* hint: vka_alloc_page_table()
          * int vka_alloc_page_table(vka_t *vka, vka_object_t *result)
          * @param vka Pointer to vka interface.
          * @param result Structure for the PageTable object.  This gets initialised.
          * @return 0 on success
-         * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TASK_3:
+         * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_3:
          */
 
         vka_object_t pt_object;
@@ -288,12 +285,12 @@ int main(void) {
 
         ZF_LOGF_IFERR(error, "Failed to allocate new page table.\n");
 
-        /* TASK 4: map the page table */
+        /* TODO 4: map the page table */
         /* hint 1: seL4_ARCH_PageTable_Map()
          * The *ARCH* versions of seL4 sys calls are abstractions over the architecture provided by libsel4utils
          * this one is defined as:
          * #define seL4_ARCH_PageTable_Map seL4_X86_PageTable_Map
-         * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TASK_4:
+         * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_4:
          * The signature for the underlying function is:
          * int seL4_X86_PageTable_Map(seL4_X86_PageTable service, seL4_X86_PageDirectory pd, seL4_Word vaddr, seL4_X86_VMAttributes attr)
          * @param service Capability to the page table to map.
@@ -304,7 +301,7 @@ int main(void) {
          * @return 0 on success.
          *
          * Note: this function is generated during build.  It is generated from the following definition:
-         * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TASK_4:
+         * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_4:
          * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
          *
          * hint 2: for VM attributes use seL4_ARCH_Default_VMAttributes
@@ -317,7 +314,7 @@ int main(void) {
                       "\tWe are inserting a new page table into the top-level table.\n"
                       "\tPass a capability to the new page table, and not for example, the IPC buffer frame vaddr.\n")
 
-        /* TASK 5: then map the frame in */
+        /* TODO 5: then map the frame in */
         /* hint 1: use seL4_ARCH_Page_Map() as above
          * hint 2: for the rights, use seL4_AllRights
          * hint 3: for VM attributes use seL4_ARCH_Default_VMAttributes
@@ -336,20 +333,20 @@ int main(void) {
     seL4_IPCBuffer *ipcbuf = (seL4_IPCBuffer*)ipc_buffer_vaddr;
     ipcbuf->userData = ipc_buffer_vaddr;
 
-    /* TASK 6: create an endpoint */
+    /* TODO 6: create an endpoint */
     /* hint: vka_alloc_endpoint()
      * int vka_alloc_endpoint(vka_t *vka, vka_object_t *result)
      * @param vka Pointer to vka interface.
      * @param result Structure for the Endpoint object.  This gets initialised.
      * @return 0 on success
-     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TASK_6:
+     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_6:
      */
 
     error = vka_alloc_endpoint(&vka, &ep_object);
 
     ZF_LOGF_IFERR(error, "Failed to allocate new endpoint object.\n");
 
-    /* TASK 7: make a badged copy of it in our cspace. This copy will be used to send
+    /* TODO 7: make a badged copy of it in our cspace. This copy will be used to send
      * an IPC message to the original cap */
     /* hint 1: vka_mint_object()
      * int vka_mint_object(vka_t *vka, vka_object_t *object, cspacepath_t *result, seL4_CapRights rights, seL4_CapData_t badge)
@@ -360,7 +357,7 @@ int main(void) {
      * @param[in] badge The badge for the minted cap.
      * @return 0 on success
      *
-     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TASK_7:
+     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_7:
      *
      * hint 2: for the rights, use seL4_AllRights
      * hint 3: for the badge use seL4_CapData_Badge_new()
@@ -372,7 +369,7 @@ int main(void) {
      * The type definition and generated field access functions are defined in a generated file:
      * build/x86/pc99/libsel4/include/sel4/types_gen.h
      * It is generated from the following definition:
-     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TASK_7:
+     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_7:
      * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      *
      * hint 4: for the badge use EP_BADGE
@@ -439,7 +436,7 @@ int main(void) {
     seL4_Word msg;
     seL4_MessageInfo_t tag;
 
-    /* TASK 8: set the data to send. We send it in the first message register */
+    /* TODO 8: set the data to send. We send it in the first message register */
     /* hint 1: seL4_MessageInfo_new()
      * seL4_MessageInfo_t CONST seL4_MessageInfo_new(seL4_Uint32 label, seL4_Uint32 capsUnwrapped, seL4_Uint32 extraCaps, seL4_Uint32 length)
      * @param label The value of the label field
@@ -451,7 +448,7 @@ int main(void) {
      * seL4_MessageInfo_new() is generated during build. It can be found in:
      * build/x86/pc99/libsel4/include/sel4/types_gen.h
      * It is generated from the following definition:
-     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TASK_8:
+     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_8:
      *
      * hint 2: use 0 for the first 3 fields.
      * hint 3: send only 1 message register of data
@@ -460,7 +457,7 @@ int main(void) {
      * void seL4_SetMR(int i, seL4_Word mr)
      * @param i The message register to write
      * @param mr The value of the message register
-     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TASK_8:
+     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_8:
      * You can find out more about message registers in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      *
      * hint 5: send MSG_DATA
@@ -470,32 +467,32 @@ int main(void) {
     seL4_SetMR(0, MSG_DATA);
 
 
-    /* TASK 9: send and wait for a reply. */
+    /* TODO 9: send and wait for a reply. */
     /* hint: seL4_Call()
      * seL4_MessageInfo_t seL4_Call(seL4_CPtr dest, seL4_MessageInfo_t msgInfo)
      * @param dest The capability to be invoked.
      * @param msgInfo The messageinfo structure for the IPC.  This specifies information about the message to send (such as the number of message registers to send).
      * @return A seL4_MessageInfo_t structure.  This is information about the repy message.
-     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TASK_9:
+     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_9:
      * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      *
      * hint 2: seL4_MessageInfo_t is generated during build.
      * The type definition and generated field access functions are defined in a generated file:
      * build/x86/pc99/libsel4/include/sel4/types_gen.h
      * It is generated from the following definition:
-     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TASK_9:
+     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_9:
      * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      */
 
     tag = seL4_Call(ep_cap_path.capPtr, tag);
 
 
-    /* TASK 10: get the reply message */
+    /* TODO 10: get the reply message */
     /* hint: seL4_GetMR()
      * seL4_Word seL4_GetMR(int i)
      * @param i The message register to retreive
      * @return The message register value
-     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TASK_10:
+     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%203#TODO_10:
      * You can find out more about message registers in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      */
 
