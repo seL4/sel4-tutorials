@@ -1,11 +1,13 @@
 /*
- * Copyright 2015, NICTA
+ * Copyright 2017, Data61
+ * Commonwealth Scientific and Industrial Research Organisation (CSIRO)
+ * ABN 41 687 119 230.
  *
  * This software may be distributed and modified according to the terms of
  * the BSD 2-Clause license. Note that NO WARRANTY is provided.
  * See "LICENSE_BSD2.txt" for details.
  *
- * @TAG(NICTA_BSD)
+ * @TAG(DATA61_BSD)
  */
 
 /*
@@ -18,11 +20,13 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #include <sel4/sel4.h>
 #include <sel4/types_gen.h>
 #include <sel4debug/debug.h>
 
+#include <utils/arith.h>
 #include <utils/zf_log.h>
 #include <sel4utils/sel4_zf_logif.h>
 
@@ -81,7 +85,7 @@ seL4_CPtr get_untyped(seL4_BootInfo *info, int size_bytes) {
 
     for (int i = info->untyped.start, idx = 0; i < info->untyped.end; ++i, ++idx) {
 
-        if (1 << info->untypedList[idx].sizeBits >= size_bytes) {
+        if (BIT(info->untypedList[idx].sizeBits) >= size_bytes) {
             return i;
         }
     }
@@ -140,7 +144,7 @@ int main(void) {
     seL4_CPtr pd_cap;
     pd_cap = seL4_CapInitThreadPD;
 
-    /* TODO 1: Find free cap slots for the caps to the:
+    /* TASK 1: Find free cap slots for the caps to the:
      *  - tcb
      *  - ipc frame
      *  - endpoint
@@ -151,17 +155,17 @@ int main(void) {
 
     /* decide on slots to use based on what is free */
 
-    seL4_CPtr tcb_cap = ?? ?;
-    seL4_CPtr ipc_frame_cap = ?? ?;
-    ep_cap = ?? ?;
-    badged_ep_cap = ?? ?;
-    seL4_CPtr page_table_cap = ?? ?;
+    //seL4_CPtr tcb_cap = ??;
+    //seL4_CPtr ipc_frame_cap = ??;
+    //ep_cap = ??;
+    //badged_ep_cap = ??;
+    //seL4_CPtr page_table_cap = ??;
 
 
     /* get an untyped to retype into all the objects we will need */
     seL4_CPtr untyped;
 
-    /* TODO 2: Obtain a cap to an untyped which is large enough to contain:
+    /* TASK 2: Obtain a cap to an untyped which is large enough to contain:
      *  - tcb
      *  - ipc frame
      *  - endpoint
@@ -176,14 +180,11 @@ int main(void) {
      *         of the object is "chipped off". For simplicity, find a cap to an untyped which is large enough
      *         to contain all required objects.
      */
+    seL4_Word size;
 
-    ZF_LOGF_IF(untyped == -1, "Failed to find an untyped which could hold %d bytes.\n",
-               (1 << seL4_TCBBits) +
-               (1 << seL4_PageBits) +
-               (1 << seL4_EndpointBits) +
-               (1 << seL4_PageTableBits));
+    ZF_LOGF_IF(untyped == -1, "Failed to find an untyped which could hold %zu bytes.\n", size)
 
-    /* TODO 3: Using the untyped, create the required objects, storing their caps in the roottask's root cnode.
+    /* TASK 3: Using the untyped, create the required objects, storing their caps in the roottask's root cnode.
      *
      * hint 1: int seL4_Untyped_Retype(seL4_Untyped service, int type, int size_bits, seL4_CNode root, int node_index, int node_depth, int node_offset, int num_objects)
      * hint 2: use a depth of 32
@@ -214,7 +215,7 @@ int main(void) {
                               seL4_AllRights, seL4_X86_Default_VMAttributes);
     if (error != 0) {
 
-        /* TODO 4: Retype the untyped into page table (if this was done in TODO 3, ignore this). */
+        /* TASK 4: Retype the untyped into page table (if this was done in TASK 3, ignore this). */
 
 
         ZF_LOGF_IFERR(error, "Failed to retype an object into a page table.\n"
@@ -238,7 +239,7 @@ int main(void) {
     seL4_IPCBuffer *ipcbuf = (seL4_IPCBuffer*)ipc_buffer_vaddr;
     ipcbuf->userData = ipc_buffer_vaddr;
 
-    /* TODO 5: Mint a copy of the endpoint cap into our cspace, using the badge EP_BADGE
+    /* TASK 5: Mint a copy of the endpoint cap into our cspace, using the badge EP_BADGE
      * hint: int seL4_CNode_Mint(seL4_CNode service, seL4_Word dest_index, seL4_Uint8 dest_depth, seL4_CNode src_root, seL4_Word src_index, seL4_Uint8 src_depth, seL4_CapRights rights, seL4_CapData_t badge);
      */
 

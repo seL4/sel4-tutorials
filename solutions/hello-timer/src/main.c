@@ -1,11 +1,13 @@
 /*
- * Copyright 2015, NICTA
+ * Copyright 2017, Data61
+ * Commonwealth Scientific and Industrial Research Organisation (CSIRO)
+ * ABN 41 687 119 230.
  *
  * This software may be distributed and modified according to the terms of
  * the BSD 2-Clause license. Note that NO WARRANTY is provided.
  * See "LICENSE_BSD2.txt" for details.
  *
- * @TAG(NICTA_BSD)
+ * @TAG(DATA61_BSD)
  */
 
 /*
@@ -56,11 +58,11 @@ vspace_t vspace;
 seL4_timer_t *timer;
 
 /* static memory for the allocator to bootstrap with */
-#define ALLOCATOR_STATIC_POOL_SIZE ((1 << seL4_PageBits) * 10)
+#define ALLOCATOR_STATIC_POOL_SIZE (BIT(seL4_PageBits) * 10)
 UNUSED static char allocator_mem_pool[ALLOCATOR_STATIC_POOL_SIZE];
 
 /* dimensions of virtual memory for the allocator to use */
-#define ALLOCATOR_VIRTUAL_POOL_SIZE ((1 << seL4_PageBits) * 100)
+#define ALLOCATOR_VIRTUAL_POOL_SIZE (BIT(seL4_PageBits) * 100)
 
 /* static memory for virtual memory bootstrapping */
 UNUSED static sel4utils_alloc_data_t data;
@@ -142,7 +144,7 @@ int main(void) {
     error = sel4utils_spawn_process_v(&new_process, &vka, &vspace, 0, NULL, 1);
     assert(error == 0);
 
-    /* TODO 1: create a notification endpoint for the timer interrupt */
+    /* TASK 1: create a notification endpoint for the timer interrupt */
     /* hint: vka_alloc_notification()
      * int vka_alloc_notification(vka_t *vka, vka_object_t *result)
      * @param vka Pointer to vka interface.
@@ -151,22 +153,22 @@ int main(void) {
      * https://github.com/seL4/libsel4vka/blob/master/include/vka/object.h#L98
      */
 
-    vka_object_t aep_object = {0};
-    error = vka_alloc_notification(&vka, &aep_object);
+    vka_object_t ntfn_object = {0};
+    error = vka_alloc_notification(&vka, &ntfn_object);
     assert(error == 0);
 
 
-    /* TODO 2: call sel4platsupport library to get the default timer */
+    /* TASK 2: call sel4platsupport library to get the default timer */
     /* hint: sel4platsupport_get_default_timer
-     * seL4_timer_t * sel4platsupport_get_default_timer(vka_t *vka, vspace_t *vspace, simple_t *simple, seL4_CPtr aep);
+     * seL4_timer_t * sel4platsupport_get_default_timer(vka_t *vka, vspace_t *vspace, simple_t *simple, seL4_CPtr ntfn);
      * @param vka Pointer to vka interface
      * @param vspace Pointer to vspace interface
      * @param simple Pointer to simple interface
-     * @param aep Async endpoint to receive the interrupt
+     * @param ntfn Notification object to receive the interrupt
      * @return Pointer to timer structure
      */
 
-    timer = sel4platsupport_get_default_timer(&vka, &vspace, &simple, aep_object.cptr);
+    timer = sel4platsupport_get_default_timer(&vka, &vspace, &simple, ntfn_object.cptr);
     assert(timer != NULL);
 
 
@@ -201,7 +203,7 @@ int main(void) {
      */
     int count = 0;
     while (1) {
-        /* TODO 3: wait for the timeout */
+        /* TASK 3: wait for the timeout */
         /* hint 1: set timeout to 1 millisecond
          * hint 2: wait for the incoming interrupt
          * hint 3: handle the interrupt
@@ -217,8 +219,8 @@ int main(void) {
          * https://github.com/seL4/util_libs/blob/master/libplatsupport/include/platsupport/timer.h#L146
          */
 
-        timer_oneshot_relative(timer->timer, 1000 * 1000);
-        seL4_Wait(aep_object.cptr, &sender);
+        timer_oneshot_relative(timer->timer, NS_IN_MS);
+        seL4_Wait(ntfn_object.cptr, &sender);
         sel4_timer_handle_single_irq(timer);
 
         count++;
