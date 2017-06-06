@@ -52,7 +52,10 @@ PLAT_TO_QEMU_ARGS = {
 
 def list_configs():
     '''Lists names of build config files'''
-    return os.listdir(common.get_config_dir())
+    try:
+        return os.listdir(common.get_config_dir())
+    except:
+        return []
 
 def list_names():
     '''Lists names of apps'''
