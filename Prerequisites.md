@@ -12,7 +12,7 @@ First of all we assume that you are running Linux.  We typically use some flavou
     apt-get install git repo cmake ninja-build clang gcc-multilib gcc-arm-none-eabi binutils-arm-none-eabi \
     libncurses-dev libxml2-utils libssl-dev libsqlite3-dev libcunit1-dev expect python-pip
 
-    pip install six tempita ply plyplus pyelftools orderedset jinja2
+    pip install camkes-deps
 
     # Required for CAmkES only
     curl -sSL https://get.haskellstack.org/ | sh
@@ -86,7 +86,7 @@ Building and running seL4 and CAmkES reguires:
 
 ```bash
     apt-get install python-pip
-    pip install six tempita ply plyplus pyelftools orderedset jinja2
+    pip install camkes-deps
 ```
 
 ### Haskell Stack (required for CAmkES only)
