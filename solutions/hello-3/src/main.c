@@ -60,6 +60,7 @@ allocman_t *allocman;
 /* variables shared with second thread */
 vka_object_t ep_object;
 cspacepath_t ep_cap_path;
+vka_object_t reply_object;
 
 /* static memory for the allocator to bootstrap with */
 #define ALLOCATOR_STATIC_POOL_SIZE (BIT(seL4_PageBits) * 10)
@@ -82,7 +83,7 @@ void thread_2(void) {
 
     /* TASK 11: wait for a message to come in over the endpoint */
     /* hint 1: seL4_Recv()
-     * seL4_MessageInfo_t seL4_Recv(seL4_CPtr src, seL4_Word* sender)
+     * seL4_MessageInfo_t seL4_Recv(seL4_CPtr src, seL4_Word* sender, seL4_CPtr reply_object)
      * @param src The capability to be invoked.
      * @param sender The badge of the endpoint capability that was invoked by the sender is written to this address.
      * @return A seL4_MessageInfo_t structure
@@ -97,7 +98,7 @@ void thread_2(void) {
      * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      */
 
-    tag = seL4_Recv(ep_object.cptr, &sender_badge);
+    tag = seL4_Recv(ep_object.cptr, &sender_badge, reply_object.cptr);
 
 
     /* TASK 12: make sure it is what we expected */
@@ -152,7 +153,7 @@ void thread_2(void) {
 
     /* TASK 15: send the message back */
     /* hint 1: seL4_ReplyRecv()
-     * seL4_MessageInfo_t seL4_ReplyRecv(seL4_CPtr dest, seL4_MessageInfo_t msgInfo, seL4_Word *sender)
+     * seL4_MessageInfo_t seL4_ReplyRecv(seL4_CPtr dest, seL4_MessageInfo_t msgInfo, seL4_Word *sender, seL4_CPtr reply)
      * @param dest The capability to be invoked.
      * @param msgInfo The messageinfo structure for the IPC.  This specifies information about the message to send (such as the number of message registers to send) as the Reply part.
      * @param sender The badge of the endpoint capability that was invoked by the sender is written to this address.  This is a result of the Wait part.
@@ -168,7 +169,7 @@ void thread_2(void) {
      * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      */
 
-    seL4_ReplyRecv(ep_object.cptr, tag, &sender_badge);
+    seL4_ReplyRecv(ep_object.cptr, tag, &sender_badge, reply_object.cptr);
 
 }
 
@@ -349,6 +350,13 @@ int main(void) {
 
     ZF_LOGF_IFERR(error, "Failed to allocate new endpoint object.\n");
 
+    /* TASK 6.1: create a reply object to track the reply */
+    /* hint: vka_alloc_reply */
+
+    error = vka_alloc_reply(&vka, &reply_object);
+
+    ZF_LOGF_IFERR(error, "Failed to allocate new reply object.\n");
+
     /* TASK 7: make a badged copy of it in our cspace. This copy will be used to send
      * an IPC message to the original cap */
     /* hint 1: vka_mint_object()
@@ -386,9 +394,19 @@ int main(void) {
                   "\tseL4_Mint is simply being used here to create a badged copy of the same IPC endpoint.\n"
                   "\tThink of a badge in this case as an IPC context cookie.\n");
 
+    /* allocate sc */
+    vka_object_t sc_object = {0};
+    error = vka_alloc_sched_context(&vka, &sc_object);
+
+    /* configure sc */
+	seL4_CPtr sched_control = simple_get_sched_ctrl(&simple, info->nodeID);
+	error = seL4_SchedControl_Configure(sched_control, sc_object.cptr,
+                                      10 * US_IN_MS, 10 * US_IN_MS, 0);
+
     /* initialise the new TCB */
     error = seL4_TCB_Configure(tcb_object.cptr, seL4_CapNull, seL4_PrioProps_new(seL4_MaxPrio, seL4_MaxPrio),
-                               cspace_cap, seL4_NilData, pd_cap, seL4_NilData,
+            sc_object.cptr,
+            cspace_cap, seL4_NilData, pd_cap, seL4_NilData,
                                ipc_buffer_vaddr, ipc_frame_object.cptr);
     ZF_LOGF_IFERR(error, "Failed to configure the new TCB object.\n"
                   "\tWe're running the new thread with the root thread's CSpace.\n"

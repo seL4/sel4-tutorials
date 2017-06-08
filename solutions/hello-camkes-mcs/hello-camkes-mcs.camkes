@@ -1,0 +1,64 @@
+/*
+ * Copyright 2017, Data61
+ * Commonwealth Scientific and Industrial Research Organisation (CSIRO)
+ * ABN 41 687 119 230.
+ *
+ * This software may be distributed and modified according to the terms of
+ * the BSD 2-Clause license. Note that NO WARRANTY is provided.
+ * See "LICENSE_BSD2.txt" for details.
+ *
+ * @TAG(DATA61_BSD)
+ */
+
+import <std_connector.camkes>;
+
+/* import component defintions */
+import "components/Client/Client.camkes";
+import "components/Echo/Echo.camkes";
+
+assembly {
+    composition {
+        /* component instances */
+        component Client client1;
+        component Client client2;
+        /* echo server */
+        component Echo echo;
+        /* RPC connections */
+        connection seL4RPCCall hello_con(from client1.hello, to echo.hello);
+        connection seL4RPCCall hello_con2(from client2.hello, to echo.hello);
+
+    }
+    configuration {
+        /* TASK 1: set component priorities */
+        /* hint 1: component priority is specified as an attribute with the name <component name>.priority
+         * hint 2: For the immediate priority ceiling protocol to work, clients should be lower priorities than
+                   the server.
+         */
+
+        client1.priority = 1;
+        client2.priority = 2;
+        echo.priority = 254;
+
+
+
+        /* TASK 2: set the client scheduling parameters. Client 1 should have 1s every 2s, and
+         * Client2 0.5s every 1s.
+         * hint  : budget can be set with <component name>.budget
+         * hint  : the other fields (period, extra_refills) can be set the same way.
+         * hint  : parameters are in microseconds
+         */
+
+        client1.budget =  500000;
+        client1.period = 1000000;
+        client2.budget = 1000000;
+        client2.period = 2000000;
+
+
+        /* TASK 3: make the server passive
+         * hint: the passive attribute can be used to do this.
+         */
+
+        echo.passive = true;
+
+    }
+}

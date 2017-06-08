@@ -36,7 +36,7 @@ Test it for ARM
 ```bash
     make arm_simple_defconfig; make silentoldconfig
     make
-    qemu-system-arm -M kzm -nographic -kernel images/capdl-loader-experimental-image-arm-imx31
+    qemu-system-arm -M sabrelite -nographic -kernel images/capdl-loader-experimental-image-arm-imx6
     # quit with Ctrl-A X
 ```
 

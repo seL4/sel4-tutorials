@@ -111,10 +111,20 @@ int main(void) {
     bootstrap_configure_virtual_pool(allocman, vaddr,
                                      ALLOCATOR_VIRTUAL_POOL_SIZE, simple_get_pd(&simple));
 
+    /* create and configure a scheduling context */
+    vka_object_t sc_object = {0};
+    error = vka_alloc_sched_context(&vka, &sc_object);
+    ZF_LOGF_IF(error, "Failed to allocate new SC");
+
+    seL4_CPtr sched_control = simple_get_sched_ctrl(&simple, info->nodeID);
+    error = seL4_SchedControl_Configure(sched_control, sc_object.cptr, 10 * US_IN_MS, 10 * US_IN_MS, 0);
+    ZF_LOGF_IFERR(error, "Failed to configure new SC.");
+
     /* use sel4utils to make a new process */
     sel4utils_process_t new_process;
     error = sel4utils_configure_process(&new_process, &vka, &vspace,
-                                        APP_PRIORITY, APP_IMAGE_NAME);
+                                        APP_PRIORITY, APP_IMAGE_NAME,
+                                        sc_object.cptr);
     assert(error == 0);
 
     /* give the new process's thread a name */
@@ -176,8 +186,13 @@ int main(void) {
     seL4_MessageInfo_t tag;
     seL4_Word msg;
 
+    /* create a reply object */
+    vka_object_t reply_object = {0};
+    error = vka_alloc_reply(&vka, &reply_object);
+    ZF_LOGF_IFERR(error, "Failed to allocate new reply object");
+
     /* wait for a message */
-    tag = seL4_Recv(ep_cap_path.capPtr, &sender_badge);
+    tag = seL4_Recv(ep_cap_path.capPtr, &sender_badge, reply_object.cptr);
 
     /* make sure it is what we expected */
     assert(sender_badge == EP_BADGE);
@@ -225,7 +240,7 @@ int main(void) {
     seL4_SetMR(0, msg);
 
     /* send the modified message back */
-    seL4_ReplyRecv(ep_cap_path.capPtr, tag, &sender_badge);
+    seL4_ReplyRecv(ep_cap_path.capPtr, tag, &sender_badge, reply_object.cptr);
 
     return 0;
 }

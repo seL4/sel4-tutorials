@@ -45,7 +45,7 @@ menu "Applications"
     source "apps/hello-camkes-1/Kconfig"
     source "apps/hello-camkes-2/Kconfig"
     source "apps/hello-camkes-timer/Kconfig"
-
+    source "apps/hello-camkes-mcs/Kconfig"
 endmenu
 
 source "tools/camkes/Kconfig"

@@ -166,12 +166,40 @@ int main(void) {
     ZF_LOGF_IFERR(error, "Failed to allocate new TCB.\n"
                   "\tVKA given sufficient bootstrap memory?");
 
+    /* TASK 8.1: create a new scheduling context (SC) */
+    /* hint: vka_alloc_sched_context() */
+
+
+    ZF_LOGF_IFERR(error, "Failed to allocate new SC.\n"
+                  "\tVKA given sufficient bootstrap memory?");
+
+    seL4_CPtr sched_control = seL4_CapNull;
+    /* TASK 8.2: obtain the scheduling control capability for the current node, which allows a
+     * scheduling context to be configured for that node. */
+
+    /* hint: simple_get_sched_ctrl
+     * hint: seL4_BootInfo has id of the current core */
+
+  
+      ZF_LOGF_IF(sched_control == seL4_CapNull, "Failed to find sched_control.");
+
+   /* TASK 8.3: Use the sched control capability to configure the scheduling context for
+       * a round robin thread with a 10ms timeslice */
+
+      /* hint: seL4_SchedControl_Configure
+       * hint: time.h in libutils has constants for time.
+       * hint: For round-robin threads, the budget and period should be thread same
+       */
+
+    ZF_LOGF_IFERR(error, "Failed to configure new SC.\n");
+
     /* TASK 9: initialise the new TCB */
     /* hint 1: seL4_TCB_Configure()
-     * int seL4_TCB_Configure(seL4_TCB service, seL4_Word fault_ep, seL4_Uint8 priority, seL4_CNode cspace_root, seL4_CapData_t cspace_root_data, seL4_CNode vspace_root, seL4_CapData_t vspace_root_data, seL4_Word buffer, seL4_CPtr bufferFrame)
+     * int seL4_TCB_Configure(seL4_TCB service, seL4_Word fault_ep, seL4_Uint8 priority, seL4_CPtr sched_context, seL4_CNode cspace_root, seL4_CapData_t cspace_root_data, seL4_CNode vspace_root, seL4_CapData_t vspace_root_data, seL4_Word buffer, seL4_CPtr bufferFrame)
      * @param service Capability to the TCB which is being operated on.
      * @param fault_ep Endpoint which receives IPCs when this thread faults (must be in TCB's cspace).
      * @param priority The thread's new priority.
+     * @param sched_context The scheduling context to run on
      * @param cspace_root The new CSpace root.
      * @param cspace_root_data Optionally set the guard and guard size of the new root CNode. If set to zero, this parameter has no effect.
      * @param vspace_root The new VSpace root.

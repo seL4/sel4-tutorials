@@ -27,6 +27,7 @@
 #include <sel4debug/debug.h>
 
 #include <utils/arith.h>
+#include <utils/time.h>
 #include <utils/zf_log.h>
 #include <sel4utils/sel4_zf_logif.h>
 
@@ -42,6 +43,7 @@ seL4_BootInfo *info;
 
 seL4_CPtr ep_cap;
 seL4_CPtr badged_ep_cap;
+seL4_CPtr reply_cap;
 
 /* stack for the new thread */
 #define THREAD_2_STACK_SIZE 512
@@ -59,7 +61,7 @@ void thread_2(void) {
     printf("thread_2: hallo wereld\n");
 
     /* wait for a message to come in over the endpoint */
-    tag = seL4_Recv(ep_cap, &sender_badge);
+    tag = seL4_Recv(ep_cap, &sender_badge, reply_cap);
 
     /* make sure it is what we expected */
     ZF_LOGF_IF(sender_badge != EP_BADGE,
@@ -76,7 +78,7 @@ void thread_2(void) {
 
     /* modify the message and send it back */
     seL4_SetMR(0, ~msg);
-    seL4_ReplyRecv(ep_cap, tag, &sender_badge);
+    seL4_ReplyRecv(ep_cap, tag, &sender_badge, reply_cap);
 }
 
 
@@ -147,8 +149,10 @@ int main(void) {
     /* TASK 1: Find free cap slots for the caps to the:
      *  - tcb
      *  - ipc frame
+     *  - scheduling context
      *  - endpoint
      *  - badged endpoint
+     *  - reply object
      *  - page table
      * hint: The bootinfo struct contains a range of free cap slot indices.
      */
@@ -156,10 +160,12 @@ int main(void) {
     /* decide on slots to use based on what is free */
 
     seL4_CPtr tcb_cap = info->empty.start;
-    seL4_CPtr ipc_frame_cap = info->empty.start + 1;
-    ep_cap = info->empty.start + 2;
-    badged_ep_cap = info->empty.start + 3;
-    seL4_CPtr page_table_cap = info->empty.start + 4;
+    seL4_CPtr sc_cap = info->empty.start + 1;
+    seL4_CPtr ipc_frame_cap = info->empty.start + 2;
+    ep_cap = info->empty.start + 3;
+    badged_ep_cap = info->empty.start + 4;
+    reply_cap = info->empty.start + 5;
+    seL4_CPtr page_table_cap = info->empty.start + 6;
 
 
     /* get an untyped to retype into all the objects we will need */
@@ -167,9 +173,11 @@ int main(void) {
 
     /* TASK 2: Obtain a cap to an untyped which is large enough to contain:
      *  - tcb
+     *  - sched context
      *  - ipc frame
      *  - endpoint
      *  - badged endpoint
+     *  - reply object
      *  - page table
      *
      * hint 1: determine the size of each object
@@ -183,8 +191,10 @@ int main(void) {
     seL4_Word size;
 
     size = BIT(seL4_TCBBits) +
+           BIT(seL4_MinSchedContextBits) +
            BIT(seL4_PageBits) +
            BIT(seL4_EndpointBits) +
+           BIT(seL4_ReplyBits) +
            BIT(seL4_PageTableBits);
     untyped = get_untyped(info, size);
 
@@ -202,6 +212,10 @@ int main(void) {
 
     ZF_LOGF_IFERR(error, "Failed to retype our chosen untyped into a TCB child object.\n");
 
+    error = untyped_retype_root(untyped, seL4_SchedContextObject, seL4_MinSchedContextBits, cspace_cap, sc_cap);
+
+    ZF_LOGF_IFERR(error, "Failed to retype our chosen untyped into an SC child object.\n");
+
     error = untyped_retype_root(untyped, seL4_X86_4K, seL4_PageBits, cspace_cap, ipc_frame_cap);
 
     ZF_LOGF_IFERR(error, "Failed to retype our chosen untyped into a page object.\n");
@@ -210,6 +224,9 @@ int main(void) {
 
     ZF_LOGF_IFERR(error, "Failed to retype our chosen untyped into an Endpoint child object.\n");
 
+    error = untyped_retype_root(untyped, seL4_ReplyObject, seL4_ReplyBits, cspace_cap, reply_cap);
+
+    ZF_LOGF_IFERR(error, "Failed to retype our chosen untyped into a Reply child object.\n");
     /*
      * map the frame into the vspace at ipc_buffer_vaddr.
      * To do this we first try to map it in to the root page directory.
@@ -264,9 +281,16 @@ int main(void) {
                     seL4_AllRights, seL4_CapData_Badge_new(EP_BADGE));
 
 
+    /* configure scheduling context */
+    seL4_CPtr sched_control = info->schedcontrol.start + info->nodeID;
+    error = seL4_SchedControl_Configure(sched_control, sc_cap, 10 * US_IN_MS,
+                                        10 * US_IN_MS, 0);
+    ZF_LOGF_IFERR(error, "Failed to configure scheduling context.\n"
+                         "\tDid you use the correct sched control cap?\n");
 
     /* initialise the new TCB */
     error = seL4_TCB_Configure(tcb_cap, seL4_CapNull, seL4_PrioProps_new(seL4_MaxPrio, seL4_MaxPrio),
+                               sc_cap,
                                cspace_cap, seL4_NilData, pd_cap, seL4_NilData,
                                ipc_buffer_vaddr, ipc_frame_cap);
     ZF_LOGF_IFERR(error, "Failed to configure the new TCB object.\n"

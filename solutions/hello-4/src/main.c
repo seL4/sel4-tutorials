@@ -39,6 +39,7 @@
 #include <sel4utils/process.h>
 
 #include <utils/arith.h>
+#include <utils/time.h>
 #include <utils/zf_log.h>
 #include <sel4utils/sel4_zf_logif.h>
 
@@ -130,6 +131,15 @@ int main(void) {
     bootstrap_configure_virtual_pool(allocman, vaddr,
                                      ALLOCATOR_VIRTUAL_POOL_SIZE, simple_get_pd(&simple));
 
+    /* create and configure a scheduling context */
+    vka_object_t sc_object = {0};
+    error = vka_alloc_sched_context(&vka, &sc_object);
+    ZF_LOGF_IF(error, "Failed to allocate new SC");
+
+    seL4_CPtr sched_control = simple_get_sched_ctrl(&simple, info->nodeID);
+    error = seL4_SchedControl_Configure(sched_control, sc_object.cptr, 10 * US_IN_MS, 10 * US_IN_MS, 0);
+    ZF_LOGF_IFERR(error, "Failed to configure new SC.");
+
     /* TASK 2: use sel4utils to make a new process */
     /* hint 1: sel4utils_configure_process()
      * int sel4utils_configure_process(sel4utils_process_t *process, vka_t *vka, vspace_t *vspace, uint8_t priority, char *image_name);
@@ -138,6 +148,7 @@ int main(void) {
      * @param vspace Vspace allocator for the current vspace.
      * @param priority Priority to configure the process to run as.
      * @param image_name Name of the elf image to load from the cpio archive.
+     * @param sched_context the scheduling context we just created
      * @return 0 on success, -1 on error.
      * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%204#TASK_2:
      *
@@ -145,9 +156,11 @@ int main(void) {
      * hint 3: the elf image name is in APP_IMAGE_NAME
      */
 
+
     sel4utils_process_t new_process;
     error = sel4utils_configure_process(&new_process, &vka, &vspace,
-                                        APP_PRIORITY, APP_IMAGE_NAME);
+                                        APP_PRIORITY, APP_IMAGE_NAME,
+                                        sc_object.cptr);
 
     ZF_LOGF_IFERR(error, "Failed to spawn a new thread.\n"
                   "\tsel4utils_configure_process expands an ELF file into our VSpace.\n"
@@ -163,6 +176,11 @@ int main(void) {
     vka_object_t ep_object = {0};
     error = vka_alloc_endpoint(&vka, &ep_object);
     ZF_LOGF_IFERR(error, "Failed to allocate new endpoint object.\n");
+
+    /* create a reply object */
+    vka_object_t reply_object = {0};
+    error = vka_alloc_reply(&vka, &reply_object);
+    ZF_LOGF_IFERR(error, "Failed to allocate new reply object.\n");
 
     /*
      * make a badged endpoint in the new process's cspace.  This copy
@@ -269,7 +287,7 @@ int main(void) {
      * hint 3: use the badged endpoint cap that you minted above
      */
 
-    tag = seL4_Recv(ep_cap_path.capPtr, &sender_badge);
+    tag = seL4_Recv(ep_cap_path.capPtr, &sender_badge, reply_object.cptr);
 
 
     /* make sure it is what we expected */
@@ -308,7 +326,7 @@ int main(void) {
      * hint 3: use the badged endpoint cap that you used for Call
      */
 
-    seL4_ReplyRecv(ep_cap_path.capPtr, tag, &sender_badge);
+    seL4_ReplyRecv(ep_cap_path.capPtr, tag, &sender_badge, reply_object.cptr);
 
 
     return 0;

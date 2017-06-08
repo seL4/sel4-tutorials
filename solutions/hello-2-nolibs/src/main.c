@@ -27,6 +27,7 @@
 
 #include <utils/arith.h>
 #include <utils/zf_log.h>
+#include <utils/time.h>
 #include <sel4utils/sel4_zf_logif.h>
 
 /* global environment variables */
@@ -142,8 +143,59 @@ int main(void) {
                   "\tDid you find an untyped capability to retype?\n"
                   "\tDid you find a free capability slot for the new child capability that will be generated?\n");
 
+
+    /* create a scheduling context (SC), similarly to creating a TCB */
+    /* TASK 3.1: allocate a cslot for the SC object */
+    seL4_CPtr sc_cap;
+    
+    sc_cap = tcb_cap + 1;
+    
+
+    /* TASK 3.2: allocate another untyped */
+    
+    untyped = get_untyped(info, 1u << seL4_MinSchedContextBits);
+    
+
+    /* TASK 3.3: retype the untyped into a SC, storing the cap in sc_cap */
+    
+    error = seL4_Untyped_Retype(untyped /* untyped cap */,
+                                seL4_SchedContextObject /* type */,
+                                seL4_MinSchedContextBits /* size */,
+                                cspace_cap /* root cnode cap */,
+                                cspace_cap /* destination cspace */,
+                                32 /* depth */,
+                                sc_cap /* offset */,
+                                1 /* num objects */);
+    
+    ZF_LOGF_IFERR(error, "Failed to allocate a SC object.\n"
+                  "\tDid you find an untyped capability to retype?\n"
+                  "\tDid you find a free capability slot for the new child capability that will be generated?\n");
+
+    seL4_CPtr sched_control = seL4_CapNull;
+    /* TASK 3.4: obtain the scheduling control capability for the current node, which allows a
+     *           scheduling context to be configured for that node.
+     * hint: seL4_SchedControl_Configure()
+     * hint: seL4_BootInfo has the id of the current node and the sched control caps for each node */
+    
+    sched_control = info->schedcontrol.start + info->nodeID;
+    
+    ZF_LOGF_IF(sched_control == seL4_CapNull, "Failed to find sched control");
+
+
+    /* TASK 3.5:  Use the sched control capability to configure the scheduling context for
+     *            a round robin thread with a 10ms timeslice
+     * hint: seL4_SchedControl_Configure
+     * hint: time.h in libutils has constants for time
+     */
+    
+    error = seL4_SchedControl_Configure(sched_control, sc_cap, 10 * US_IN_MS, 10 * US_IN_MS, 0);
+    
+    ZF_LOGF_IFERR(error, "Failed to configure scheduling context.\n"
+                         "\tDid you use the correct sched control cap?\n");
+
     /* initialise the new TCB */
     error = seL4_TCB_Configure(tcb_cap, seL4_CapNull, seL4_PrioProps_new(seL4_MaxPrio, seL4_MaxPrio),
+                               sc_cap,
                                cspace_cap, seL4_NilData, pd_cap, seL4_NilData, 0, 0);
     ZF_LOGF_IFERR(error, "Failed to configure TCB object.\n"
                   "\tWe're spawning the new thread in the root thread's CSpace.\n"
