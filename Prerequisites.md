@@ -44,7 +44,7 @@ Test it for x86
 
 ```bash
     make clean
-    make ia32_simple_defconfig; make silentoldconfig
+    make x86_simple_defconfig; make silentoldconfig
     make
     qemu-system-i386 -nographic -m 512 -cpu Haswell -kernel images/kernel-ia32-pc99 -initrd images/capdl-loader-experimental-image-ia32-pc99
     # quit with Ctrl-A X
