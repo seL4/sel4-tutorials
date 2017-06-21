@@ -18,21 +18,24 @@ To get a copy of the seL4 API and library exercise code and all libraries and to
 
         mkdir sel4-tutorials
         cd sel4-tutorials
-        repo init -u http://github.com/sel4-projects/sel4-tutorials-manifest -m sel4-tutorials.xml
-        repo sync 
+        repo init -u http://github.com/SEL4PROJ/sel4-tutorials-manifest -m sel4-tutorials.xml
+        repo sync
 
 To get a copy of the CAmkES exercise code and all libraries and tools needed to build and run it do the following:
 
         mkdir camkes-tutorials
         cd camkes-tutorials
-        repo init -u http://github.com/sel4-projects/sel4-tutorials-manifest -m camkes-tutorials.xml
-        repo sync 
+        repo init -u http://github.com/SEL4PROJ/sel4-tutorials-manifest -m camkes-tutorials.xml
+        repo sync
 
 ### Reporting issues or bugs in the tutorials:
 Please report any issues you find in the tutorials (bugs, outdated API calls, etc) by filing an issue on the public github repository:
 https://github.com/SEL4PROJ/sel4-tutorials/issues
 
 # Documentation
+
+## Developer wiki
+A walkthrough of each tutorial is available on the [`wiki`](https://wiki.sel4.systems/Tutorials)
 
 ## Tutorial Slides
 The slides used for the tutorial are available in [`docs`](docs).
