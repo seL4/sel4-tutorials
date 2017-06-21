@@ -34,6 +34,9 @@ https://github.com/SEL4PROJ/sel4-tutorials/issues
 
 # Documentation
 
+## Developer wiki
+A walkthrough of each tutorial is available on the [`wiki`](https://wiki.sel4.systems/Tutorials)
+
 ## Tutorial Slides
 The slides used for the tutorial are available in [`docs`](docs).
 
