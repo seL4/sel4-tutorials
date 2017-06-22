@@ -417,8 +417,10 @@ int main(void) {
     /* set stack pointer for the new thread. remember the stack grows down */
     sel4utils_set_stack_pointer(&regs, thread_2_stack_top);
 
+#ifdef CONFIG_ARCH_IA32
     /* set the fs register for IPC buffer */
     regs.fs = IPCBUF_GDT_SELECTOR;
+#endif /* CONFIG_ARCH_IA32 */
 
     /* actually write the TCB registers. */
     error = seL4_TCB_WriteRegisters(tcb_object.cptr, 0, 0, regs_size, &regs);
