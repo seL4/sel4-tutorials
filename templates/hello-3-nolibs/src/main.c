@@ -30,6 +30,8 @@
 #include <utils/zf_log.h>
 #include <sel4utils/sel4_zf_logif.h>
 
+#include <vspace/page.h>
+
 /* constants */
 #define IPCBUF_FRAME_SIZE_BITS 12 // use a 4K frame for the IPC buffer
 #define IPCBUF_VADDR 0x7000000 // arbitrary (but free) address for IPC buffer
@@ -208,7 +210,7 @@ int main(void) {
 /*- endif -*/
     ZF_LOGF_IFERR(error, "Failed to retype our chosen untyped into a TCB child object.\n");
 /*- if solution -*/
-    error = untyped_retype_root(untyped, seL4_X86_4K, seL4_PageBits, cspace_cap, ipc_frame_cap);
+    error = untyped_retype_root(untyped, seL4_ARCH_4KPage, seL4_PageBits, cspace_cap, ipc_frame_cap);
 /*- endif -*/
     ZF_LOGF_IFERR(error, "Failed to retype our chosen untyped into a page object.\n");
 /*- if solution -*/
@@ -229,28 +231,28 @@ int main(void) {
      */
     seL4_Word ipc_buffer_vaddr;
     ipc_buffer_vaddr = IPCBUF_VADDR;
-    error = seL4_X86_Page_Map(ipc_frame_cap, pd_cap, ipc_buffer_vaddr,
-                              seL4_AllRights, seL4_X86_Default_VMAttributes);
+    error = seL4_ARCH_Page_Map(ipc_frame_cap, pd_cap, ipc_buffer_vaddr,
+                              seL4_AllRights, seL4_ARCH_Default_VMAttributes);
     if (error != 0) {
 
         /* TASK 4: Retype the untyped into page table (if this was done in TASK 3, ignore this). */
 
 /*- if solution -*/
         /* create and map a page table */
-        error = untyped_retype_root(untyped, seL4_X86_PageTableObject, seL4_PageTableBits, cspace_cap, page_table_cap);
+        error = untyped_retype_root(untyped, seL4_ARCH_PageTableObject, seL4_PageTableBits, cspace_cap, page_table_cap);
 /*- endif -*/
         ZF_LOGF_IFERR(error, "Failed to retype an object into a page table.\n"
                       "Re-examine your arguments -- check the solution files if you're unable to get it.\n");
 
-        error = seL4_X86_PageTable_Map(page_table_cap, pd_cap,
-                                       ipc_buffer_vaddr, seL4_X86_Default_VMAttributes);
+        error = seL4_ARCH_PageTable_Map(page_table_cap, pd_cap,
+                                       ipc_buffer_vaddr, seL4_ARCH_Default_VMAttributes);
         ZF_LOGF_IFERR(error, "Failed to map page table into VSpace.\n"
                       "\tWe are inserting a new page table into the top-level table.\n"
                       "\tPass a capability to the new page table, and not for example, the IPC buffer frame vaddr.\n");
 
         /* then map the frame in */
-        error = seL4_X86_Page_Map(ipc_frame_cap, pd_cap,
-                                  ipc_buffer_vaddr, seL4_AllRights, seL4_X86_Default_VMAttributes);
+        error = seL4_ARCH_Page_Map(ipc_frame_cap, pd_cap,
+                                  ipc_buffer_vaddr, seL4_AllRights, seL4_ARCH_Default_VMAttributes);
         ZF_LOGF_IFERR(error, "Failed again to map the IPC buffer frame into the VSpace.\n"
                       "\tPass a capability to the IPC buffer's physical frame.\n"
                       "\tRevisit the first seL4_ARCH_Page_Map call above and double-check your arguments.\n");
@@ -294,12 +296,20 @@ int main(void) {
                stack_alignment_requirement);
 
     /* set instruction pointer, stack pointer and fs register (used for IPC buffer) */
+#ifdef CONFIG_ARCH_IA32
     seL4_UserContext regs = {
         .eip = (seL4_Word)thread_2,
         .esp = (seL4_Word)thread_2_stack_top,
         .fs = IPCBUF_GDT_SELECTOR
     };
-
+#elif defined(CONFIG_ARCH_ARM)
+    seL4_UserContext regs = {
+        .pc = (seL4_Word)thread_2,
+        .sp = (seL4_Word)thread_2_stack_top
+    };
+#else
+#error "Unsupported architecture"
+#endif
     /* actually write the TCB registers. */
     error = seL4_TCB_WriteRegisters(tcb_cap, 0, 0, regs_size, &regs);
     ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
