@@ -18,4 +18,5 @@ include tools/camkes/toplevel.mk
 
 # All camkes apps have the same binary name
 apps = capdl-loader-experimental
+HELP_TITLE := "CAmkES Tutorials"
 include $(BUILD_CONFIG)/Makefile-common

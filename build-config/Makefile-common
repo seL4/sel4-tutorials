@@ -47,7 +47,7 @@ simulate: all
 	${QEMU} -nographic ${QEMU_ARGS} ${QEMU_IMAGE}
 .PHONY: help
 help:
-	@echo "sel4-tutorials"
+	@echo "${HELP_TITLE}"
 	@echo " make menuconfig      - Select build configuration via menus."
 	@echo " make <defconfig>     - Apply one of the default configurations. See"
 	@echo "                        below for valid configurations."

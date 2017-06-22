@@ -22,4 +22,6 @@ all: app-images
 -include .config
 
 include tools/common/project.mk
+
+HELP_TITLE := "seL4 Tutorials"
 include $(BUILD_CONFIG)/Makefile-common
