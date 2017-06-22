@@ -18,10 +18,14 @@ ifeq (${PLAT}, imx6)
 # note: this relies on qemu after version 2.0
 QEMU_ARGS:=-M sabrelite -m size=1024M -s -serial null -serial mon:stdio
 else
+ifeq (${PLAT}, zynq7000)
+QEMU_ARGS:=-M xilinx-zynq-a9 -nographic -m size=1024M -s -serial null -serial mon:stdio
+else
 ifeq (${PLAT}, pc99)
 QEMU_ARGS:=-m 512 -cpu Haswell
 else
 $(warning Unsupport or undefined platform, did you run make <defconfig>?)
+endif
 endif
 endif
 endif
