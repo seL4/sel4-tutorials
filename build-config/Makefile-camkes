@@ -7,7 +7,16 @@
 # the BSD 2-Clause license. Note that NO WARRANTY is provided.
 # See "LICENSE_BSD2.txt" for details.
 #
-# @TAG(D61_BSD)
+# @TAG(DATA61_BSD)
 #
 
+# The makefile may be a symlink, and it wants to include files relative to its
+# real location, so find out where that is.
+BUILD_CONFIG := $(dir $(realpath $(abspath $(lastword $(MAKEFILE_LIST)))))
+
 include tools/camkes/toplevel.mk
+
+# All camkes apps have the same binary name
+apps = capdl-loader-experimental
+HELP_TITLE := "CAmkES Tutorials"
+include $(BUILD_CONFIG)/Makefile-common
