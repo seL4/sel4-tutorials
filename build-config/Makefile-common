@@ -19,7 +19,7 @@ ifeq (${PLAT}, imx6)
 QEMU_ARGS:=-M sabrelite -m size=1024M -s -serial null -serial mon:stdio
 else
 ifeq (${PLAT}, pc99)
-QEMU_ARGS:=-m 512
+QEMU_ARGS:=-m 512 -cpu Haswell
 else
 $(warning Unsupport or undefined platform, did you run make <defconfig>?)
 endif
