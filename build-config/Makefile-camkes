@@ -10,4 +10,12 @@
 # @TAG(D61_BSD)
 #
 
+# The makefile may be a symlink, and it wants to include files relative to its
+# real location, so find out where that is.
+BUILD_CONFIG := $(dir $(realpath $(abspath $(lastword $(MAKEFILE_LIST)))))
+
 include tools/camkes/toplevel.mk
+
+# All camkes apps have the same binary name
+apps = capdl-loader-experimental
+include $(BUILD_CONFIG)/Makefile-common
