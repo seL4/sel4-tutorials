@@ -35,7 +35,7 @@ CONFIG_PREFIX_TO_ARCH = {
 CONFIG_PREFIX_TO_PLAT = {
     'ia32': 'pc99',
     'arm': 'imx31',
-    'zynq': 'zynq7000',
+    'zynq7000': 'zynq7000',
 }
 ARCH_TO_DEFAULT_PLAT = {
     'ia32': 'pc99',
@@ -75,11 +75,11 @@ def list_names_for_target(target_arch, target_plat):
 def config_file_to_info(filename):
     '''Returns a (name, arch, plat) tuple fora given build config file name'''
     prefix, name = common.config_filename_to_parts(filename)
-    return name, CONFIG_PREFIX_TO_ARCH[prefix], CONFIG_PREFIX_TO_PLAT[prefix]
+    return name, CONFIG_PREFIX_TO_PLAT[prefix], CONFIG_PREFIX_TO_PLAT[prefix]
 
-def arch_to_config_file(arch, name):
+def plat_to_config_file(plat, name):
     '''Returns a build config file name for a given (name, arch, plat) tuple'''
-    return common.config_filename_from_parts(arch, name)
+    return common.config_filename_from_parts(plat, name)
 
 def check_config(arch, plat, name):
     '''Returns True if a given arch, plat, name corresponds to an existing
@@ -128,7 +128,7 @@ def build(arch, plat, name, jobs):
     make = sh.make.bake(_out=process_output, _err=process_output)
     logger.info('make clean')
     make.clean()
-    config = arch_to_config_file(arch, name)
+    config = plat_to_config_file(plat, name)
     logger.info('make ' + config)
     make(config)
     logger.info('make silentoldconfig')
