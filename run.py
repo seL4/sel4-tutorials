@@ -25,29 +25,33 @@ import common
 
 logger = common.setup_logger(__name__)
 
-PLATS = ['pc99', 'imx31', 'imx6']
+PLATS = ['pc99', 'imx31', 'imx6', 'zynq7000']
 
 CONFIG_PREFIX_TO_ARCH = {
     'ia32': 'ia32',
     'arm': 'arm',
+    'zynq': 'arm',
 }
 CONFIG_PREFIX_TO_PLAT = {
     'ia32': 'pc99',
     'arm': 'imx31',
+    'zynq': 'zynq7000',
 }
 ARCH_TO_DEFAULT_PLAT = {
     'ia32': 'pc99',
-    'arm': 'imx31',
+    'arm': 'zynq7000',
 }
 PLAT_TO_QEMU_BIN = {
     'pc99': 'qemu-system-i386',
     'imx31': 'qemu-system-arm',
     'imx6': 'qemu-system-arm',
+    'zynq7000': 'qemu-system-arm',
 }
 PLAT_TO_QEMU_ARGS = {
     'pc99': ['-nographic', '-m', '512', '-cpu', 'Haswell'],
     'imx6': ['-nographic', '-M', 'sabrelite'],
     'imx31': ['-nographic', '-M', 'kzm'],
+    'zynq7000': ['-nographic', '-M', 'xilinx-zynq-a9', '-m', 'size=1024M', '-s', '-serial', 'null', '-serial', 'mon:stdio'],
 }
 
 def list_configs():
