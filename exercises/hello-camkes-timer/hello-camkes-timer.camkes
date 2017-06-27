@@ -22,7 +22,7 @@ import "components/Timer/Timer.camkes";
 
 assembly {
     composition {
-        /* TASK: component instances */
+        /* TASK 1: component instances */
         /* hint 1: one hardware component, one driver component
          * hint 2: look at
          * https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#creating-an-application
@@ -31,7 +31,7 @@ assembly {
 
         component Client client;
 
-        /* TASK: connections */
+        /* TASK 2: connections */
         /* hint 1: use seL4HardwareMMIO to connect device memory
          * hint 2: use seL4HardwareInterrupt to connect interrupt
          * hint 3: look at
@@ -43,7 +43,7 @@ assembly {
         connection seL4RPCCall hello_timer(from client.hello, to timer.hello);
     }
     configuration {
-        /* TASK: hardware resources */
+        /* TASK 3: hardware resources */
         /* hint 1: find out the device memory address and IRQ number from the hardware data sheet
          * hint 2: look at
          * https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#hardware-components
