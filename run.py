@@ -28,13 +28,14 @@ logger = common.setup_logger(__name__)
 PLATS = ['pc99', 'imx31', 'imx6', 'zynq7000']
 
 CONFIG_PREFIX_TO_ARCH = {
-    'ia32': 'ia32',
+    'pc99': 'ia32',
     'arm': 'arm',
-    'zynq': 'arm',
+    'zynq7000': 'arm',
+    'kzm': 'arm',
 }
 CONFIG_PREFIX_TO_PLAT = {
-    'ia32': 'pc99',
-    'arm': 'imx31',
+    'pc99': 'pc99',
+    'kzm': 'imx31',
     'zynq7000': 'zynq7000',
 }
 ARCH_TO_DEFAULT_PLAT = {
@@ -49,8 +50,8 @@ PLAT_TO_QEMU_BIN = {
 }
 PLAT_TO_QEMU_ARGS = {
     'pc99': ['-nographic', '-m', '512', '-cpu', 'Haswell'],
-    'imx6': ['-nographic', '-M', 'sabrelite'],
-    'imx31': ['-nographic', '-M', 'kzm'],
+    'imx6': ['-nographic', '-M', 'sabrelite', '-m', 'size=1024M', '-s', '-serial', 'null', '-serial', 'mon:stdio'],
+    'imx31': ['-nographic', '-M', 'kzm', '-m', 'size=1024M', '-s', '-serial', 'null', '-serial', 'mon:stdio'],
     'zynq7000': ['-nographic', '-M', 'xilinx-zynq-a9', '-m', 'size=1024M', '-s', '-serial', 'null', '-serial', 'mon:stdio'],
 }
 
@@ -75,7 +76,7 @@ def list_names_for_target(target_arch, target_plat):
 def config_file_to_info(filename):
     '''Returns a (name, arch, plat) tuple fora given build config file name'''
     prefix, name = common.config_filename_to_parts(filename)
-    return name, CONFIG_PREFIX_TO_PLAT[prefix], CONFIG_PREFIX_TO_PLAT[prefix]
+    return name, CONFIG_PREFIX_TO_ARCH[prefix], CONFIG_PREFIX_TO_PLAT[prefix]
 
 def plat_to_config_file(plat, name):
     '''Returns a build config file name for a given (name, arch, plat) tuple'''

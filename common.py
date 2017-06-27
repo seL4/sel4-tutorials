@@ -17,7 +17,7 @@ import sys
 import logging
 
 ARCHS = ['ia32', 'arm']
-PLATS = ['ia32', 'imx6', 'zynq7000']
+PLATS = ['pc99', 'imx6', 'zynq7000']
 
 BUILD_CONFIG_PAT = r'(?P<prefix>%s)_(?P<name>.*)_defconfig' % "|".join(PLATS)
 BUILD_CONFIG_RE = re.compile(BUILD_CONFIG_PAT)
