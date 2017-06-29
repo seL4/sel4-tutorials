@@ -66,8 +66,7 @@ void callback_handler_1(void *a) {
      * hint 3: write to the "str_buf_t" dataport as defined in the Echo.camkes file
      * hint 4: to access the dataport use the interface name as defined in Echo.camkes.
      * For example if you defined it as "dataport str_buf_t d_typed" then you would use "d_typed" to refer to the dataport in C.
-     * hint 5: for the definition of "str_buf_t" see "str_buf.h":
-     *      https://github.com/seL4-projects/sel4-tutorials/blob/master/apps/hello-camkes-2/include/str_buf.h#L24
+     * hint 5: for the definition of "str_buf_t" see "str_buf.h"
      * hint 6: use the "n" field to specify the number of strings in the dataport
      * hint 7: copy the specified number of strings from the "Buf" dataport to the "str" field
      * hint 8: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-dataports
@@ -119,8 +118,7 @@ void callback_handler_2(void *a) {
      */
     /* hint 1: for the untyped dataport use the "Buf" dataport as defined in the Echo.camkes file
      * hint 2: for the typed dataport use the "ptr_buf_t" dataport as defined in the Echo.camkes file
-     * hint 3: for the definition of "ptr_buf_t" see "str_buf.h":
-     *      https://github.com/seL4-projects/sel4-tutorials/blob/master/apps/hello-camkes-2/include/str_buf.h#L32
+     * hint 3: for the definition of "ptr_buf_t" see "str_buf.h".
      * hint 4: the "n" field of the typed dataport specifies the number of dataport pointers
      * hint 5: the "ptr" field of the typed dataport contains the dataport pointers
      * hint 6: use the function "dataport_unwrap_ptr()" to create a regular pointer from a dataport pointer
