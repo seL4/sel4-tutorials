@@ -35,7 +35,7 @@ int run(void) {
      * For example if you defined it as "dataport Buf d" then you would use "d" to refer to the dataport in C.
      * hint 3: first write the number of strings (NUM_STRINGS) to the dataport
      * hint 4: then copy all the strings from "s_arr" to the dataport.
-     * hint 5: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-dataports
+     * hint 5: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-dataports
      */
 /*- if solution -*/
     int *n = (int*)d;
@@ -49,7 +49,7 @@ int run(void) {
 
     /* TASK 10: emit event to signal that the data is available */
     /* hint 1: use the function <interface_name>.emit
-     * hint 2: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-events
+     * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
      */
 /*- if solution -*/
     echo_emit();
@@ -57,7 +57,7 @@ int run(void) {
 
     /* TASK 11: wait to get an event back signalling that the reply data is avaialble */
     /* hint 1: use the function <interface_name>.wait
-     * hint 2: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-events
+     * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
      */
 /*- if solution -*/
     client_wait();
@@ -70,7 +70,7 @@ int run(void) {
      * hint 3: for the definition of "str_buf_t" see "str_buf.h".
      * hint 4: use the "n" field to determine the number of strings in the dataport
      * hint 5: print out the specified number of strings from the "str" field
-     * hint 6: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-dataports
+     * hint 6: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-dataports
      */
 /*- if solution -*/
     for (int i = 0; i < d_typed->n; i++) {
@@ -90,7 +90,7 @@ int run(void) {
      * hint 6: use the "ptr" field of the typed dataport to store the dataport pointers
      * hint 7: use the function "dataport_wrap_ptr()" to create a dataport pointer from a regular pointer
      * hint 8: the dataport pointers should point into the untyped dataport
-     * hint 9: for more information about dataport pointers see: https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md
+     * hint 9: for more information about dataport pointers see: https://github.com/seL4/camkes-tool/blob/master/docs/index.md
      */
 /*- if solution -*/
     d_ptrs->n = NUM_STRINGS;

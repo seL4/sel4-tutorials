@@ -85,7 +85,7 @@ void hello__init() {
  * hint 4: so the function would be: hello_sleep()
  * hint 5: the CAmkES 'int' type maps to 'int' in C
  * hint 6: call platsupport library function to set up the timer
- * hint 7: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#creating-an-application
+ * hint 7: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
  */
 void hello_sleep(int sec) {
     /* TASK 8: call platsupport library function to set up the timer */
