@@ -150,7 +150,6 @@ int main(void) {
      * @param vka Pointer to vka interface.
      * @param result Structure for the Endpoint object.  This gets initialised.
      * @return 0 on success
-     * https://github.com/seL4/libsel4vka/blob/master/include/vka/object.h#L98
      */
 
     vka_object_t ntfn_object = {0};
@@ -215,8 +214,6 @@ int main(void) {
          *
              * void sel4_timer_handle_single_irq(seL4_timer_t* timer);
          * @param device generic timer handler
-         *
-         * https://github.com/seL4/util_libs/blob/master/libplatsupport/include/platsupport/timer.h#L146
          */
 
         timer_oneshot_relative(timer->timer, NS_IN_MS);

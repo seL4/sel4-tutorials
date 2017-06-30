@@ -24,7 +24,7 @@ component Client {
     /* TASK 1: the event interfaces */
     /* hint 1: specify 2 interfaces: one "emits" and one "consumes"
      * hint 2: you can use an arbitrary string as the interface type (it doesn't get used)
-     * hint 3: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-events
+     * hint 3: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
      */
 
     emits TheEvent echo;
@@ -33,9 +33,8 @@ component Client {
 
     /* TASK 2: the dataport interfaces */
     /* hint 1: specify 3 interfaces: one of type "Buf", one of type "str_buf_t" and one of type "ptr_buf_t"
-     * hint 2: for the definition of these types see "str_buf.h":
-     *     https://github.com/seL4-projects/sel4-tutorials/blob/master/apps/hello-camkes-2/include/str_buf.h
-     * hint 2: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-dataports
+     * hint 2: for the definition of these types see "str_buf.h".
+     * hint 3: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-dataports
      */
 
     dataport Buf d;

@@ -35,19 +35,19 @@ int run(void) {
      * For example if you defined it as "dataport Buf d" then you would use "d" to refer to the dataport in C.
      * hint 3: first write the number of strings (NUM_STRINGS) to the dataport
      * hint 4: then copy all the strings from "s_arr" to the dataport.
-     * hint 5: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-dataports
+     * hint 5: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-dataports
      */
 
 
     /* TASK 10: emit event to signal that the data is available */
     /* hint 1: use the function <interface_name>.emit
-     * hint 2: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-events
+     * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
      */
 
 
     /* TASK 11: wait to get an event back signalling that the reply data is avaialble */
     /* hint 1: use the function <interface_name>.wait
-     * hint 2: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-events
+     * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
      */
 
 
@@ -55,11 +55,10 @@ int run(void) {
     /* hint 1: use the "str_buf_t" dataport as defined in the Client.camkes file
      * hint 2: to access the dataport use the interface name as defined in Client.camkes.
      * For example if you defined it as "dataport str_buf_t d_typed" then you would use "d_typed" to refer to the dataport in C.
-     * hint 3: for the definition of "str_buf_t" see "str_buf.h":
-     *      https://github.com/seL4-projects/sel4-tutorials/blob/master/apps/hello-camkes-2/include/str_buf.h#L24
+     * hint 3: for the definition of "str_buf_t" see "str_buf.h".
      * hint 4: use the "n" field to determine the number of strings in the dataport
      * hint 5: print out the specified number of strings from the "str" field
-     * hint 6: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#an-example-of-dataports
+     * hint 6: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-dataports
      */
 
 
@@ -69,14 +68,13 @@ int run(void) {
      */
     /* hint 1: for the untyped dataport use the "Buf" dataport as defined in the Client.camkes file
      * hint 2: for the typed dataport use the "ptr_buf_t" dataport as defined in the Client.camkes file
-     * hint 3: for the definition of "ptr_buf_t" see "str_buf.h":
-     *      https://github.com/seL4-projects/sel4-tutorials/blob/master/apps/hello-camkes-2/include/str_buf.h#L32
+     * hint 3: for the definition of "ptr_buf_t" see "str_buf.h".
      * hint 4: copy all the strings from "s_arr" into the untyped dataport
      * hint 5: use the "n" field of the typed dataport to specify the number of dataport pointers (NUM_STRINGS)
      * hint 6: use the "ptr" field of the typed dataport to store the dataport pointers
      * hint 7: use the function "dataport_wrap_ptr()" to create a dataport pointer from a regular pointer
      * hint 8: the dataport pointers should point into the untyped dataport
-     * hint 9: for more information about dataport pointers see: https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md
+     * hint 9: for more information about dataport pointers see: https://github.com/seL4/camkes-tool/blob/master/docs/index.md
      */
 
 

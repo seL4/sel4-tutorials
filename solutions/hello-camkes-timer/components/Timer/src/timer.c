@@ -37,7 +37,6 @@ void irq_handle(void) {
     /* hint: void timer_handle_irq(pstimer_t* device, uint32_t irq)
      * @param device Structure for the timer device driver.
      * @param irq    Timer's interrupt number
-     * https://github.com/seL4/util_libs/blob/master/libplatsupport/include/platsupport/timer.h#L159
      */
 
     timer_handle_irq(timer_drv, EPIT2_INTERRUPT);
@@ -71,7 +70,6 @@ void hello__init() {
     /* hint: pstimer_t *epit_get_timer(epit_config_t *config);
      * @param config timer configuration structure
      * @return timer handler
-     * https://github.com/seL4/util_libs/blob/master/libplatsupport/mach_include/imx/platsupport/mach/epit.h#L28
      */
 
     timer_drv = epit_get_timer(&config);
@@ -87,7 +85,7 @@ void hello__init() {
  * hint 4: so the function would be: hello_sleep()
  * hint 5: the CAmkES 'int' type maps to 'int' in C
  * hint 6: call platsupport library function to set up the timer
- * hint 7: look at https://github.com/seL4/camkes-tool/blob/2.1.0/docs/index.md#creating-an-application
+ * hint 7: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
  */
 void hello_sleep(int sec) {
     /* TASK 8: call platsupport library function to set up the timer */
@@ -95,7 +93,6 @@ void hello_sleep(int sec) {
      * @param device timer handler
      * @param ns     timeout in nanoseconds
      * @return 0 on success
-     * https://github.com/seL4/util_libs/blob/master/libplatsupport/include/platsupport/timer.h#L146
      */
 
     timer_oneshot_relative(timer_drv, sec * NS_IN_SECOND);
