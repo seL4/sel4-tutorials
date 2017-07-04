@@ -150,6 +150,7 @@ int main(void) {
      * @param vka Pointer to vka interface.
      * @param result Structure for the Endpoint object.  This gets initialised.
      * @return 0 on success
+     * https://github.com/seL4/libsel4vka/blob/master/include/vka/object.h#L98
      */
 
 
@@ -186,27 +187,33 @@ int main(void) {
     msg = seL4_GetMR(0);
     printf("main: got a message from %#x to sleep %u seconds\n", sender_badge, msg);
 
-    seL4_Word sender;
-
     /*
-     * The PIT only has 16-bit count down register, we cannot make it
-     * sleep for 1 second, instead, we make PIT to fire an interrupt every
-     * one millisecond, and count for 1000 times to make one second.
+     * TASK 3: Start and configure the timer 
+     * hint 1: start the timer
+     * hint 2: set period to 1 millisecond
+     *
+     * int timer_start (pstimer_t* device)
+     * @param device generic timer handler
+     * @return 0 on success
+     *
+     * int timer_periodic (pstimer_t* device, uint64_t ns)
+     * @param device generic timer handler
+     * @param ns number of nanoseconds before firing the interrupt
+     * @return 0 on success
+     *
      */
+
+
     int count = 0;
     while (1) {
-        /* TASK 3: wait for the timeout */
-        /* hint 1: set timeout to 1 millisecond
-         * hint 2: wait for the incoming interrupt
-         * hint 3: handle the interrupt
+        /*
+         * TASK 4: Handle the timer interrupt
+         * hint 1: wait for the incoming interrupt and handle it
+         * The loop runs for (1000 * msg) times, which is basically 1 second * msg.
          *
-         * int timer_oneshot_relative(pstimer_t* device, uint64_t ns)
+         * void sel4_timer_handle_single_irq(seL4_timer_t* timer);
          * @param device generic timer handler
-         * @param ns number of nanoseconds before firing the interrupt
-         * @return 0 on success
          *
-             * void sel4_timer_handle_single_irq(seL4_timer_t* timer);
-         * @param device generic timer handler
          */
 
         count++;
@@ -214,6 +221,16 @@ int main(void) {
             break;
         }
     }
+
+    /*
+     * TASK 5: Stop the timer
+     *
+     * int timer_stop(pstimer_t* device)
+     * @param device generic timer handler
+     * @return 0 on success
+     *
+     */
+
 
     /* get the current time */
     msg = timer_get_time(timer->timer);

@@ -108,7 +108,7 @@ int main(void) {
     /* TASK 2: Obtain a cap to an untyped which is large enough to contain a tcb.
      *
      * hint 1: determine the size of a tcb object.
-     *         (look in libs/libsel4/arch_include/x86/sel4/arch/types.h)
+     *         (look in libs/libsel4/arch_include/$ARCH/sel4/arch/types.h)
      * hint 2: an array of untyped caps, and a corresponding array of untyped sizes
      *         can be found in the bootinfo struct
      */
@@ -160,21 +160,25 @@ int main(void) {
                stack_alignment_requirement);
 
     /* TASK 4: Set up regs to contain the desired stack pointer and instruction pointer
-     * hint 1: libsel4/arch_include/x86/sel4/arch/types.h:
-     *  ...
-        typedef struct seL4_UserContext_ {
-            seL4_Word eip, esp, eflags, eax, ebx, ecx, edx, esi, edi, ebp;
-            seL4_Word tls_base, fs, gs;
-        } seL4_UserContext;
-
+     * hint 1: libsel4/arch_include/$ARCH/sel4/arch/types.h:
      */
 
 
     /* set start up registers for the new thread: */
+#ifdef CONFIG_ARCH_IA32
+     /* set start up registers for the new thread: */
+     seL4_UserContext regs = {
+         .eip = (seL4_Word)thread_2,
+         .esp = (seL4_Word)thread_2_stack_top
+     };
+#elif CONFIG_ARCH_ARM
     seL4_UserContext regs = {
-        .eip = (seL4_Word)thread_2,
-        .esp = (seL4_Word)thread_2_stack_top
+        .pc = (seL4_Word)thread_2,
+        .sp = (seL4_Word)thread_2_stack_top
     };
+#else
+#error "Unsupported architecture"
+#endif
 
 
     /* TASK 5: Write the registers in regs to the new thread
