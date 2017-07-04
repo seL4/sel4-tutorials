@@ -12,8 +12,8 @@
 
 #include <stdio.h>
 
-#include <platsupport/mach/epit.h>
 #include <platsupport/timer.h>
+#include <sel4platsupport/plat/timer.h>
 #include <sel4utils/sel4_zf_logif.h>
 
 #include <camkes.h>
@@ -39,14 +39,22 @@ void irq_handle(void) {
      * @param irq    Timer's interrupt number
      */
 /*- if solution -*/
-    timer_handle_irq(timer_drv, EPIT2_INTERRUPT);
+    timer_handle_irq(timer_drv, TTC0_TIMER1_IRQ);
+/*- endif -*/
+
+    /* TASK 5: Stop the timer. */
+    /* hint: void timer_stop(pstimer_t* device)
+     * @param device Structure for the timer device driver.
+     */
+/*- if solution -*/
+    timer_stop(timer_drv);
 /*- endif -*/
 
     /* Signal the RPC interface. */
     error = sem_post();
     ZF_LOGF_IF(error != 0, "Failed to post to semaphore");
 
-    /* TASK 5: acknowledge the interrupt */
+    /* TASK 6: acknowledge the interrupt */
     /* hint 1: use the function <IRQ interface name>_acknowledge()
      */
 /*- if solution -*/
@@ -57,22 +65,26 @@ void irq_handle(void) {
 
 void hello__init() {
     /* Structure of the timer configuration in platsupport library */
-    epit_config_t config;
+    timer_config_t config;
 
     /*
      * Provide hardware info to platsupport.
+     * Note, The following only works for zynq7000 platform. Other platforms may
+     * require other info. Check the definition of timer_config_t and manuals.
      */
     config.vaddr = (void*)reg;
-    config.irq = EPIT2_INTERRUPT;
-    config.prescaler = 0;
+    clk_t clk = clk_generate_fixed_clk(CLK_MASTER, 0);
+    config.clk_src = &clk;
 
-    /* TASK 6: call platsupport library to get the timer handler */
-    /* hint: pstimer_t *epit_get_timer(epit_config_t *config);
+    /* TASK 7: call platsupport library to get the timer handler */
+    /* hint1: pstimer_t *ps_get_timer(enum timer_id id, timer_config_t *config);
+     * hint2: search for TMR_DEFAULT definition to get id
+     * @param id the timer to get
      * @param config timer configuration structure
      * @return timer handler
      */
 /*- if solution -*/
-    timer_drv = epit_get_timer(&config);
+    timer_drv = ps_get_timer(TMR_DEFAULT, &config);
     assert(timer_drv);
 /*- endif -*/
 }
@@ -89,16 +101,24 @@ void hello__init() {
  */
 void hello_sleep(int sec) {
     /* TASK 8: call platsupport library function to set up the timer */
-    /* hint: int timer_oneshot_relative(pstimer_t* device, uint64_t ns)
+    /* hint: int timer_oneshot_absolute(pstimer_t* device, uint64_t ns)
      * @param device timer handler
      * @param ns     timeout in nanoseconds
      * @return 0 on success
      */
 /*- if solution -*/
-    timer_oneshot_relative(timer_drv, sec * NS_IN_SECOND);
+    timer_oneshot_absolute(timer_drv, sec * NS_IN_SECOND);
 /*- endif -*/
 
-    /* Wait for the timeout interrupt */
+    /* TASK 9: Start the timer
+     * hint: int timer_start(pstimer_t* device)
+     * @param device timer handler
+     * @return 0 on success
+     */
+/*- if solution -*/
+    timer_start(timer_drv);
+/*- endif -*/
+
     int error = sem_wait();
     ZF_LOGF_IF(error != 0, "Failed to wait on semaphore");
 }
