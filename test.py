@@ -29,20 +29,29 @@ DEFAULT_TIMEOUT = 1800
 
 # Completion text for each test
 COMPLETION = {
-    "ia32_sel4_hello-1": "hello world",
-    "ia32_sel4_hello-2": "(thread_2: hallo wereld)|(main: hello world)",
-    "ia32_sel4_hello-3": "main: got a reply: 0xffff9e9e",
-    "ia32_sel4_hello-4": "process_2: got a reply: 0xffff9e9e",
-    "ia32_sel4_hello-2-nolibs": "(thread_2: hallo wereld)|(main: hello world)",
-    "ia32_sel4_hello-3-nolibs": "main: got a reply: 0xffff9e9e",
-    "ia32_sel4_hello-timer": "timer client wakes up: got the current timer tick:",
-    "arm_camkes_hello-camkes-0": "Hello CAmkES World",
-    "arm_camkes_hello-camkes-1": "Component echo saying: hello world",
-    "arm_camkes_hello-camkes-2": "FAULT HANDLER: data fault from client.control",
-    "arm_camkes_hello-camkes-timer": "After the client: wakeup",
-    "ia32_camkes_hello-camkes-0": "Hello CAmkES World",
-    "ia32_camkes_hello-camkes-1": "Component echo saying: hello world",
-    "ia32_camkes_hello-camkes-2": "FAULT HANDLER: data fault from client.control"
+    # seL4 tests
+    "pc99_sel4_hello-1": "hello world",
+    "pc99_sel4_hello-2": "(thread_2: hallo wereld)|(main: hello world)",
+    "pc99_sel4_hello-3": "main: got a reply: 0xffff9e9e",
+    "pc99_sel4_hello-4": "process_2: got a reply: 0xffff9e9e",
+    "pc99_sel4_hello-2-nolibs": "(thread_2: hallo wereld)|(main: hello world)",
+    "pc99_sel4_hello-3-nolibs": "main: got a reply: 0xffff9e9e",
+    "pc99_sel4_hello-timer": "timer client wakes up: got the current timer tick:",
+    "zynq7000_sel4_hello-1": "hello world",
+    "zynq7000_sel4_hello-2": "(thread_2: hallo wereld)|(main: hello world)",
+    "zynq7000_sel4_hello-3": "main: got a reply: 0xffff9e9e",
+    "zynq7000_sel4_hello-4": "process_2: got a reply: 0xffff9e9e",
+    "zynq7000_sel4_hello-2-nolibs": "(thread_2: hallo wereld)|(main: hello world)",
+    "zynq7000_sel4_hello-3-nolibs": "main: got a reply: 0xffff9e9e",
+    "zynq7000_sel4_hello-timer": "timer client wakes up: got the current timer tick:",
+
+    # camkes tests
+    "zynq7000_camkes_hello-camkes-0": "Hello CAmkES World",
+    "zynq7000_camkes_hello-camkes-1": "Component echo saying: hello world",
+    "zynq7000_camkes_hello-camkes-2": "FAULT HANDLER: data fault from client.control",
+    "pc99_camkes_hello-camkes-0": "Hello CAmkES World",
+    "pc99_camkes_hello-camkes-1": "Component echo saying: hello world",
+    "pc99_camkes_hello-camkes-2": "FAULT HANDLER: data fault from client.control"
 }
 
 # List of strings whose appearence in test output indicates test failure
@@ -53,6 +62,7 @@ FAILURE_TEXTS = [
 ]
 
 ARCHITECTURES = ['arm', 'ia32']
+PLATFORMS = ['pc99', 'zynq7000']
 
 def print_pexpect_failure(failure):
     if failure == pexpect.EOF:
@@ -60,7 +70,7 @@ def print_pexpect_failure(failure):
     elif failure == pexpect.TIMEOUT:
         print("Test timed out")
 
-def app_names(arch, system):
+def app_names(plat, system):
     """
     Yields the names of all tutorial applications for a given architecture
     for a given system
@@ -68,7 +78,7 @@ def app_names(arch, system):
 
     build_config_dir = os.path.join(TUTORIAL_DIR, 'build-config')
     system_build_config_dir = os.path.join(build_config_dir, "configs-%s" % system)
-    pattern = re.compile("^%s_(.*)_defconfig" % arch)
+    pattern = re.compile("^%s_(.*)_defconfig" % plat)
     for config in os.listdir(system_build_config_dir):
         matches = pattern.match(config)
         if matches is None:
@@ -78,17 +88,17 @@ def app_names(arch, system):
             app_name = matches.group(1)
             yield app_name
 
-def arch_test_script(arch):
-    return "%s/run-%s.py" % (TUTORIAL_DIR, arch)
+def plat_test_script(plat):
+    return "%s/run-%s.py" % (TUTORIAL_DIR, plat)
 
-def run_single_test(arch, system, app, timeout):
+def run_single_test(plat, system, app, timeout):
     """
     Builds and runs the solution to a given tutorial application for a given
     architecture for a given system, checking that the result matches the
     completion text
     """
 
-    full_name = "%s_%s_%s" % (arch, system, app)
+    full_name = "%s_%s_%s" % (plat, system, app)
     try:
         completion_text = COMPLETION[full_name]
     except KeyError:
@@ -101,7 +111,7 @@ def run_single_test(arch, system, app, timeout):
 
     # run the test, storting output in a temporary file
     temp_file = tempfile.NamedTemporaryFile(delete=True)
-    command = '%s %s' % (arch_test_script(arch), app)
+    command = '%s %s' % (plat_test_script(plat), app)
     logging.info("Running command: %s" % command)
     test = pexpect.spawn(command, cwd=TOP_LEVEL_DIR)
     test.logfile = temp_file
@@ -122,16 +132,16 @@ def run_single_test(arch, system, app, timeout):
 
     temp_file.close()
 
-def run_arch_tests(arch, system, timeout):
+def run_plat_tests(plat, system, timeout):
     """
     Builds and runs all tests for a given architecture for a given system
     """
 
-    logging.info("\nRunning %s tutorial tests for %s architecture..." % (system, arch))
+    logging.info("\nRunning %s tutorial tests for %s platform..." % (system, plat))
 
-    for app in app_names(arch, system):
-        print("<testcase classname='sel4tutorials' name='%s_%s_%s'>" % (arch, system, app))
-        run_single_test(arch, system, app, timeout)
+    for app in app_names(plat, system):
+        print("<testcase classname='sel4tutorials' name='%s_%s_%s'>" % (plat, system, app))
+        run_single_test(plat, system, app, timeout)
         print("</testcase>")
 
 
@@ -144,8 +154,8 @@ def run_tests(timeout):
     for system in ['sel4', 'camkes']:
         manage.main(['env', system])
         manage.main(['solution'])
-        for arch in ARCHITECTURES:
-            run_arch_tests(arch, system, timeout)
+        for plat in PLATFORMS:
+            run_plat_tests(plat, system, timeout)
     print('</testsuite>')
 
 def run_system_tests(system, timeout):
@@ -154,8 +164,8 @@ def run_system_tests(system, timeout):
     """
 
     print('<testsuite>')
-    for arch in ARCHITECTURES:
-        run_arch_tests(arch, system, timeout)
+    for plat in PLATFORMS:
+        run_plat_tests(plat, system, timeout)
     print('</testsuite>')
 
 def set_log_level(args):
