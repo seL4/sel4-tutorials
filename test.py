@@ -49,6 +49,7 @@ COMPLETION = {
     "zynq7000_camkes_hello-camkes-0": "Hello CAmkES World",
     "zynq7000_camkes_hello-camkes-1": "Component echo saying: hello world",
     "zynq7000_camkes_hello-camkes-2": "FAULT HANDLER: data fault from client.control",
+    "zynq7000_camkes_hello-camkes-timer": "After the client: wakeup",
     "pc99_camkes_hello-camkes-0": "Hello CAmkES World",
     "pc99_camkes_hello-camkes-1": "Component echo saying: hello world",
     "pc99_camkes_hello-camkes-2": "FAULT HANDLER: data fault from client.control"
