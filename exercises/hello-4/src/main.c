@@ -128,8 +128,8 @@ int main(void) {
                                      ALLOCATOR_VIRTUAL_POOL_SIZE, simple_get_pd(&simple));
 
     /* TASK 2: use sel4utils to make a new process */
-    /* hint 1: sel4utils_configure_process()
-     * int sel4utils_configure_process(sel4utils_process_t *process, vka_t *vka, vspace_t *vspace, uint8_t priority, char *image_name);
+    /* hint 1: sel4utils_configure_process_custom()
+     * hint 2: process_config_default_simple()
      * @param process Uninitialised process struct.
      * @param vka Allocator to use to allocate objects.
      * @param vspace Vspace allocator for the current vspace.

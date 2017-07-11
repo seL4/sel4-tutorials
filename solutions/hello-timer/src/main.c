@@ -113,8 +113,8 @@ int main(void) {
 
     /* use sel4utils to make a new process */
     sel4utils_process_t new_process;
-    error = sel4utils_configure_process(&new_process, &vka, &vspace,
-                                        APP_PRIORITY, APP_IMAGE_NAME);
+    sel4utils_process_config_t config = process_config_default_simple(&simple, APP_IMAGE_NAME, APP_PRIORITY);
+    error = sel4utils_configure_process_custom(&new_process, &vka, &vspace, config);
     assert(error == 0);
 
     /* give the new process's thread a name */
