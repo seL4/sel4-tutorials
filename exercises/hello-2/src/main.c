@@ -78,7 +78,10 @@ void thread_2(void) {
 }
 
 int main(void) {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic warning "-Wuninitialized"
     UNUSED int error;
+#pragma GCC diagnostic pop
 
     /* TASK 1: get boot info */
     /* hint: platsupport_get_bootinfo()
@@ -201,7 +204,7 @@ int main(void) {
      * set start up registers for the new thread:
      */
 
-    seL4_UserContext regs = {0};
+    UNUSED seL4_UserContext regs = {0};
 
     /* TASK 11: set instruction pointer where the thread shoud start running */
     /* hint 1: sel4utils_set_instruction_pointer()
