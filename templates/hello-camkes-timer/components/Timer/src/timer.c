@@ -12,15 +12,14 @@
 
 #include <stdio.h>
 
-#include <platsupport/timer.h>
-#include <sel4platsupport/plat/timer.h>
+#include <platsupport/plat/timer.h>
 #include <sel4utils/sel4_zf_logif.h>
 
 #include <camkes.h>
 
 #define NS_IN_SECOND 1000000000ULL
 
-pstimer_t *timer_drv = NULL;
+ttc_t timer_drv;
 
 /* this callback handler is meant to be invoked when the first interrupt
  * arrives on the interrupt event interface.
@@ -34,20 +33,17 @@ void irq_handle(void) {
     int error;
 
     /* TASK 4: call the platsupport library to handle the interrupt. */
-    /* hint: void timer_handle_irq(pstimer_t* device, uint32_t irq)
-     * @param device Structure for the timer device driver.
-     * @param irq    Timer's interrupt number
+    /* hint: ttc_handle_irq
      */
 /*- if solution -*/
-    timer_handle_irq(timer_drv, TTC0_TIMER1_IRQ);
+    ttc_handle_irq(&timer_drv);
 /*- endif -*/
 
     /* TASK 5: Stop the timer. */
-    /* hint: void timer_stop(pstimer_t* device)
-     * @param device Structure for the timer device driver.
+    /* hint: ttc_stop
      */
 /*- if solution -*/
-    timer_stop(timer_drv);
+    ttc_stop(&timer_drv);
 /*- endif -*/
 
     /* Signal the RPC interface. */
@@ -65,7 +61,7 @@ void irq_handle(void) {
 
 void hello__init() {
     /* Structure of the timer configuration in platsupport library */
-    timer_config_t config;
+    ttc_config_t config;
 
     /*
      * Provide hardware info to platsupport.
@@ -73,20 +69,25 @@ void hello__init() {
      * require other info. Check the definition of timer_config_t and manuals.
      */
     config.vaddr = (void*)reg;
-    clk_t clk = clk_generate_fixed_clk(CLK_MASTER, 0);
-    config.clk_src = &clk;
+    config.clk_src = 0;
+    config.id = TMR_DEFAULT;
 
     /* TASK 7: call platsupport library to get the timer handler */
-    /* hint1: pstimer_t *ps_get_timer(enum timer_id id, timer_config_t *config);
-     * hint2: search for TMR_DEFAULT definition to get id
-     * @param id the timer to get
-     * @param config timer configuration structure
-     * @return timer handler
+    /* hint1: ttc_init
      */
 /*- if solution -*/
-    timer_drv = ps_get_timer(TMR_DEFAULT, &config);
-    assert(timer_drv);
+    int error = ttc_init(&timer_drv, config);
+    assert(error == 0);
 /*- endif -*/
+
+    /* TASK 9: Start the timer
+     * hint: ttc_start
+     */
+/*- if solution -*/
+    ttc_start(&timer_drv);
+/*- endif -*/
+
+
 }
 
 /* TASK 7: implement the RPC function. */
@@ -101,22 +102,10 @@ void hello__init() {
  */
 void hello_sleep(int sec) {
     /* TASK 8: call platsupport library function to set up the timer */
-    /* hint: int timer_oneshot_absolute(pstimer_t* device, uint64_t ns)
-     * @param device timer handler
-     * @param ns     timeout in nanoseconds
-     * @return 0 on success
+    /* hint: ttc_set_timeout
      */
 /*- if solution -*/
-    timer_oneshot_absolute(timer_drv, sec * NS_IN_SECOND);
-/*- endif -*/
-
-    /* TASK 9: Start the timer
-     * hint: int timer_start(pstimer_t* device)
-     * @param device timer handler
-     * @return 0 on success
-     */
-/*- if solution -*/
-    timer_start(timer_drv);
+    ttc_set_timeout(&timer_drv, sec * NS_IN_SECOND, false);
 /*- endif -*/
 
     int error = sem_wait();
