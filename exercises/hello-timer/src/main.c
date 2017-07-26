@@ -55,7 +55,7 @@ simple_t simple;
 vka_t vka;
 allocman_t *allocman;
 vspace_t vspace;
-seL4_timer_t *timer;
+seL4_timer_t timer;
 
 /* static memory for the allocator to bootstrap with */
 #define ALLOCATOR_STATIC_POOL_SIZE (BIT(seL4_PageBits) * 10)
@@ -155,13 +155,7 @@ int main(void) {
 
 
     /* TASK 2: call sel4platsupport library to get the default timer */
-    /* hint: sel4platsupport_get_default_timer
-     * seL4_timer_t * sel4platsupport_get_default_timer(vka_t *vka, vspace_t *vspace, simple_t *simple, seL4_CPtr ntfn);
-     * @param vka Pointer to vka interface
-     * @param vspace Pointer to vspace interface
-     * @param simple Pointer to simple interface
-     * @param ntfn Notification object to receive the interrupt
-     * @return Pointer to timer structure
+    /* hint: sel4platsupport_init_default_timer
      */
 
 
@@ -188,19 +182,9 @@ int main(void) {
     printf("main: got a message from %#x to sleep %u seconds\n", sender_badge, msg);
 
     /*
-     * TASK 3: Start and configure the timer 
-     * hint 1: start the timer
+     * TASK 3: Start and configure the timer
+     * hint 1: ltimer_set_timeout
      * hint 2: set period to 1 millisecond
-     *
-     * int timer_start (pstimer_t* device)
-     * @param device generic timer handler
-     * @return 0 on success
-     *
-     * int timer_periodic (pstimer_t* device, uint64_t ns)
-     * @param device generic timer handler
-     * @param ns number of nanoseconds before firing the interrupt
-     * @return 0 on success
-     *
      */
 
 
@@ -211,8 +195,8 @@ int main(void) {
          * hint 1: wait for the incoming interrupt and handle it
          * The loop runs for (1000 * msg) times, which is basically 1 second * msg.
          *
-         * void sel4_timer_handle_single_irq(seL4_timer_t* timer);
-         * @param device generic timer handler
+         * hint2: seL4_Wait
+         * hint3: sel4platsupport_handle_timer_irq
          *
          */
 
@@ -222,20 +206,20 @@ int main(void) {
         }
     }
 
+    /* get the current time */
+    uint64_t time;
+    ltimer_get_time(&timer.ltimer, &time);
+
     /*
      * TASK 5: Stop the timer
      *
-     * int timer_stop(pstimer_t* device)
-     * @param device generic timer handler
-     * @return 0 on success
+     * hint: sel4platsupport_destroy_timer
      *
      */
 
 
-    /* get the current time */
-    msg = timer_get_time(timer->timer);
-
-    /* modify the message */
+   /* modify the message */
+    msg = (uint32_t) time;
     seL4_SetMR(0, msg);
 
     /* send the modified message back */
