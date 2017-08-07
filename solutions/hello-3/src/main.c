@@ -74,9 +74,9 @@ extern void name_thread(seL4_CPtr tcb, char *name);
 
 /* function to run in the new thread */
 void thread_2(void) {
-    seL4_Word sender_badge;
-    seL4_MessageInfo_t tag;
-    seL4_Word msg;
+    seL4_Word sender_badge = 0;
+    UNUSED seL4_MessageInfo_t tag;
+    seL4_Word msg = 0;
 
     printf("thread_2: hallo wereld\n");
 
@@ -438,8 +438,8 @@ int main(void) {
      * now send a message to the new thread, and wait for a reply
      */
 
-    seL4_Word msg;
-    seL4_MessageInfo_t tag;
+    seL4_Word msg = 0;
+    seL4_MessageInfo_t tag = seL4_MessageInfo_new(0, 0, 0, 0);
 
     /* TASK 8: set the data to send. We send it in the first message register */
     /* hint 1: seL4_MessageInfo_new()
