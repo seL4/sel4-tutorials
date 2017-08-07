@@ -76,7 +76,7 @@ UNUSED static int thread_2_stack[THREAD_2_STACK_SIZE];
 extern void name_thread(seL4_CPtr tcb, char *name);
 
 int main(void) {
-    UNUSED int error;
+    UNUSED int error = 0;
 
     /* get boot info */
     info = platsupport_get_bootinfo();
@@ -179,9 +179,9 @@ int main(void) {
      *
      * hint 2: use the cslot of the endpoint allocated above
      */
-/*- if solution -*/
     cspacepath_t ep_cap_path;
-    seL4_CPtr new_ep_cap;
+    seL4_CPtr new_ep_cap = 0;
+/*- if solution -*/
     vka_cspace_make_path(&vka, ep_object.cptr, &ep_cap_path);
 /*- endif -*/
 
@@ -246,8 +246,8 @@ int main(void) {
      * now wait for a message from the new process, then send a reply back
      */
 
-    seL4_Word sender_badge;
-    seL4_MessageInfo_t tag;
+    seL4_Word sender_badge = 0;
+    seL4_MessageInfo_t tag = seL4_MessageInfo_new(0, 0, 0, 0);
     seL4_Word msg;
 
     /* TASK 7: wait for a message */
