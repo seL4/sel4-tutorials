@@ -338,6 +338,12 @@ def handle_publish(args):
     logger.info("Copying file: %s -> %s" % (src, dst))
     shutil.copyfile(src, dst)
 
+    # copy the licenseignore
+    src = os.path.join(tutorial_dir, '.licenseignore')
+    dst = os.path.join(temp_dir, '.licenseignore')
+    logger.info("Copying file: %s -> %s" % (src, dst))
+    shutil.copyfile(src, dst)
+
     template_ctx = TemplateCtx()
     template_dir = os.path.join(tutorial_dir, 'templates')
     solution_dir = os.path.join(temp_dir, 'solutions')
