@@ -42,18 +42,6 @@ ARCH_TO_DEFAULT_PLAT = {
     'ia32': 'pc99',
     'arm': 'zynq7000',
 }
-PLAT_TO_QEMU_BIN = {
-    'pc99': 'qemu-system-i386',
-    'imx31': 'qemu-system-arm',
-    'imx6': 'qemu-system-arm',
-    'zynq7000': 'qemu-system-arm',
-}
-PLAT_TO_QEMU_ARGS = {
-    'pc99': ['-nographic', '-m', '512', '-cpu', 'Haswell'],
-    'imx6': ['-nographic', '-M', 'sabrelite', '-m', 'size=1024M', '-s', '-serial', 'null', '-serial', 'mon:stdio'],
-    'imx31': ['-nographic', '-M', 'kzm', '-m', 'size=1024M', '-s', '-serial', 'null', '-serial', 'mon:stdio'],
-    'zynq7000': ['-nographic', '-M', 'xilinx-zynq-a9', '-m', 'size=1024M', '-s', '-serial', 'null', '-serial', 'mon:stdio'],
-}
 
 def list_configs():
     '''Lists names of build config files'''
@@ -137,35 +125,11 @@ def build(arch, plat, name, jobs):
     logger.info('make -j' + str(jobs))
     make('-j%d' % jobs)
 
-def get_qemu_image_args(arch, plat, name):
-    '''Return a list of arguments for qemu to specify which image to run'''
-
-    if common.get_tutorial_type() == 'CAmkES':
-        app_image = 'images/capdl-loader-experimental-image-%s-%s' % (arch, plat)
-    else:
-        app_image = 'images/%s-image-%s-%s' % (name, arch, plat)
-
-    if arch == 'ia32':
-        return ['-kernel', 'images/kernel-ia32-pc99', '-initrd', app_image]
-    else:
-        return ['-kernel', app_image]
-
-def run(arch, plat, name):
-    '''Runs the specified app in qemu'''
-
-    qemu = PLAT_TO_QEMU_BIN[plat]
-    qemu_args = PLAT_TO_QEMU_ARGS[plat]
-
-    try:
-
-        logger.info(' '.join([qemu] + qemu_args + get_qemu_image_args(arch, plat, name)))
-        logger.info('Ctrl+A X to quit')
-        proc = subprocess.Popen([qemu] + qemu_args + get_qemu_image_args(arch, plat, name),
-                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        while proc.poll() is None:
-            print(proc.stdout.readline().decode(sys.stdout.encoding).rstrip())
-    except OSError:
-        raise Exception("%s is not installed" % qemu)
+def run():
+    make = sh.make.bake(_out=process_output, _err=process_output)
+    logger.info('make simulate')
+    logger.info('Use Ctrl-C to exit')
+    make.simulate()
 
 def make_parser():
     parser = argparse.ArgumentParser(description=get_description())
@@ -183,10 +147,10 @@ def handle_run(args, loglevel=logging.INFO):
     if args.name == 'all':
         for name in list_names():
             build(args.arch, args.plat, name, args.jobs)
-            run(args.arch, args.plat, name)
+            run()
     else:
         build(args.arch, args.plat, args.name, args.jobs)
-        run(args.arch, args.plat, args.name)
+        run()
 
 def add_sub_parser_run(subparsers):
     '''Creates a parser for the tutorial runner. The arch agrument is a string
