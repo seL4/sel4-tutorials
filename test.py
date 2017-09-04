@@ -15,6 +15,9 @@
 # completion text.
 
 import sys, os, argparse, re, pexpect, subprocess, tempfile, logging
+import signal
+import psutil
+import os.path
 import xml.sax.saxutils
 
 import manage
@@ -89,9 +92,6 @@ def app_names(plat, system):
             app_name = matches.group(1)
             yield app_name
 
-def plat_test_script(plat):
-    return "%s/run-%s.py" % (TUTORIAL_DIR, plat)
-
 def run_single_test(plat, system, app, timeout):
     """
     Builds and runs the solution to a given tutorial application for a given
@@ -112,7 +112,11 @@ def run_single_test(plat, system, app, timeout):
 
     # run the test, storting output in a temporary file
     temp_file = tempfile.NamedTemporaryFile(delete=True)
-    command = '%s %s' % (plat_test_script(plat), app)
+    script_file = "%s/run-%s.py" % (TUTORIAL_DIR, plat)
+    command = '%s %s' % (script_file, app)
+    if not os.path.exists(script_file):
+        logging.error("Couldn't find file %s." % script_file)
+        sys.exit(1)
     logging.info("Running command: %s" % command)
     test = pexpect.spawn(command, cwd=TOP_LEVEL_DIR)
     test.logfile = temp_file
@@ -131,6 +135,9 @@ def run_single_test(plat, system, app, timeout):
         print_pexpect_failure(expect_strings[result])
         print("</failure>")
 
+    for proc in psutil.process_iter():
+        if "qemu" in proc.name():
+            proc.kill()
     temp_file.close()
 
 def run_plat_tests(plat, system, timeout):
@@ -188,9 +195,9 @@ def main():
     parser.add_argument('--verbose', action='store_true',
                         help="Output everything including debug info")
     parser.add_argument('--quiet', action='store_true',
-                        help="Supress output except for junit xml")
+                        help="Suppress output except for junit xml")
     parser.add_argument('--timeout', type=int, default=DEFAULT_TIMEOUT)
-    parser.add_argument('--system', type=str)
+    parser.add_argument('--system', type=str, choices=['camkes', 'seL4'])
 
     args = parser.parse_args()
 
