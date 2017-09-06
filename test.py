@@ -15,6 +15,7 @@
 # completion text.
 
 import sys, os, argparse, re, pexpect, subprocess, tempfile, logging
+import run
 import signal
 import psutil
 import os.path
@@ -112,11 +113,9 @@ def run_single_test(plat, system, app, timeout):
 
     # run the test, storting output in a temporary file
     temp_file = tempfile.NamedTemporaryFile(delete=True)
-    script_file = "%s/run-%s.py" % (TUTORIAL_DIR, plat)
-    command = '%s %s' % (script_file, app)
-    if not os.path.exists(script_file):
-        logging.error("Couldn't find file %s." % script_file)
-        sys.exit(1)
+    script_file = "%s/run.py" % (TUTORIAL_DIR)
+    arch = 'ia32' if plat is 'pc99' else 'arm'
+    command = '%s -a %s -p %s %s' % (script_file, arch, plat, app)
     logging.info("Running command: %s" % command)
     test = pexpect.spawn(command, cwd=TOP_LEVEL_DIR)
     test.logfile = temp_file
