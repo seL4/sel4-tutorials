@@ -95,7 +95,7 @@ void callback_handler_1(void *a) {
 /*- endif -*/
 
     /* TASK 22: notify the client that there is new data available for it */
-    /* hint 1: use the function <interface_name>.emit
+    /* hint 1: use the function <interface_name>_emit
      * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
      */
 /*- if solution -*/
@@ -145,7 +145,7 @@ void callback_handler_2(void *a) {
 /*- endif -*/
 
     /* TASK 25: notify the client that we are done reading the data */
-    /* hint 1: use the function <interface_name>.emit
+    /* hint 1: use the function <interface_name>_emit
      * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
      */
 /*- if solution -*/
