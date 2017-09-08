@@ -232,7 +232,12 @@ int main(void) {
      * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%204#TASK_6:
      */
 /*- if solution -*/
-    error = sel4utils_spawn_process_v(&new_process, &vka, &vspace, 0, NULL, 1);
+    seL4_Word argc = 1;
+    char string_args[argc][WORD_STRING_SIZE];
+    char* argv[argc];
+    sel4utils_create_word_args(string_args, argv, argc, new_ep_cap);
+
+    error = sel4utils_spawn_process_v(&new_process, &vka, &vspace, argc, (char**) &argv, 1);
 /*- endif -*/
     ZF_LOGF_IFERR(error, "Failed to spawn and start the new thread.\n"
                   "\tVerify: the new thread is being executed in the root thread's VSpace.\n"
