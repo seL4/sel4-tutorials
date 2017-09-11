@@ -196,7 +196,7 @@ def main():
     parser.add_argument('--quiet', action='store_true',
                         help="Suppress output except for junit xml")
     parser.add_argument('--timeout', type=int, default=DEFAULT_TIMEOUT)
-    parser.add_argument('--system', type=str, choices=['camkes', 'seL4'])
+    parser.add_argument('--system', type=str, choices=['camkes', 'sel4'])
 
     args = parser.parse_args()
 
