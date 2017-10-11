@@ -24,7 +24,6 @@
 #include <sel4utils/sel4_zf_logif.h>
 
 /* constants */
-#define EP_CPTR SEL4UTILS_FIRST_FREE // where the cap for the endpoint was placed.
 #define MSG_DATA 0x6161 //  arbitrary data to send
 
 int main(int argc, char **argv) {
@@ -50,13 +49,16 @@ int main(int argc, char **argv) {
      * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%204#TASK_9:
      * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
      *
-     * hint 2: the endpoint cap is in slot EP_CPTR
+     * hint 2: send the endpoint cap using argv (see TASK 6 in the other main.c)
      */
+    ZF_LOGF_IF(argc < 1,
+               "Missing arguments.\n");
+    seL4_CPtr ep = (seL4_CPtr) atol(argv[0]);
 
-    tag = seL4_Call(EP_CPTR, tag);
+    tag = seL4_Call(ep, tag);
 
 
-    /* check that we got the expected repy */
+    /* check that we got the expected reply */
     ZF_LOGF_IF(seL4_MessageInfo_get_length(tag) != 1,
                "Length of the data send from root thread was not what was expected.\n"
                "\tHow many registers did you set with seL4_SetMR, within the root thread?\n");

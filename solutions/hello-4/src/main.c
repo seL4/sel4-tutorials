@@ -76,7 +76,7 @@ UNUSED static int thread_2_stack[THREAD_2_STACK_SIZE];
 extern void name_thread(seL4_CPtr tcb, char *name);
 
 int main(void) {
-    UNUSED int error;
+    UNUSED int error = 0;
 
     /* get boot info */
     info = platsupport_get_bootinfo();
@@ -179,9 +179,9 @@ int main(void) {
      *
      * hint 2: use the cslot of the endpoint allocated above
      */
-
     cspacepath_t ep_cap_path;
-    seL4_CPtr new_ep_cap;
+    seL4_CPtr new_ep_cap = 0;
+
     vka_cspace_make_path(&vka, ep_object.cptr, &ep_cap_path);
 
 
@@ -232,7 +232,12 @@ int main(void) {
      * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%204#TASK_6:
      */
 
-    error = sel4utils_spawn_process_v(&new_process, &vka, &vspace, 0, NULL, 1);
+    seL4_Word argc = 1;
+    char string_args[argc][WORD_STRING_SIZE];
+    char* argv[argc];
+    sel4utils_create_word_args(string_args, argv, argc, new_ep_cap);
+
+    error = sel4utils_spawn_process_v(&new_process, &vka, &vspace, argc, (char**) &argv, 1);
 
     ZF_LOGF_IFERR(error, "Failed to spawn and start the new thread.\n"
                   "\tVerify: the new thread is being executed in the root thread's VSpace.\n"
@@ -246,8 +251,8 @@ int main(void) {
      * now wait for a message from the new process, then send a reply back
      */
 
-    seL4_Word sender_badge;
-    seL4_MessageInfo_t tag;
+    seL4_Word sender_badge = 0;
+    seL4_MessageInfo_t tag = seL4_MessageInfo_new(0, 0, 0, 0);
     seL4_Word msg;
 
     /* TASK 7: wait for a message */

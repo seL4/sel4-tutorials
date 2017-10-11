@@ -38,6 +38,8 @@
 #include <sel4utils/mapping.h>
 #include <sel4utils/process.h>
 
+#include <sel4platsupport/io.h>
+#include <sel4platsupport/arch/io.h>
 #include <sel4platsupport/timer.h>
 #include <sel4platsupport/bootinfo.h>
 #include <platsupport/plat/timer.h>

@@ -38,6 +38,8 @@
 #include <sel4utils/mapping.h>
 #include <sel4utils/process.h>
 
+#include <sel4platsupport/io.h>
+#include <sel4platsupport/arch/io.h>
 #include <sel4platsupport/timer.h>
 #include <sel4platsupport/bootinfo.h>
 #include <platsupport/plat/timer.h>
@@ -162,7 +164,15 @@ int main(void) {
     /* hint: sel4platsupport_init_default_timer
      */
 
-    error = sel4platsupport_init_default_timer(&vka, &vspace, &simple, ntfn_object.cptr, &timer);
+    ps_io_ops_t ops = {0};
+    error = sel4platsupport_new_io_ops(vspace, vka, &ops);
+    assert(error == 0);
+
+    error = sel4platsupport_new_arch_ops(&ops, &simple);
+    assert(error == 0);
+
+    error = sel4platsupport_init_default_timer_ops(&vka, &vspace, &simple, ops,
+                                                   ntfn_object.cptr, &timer);
     assert(error == 0);
 
 

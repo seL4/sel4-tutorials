@@ -76,7 +76,7 @@ UNUSED static int thread_2_stack[THREAD_2_STACK_SIZE];
 extern void name_thread(seL4_CPtr tcb, char *name);
 
 int main(void) {
-    UNUSED int error;
+    UNUSED int error = 0;
 
     /* get boot info */
     info = platsupport_get_bootinfo();
@@ -170,6 +170,8 @@ int main(void) {
      *
      * hint 2: use the cslot of the endpoint allocated above
      */
+    cspacepath_t ep_cap_path;
+    seL4_CPtr new_ep_cap = 0;
 
 
     /* TASK 5: copy the endpont cap and add a badge to the new cap */
@@ -228,8 +230,8 @@ int main(void) {
      * now wait for a message from the new process, then send a reply back
      */
 
-    seL4_Word sender_badge;
-    seL4_MessageInfo_t tag;
+    seL4_Word sender_badge = 0;
+    seL4_MessageInfo_t tag = seL4_MessageInfo_new(0, 0, 0, 0);
     seL4_Word msg;
 
     /* TASK 7: wait for a message */

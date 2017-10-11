@@ -40,7 +40,7 @@ int run(void) {
 
 
     /* TASK 10: emit event to signal that the data is available */
-    /* hint 1: use the function <interface_name>.emit
+    /* hint 1: use the function <interface_name>_emit
      * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
      */
 

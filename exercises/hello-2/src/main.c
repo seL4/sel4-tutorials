@@ -186,6 +186,7 @@ int main(void) {
      * hint 2: use seL4_CapNull for the fault endpoint
      * hint 3: use seL4_NilData for cspace and vspace data
      * hint 4: we don't need an IPC buffer frame or address yet
+     * hint 5: set the priority of the new thread to seL4_MaxPrio
      */
 
     ZF_LOGF_IFERR(error, "Failed to configure the new TCB object.\n"

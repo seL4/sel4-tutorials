@@ -28,7 +28,7 @@ assembly {
 
         /* TASK 5: Event connections */
         /* hint 1: connect each "emits" interface in a component to the "consumes" interface in the other
-         * hint 2: use seL4Asynch as the connector
+         * hint 2: use seL4Notification as the connector
          * hint 3: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
          */
 
