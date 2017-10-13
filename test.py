@@ -31,6 +31,9 @@ TOP_LEVEL_DIR = common.get_project_root()
 # timeout per test in seconds
 DEFAULT_TIMEOUT = 1800
 
+# number of make jobs to run in parallel
+DEFAULT_JOBS = 1
+
 # Completion text for each test
 COMPLETION = {
     # seL4 tests
@@ -93,7 +96,7 @@ def app_names(plat, system):
             app_name = matches.group(1)
             yield app_name
 
-def run_single_test(plat, system, app, timeout):
+def run_single_test(plat, system, app, timeout, jobs):
     """
     Builds and runs the solution to a given tutorial application for a given
     architecture for a given system, checking that the result matches the
@@ -115,7 +118,7 @@ def run_single_test(plat, system, app, timeout):
     temp_file = tempfile.NamedTemporaryFile(delete=True)
     script_file = "%s/run.py" % (TUTORIAL_DIR)
     arch = 'ia32' if plat is 'pc99' else 'arm'
-    command = '%s -a %s -p %s %s' % (script_file, arch, plat, app)
+    command = '%s -a %s -j %s -p %s %s' % (script_file, arch, jobs, plat, app)
     logging.info("Running command: %s" % command)
     test = pexpect.spawn(command, cwd=TOP_LEVEL_DIR)
     test.logfile = temp_file
@@ -139,7 +142,7 @@ def run_single_test(plat, system, app, timeout):
             proc.kill()
     temp_file.close()
 
-def run_plat_tests(plat, system, timeout):
+def run_plat_tests(plat, system, timeout, jobs):
     """
     Builds and runs all tests for a given architecture for a given system
     """
@@ -148,11 +151,11 @@ def run_plat_tests(plat, system, timeout):
 
     for app in app_names(plat, system):
         print("<testcase classname='sel4tutorials' name='%s_%s_%s'>" % (plat, system, app))
-        run_single_test(plat, system, app, timeout)
+        run_single_test(plat, system, app, timeout, jobs)
         print("</testcase>")
 
 
-def run_tests(timeout):
+def run_tests(timeout, jobs):
     """
     Builds and runs all tests for all architectures for all systems
     """
@@ -162,17 +165,17 @@ def run_tests(timeout):
         manage.main(['env', system])
         manage.main(['solution'])
         for plat in PLATFORMS:
-            run_plat_tests(plat, system, timeout)
+            run_plat_tests(plat, system, timeout, jobs)
     print('</testsuite>')
 
-def run_system_tests(system, timeout):
+def run_system_tests(system, timeout, jobs):
     """
     Builds and runs all tests for all architectures for a given system
     """
 
     print('<testsuite>')
     for plat in PLATFORMS:
-        run_plat_tests(plat, system, timeout)
+        run_plat_tests(plat, system, timeout, jobs)
     print('</testsuite>')
 
 def set_log_level(args):
@@ -197,6 +200,7 @@ def main():
                         help="Suppress output except for junit xml")
     parser.add_argument('--timeout', type=int, default=DEFAULT_TIMEOUT)
     parser.add_argument('--system', type=str, choices=['camkes', 'sel4'])
+    parser.add_argument('--jobs', type=int, default=DEFAULT_JOBS)
 
     args = parser.parse_args()
 
@@ -205,7 +209,7 @@ def main():
     if args.system is None:
         run_tests(args.timeout)
     else:
-        run_system_tests(args.system, args.timeout)
+        run_system_tests(args.system, args.timeout, args.jobs)
 
 if __name__ == '__main__':
     sys.exit(main())
