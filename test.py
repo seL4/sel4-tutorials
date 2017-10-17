@@ -117,7 +117,7 @@ def run_single_test(plat, system, app, timeout, jobs):
     # run the test, storting output in a temporary file
     temp_file = tempfile.NamedTemporaryFile(delete=True)
     script_file = "%s/run.py" % (TUTORIAL_DIR)
-    arch = 'ia32' if plat is 'pc99' else 'arm'
+    arch = 'ia32' if plat == "pc99" else "arm"
     command = '%s -a %s -j %s -p %s %s' % (script_file, arch, jobs, plat, app)
     logging.info("Running command: %s" % command)
     test = pexpect.spawn(command, cwd=TOP_LEVEL_DIR)
@@ -202,12 +202,22 @@ def main():
     parser.add_argument('--system', type=str, choices=['camkes', 'sel4'])
     parser.add_argument('--jobs', type=int, default=DEFAULT_JOBS)
 
+    subparsers = parser.add_subparsers(title='subcommands', description='valid subcommands',
+                                dest='command')
+    single_test_parser = subparsers.add_parser('single', help='Run a single test')
+    single_test_parser.add_argument('--plat', type=str, choices=PLATFORMS, required=True)
+    single_test_parser.add_argument('--app', type=str, required=True)
+
     args = parser.parse_args()
 
     set_log_level(args)
 
     if args.system is None:
         run_tests(args.timeout, args.jobs)
+    elif args.command == "single":
+        print("<testcase classname='sel4tutorials' name='%s_%s_%s'>" % (args.plat, args.system, args.app))
+        run_single_test(args.plat, args.system, args.app, args.timeout, args.jobs)
+        print("</testcase>")
     else:
         run_system_tests(args.system, args.timeout, args.jobs)
 
