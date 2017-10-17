@@ -207,7 +207,7 @@ def main():
     set_log_level(args)
 
     if args.system is None:
-        run_tests(args.timeout)
+        run_tests(args.timeout, args.jobs)
     else:
         run_system_tests(args.system, args.timeout, args.jobs)
 
