@@ -213,9 +213,11 @@ def main():
     if args.system is None:
         run_tests(args.timeout, args.jobs)
     elif args.single:
+        print('<testsuite>')
         print("<testcase classname='sel4tutorials' name='%s_%s_%s'>" % (args.plat, args.system, args.app))
         run_single_test(args.plat, args.system, args.app, args.timeout, args.jobs)
         print("</testcase>")
+        print('</testsuite>')
     else:
         run_system_tests(args.system, args.timeout, args.jobs)
 
