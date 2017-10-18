@@ -201,12 +201,10 @@ def main():
     parser.add_argument('--timeout', type=int, default=DEFAULT_TIMEOUT)
     parser.add_argument('--system', type=str, choices=['camkes', 'sel4'])
     parser.add_argument('--jobs', type=int, default=DEFAULT_JOBS)
-
-    subparsers = parser.add_subparsers(title='subcommands', description='valid subcommands',
-                                dest='command')
-    single_test_parser = subparsers.add_parser('single', help='Run a single test')
-    single_test_parser.add_argument('--plat', type=str, choices=PLATFORMS, required=True)
-    single_test_parser.add_argument('--app', type=str, required=True)
+    parser.add_argument('--single', action='store_true',
+            help="Run a single test. To run a single test, you need to specify the platform and application.")
+    parser.add_argument('--plat', type=str, choices=PLATFORMS, required='--single' in sys.argv)
+    parser.add_argument('--app', type=str, required='--single' in sys.argv)
 
     args = parser.parse_args()
 
@@ -214,7 +212,7 @@ def main():
 
     if args.system is None:
         run_tests(args.timeout, args.jobs)
-    elif args.command == "single":
+    elif args.single:
         print("<testcase classname='sel4tutorials' name='%s_%s_%s'>" % (args.plat, args.system, args.app))
         run_single_test(args.plat, args.system, args.app, args.timeout, args.jobs)
         print("</testcase>")
