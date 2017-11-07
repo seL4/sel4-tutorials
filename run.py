@@ -23,6 +23,8 @@ import subprocess
 import sh
 import common
 
+import manage
+
 logger = common.setup_logger(__name__)
 
 PLATS = ['pc99', 'imx31', 'imx6', 'zynq7000']
@@ -108,6 +110,8 @@ def add_arguments(parser):
                         help='number of jobs to use while building', default=1)
     parser.add_argument('-p', '--plat', dest='plat', type=str,
                         help='platform to build for and emulate', choices=PLATS)
+    parser.add_argument('-R', '--no-reset', action='store_true',
+                        help='don\'t regenerate tutorial from jinja templates')
 
 def process_output(line):
     print(line.rstrip())
@@ -137,6 +141,8 @@ def make_parser():
     return parser
 
 def handle_run(args, loglevel=logging.INFO):
+    if not args.no_reset:  # '-' in '--no-reset' is converted to _ by argparse
+        manage.handle_reset(args)
     logger.setLevel(loglevel)
     if args.plat is None:
         args.plat = ARCH_TO_DEFAULT_PLAT[args.arch]

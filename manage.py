@@ -431,7 +431,7 @@ def handle_reset(args):
     env(get_env().name, is_solutions=solutions, is_template=template)
 
 def add_sub_parser_reset(subparsers):
-    parser = subparsers.add_parser('reset', help='Reset the environmenti by regenerating from templates')
+    parser = subparsers.add_parser('reset', help='Reset the environment by regenerating from templates')
     parser.set_defaults(func=handle_reset)
 
 def handle_status(args):
