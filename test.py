@@ -118,7 +118,7 @@ def run_single_test(plat, system, app, timeout, jobs):
     temp_file = tempfile.NamedTemporaryFile(delete=True)
     script_file = "%s/run.py" % (TUTORIAL_DIR)
     arch = 'ia32' if plat == "pc99" else "arm"
-    command = '%s -a %s -j %s -p %s %s' % (script_file, arch, jobs, plat, app)
+    command = '%s -a %s -j %s -p %s %s -R' % (script_file, arch, jobs, plat, app)
     logging.info("Running command: %s" % command)
     test = pexpect.spawn(command, cwd=TOP_LEVEL_DIR)
     test.logfile = temp_file
