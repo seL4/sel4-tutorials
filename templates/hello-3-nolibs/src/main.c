@@ -23,7 +23,6 @@
 #include <stdlib.h>
 
 #include <sel4/sel4.h>
-#include <sel4/types_gen.h>
 #include <sel4debug/debug.h>
 
 #include <utils/arith.h>
@@ -269,7 +268,7 @@ int main(void) {
 /*- if solution -*/
     /* create a copy of the endpoint cap with a badge (to use for sending) */
     seL4_CNode_Mint(cspace_cap, badged_ep_cap, 32, cspace_cap, ep_cap, 32,
-                    seL4_AllRights, seL4_CapData_Badge_new(EP_BADGE));
+                    seL4_AllRights, EP_BADGE);
 /*- endif -*/
 
 

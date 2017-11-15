@@ -212,7 +212,7 @@ int main(void) {
      */
 /*- if solution -*/
     new_ep_cap = sel4utils_mint_cap_to_process(&new_process, ep_cap_path,
-                                               seL4_AllRights, seL4_CapData_Badge_new(EP_BADGE));
+                                               seL4_AllRights, EP_BADGE);
 /*- endif -*/
     ZF_LOGF_IF(new_ep_cap == 0, "Failed to mint a badged copy of the IPC endpoint into the new thread's CSpace.\n"
                "\tsel4utils_mint_cap_to_process takes a cspacepath_t: double check what you passed.\n");
