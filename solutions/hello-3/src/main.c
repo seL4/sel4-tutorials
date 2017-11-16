@@ -21,7 +21,6 @@
 #include <assert.h>
 
 #include <sel4/sel4.h>
-#include <sel4/types_gen.h>
 
 #include <simple/simple.h>
 #include <simple-default/simple-default.h>
@@ -379,7 +378,7 @@ int main(void) {
      */
 
     error = vka_mint_object(&vka, &ep_object, &ep_cap_path, seL4_AllRights,
-                            seL4_CapData_Badge_new(EP_BADGE));
+                            EP_BADGE);
 
     ZF_LOGF_IFERR(error, "Failed to mint new badged copy of IPC endpoint.\n"
                   "\tseL4_Mint is the backend for vka_mint_object.\n"

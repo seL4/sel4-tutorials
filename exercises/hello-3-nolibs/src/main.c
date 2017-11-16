@@ -23,7 +23,6 @@
 #include <stdlib.h>
 
 #include <sel4/sel4.h>
-#include <sel4/types_gen.h>
 #include <sel4debug/debug.h>
 
 #include <utils/arith.h>
