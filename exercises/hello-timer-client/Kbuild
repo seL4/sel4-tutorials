@@ -11,4 +11,4 @@
 #
 
 components-$(CONFIG_APP_HELLO_TIMER_CLIENT) += hello-timer-client
-hello-timer-client: common libsel4 libmuslc libsel4muslcsys libutils
+hello-timer-client: common libsel4 libmuslc libsel4muslcsys libutils libplatsupport libsel4platsupport

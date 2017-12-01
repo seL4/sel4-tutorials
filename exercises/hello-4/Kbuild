@@ -19,7 +19,7 @@ hello-4-y = common libsel4 libmuslc \
             libsel4platsupport \
             libsel4utils \
             libcpio libelf \
-            libutils libsel4simple-default libsel4debug
+            libutils libsel4simple-default libsel4debug libplatsupport
 
 # add the companion app as a component so that we can elf load it
 hello-4-components-y += hello-4-app

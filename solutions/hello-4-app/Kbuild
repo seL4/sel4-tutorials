@@ -11,4 +11,4 @@
 #
 
 components-$(CONFIG_APP_HELLO_4_APP) += hello-4-app
-hello-4-app: common libsel4 libmuslc libsel4muslcsys libutils libsel4utils libsel4debug
+hello-4-app: common libsel4 libmuslc libsel4muslcsys libutils libsel4utils libsel4debug libsel4platsupport libplatsupport

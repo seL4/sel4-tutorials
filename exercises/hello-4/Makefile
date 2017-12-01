@@ -34,7 +34,7 @@ LIBS = c sel4 sel4muslcsys \
        sel4platsupport platsupport\
        sel4utils \
        cpio elf \
-       utils sel4simple-default sel4debug
+       utils sel4simple-default sel4debug platsupport
 
 # extra cflags 
 CFLAGS += -Werror -g

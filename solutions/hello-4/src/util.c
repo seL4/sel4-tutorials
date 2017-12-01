@@ -24,13 +24,6 @@ void abort(void) {
     while (1);
 }
 
-/* allow printf to use kernel debug printing */
-void __arch_putchar(int c) {
-#ifdef CONFIG_DEBUG_BUILD
-    seL4_DebugPutChar(c);
-#endif
-}
-
 /* set a thread's name for debugging purposes */
 void name_thread(seL4_CPtr tcb, char *name) {
 #ifdef SEL4_DEBUG_KERNEL
