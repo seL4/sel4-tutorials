@@ -62,6 +62,11 @@ $ ./manage.py status
 sel4 exercise
 ```
 
+# Building using CMake:
+
+There is support for building using CMake. To use this support, please see the
+README-tutorials.md file.
+
 # Running Tutorials
 
 The "manage.py" script can be used to run tutorials in the current environment.
