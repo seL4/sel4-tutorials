@@ -122,7 +122,7 @@ int main(void) {
     /* TASK 3: Retype the untyped into a tcb, storing a cap in tcb_cap
      *
      * hint 1: int seL4_Untyped_Retype(seL4_Untyped service, int type, int size_bits, seL4_CNode root, int node_index, int node_depth, int node_offset, int num_objects)
-     * hint 2: use a depth of 32
+     * hint 2: use a depth of seL4_WordBits
      * hint 3: use cspace_cap for the root cnode AND the cnode_index
      *         (bonus question: What property of the calling thread's cspace must hold for this to be ok?)
      */
@@ -134,7 +134,7 @@ int main(void) {
                                 seL4_TCBBits /* size */,
                                 cspace_cap /* root cnode cap */,
                                 cspace_cap /* destination cspace */,
-                                32 /* depth */,
+                                seL4_WordBits /* depth */,
                                 tcb_cap /* offset */,
                                 1 /* num objects */);
 /*- endif -*/
