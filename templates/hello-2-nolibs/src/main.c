@@ -171,10 +171,15 @@ int main(void) {
          .eip = (seL4_Word)thread_2,
          .esp = (seL4_Word)thread_2_stack_top
      };
-#elif CONFIG_ARCH_ARM
+#elif defined(CONFIG_ARCH_ARM)
     seL4_UserContext regs = {
         .pc = (seL4_Word)thread_2,
         .sp = (seL4_Word)thread_2_stack_top
+    };
+#elif defined(CONFIG_ARCH_X86_64)
+    seL4_UserContext regs = {
+        .rip = (seL4_Word)thread_2,
+        .rsp = (seL4_Word)thread_2_stack_top
     };
 #else
 #error "Unsupported architecture"

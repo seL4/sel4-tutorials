@@ -306,6 +306,11 @@ int main(void) {
         .pc = (seL4_Word)thread_2,
         .sp = (seL4_Word)thread_2_stack_top
     };
+#elif defined(CONFIG_ARCH_X86_64)
+    seL4_UserContext regs = {
+        .rip = (seL4_Word)thread_2,
+        .rsp = (seL4_Word)thread_2_stack_top
+    };
 #else
 #error "Unsupported architecture"
 #endif
