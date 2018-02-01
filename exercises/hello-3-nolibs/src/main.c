@@ -104,7 +104,7 @@ int untyped_retype_root(seL4_CPtr untyped, seL4_ObjectType type, int size_bits, 
                                size_bits /* size */,
                                root_cnode /* root cnode cap */,
                                root_cnode /* destination cspace */,
-                               32 /* depth */,
+                               seL4_WordBits /* depth */,
                                slot /* offset */,
                                1 /* num objects */);
 }
@@ -188,7 +188,7 @@ int main(void) {
     /* TASK 3: Using the untyped, create the required objects, storing their caps in the roottask's root cnode.
      *
      * hint 1: int seL4_Untyped_Retype(seL4_Untyped service, int type, int size_bits, seL4_CNode root, int node_index, int node_depth, int node_offset, int num_objects)
-     * hint 2: use a depth of 32
+     * hint 2: use a depth of seL4_WordBits
      * hint 3: use cspace_cap for the root cnode AND the cnode_index
      */
     /* create required objects */
@@ -280,6 +280,11 @@ int main(void) {
     seL4_UserContext regs = {
         .pc = (seL4_Word)thread_2,
         .sp = (seL4_Word)thread_2_stack_top
+    };
+#elif defined(CONFIG_ARCH_X86_64)
+    seL4_UserContext regs = {
+        .rip = (seL4_Word)thread_2,
+        .rsp = (seL4_Word)thread_2_stack_top
     };
 #else
 #error "Unsupported architecture"
