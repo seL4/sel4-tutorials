@@ -316,7 +316,7 @@ def handle_publish(args):
 
     # copy dirs/files that can be copied literally
     DIRS_TO_COPY = ['docs', 'build-config']
-    FILES_TO_COPY = ['LICENSE_BSD2.txt', 'Prerequisites.md']
+    FILES_TO_COPY = ['LICENSE_BSD2.txt', 'Prerequisites.md', 'CMakeLists.txt']
 
     tutorial_dir = common.get_tutorial_dir()
 
