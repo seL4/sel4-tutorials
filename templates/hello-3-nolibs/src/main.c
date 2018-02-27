@@ -273,7 +273,7 @@ int main(void) {
 
 
     /* initialise the new TCB */
-    error = seL4_TCB_Configure(tcb_cap, seL4_CapNull, seL4_PrioProps_new(seL4_MaxPrio, seL4_MaxPrio),
+    error = seL4_TCB_Configure(tcb_cap, seL4_CapNull, 
                                cspace_cap, seL4_NilData, pd_cap, seL4_NilData,
                                ipc_buffer_vaddr, ipc_frame_cap);
     ZF_LOGF_IFERR(error, "Failed to configure the new TCB object.\n"

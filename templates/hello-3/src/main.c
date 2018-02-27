@@ -386,7 +386,7 @@ int main(void) {
                   "\tThink of a badge in this case as an IPC context cookie.\n");
 
     /* initialise the new TCB */
-    error = seL4_TCB_Configure(tcb_object.cptr, seL4_CapNull, seL4_PrioProps_new(seL4_MaxPrio, seL4_MaxPrio),
+    error = seL4_TCB_Configure(tcb_object.cptr, seL4_CapNull, 
                                cspace_cap, seL4_NilData, pd_cap, seL4_NilData,
                                ipc_buffer_vaddr, ipc_frame_object.cptr);
     ZF_LOGF_IFERR(error, "Failed to configure the new TCB object.\n"
