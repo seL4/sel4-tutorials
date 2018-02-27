@@ -166,7 +166,9 @@ int main(void) {
     /* hint: sel4platsupport_init_default_timer
      */
 /*- if solution -*/
-    ps_io_ops_t ops = {0};
+/*- raw -*/
+    ps_io_ops_t ops = {{0}};
+/*- endraw -*/
     error = sel4platsupport_new_io_ops(vspace, vka, &ops);
     assert(error == 0);
 
