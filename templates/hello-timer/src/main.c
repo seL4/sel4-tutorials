@@ -139,7 +139,7 @@ int main(void) {
     seL4_CPtr new_ep_cap;
     vka_cspace_make_path(&vka, ep_object.cptr, &ep_cap_path);
 
-    /* copy the endpont cap and add a badge to the new cap */
+    /* copy the endpoint cap and add a badge to the new cap */
     new_ep_cap = sel4utils_mint_cap_to_process(&new_process, ep_cap_path,
                                                seL4_AllRights, EP_BADGE);
     assert(new_ep_cap != 0);
