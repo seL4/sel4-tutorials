@@ -193,7 +193,6 @@ int main(void) {
      * int seL4_TCB_Configure(seL4_TCB service, seL4_Word fault_ep, seL4_Uint8 priority, seL4_CNode cspace_root, seL4_CapData_t cspace_root_data, seL4_CNode vspace_root, seL4_CapData_t vspace_root_data, seL4_Word buffer, seL4_CPtr bufferFrame)
      * @param service Capability to the TCB which is being operated on.
      * @param fault_ep Endpoint which receives IPCs when this thread faults (must be in TCB's cspace).
-     * @param priority The thread's new priority.
      * @param cspace_root The new CSpace root.
      * @param cspace_root_data Optionally set the guard and guard size of the new root CNode. If set to zero, this parameter has no effect.
      * @param vspace_root The new VSpace root.
@@ -211,7 +210,7 @@ int main(void) {
      * hint 5: set the priority of the new thread to seL4_MaxPrio
      */
 
-    error = seL4_TCB_Configure(tcb_object.cptr, seL4_CapNull, seL4_PrioProps_new(seL4_MaxPrio, seL4_MaxPrio), cspace_cap, seL4_NilData, pd_cap, seL4_NilData, 0, 0);
+    error = seL4_TCB_Configure(tcb_object.cptr, seL4_CapNull,  cspace_cap, seL4_NilData, pd_cap, seL4_NilData, 0, 0);
 
     ZF_LOGF_IFERR(error, "Failed to configure the new TCB object.\n"
                   "\tWe're running the new thread with the root thread's CSpace.\n"

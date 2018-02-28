@@ -116,6 +116,8 @@ int main(void) {
     /* use sel4utils to make a new process */
     sel4utils_process_t new_process;
     sel4utils_process_config_t config = process_config_default_simple(&simple, APP_IMAGE_NAME, APP_PRIORITY);
+    config = process_config_auth(config, simple_get_tcb(&simple));
+    config = process_config_priority(config, seL4_MaxPrio);
     error = sel4utils_configure_process_custom(&new_process, &vka, &vspace, config);
     assert(error == 0);
 
@@ -137,7 +139,7 @@ int main(void) {
     seL4_CPtr new_ep_cap;
     vka_cspace_make_path(&vka, ep_object.cptr, &ep_cap_path);
 
-    /* copy the endpont cap and add a badge to the new cap */
+    /* copy the endpoint cap and add a badge to the new cap */
     new_ep_cap = sel4utils_mint_cap_to_process(&new_process, ep_cap_path,
                                                seL4_AllRights, EP_BADGE);
     assert(new_ep_cap != 0);

@@ -128,7 +128,7 @@ int main(void) {
                   "\tDid you find a free capability slot for the new child capability that will be generated?\n");
 
     /* initialise the new TCB */
-    error = seL4_TCB_Configure(tcb_cap, seL4_CapNull, seL4_PrioProps_new(seL4_MaxPrio, seL4_MaxPrio),
+    error = seL4_TCB_Configure(tcb_cap, seL4_CapNull, 
                                cspace_cap, seL4_NilData, pd_cap, seL4_NilData, 0, 0);
     ZF_LOGF_IFERR(error, "Failed to configure TCB object.\n"
                   "\tWe're spawning the new thread in the root thread's CSpace.\n"
