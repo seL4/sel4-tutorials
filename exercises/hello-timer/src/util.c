@@ -33,7 +33,7 @@ void __arch_putchar(int c) {
 
 /* set a thread's name for debugging purposes */
 void name_thread(seL4_CPtr tcb, char *name) {
-#ifdef SEL4_DEBUG_KERNEL
+#ifdef CONFIG_DEBUG_BUILD
     seL4_DebugNameThread(tcb, name);
 #endif
 }
