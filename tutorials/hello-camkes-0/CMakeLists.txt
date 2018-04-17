@@ -12,11 +12,8 @@
 
 cmake_minimum_required(VERSION 3.7.2)
 
-project(hello-3-nolibs C)
+project(hello-camkes-0 C)
 
-add_tutorials_executable(hello-3-nolibs TUTORIAL_SOURCES src/util.c TEMPLATE_SOURCES src/main.c)
+DeclareTutorialsCAmkESComponent(Client TUTORIAL_SOURCES components/Client/src/client.c)
 
-target_link_libraries(hello-3-nolibs
-    sel4
-    muslc utils
-    sel4muslcsys sel4platsupport sel4utils sel4debug sel4allocman)
+DeclareTutorialsCAmkESRootserver(hello-camkes-0.camkes ADL_IS_TUTORIAL TUTORIAL_SOURCES components/Client/Client.camkes)

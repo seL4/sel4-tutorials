@@ -12,18 +12,15 @@
 
 cmake_minimum_required(VERSION 3.7.2)
 
-add_subdirectory(../hello-timer-client hello-timer-client)
+project(hello-timer C)
 
-file(GLOB c_sources src/*.c src/*/*.c)
-list(SORT c_sources)
+add_subdirectory(hello-timer-client)
 
-MakeCPIO(sel4_tutorial_cpio.o "$<TARGET_FILE:hello-timer-client>")
+MakeCPIO(archive.o "$<TARGET_FILE:hello-timer-client>")
 
-add_executable(sel4_tutorial_executable ${c_sources} sel4_tutorial_cpio.o)
+add_tutorials_executable(hello-timer archive.o TEMPLATE_SOURCES src/main.c TUTORIAL_SOURCES src/util.c)
 
-target_link_libraries(sel4_tutorial_executable
+target_link_libraries(hello-timer
     sel4
     muslc utils
     sel4muslcsys sel4platsupport sel4utils sel4debug sel4allocman)
-
-target_include_directories(sel4_tutorial_executable PRIVATE "include")

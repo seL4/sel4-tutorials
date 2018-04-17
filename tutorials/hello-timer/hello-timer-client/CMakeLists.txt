@@ -12,14 +12,7 @@
 
 cmake_minimum_required(VERSION 3.7.2)
 
-if (${tut_desired_tutorial} STREQUAL "hello-timer-client")
-    message(FATAL_ERROR "\tPlease build the hello-timer tutorial instead. This sub-app is not meant to be targeted directly.\n\tTry -DTUTORIAL=hello-timer")
-endif()
-
-file(GLOB c_sources src/*.c src/*/*.c)
-list(SORT c_sources)
-
-add_executable(hello-timer-client ${c_sources})
+add_tutorials_executable(hello-timer-client TUTORIAL_SOURCES src/main.c src/util.c)
 
 set_property(TARGET hello-timer-client APPEND_STRING PROPERTY LINK_FLAGS " -u __vsyscall_ptr ")
 
@@ -27,5 +20,3 @@ target_link_libraries(hello-timer-client
     sel4
     muslc utils
     sel4muslcsys sel4platsupport sel4utils sel4debug)
-
-target_include_directories(hello-timer-client PRIVATE "include")

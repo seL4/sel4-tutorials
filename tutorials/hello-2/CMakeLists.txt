@@ -12,14 +12,11 @@
 
 cmake_minimum_required(VERSION 3.7.2)
 
-file(GLOB c_sources src/*.c src/*/*.c)
-list(SORT c_sources)
+project(hello-2 C)
 
-add_executable(sel4_tutorial_executable ${c_sources})
+add_tutorials_executable(hello-2 TUTORIAL_SOURCES src/util.c TEMPLATE_SOURCES src/main.c)
 
-target_link_libraries(sel4_tutorial_executable
+target_link_libraries(hello-2
     sel4
     muslc utils
     sel4muslcsys sel4platsupport sel4utils sel4debug sel4allocman)
-
-target_include_directories(sel4_tutorial_executable PRIVATE "include")
