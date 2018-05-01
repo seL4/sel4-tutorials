@@ -200,6 +200,10 @@ int main(void) {
     ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
                   "\tDid you write the correct number of registers? See arg4.\n");
 
+    /* Set the priority of the new thread to be equal to our priority. This ensures it will run
+     * in round robin with us. By default it has priority of 0 and so would never run unless we block */
+    error = seL4_TCB_SetPriority(tcb_cap, seL4_CapInitThreadTCB, seL4_MaxPrio);
+    ZF_LOGF_IFERR(error, "Failed to set the new thread's priority.\n");
     /* start the new thread running */
     error = seL4_TCB_Resume(tcb_cap);
     ZF_LOGF_IFERR(error, "Failed to start new thread.\n");
