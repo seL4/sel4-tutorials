@@ -132,7 +132,7 @@ void thread_2(void) {
     msg = seL4_GetMR(0);
 /*- endif -*/
 
-    printf("thread_2: got a message %#x from %#x\n", msg, sender_badge);
+    printf("thread_2: got a message %#" PRIxPTR " from %#" PRIxPTR "\n", msg, sender_badge);
 
     /* modify the message */
     msg = ~msg;
@@ -511,7 +511,7 @@ int main(void) {
     ZF_LOGF_IF(msg != ~MSG_DATA,
                "Response data from thread_2's content was not what was expected.\n");
 
-    printf("main: got a reply: %#x\n", msg);
+    printf("main: got a reply: %#" PRIxPTR "\n", msg);
 
     return 0;
 }

@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
     ZF_LOGF_IF(msg != ~MSG_DATA,
                "Unexpected response from root thread.\n");
 
-    printf("process_2: got a reply: %#x\n", msg);
+    printf("process_2: got a reply: %#" PRIxPTR "\n", msg);
 
     return 0;
 }

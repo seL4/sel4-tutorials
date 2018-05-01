@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
     assert(seL4_MessageInfo_get_length(tag) == 1);
     msg = seL4_GetMR(0);
 
-    printf("timer client wakes up: got the current timer tick: %u\n", msg);
+    printf("timer client wakes up: got the current timer tick: %zu\n", msg);
 
     return 0;
 }

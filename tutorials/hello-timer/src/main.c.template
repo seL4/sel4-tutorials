@@ -200,7 +200,7 @@ int main(void) {
 
     /* get the message stored in the first message register */
     msg = seL4_GetMR(0);
-    printf("main: got a message from %#x to sleep %u seconds\n", sender_badge, msg);
+    printf("main: got a message from %#" PRIxPTR " to sleep %zu seconds\n", sender_badge, msg);
 
     /*
      * TASK 3: Start and configure the timer
