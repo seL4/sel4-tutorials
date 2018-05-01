@@ -18,10 +18,11 @@ import sys, os, argparse, re, pexpect, subprocess, tempfile, logging
 import run
 import signal
 import psutil
+import shutil
 import os.path
 import xml.sax.saxutils
+import sh
 
-import manage
 import common
 
 # this assumes this script is in a directory inside the tutorial directory
@@ -31,35 +32,19 @@ TOP_LEVEL_DIR = common.get_project_root()
 # timeout per test in seconds
 DEFAULT_TIMEOUT = 1800
 
-# number of make jobs to run in parallel
-DEFAULT_JOBS = 1
-
 # Completion text for each test
 COMPLETION = {
-    # seL4 tests
-    "pc99_sel4_hello-1": "hello world",
-    "pc99_sel4_hello-2": "(thread_2: hallo wereld)|(main: hello world)",
-    "pc99_sel4_hello-3": "main: got a reply: 0xffff9e9e",
-    "pc99_sel4_hello-4": "process_2: got a reply: 0xffff9e9e",
-    "pc99_sel4_hello-2-nolibs": "(thread_2: hallo wereld)|(main: hello world)",
-    "pc99_sel4_hello-3-nolibs": "main: got a reply: 0xffff9e9e",
-    "pc99_sel4_hello-timer": "timer client wakes up: got the current timer tick:",
-    "zynq7000_sel4_hello-1": "hello world",
-    "zynq7000_sel4_hello-2": "(thread_2: hallo wereld)|(main: hello world)",
-    "zynq7000_sel4_hello-3": "main: got a reply: 0xffff9e9e",
-    "zynq7000_sel4_hello-4": "process_2: got a reply: 0xffff9e9e",
-    "zynq7000_sel4_hello-2-nolibs": "(thread_2: hallo wereld)|(main: hello world)",
-    "zynq7000_sel4_hello-3-nolibs": "main: got a reply: 0xffff9e9e",
-    "zynq7000_sel4_hello-timer": "timer client wakes up: got the current timer tick:",
-
-    # camkes tests
-    "zynq7000_camkes_hello-camkes-0": "Hello CAmkES World",
-    "zynq7000_camkes_hello-camkes-1": "Component echo saying: hello world",
-    "zynq7000_camkes_hello-camkes-2": "FAULT HANDLER: data fault from client.control",
-    "zynq7000_camkes_hello-camkes-timer": "After the client: wakeup",
-    "pc99_camkes_hello-camkes-0": "Hello CAmkES World",
-    "pc99_camkes_hello-camkes-1": "Component echo saying: hello world",
-    "pc99_camkes_hello-camkes-2": "FAULT HANDLER: data fault from client.control"
+    "hello-1": "hello world",
+    "hello-2": "(thread_2: hallo wereld)|(main: hello world)",
+    "hello-2-nolibs": "(thread_2: hallo wereld)|(main: hello world)",
+    "hello-3": "main: got a reply: 0xffff*9e9e",
+    "hello-3-nolibs": "main: got a reply: 0xffff*9e9e",
+    "hello-4": "process_2: got a reply: 0xffff*9e9e",
+    "hello-timer": "timer client wakes up: got the current timer tick:",
+    "hello-camkes-0": "Hello CAmkES World",
+    "hello-camkes-1": "Component echo saying: hello world",
+    "hello-camkes-2": "FAULT HANDLER: data fault from client.control",
+    "hello-camkes-timer": "After the client: wakeup",
 }
 
 # List of strings whose appearence in test output indicates test failure
@@ -69,58 +54,43 @@ FAILURE_TEXTS = [
     "Ignoring call to sys_exit_group"
 ]
 
-ARCHITECTURES = ['arm', 'ia32']
-PLATFORMS = ['pc99', 'zynq7000']
-
 def print_pexpect_failure(failure):
     if failure == pexpect.EOF:
         print("EOF received before completion text")
     elif failure == pexpect.TIMEOUT:
         print("Test timed out")
 
-def app_names(plat, system):
-    """
-    Yields the names of all tutorial applications for a given architecture
-    for a given system
-    """
-
-    build_config_dir = os.path.join(TUTORIAL_DIR, 'build-config')
-    system_build_config_dir = os.path.join(build_config_dir, "configs-%s" % system)
-    pattern = re.compile("^%s_(.*)_defconfig" % plat)
-    for config in os.listdir(system_build_config_dir):
-        matches = pattern.match(config)
-        if matches is None:
-            logging.info("Ignoring incompatible build config %s" % config)
-        else:
-            logging.info("Using build config %s" % config)
-            app_name = matches.group(1)
-            yield app_name
-
-def run_single_test(plat, system, app, timeout, jobs):
+def run_single_test(config, tutorial, timeout):
     """
     Builds and runs the solution to a given tutorial application for a given
-    architecture for a given system, checking that the result matches the
-    completion text
+    configuration, checking that the result matches the completion text
     """
 
-    full_name = "%s_%s_%s" % (plat, system, app)
     try:
-        completion_text = COMPLETION[full_name]
+        completion_text = COMPLETION[tutorial]
     except KeyError:
-        logging.error("No completion text provided for %s." % full_name)
+        logging.error("No completion text provided for %s." % tutorial)
         sys.exit(1)
 
-    # clean everything before each test
-    make_mrproper = subprocess.Popen(['make', 'mrproper'], cwd=TOP_LEVEL_DIR)
-    make_mrproper.wait()
+    # Create temporary directory for working in (make this a common helper to share with init.py)
+    build_dir = tempfile.mkdtemp(dir=TOP_LEVEL_DIR, prefix='build_')
+
+    # Initialize build directory (check results?)
+    result = common.init_build_directory(config, tutorial, True, build_dir)
+    if result.exit_code != 0:
+        logging.error("Failed to initialize build directory. Not deleting build directory %s" % build_dir)
+        sys.exit(1)
+
+    # Build
+    result = sh.ninja(_cwd = build_dir)
+    if result.exit_code != 0:
+        logging.error("Failed to build. Not deleting build directory %s" % build_dir)
+        sys.exit(1)
 
     # run the test, storting output in a temporary file
     temp_file = tempfile.NamedTemporaryFile(delete=True)
-    script_file = "%s/run.py" % (TUTORIAL_DIR)
-    arch = 'ia32' if plat == "pc99" else "arm"
-    command = '%s -a %s -j %s -p %s %s -R' % (script_file, arch, jobs, plat, app)
-    logging.info("Running command: %s" % command)
-    test = pexpect.spawn(command, cwd=TOP_LEVEL_DIR)
+    logging.info("Running ./simulate")
+    test = pexpect.spawn("sh", args=["simulate"], cwd=build_dir)
     test.logfile = temp_file
     expect_strings = [completion_text] + FAILURE_TEXTS
     result = test.expect(expect_strings, timeout=timeout)
@@ -141,85 +111,46 @@ def run_single_test(plat, system, app, timeout, jobs):
         if "qemu" in proc.name():
             proc.kill()
     temp_file.close()
+    shutil.rmtree(build_dir)
 
-def run_plat_tests(plat, system, timeout, jobs):
+def run_tests(tests, timeout):
     """
-    Builds and runs all tests for a given architecture for a given system
-    """
-
-    logging.info("\nRunning %s tutorial tests for %s platform..." % (system, plat))
-
-    for app in app_names(plat, system):
-        print("<testcase classname='sel4tutorials' name='%s_%s_%s'>" % (plat, system, app))
-        run_single_test(plat, system, app, timeout, jobs)
-        print("</testcase>")
-
-
-def run_tests(timeout, jobs):
-    """
-    Builds and runs all tests for all architectures for all systems
+    Builds and runs a list of tests
     """
 
     print('<testsuite>')
-    for system in ['sel4', 'camkes']:
-        manage.main(['env', system])
-        manage.main(['solution'])
-        for plat in PLATFORMS:
-            run_plat_tests(plat, system, timeout, jobs)
+    for (config, app) in tests:
+        print("<testcase classname='sel4tutorials' name='%s_%s'>" % (config,app))
+        run_single_test(config, app, timeout)
     print('</testsuite>')
-
-def run_system_tests(system, timeout, jobs):
-    """
-    Builds and runs all tests for all architectures for a given system
-    """
-
-    print('<testsuite>')
-    for plat in PLATFORMS:
-        run_plat_tests(plat, system, timeout, jobs)
-    print('</testsuite>')
-
-def set_log_level(args):
-    """
-    Set the log level for the script from command line arguments
-    """
-
-    if args.verbose:
-        logging.basicConfig(level=logging.DEBUG)
-    elif args.quiet:
-        logging.basicConfig(level=logging.ERROR)
-    else:
-        logging.basicConfig(level=logging.INFO)
 
 def main():
     parser = argparse.ArgumentParser(
-                description="Runs all tests for sel4 tutorials or camkes tutorials")
+                description="Runs all tests for the tutorials")
 
     parser.add_argument('--verbose', action='store_true',
                         help="Output everything including debug info")
     parser.add_argument('--quiet', action='store_true',
                         help="Suppress output except for junit xml")
     parser.add_argument('--timeout', type=int, default=DEFAULT_TIMEOUT)
-    parser.add_argument('--system', type=str, choices=['camkes', 'sel4'])
-    parser.add_argument('--jobs', type=int, default=DEFAULT_JOBS)
-    parser.add_argument('--single', action='store_true',
-            help="Run a single test. To run a single test, you need to specify the platform and application.")
-    parser.add_argument('--plat', type=str, choices=PLATFORMS, required='--single' in sys.argv)
-    parser.add_argument('--app', type=str, required='--single' in sys.argv)
+    parser.add_argument('--config', type=str, choices=common.ALL_CONFIGS)
+    parser.add_argument('--app', type=str, choices=common.ALL_TUTORIALS)
 
     args = parser.parse_args()
 
-    set_log_level(args)
+    common.setup_logger(__name__)
+    common.set_log_level(args.verbose, args.quiet)
 
-    if args.system is None:
-        run_tests(args.timeout, args.jobs)
-    elif args.single:
-        print('<testsuite>')
-        print("<testcase classname='sel4tutorials' name='%s_%s_%s'>" % (args.plat, args.system, args.app))
-        run_single_test(args.plat, args.system, args.app, args.timeout, args.jobs)
-        print("</testcase>")
-        print('</testsuite>')
-    else:
-        run_system_tests(args.system, args.timeout, args.jobs)
+    # Generate all the tests (restricted by app and config)
+    tests=[]
+    for tutorial in common.ALL_TUTORIALS:
+        for config in common.TUTORIALS[tutorial]:
+            if (args.app is None or args.app == tutorial) and \
+               (args.config is None or args.config == config):
+                tests = tests + [(config, tutorial)]
+
+    run_tests(tests, args.timeout)
+    return 0
 
 if __name__ == '__main__':
     sys.exit(main())

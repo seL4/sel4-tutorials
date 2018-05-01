@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright 2017, Data61
+# Copyright 2018, Data61
 # Commonwealth Scientific and Industrial Research Organisation (CSIRO)
 # ABN 41 687 119 230.
 #
@@ -11,30 +11,36 @@
 # @TAG(DATA61_BSD)
 #
 
-import re
 import os
 import sys
+import sh
 import logging
 
-ARCHS = ['ia32', 'arm']
-PLATS = ['pc99', 'imx6', 'zynq7000']
+# Define how to configure each platform in terms of arguments passed to cmake
+PLAT_CONFIG = {
+    'pc99': ['-DTUT_BOARD=pc', '-DTUT_ARCH=x86_64'],
+    'imx6': ['-DAARCH32=TRUE', '-DTUT_BOARD=imx6'],
+    'zynq7000': ['-DAARCH32=TRUE', '-DTUT_BOARD=zynq7000'],
+}
 
-BUILD_CONFIG_PAT = r'(?P<prefix>%s)_(?P<name>.*)_defconfig' % "|".join(PLATS)
-BUILD_CONFIG_RE = re.compile(BUILD_CONFIG_PAT)
+ALL_CONFIGS = PLAT_CONFIG.keys()
 
-def config_filename_to_parts(filename):
-    '''Return a tuple (prefix, name) for a given build config filename'''
-    m = BUILD_CONFIG_RE.match(filename)
-    if m is not None:
-        prefix = m.group('prefix')
-        name = m.group('name')
-        return prefix, name
-    else:
-        raise Exception("invalid build config filename: %s" % filename)
+# Declare each tutorial and the configs they support
+TUTORIALS = {
+    'hello-1': ALL_CONFIGS,
+    'hello-2': ALL_CONFIGS,
+    'hello-2-nolibs': ALL_CONFIGS,
+    'hello-3': ALL_CONFIGS,
+    'hello-3-nolibs': ALL_CONFIGS,
+    'hello-4': ALL_CONFIGS,
+    'hello-timer': ALL_CONFIGS,
+    'hello-camkes-0': ALL_CONFIGS,
+    'hello-camkes-1': ALL_CONFIGS,
+    'hello-camkes-2': ALL_CONFIGS,
+    'hello-camkes-timer': ['zynq7000'],
+}
 
-def config_filename_from_parts(prefix, name):
-    '''Return a build config filename for a given prefix and name'''
-    return "%s_%s_defconfig" % (prefix, name)
+ALL_TUTORIALS = TUTORIALS.keys()
 
 def get_tutorial_dir():
     '''Return directory containing sel4 tutorials repo'''
@@ -45,26 +51,29 @@ def get_project_root():
     # assume default location of this project in projects/sel4-tutorials
     return os.path.join(get_tutorial_dir(), '..', '..')
 
-def get_config_dir():
-    '''Returns the path to the "configs" dir inside the root directory of this project'''
-    return os.path.realpath(os.path.join(get_project_root(), 'configs'))
+def init_build_directory(config, tut, solution, directory):
+    tut_arg = "-DTUTORIAL=" + tut
+    args = ['-DCMAKE_TOOLCHAIN_FILE=../kernel/gcc.cmake', '-G', 'Ninja'] + PLAT_CONFIG[config] + [tut_arg];
+    if solution:
+        args = args + ["-DBUILD_SOLUTIONS=TRUE"]
+    result = sh.cmake(args + ['..'], _cwd = directory)
+    if result.exit_code != 0:
+        return result
+    sh.cmake(['..'], _cwd = directory)
+    if result.exit_code != 0:
+        return result
+    sh.cmake(['..'], _cwd = directory)
+    if result.exit_code != 0:
+        return result
+    return sh.cmake(['..'], _cwd = directory)
 
-def get_tutorial_type():
-    '''Returns a string identifying which tutorial environment we are currently
-       in, based on the config dir symlink.
-    '''
-    config_path = get_config_dir()
-
-    if not os.path.isdir(config_path):
-        return None
-
-    config_path_end = os.path.split(config_path)[-1]
-    if config_path_end == 'configs-camkes':
-        return 'CAmkES'
-    elif config_path_end == 'configs-sel4':
-        return 'seL4'
+def set_log_level(verbose, quiet):
+    if verbose:
+        logging.basicConfig(level=logging.DEBUG)
+    elif quiet:
+        logging.basicConfig(level=logging.ERROR)
     else:
-        raise Exception("unexpected build config path: %s" % config_path)
+        logging.basicConfig(level=logging.INFO)
 
 def setup_logger(name):
     logger = logging.getLogger(name)
