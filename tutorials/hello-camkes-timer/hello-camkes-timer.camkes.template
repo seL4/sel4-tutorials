@@ -20,8 +20,20 @@ import <std_connector.camkes>;
 import "components/Client/Client.camkes";
 import "components/Timer/Timer.camkes";
 
+/*- if not solution -*/
+/* A valid CAmkES assembly must have at least one component. As the starting point for
+ * this tutorial does not have any valid components we declare an empty one that does nothing
+ * just to construct a valid spec. Once you have added some components to the composition
+ * you can remove this if you want, although it will cause no harm being left in */
+component EmptyComponent {
+}
+/*- endif -*/
+
 assembly {
     composition {
+/*- if not solution -*/
+        component EmptyComponent empty;
+/*- endif -*/
         /* TASK 1: component instances */
         /* hint 1: one hardware component, one driver component
          * hint 2: look at
@@ -32,7 +44,14 @@ assembly {
         component Timer timer;
 /*- endif -*/
 
+/*- if solution -*/
         component Client client;
+/*- else -*/
+        /* this is the component interface. This starts commented out as there it must have
+         * its 'hello' interface connected, which initially we cannot do. Uncomment this once
+         * you can uncomment the 'timer interface connection' below */
+//        component Client client;
+/*- endif -*/
 
         /* TASK 2: connections */
         /* hint 1: use seL4HardwareMMIO to connect device memory
@@ -46,7 +65,12 @@ assembly {
 /*- endif -*/
 
         /* timer interface connection */
+/*- if solution -*/
         connection seL4RPCCall hello_timer(from client.hello, to timer.hello);
+/*- else -*/
+        /* uncomment this (and the insantiation of 'client' above) once there is a timer component */
+//        connection seL4RPCCall hello_timer(from client.hello, to timer.hello);
+/*- endif -*/
     }
     configuration {
         /* TASK 3: hardware resources */
@@ -61,7 +85,11 @@ assembly {
 /*- endif -*/
 
         /* assign an initial value to semaphore */
+/*- if solution -*/
         timer.sem_value = 0;
+/*- else -*/
+//        timer.sem_value = 0;
+/*- endif -*/
     }
 }
 

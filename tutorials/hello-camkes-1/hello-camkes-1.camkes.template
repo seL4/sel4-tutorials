@@ -20,8 +20,20 @@ import <std_connector.camkes>;
 import "components/Client/Client.camkes";
 import "components/Echo/Echo.camkes";
 
+/*- if not solution -*/
+/* A valid CAmkES assembly must have at least one component. As the starting point for
+ * this tutorial does not have any valid components we declare an empty one that does nothing
+ * just to construct a valid spec. Once you have added some components to the composition
+ * you can remove this if you want, although it will cause no harm being left in */
+component EmptyComponent {
+}
+/*- endif -*/
+
 assembly {
     composition {
+/*- if not solution -*/
+        component EmptyComponent empty;
+/*- endif -*/
         /* TASK 1: component instances */
         /* hint 1: one Client compoent, one Echo component
          * hint 2: look at
