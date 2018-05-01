@@ -10,25 +10,26 @@
  * @TAG(DATA61_BSD)
  */
 
-/*
- * helper functions
- */
-
 /* Include Kconfig variables. */
 #include <autoconf.h>
 
 #include <sel4/sel4.h>
+#include <arch_stdio.h>
+#include <utils/attribute.h>
 
-/* avoid main falling off the end of the world */
-void abort(void) {
-    while (1);
+/* allow printf to use kernel debug printing */
+size_t kernel_putchar_write(void *data, size_t count) {
+#ifdef CONFIG_DEBUG_BUILD
+    char *cdata = (char*)data;
+    for (size_t i = 0; i < count; i++) {
+        seL4_DebugPutChar(cdata[i]);
+    }
+#endif
+    return count;
 }
 
-/* enable printf to use kernel debug printing */
-void __arch_putchar(int c) {
-#ifdef CONFIG_DEBUG_BUILD
-    seL4_DebugPutChar(c);
-#endif
+void CONSTRUCTOR(200) register_debug_putchar(void) {
+    sel4muslcsys_register_stdio_write_fn(kernel_putchar_write);
 }
 
 /* set a thread's name for debugging purposes */
@@ -37,6 +38,3 @@ void name_thread(seL4_CPtr tcb, char *name) {
     seL4_DebugNameThread(tcb, name);
 #endif
 }
-
-
-

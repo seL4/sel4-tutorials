@@ -19,11 +19,6 @@
 
 #include <sel4/sel4.h>
 
-/* avoid main falling off the end of the world */
-void abort(void) {
-    while (1);
-}
-
 /* set a thread's name for debugging purposes */
 void name_thread(seL4_CPtr tcb, char *name) {
 #ifdef SEL4_DEBUG_KERNEL
