@@ -30,13 +30,11 @@ tutorials cannot be built with the CMake build system:
 * hello-camkes-2
 * hello-camkes-timer
 
-#### Don't forget to pass -DAARCH32 or -DAARCH64:
-
-If you're compiling for *any* ARM platform, please don't forget to pass in the
-extra -DAARCH32 or -DAARCH64 flag (depending on whether you're compiling for
-32-bit or 64-bit ARM) when invoking CMake.
-
 ### Choosing your target machine and compiling
+
+If you're compiling for **any** ARM platform, please don't forget to pass in the (required)
+extra `-DAARCH32=1` or `-DAARCH64=1` flag (depending on whether you're compiling for
+32-bit or 64-bit ARM) when invoking CMake.
 
 Invoke the CMake build system to begin trying your changes to the exercises:
 
@@ -64,7 +62,7 @@ The *officially* supported combinations of `TUT_BOARD` and `TUT_ARCH` are:
 
 * `TUT_BOARD`=pc, `TUT_ARCH`=x86: This yields an x86-pc build.
 * `TUT_BOARD`=pc, `TUT_ARCH`=x86_64: This yields an x86_64-pc build.
-* `TUT_BOARD`=zynq7000: This yields an armv7-zynq7000 build.
+* `TUT_BOARD`=zynq7000: This yields an armv7-zynq7000 build (don't forget to add `-DAARCH32=1`)
 
 Other boards may work, and the hello-1, hello-2, hello-3 and hello-4 tutorials
 should work on most boards. Hello-timer may not work on many boards.
