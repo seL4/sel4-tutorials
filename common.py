@@ -19,7 +19,6 @@ import logging
 # Define how to configure each platform in terms of arguments passed to cmake
 PLAT_CONFIG = {
     'pc99': ['-DTUT_BOARD=pc', '-DTUT_ARCH=x86_64'],
-    'imx6': ['-DAARCH32=TRUE', '-DTUT_BOARD=imx6'],
     'zynq7000': ['-DAARCH32=TRUE', '-DTUT_BOARD=zynq7000'],
 }
 
