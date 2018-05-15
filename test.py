@@ -15,7 +15,6 @@
 # completion text.
 
 import sys, os, argparse, re, pexpect, subprocess, tempfile, logging
-import run
 import signal
 import psutil
 import shutil
