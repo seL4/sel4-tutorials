@@ -75,13 +75,13 @@ def run_single_test(config, tutorial, timeout):
     build_dir = tempfile.mkdtemp(dir=TOP_LEVEL_DIR, prefix='build_')
 
     # Initialize build directory (check results?)
-    result = common.init_build_directory(config, tutorial, True, build_dir)
+    result = common.init_build_directory(config, tutorial, True, build_dir, output=sys.stdout)
     if result.exit_code != 0:
         logging.error("Failed to initialize build directory. Not deleting build directory %s" % build_dir)
         sys.exit(1)
 
     # Build
-    result = sh.ninja(_cwd = build_dir)
+    result = sh.ninja(_out=sys.stdout, _cwd=build_dir)
     if result.exit_code != 0:
         logging.error("Failed to build. Not deleting build directory %s" % build_dir)
         sys.exit(1)
