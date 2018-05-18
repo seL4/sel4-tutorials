@@ -172,7 +172,7 @@ int main(void) {
     error = sel4platsupport_new_io_ops(vspace, vka, &ops);
     assert(error == 0);
 
-    error = sel4platsupport_new_arch_ops(&ops, &simple);
+    error = sel4platsupport_new_arch_ops(&ops, &simple, &vka);
     assert(error == 0);
 
     error = sel4platsupport_init_default_timer_ops(&vka, &vspace, &simple, ops,
