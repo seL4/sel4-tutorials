@@ -13,7 +13,8 @@
 Various tutorials for using seL4, its libraries, and CAmkES.
 
 ## Prerequisites
-Download the prerequisites for building and running the tutorial code following the [instructions](Prerequisites.md).
+
+Follow the instructions for setting up your host environment on the [seL4 docsite](https://docs.sel4.systems/HostDependencies).
 
 ## Starting a tutorial
 
