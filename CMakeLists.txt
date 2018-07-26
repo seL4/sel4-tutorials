@@ -247,7 +247,7 @@ if (CAMKES)
     find_program(TPP_TOOL tpp PATHS "${CMAKE_SOURCE_DIR}/tools/camkes/tools")
     include("${CMAKE_SOURCE_DIR}/tools/camkes/camkes.cmake")
     add_subdirectory("${CMAKE_SOURCE_DIR}/projects/camkes/capdl/capdl-loader-app" capdl-loader-app)
-    add_subdirectory("${CMAKE_SOURCE_DIR}/projects/camkes/global-components" global-components)
+    include("${CMAKE_SOURCE_DIR}/projects/camkes/global-components/global-components.cmake")
     add_subdirectory("${CMAKE_SOURCE_DIR}/tools/camkes/libsel4camkes" libsel4camkes)
 endif()
 
