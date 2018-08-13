@@ -190,7 +190,7 @@ int main(void) {
 
     /* TASK 9: initialise the new TCB */
     /* hint 1: seL4_TCB_Configure()
-     * int seL4_TCB_Configure(seL4_TCB service, seL4_Word fault_ep, seL4_Uint8 priority, seL4_CNode cspace_root, seL4_CapData_t cspace_root_data, seL4_CNode vspace_root, seL4_CapData_t vspace_root_data, seL4_Word buffer, seL4_CPtr bufferFrame)
+     * int seL4_TCB_Configure(seL4_TCB _service, seL4_Word fault_ep, seL4_CNode cspace_root, seL4_Word cspace_root_data, seL4_CNode vspace_root, seL4_Word vspace_root_data, seL4_Word buffer, seL4_CPtr bufferFrame)
      * @param service Capability to the TCB which is being operated on.
      * @param fault_ep Endpoint which receives IPCs when this thread faults (must be in TCB's cspace).
      * @param cspace_root The new CSpace root.
