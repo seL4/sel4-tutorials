@@ -40,19 +40,19 @@
 /* global environment variables */
 
 /* seL4_BootInfo defined in bootinfo.h
- * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#Globals_links: */
+ * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#globals-links: */
 seL4_BootInfo *info;
 
 /* simple_t defined in simple.h
- * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#Globals_links: */
+ * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#globals-links: */
 simple_t simple;
 
 /* vka_t defined in vka.h
- * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#Globals_links: */
+ * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#globals-links: */
 vka_t vka;
 
 /* allocman_t defined in allocman.h
- * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#Globals_links: */
+ * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#globals-links: */
 allocman_t *allocman;
 
 /* static memory for the allocator to bootstrap with */
@@ -64,7 +64,7 @@ UNUSED static char allocator_mem_pool[ALLOCATOR_STATIC_POOL_SIZE];
 static uint64_t thread_2_stack[THREAD_2_STACK_SIZE];
 
 /* name_thread(): convenience function in util.c:
- * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#Globals_links:
+ * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#globals-links:
  */
 extern void name_thread(seL4_CPtr tcb, char *name);
 
@@ -86,7 +86,7 @@ int main(void) {
     /* hint: platsupport_get_bootinfo()
      * seL4_BootInfo* platsupport_get_bootinfo(void);
      * @return Pointer to the bootinfo, NULL on failure
-     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TASK_1:
+     * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#task-1:
      */
 /*- if solution -*/
     info = platsupport_get_bootinfo();
@@ -96,7 +96,7 @@ int main(void) {
     /* Set up logging and give us a name: useful for debugging if the thread faults */
     /* seL4_CapInitThreadTCB is a cap pointer to the root task's initial TCB.
      * It is part of the root task's boot environment and defined in bootinfo.h from libsel4:
-     * https://wiki.sel4.systems/seL4%20Tutorial%202#Globals_links:
+     * https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#globals-links:
      */
     zf_log_set_tag_prefix("hello-2:");
     name_thread(seL4_CapInitThreadTCB, "hello-2");
@@ -106,7 +106,7 @@ int main(void) {
      * void simple_default_init_bootinfo(simple_t *simple, seL4_BootInfo *bi);
      * @param simple Structure for the simple interface object. This gets initialised.
      * @param bi Pointer to the bootinfo describing what resources are available
-     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TASK_2:
+     * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#task-2:
      */
 /*- if solution -*/
     simple_default_init_bootinfo(&simple, info);
@@ -116,7 +116,7 @@ int main(void) {
     /* hint: simple_print()
      * void simple_print(simple_t *simple);
      * @param simple Pointer to simple interface.
-     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TASK_3:
+     * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#task-3:
      */
 /*- if solution -*/
     simple_print(&simple);
@@ -129,7 +129,7 @@ int main(void) {
      * @param pool_size Size of the initial memory pool.
      * @param pool Initial memory pool.
      * @return returns NULL on error
-     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TASK_4:
+     * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#task-4:
      */
 /*- if solution -*/
     allocman = bootstrap_use_current_simple(&simple, ALLOCATOR_STATIC_POOL_SIZE, allocator_mem_pool);
@@ -143,7 +143,7 @@ int main(void) {
      * void allocman_make_vka(vka_t *vka, allocman_t *alloc);
      * @param vka Structure for the vka interface object.  This gets initialised.
      * @param alloc allocator to be used with this vka
-     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TASK_5:
+     * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#task-5:
      */
 /*- if solution -*/
     allocman_make_vka(&vka, allocman);
@@ -154,7 +154,7 @@ int main(void) {
      * seL4_CPtr simple_get_cnode(simple_t *simple);
      * @param simple Pointer to simple interface.
      * @return The cnode backing the simple interface. no failure.
-     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TASK_6:
+     * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#task-6:
      */
 /*- if solution -*/
     seL4_CPtr cspace_cap;
@@ -166,7 +166,7 @@ int main(void) {
      * seL4_CPtr simple_get_pd(simple_t *simple);
      * @param simple Pointer to simple interface.
      * @return The vspace (PD) backing the simple interface. no failure.
-     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TASK_7:
+     * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#task-7:
      */
 /*- if solution -*/
     seL4_CPtr pd_cap;
@@ -179,7 +179,7 @@ int main(void) {
      * @param vka Pointer to vka interface.
      * @param result Structure for the TCB object.  This gets initialised.
      * @return 0 on success
-     * https://wiki.sel4.systems/seL4%20Tutorial%202#TASK_8:
+     * https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#task-8:
      */
 /*- if solution -*/
     vka_object_t tcb_object = {0};
@@ -201,8 +201,8 @@ int main(void) {
      * @param bufferFrame Capability to a page containing the thread?s IPC buffer.
      * @return 0 on success.
      * Note: this function is generated during build.  It is generated from the following definition:
-     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TASK_9:
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
+     * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#task-9:
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-latest.pdf
      *
      * hint 2: use seL4_CapNull for the fault endpoint
      * hint 3: use seL4_NilData for cspace and vspace data
@@ -238,7 +238,7 @@ int main(void) {
      * void sel4utils_set_instruction_pointer(seL4_UserContext *regs, seL4_Word value);
      * @param regs Data structure in which to set the instruction pointer value
      * @param value New instruction pointer value
-     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TASK_11:
+     * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#task-11:
      *
      * hint 2: we want the new thread to run the function "thread_2"
      */
@@ -259,7 +259,7 @@ int main(void) {
      * void sel4utils_set_stack_pointer(seL4_UserContext *regs, seL4_Word value);
      * @param regs  Data structure in which to set the stack pointer value
      * @param value New stack pointer value
-     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TASK_12:
+     * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#task-12:
      *
      * hint 2: remember the stack grows down!
      */
@@ -279,8 +279,8 @@ int main(void) {
      * @return 0 on success
      *
      * Note: this function is generated during build.  It is generated from the following definition:
-     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TASK_13:
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
+     * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#task-13:
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-latest.pdf
      */
 /*- if solution -*/
     error = seL4_TCB_WriteRegisters(tcb_object.cptr, 0, 0, 2, &regs);
@@ -295,8 +295,8 @@ int main(void) {
      * @return 0 on success
      *
      * Note: this function is generated during build.  It is generated from the following definition:
-     * Links to source: https://wiki.sel4.systems/seL4%20Tutorial%202#TASK_14:
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
+     * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#task-14:
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-latest.pdf
      */
 /*- if solution -*/
     error = seL4_TCB_Resume(tcb_object.cptr);

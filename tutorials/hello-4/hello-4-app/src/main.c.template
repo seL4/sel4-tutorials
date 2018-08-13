@@ -46,8 +46,8 @@ int main(int argc, char **argv) {
      * @param dest The capability to be invoked.
      * @param msgInfo The messageinfo structure for the IPC.  This specifies information about the message to send (such as the number of message registers to send).
      * @return A seL4_MessageInfo_t structure.  This is information about the repy message.
-     * Link to source: https://wiki.sel4.systems/seL4%20Tutorial%204#TASK_9:
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-3.0.0.pdf
+     * Link to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_4#task-9:
+     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-latest.pdf
      *
      * hint 2: send the endpoint cap using argv (see TASK 6 in the other main.c)
      */
