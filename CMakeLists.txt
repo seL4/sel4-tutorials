@@ -251,6 +251,7 @@ if (CAMKES)
     add_subdirectory("${CMAKE_SOURCE_DIR}/tools/camkes/libsel4camkes" libsel4camkes)
 endif()
 
+add_subdirectory(libsel4tutorials)
 add_subdirectory(tutorials/${TUTORIAL})
 
 if (CAMKES)

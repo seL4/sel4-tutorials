@@ -12,11 +12,11 @@
 
 cmake_minimum_required(VERSION 3.7.2)
 
-add_tutorials_executable(hello-timer-client TUTORIAL_SOURCES src/main.c src/util.c)
+add_tutorials_executable(hello-timer-client TUTORIAL_SOURCES src/main.c)
 
 set_property(TARGET hello-timer-client APPEND_STRING PROPERTY LINK_FLAGS " -u __vsyscall_ptr ")
 
 target_link_libraries(hello-timer-client
     sel4
-    muslc utils
+    muslc utils sel4tutorials
     sel4muslcsys sel4platsupport sel4utils sel4debug)
