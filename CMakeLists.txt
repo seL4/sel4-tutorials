@@ -243,7 +243,7 @@ if (CAMKES)
     # default top level CMakeLists.txt from CAmkES, but as we wish to switch CAmkES on and
     # off this is not possible, hence we have to do this mangling here ourselves.
     set(PYTHON_CAPDL_PATH "${CMAKE_SOURCE_DIR}/projects/camkes/capdl/python-capdl-tool")
-    set(CAPDL_TOOL_SOURCE_PATH "${CMAKE_SOURCE_DIR}/projects/camkes/capdl/capDL-tool")
+    set(CAPDL_TOOL_HELPERS "${CMAKE_SOURCE_DIR}/projects/camkes/capdl/capDL-tool/capDL-tool.cmake")
     find_program(TPP_TOOL tpp PATHS "${CMAKE_SOURCE_DIR}/tools/camkes/tools")
     include("${CMAKE_SOURCE_DIR}/tools/camkes/camkes.cmake")
     add_subdirectory("${CMAKE_SOURCE_DIR}/projects/camkes/capdl/capdl-loader-app" capdl-loader-app)
