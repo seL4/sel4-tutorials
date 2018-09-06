@@ -14,18 +14,6 @@ cmake_minimum_required(VERSION 3.8.2)
 
 project(sel4_tutorials C)
 
-# See if a valid tutorial was defined
-if (NOT (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tutorials/${TUTORIAL}/CMakeLists.txt"))
-    message(FATAL_ERROR "\"${TUTORIAL}\" is not a valid tutorial. Choose one with -DTUTORIAL=<PREFERENCE>")
-endif()
-
-if ("${TUTORIAL}" MATCHES "camkes")
-    set(CAMKES TRUE)
-else ()
-    set(CAMKES FALSE)
-endif()
-
-
 include(cmake/settings.cmake)
 
 # Ensure we have the python script for processing the templates
