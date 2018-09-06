@@ -26,3 +26,5 @@ DeclareCAmkESComponent(Timer SOURCES components/Timer/src/timer.c)
 DeclareCAmkESComponent(EmptyComponent)
 
 DeclareCAmkESRootserver(hello-camkes-timer.camkes)
+
+GenerateCAmkESRootserver()
