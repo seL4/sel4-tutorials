@@ -18,7 +18,7 @@ add_subdirectory(hello-4-app)
 
 MakeCPIO(archive.o "$<TARGET_FILE:hello-4-app>")
 
-add_tutorials_executable(hello-4 archive.o TEMPLATE_SOURCES src/main.c)
+add_executable(hello-4 archive.o src/main.c)
 
 target_link_libraries(hello-4
     sel4

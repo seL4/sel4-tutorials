@@ -18,7 +18,7 @@ add_subdirectory(hello-timer-client)
 
 MakeCPIO(archive.o "$<TARGET_FILE:hello-timer-client>")
 
-add_tutorials_executable(hello-timer archive.o TEMPLATE_SOURCES src/main.c)
+add_executable(hello-timer archive.o src/main.c)
 
 target_link_libraries(hello-timer
     sel4

@@ -21,11 +21,8 @@ if (NOT ("${TUT_BOARD}" STREQUAL "zynq7000"))
     message(FATAL_ERROR "The hello-camkes-timer tutorial is only supported on the zynq7000 board.")
 endif()
 
-DeclareTutorialsCAmkESComponent(Client TUTORIAL_SOURCES components/Client/src/client.c)
-DeclareTutorialsCAmkESComponent(Timer TEMPLATE_SOURCES components/Timer/src/timer.c)
+DeclareCAmkESComponent(Client SOURCES components/Client/src/client.c)
+DeclareCAmkESComponent(Timer SOURCES components/Timer/src/timer.c)
 DeclareCAmkESComponent(EmptyComponent)
 
-DeclareTutorialsCAmkESRootserver(hello-camkes-timer.camkes ADL_IS_TEMPLATE
-    TUTORIAL_SOURCES interfaces/timer.camkes components/Client/Client.camkes
-        components/Timer/Timer.camkes
-)
+DeclareCAmkESRootserver(hello-camkes-timer.camkes)

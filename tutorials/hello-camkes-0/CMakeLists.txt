@@ -16,6 +16,6 @@ project(hello-camkes-0 C)
 
 ImportCamkes()
 
-DeclareTutorialsCAmkESComponent(Client TUTORIAL_SOURCES components/Client/src/client.c)
+DeclareCAmkESComponent(Client SOURCES components/Client/src/client.c)
 
-DeclareTutorialsCAmkESRootserver(hello-camkes-0.camkes ADL_IS_TUTORIAL TUTORIAL_SOURCES components/Client/Client.camkes)
+DeclareCAmkESRootserver(hello-camkes-0.camkes)

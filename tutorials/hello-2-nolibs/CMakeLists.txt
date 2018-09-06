@@ -14,7 +14,7 @@ cmake_minimum_required(VERSION 3.7.2)
 
 project(hello-2-nolibs C)
 
-add_tutorials_executable(hello-2-nolibs TEMPLATE_SOURCES src/main.c)
+add_executable(hello-2-nolibs src/main.c)
 
 target_link_libraries(hello-2-nolibs
     sel4
