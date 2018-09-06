@@ -53,16 +53,13 @@ def get_project_root():
 def _init_build_directory(config, directory, tute_directory, output=None):
     tute_dir = "-DTUTORIAL_DIR=" + os.path.basename(tute_directory)
     args = ['-DCMAKE_TOOLCHAIN_FILE=../kernel/gcc.cmake', '-G', 'Ninja'] + PLAT_CONFIG[config] + [tute_dir]
-    result = sh.cmake(args + ['..'], _cwd = directory, _out=output)
+    result = sh.cmake(args + ['..'], _cwd = directory, _out=output, _err=output)
     if result.exit_code != 0:
         return result
-    sh.cmake(['..'], _cwd = directory, _out=output)
+    result = sh.cmake(['..'], _cwd = directory, _out=output, _err=output)
     if result.exit_code != 0:
         return result
-    sh.cmake(['..'], _cwd = directory, _out=output)
-    if result.exit_code != 0:
-        return result
-    return sh.cmake(['..'], _cwd = directory, _out=output)
+    return sh.cmake(['..'], _cwd = directory, _out=output, _err=output)
 
 
 def _init_tute_directory(config, tut, solution, directory, output=None):
