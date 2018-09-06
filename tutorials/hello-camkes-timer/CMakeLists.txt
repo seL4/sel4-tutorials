@@ -14,6 +14,8 @@ cmake_minimum_required(VERSION 3.7.2)
 
 project(hello-camkes-timer C)
 
+ImportCamkes()
+
 # This tutorial is hard coded for the zynq, make sure that was what was selected
 if (NOT ("${TUT_BOARD}" STREQUAL "zynq7000"))
     message(FATAL_ERROR "The hello-camkes-timer tutorial is only supported on the zynq7000 board.")

@@ -49,12 +49,6 @@ set(LibSel4PlatSupportUseDebugPutChar true CACHE BOOL "" FORCE)
 # confusing output from the kernel for a tutorial
 set(LibSel4MuslcSysDebugHalt FALSE CACHE BOOL "" FORCE)
 
-if (CAMKES)
-    set(CapDLLoaderMaxObjects 20000 CACHE STRING "" FORCE)
-    set(KernelRootCNodeSizeBits 17 CACHE STRING "" FORCE)
-    set(KernelNumDomains 1 CACHE STRING "" FORCE)
-endif()
-
 # We must build the debug kernel because the tutorials rely on seL4_DebugPutChar
 # and they don't initialize a platsupport driver.
 ApplyCommonReleaseVerificationSettings(FALSE FALSE)

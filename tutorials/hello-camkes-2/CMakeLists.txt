@@ -14,6 +14,8 @@ cmake_minimum_required(VERSION 3.7.2)
 
 project(hello-camkes-2 C)
 
+ImportCamkes()
+
 DeclareTutorialsCAmkESComponent(Client INCLUDES include TEMPLATE_SOURCES components/Client/src/client.c)
 DeclareTutorialsCAmkESComponent(Echo INCLUDES include TEMPLATE_SOURCES components/Echo/src/echo.c)
 

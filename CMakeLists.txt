@@ -39,19 +39,6 @@ set(tutorial_base_dir "${CMAKE_CURRENT_SOURCE_DIR}/tutorials")
 
 include(cmake/helpers.cmake)
 
-if (CAMKES)
-    # We are including camkes from a non standard location and need to give some paths
-    # This is a very non standard way of using CAmkES as normally you would use the
-    # default top level CMakeLists.txt from CAmkES, but as we wish to switch CAmkES on and
-    # off this is not possible, hence we have to do this mangling here ourselves.
-    set(PYTHON_CAPDL_PATH "${CMAKE_SOURCE_DIR}/projects/camkes/capdl/python-capdl-tool")
-    set(CAPDL_TOOL_HELPERS "${CMAKE_SOURCE_DIR}/projects/camkes/capdl/capDL-tool/capDL-tool.cmake")
-    find_program(TPP_TOOL tpp PATHS "${CMAKE_SOURCE_DIR}/tools/camkes/tools")
-    include("${CMAKE_SOURCE_DIR}/tools/camkes/camkes.cmake")
-    add_subdirectory("${CMAKE_SOURCE_DIR}/projects/camkes/capdl/capdl-loader-app" capdl-loader-app)
-    include("${CMAKE_SOURCE_DIR}/projects/camkes/global-components/global-components.cmake")
-    add_subdirectory("${CMAKE_SOURCE_DIR}/tools/camkes/libsel4camkes" libsel4camkes)
-endif()
 
 add_subdirectory(libsel4tutorials)
 add_subdirectory(tutorials/${TUTORIAL})
