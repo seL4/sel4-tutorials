@@ -50,16 +50,19 @@ def main():
             logging.error("Current dir %s is invalid" % os.getcwd())
             parser.print_help(sys.stderr)
             return -1
-        build_dir = tempfile.mkdtemp(dir=os.getcwd(), prefix=('build_%s_%s' % (args.plat, args.tut)))
-        os.chdir(build_dir)
+        tute_dir = tempfile.mkdtemp(dir=os.getcwd(), prefix=('%s' % (args.tut)))
+        os.chdir(tute_dir)
     else:
-        build_dir = None
+        tute_dir = os.getcwd()
     # Check that our parent directory is an expected tutorial root directory
     if not os.access(os.getcwd() + "/../init", os.X_OK):
         logging.error("Parent directory is not tutorials root directory")
         return -1
     # Initialize cmake. Output will be supressed as it defaults to the background
-    result = common.init_build_directory(args.plat, args.tut, args.solution, os.getcwd())
+    build_dir = "%s_build" % tute_dir
+    os.mkdir(build_dir)
+
+    result = common.init_directories(args.plat, args.tut, args.solution, tute_dir, build_dir, sys.stdout)
     if result.exit_code != 0:
         logging.error("Failed to initialize build directory.")
         return -1
@@ -68,8 +71,8 @@ def main():
     # Run again in the background but turn of printing
     sh.cmake(['-DTUTORIALS_PRINT_INSTRUCTIONS=FALSE', '..'])
     # Inform the user about any subdirectory we might have made
-    if build_dir is not None:
-        print("Tutorials created in subdirectory \"%s\". Switch to this directory and follow the instructions above to complete." % os.path.basename(build_dir))
+    print("Tutorials created in subdirectory \"%s\"." % os.path.basename(tute_dir))
+    print("Build directory initialised in \"%s\"." % os.path.basename(build_dir))
     return 0
 
 if __name__ == '__main__':
