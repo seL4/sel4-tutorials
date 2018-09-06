@@ -19,3 +19,5 @@ ImportCamkes()
 DeclareCAmkESComponent(Client SOURCES components/Client/src/client.c)
 
 DeclareCAmkESRootserver(hello-camkes-0.camkes)
+
+GenerateCAmkESRootserver()

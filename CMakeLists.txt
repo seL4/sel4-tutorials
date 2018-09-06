@@ -50,16 +50,6 @@ GenerateTutorial(${TUTORIAL_DIR})
 # Add the tutorial directory the same as any other project
 add_subdirectory(${CMAKE_SOURCE_DIR}/${TUTORIAL_DIR} ${CMAKE_BINARY_DIR}/${TUTORIAL_DIR})
 
-if (CAMKES)
-    GenerateCAmkESRootserver()
-else()
-    if (NOT (TARGET ${TUTORIAL}))
-        message(FATAL_ERROR "bug: ${TUTORIAL} did not define a target with the same name")
-    endif()
-
-    DeclareRootserver(${TUTORIAL})
-endif()
-
 GenerateSimulateScript()
 
 # Print out any information regarding to sources that were constructed

@@ -24,3 +24,5 @@ target_link_libraries(hello-4
     sel4
     muslc utils sel4tutorials
     sel4muslcsys sel4platsupport sel4utils sel4debug sel4allocman)
+
+DeclareRootserver(hello-4)

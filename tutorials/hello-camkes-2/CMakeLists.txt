@@ -20,3 +20,5 @@ DeclareCAmkESComponent(Client INCLUDES include SOURCES components/Client/src/cli
 DeclareCAmkESComponent(Echo INCLUDES include SOURCES components/Echo/src/echo.c)
 
 DeclareCAmkESRootserver(hello-camkes-2.camkes)
+
+GenerateCAmkESRootserver()

@@ -22,3 +22,5 @@ DeclareCAmkESComponent(Echo SOURCES components/Echo/src/echo.c)
 DeclareCAmkESComponent(EmptyComponent)
 
 DeclareCAmkESRootserver(hello-camkes-1.camkes)
+
+GenerateCAmkESRootserver()
