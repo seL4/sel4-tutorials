@@ -72,12 +72,14 @@ def run_single_test(config, tutorial, timeout):
         sys.exit(1)
 
     # Create temporary directory for working in (make this a common helper to share with init.py)
-    build_dir = tempfile.mkdtemp(dir=TOP_LEVEL_DIR, prefix='build_')
+    tute_dir = tempfile.mkdtemp(dir=TOP_LEVEL_DIR, prefix='tute_')
+    build_dir = "%s_build" % tute_dir
+    os.mkdir(build_dir)
 
-    # Initialize build directory (check results?)
-    result = common.init_build_directory(config, tutorial, True, build_dir, output=sys.stdout)
+    # Initialize directories
+    result = common.init_directories(config, tutorial, True, tute_dir, build_dir, sys.stdout)
     if result.exit_code != 0:
-        logging.error("Failed to initialize build directory. Not deleting build directory %s" % build_dir)
+        logging.error("Failed to initialize tute directory. Not deleting tute directory %s" % build_dir)
         sys.exit(1)
 
     # Build
@@ -111,6 +113,7 @@ def run_single_test(config, tutorial, timeout):
             proc.kill()
     temp_file.close()
     shutil.rmtree(build_dir)
+    shutil.rmtree(tute_dir)
 
 def run_tests(tests, timeout):
     """

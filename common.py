@@ -50,9 +50,10 @@ def get_project_root():
     # assume default location of this project in projects/sel4-tutorials
     return os.path.join(get_tutorial_dir(), '..', '..')
 
-def init_build_directory(config, tut, solution, directory, output=None):
+def _init_build_directory(config, tut, solution, directory, tute_directory, output=None):
     tut_arg = "-DTUTORIAL=" + tut
-    args = ['-DCMAKE_TOOLCHAIN_FILE=../kernel/gcc.cmake', '-G', 'Ninja'] + PLAT_CONFIG[config] + [tut_arg];
+    tute_dir = "-DTUTORIAL_DIR=" + os.path.basename(tute_directory)
+    args = ['-DCMAKE_TOOLCHAIN_FILE=../kernel/gcc.cmake', '-G', 'Ninja'] + PLAT_CONFIG[config] + [tut_arg, tute_dir]
     if solution:
         args = args + ["-DBUILD_SOLUTIONS=TRUE"]
     result = sh.cmake(args + ['..'], _cwd = directory, _out=output)
@@ -65,6 +66,11 @@ def init_build_directory(config, tut, solution, directory, output=None):
     if result.exit_code != 0:
         return result
     return sh.cmake(['..'], _cwd = directory, _out=output)
+
+
+def init_directories(config, tut, solution, tute_directory, build_directory, output=None):
+    os.chdir(build_directory)
+    return _init_build_directory(config, tut, solution, build_directory, tute_directory, output)
 
 def set_log_level(verbose, quiet):
     if verbose:
