@@ -63,6 +63,41 @@ function(Copy src dest)
     endif()
 endfunction(Copy)
 
+# Return non-zero if files one and two are not the same.
+function(DiffFiles res one two)
+        execute_process(
+            COMMAND diff -q "${one}" "${two}"
+            RESULT_VARIABLE exit_status
+            OUTPUT_VARIABLE OUTPUT
+            ERROR_VARIABLE OUTPUT
+        )
+        set(${res} ${exit_status} PARENT_SCOPE)
+endfunction()
+
+# Try to update output and old with the value of input
+# Only update output with input if input != old
+# Fail if input != old and output != old
+function(CopyIfUpdated input output old)
+    if (EXISTS ${output})
+        DiffFiles(template_updated ${input} ${old})
+        DiffFiles(instance_updated ${output} ${old})
+        if(template_updated AND instance_updated)
+            message(FATAL_ERROR "Template has been updated and the instantiated tutorial has been updated. \
+             Changes would be lost if proceeded.")
+        endif()
+        set(do_update ${template_updated})
+    else()
+        set(do_update TRUE)
+    endif()
+    if(do_update)
+        Copy(${input} ${output})
+        Copy(${input} ${old})
+    endif()
+    file(REMOVE ${input})
+
+endfunction()
+
+
 # Copies a tutorial source file into the destination location.
 # `parent_dest` is the name of a variable where the full path of the outputted file will be placed
 # `name` is the filename relative to the current source directory but without any '.template' or '.source' extension
@@ -100,30 +135,10 @@ function(CopyTutorialSource parent_dest name extension is_template)
     else()
         Copy("${template}" "${temp}")
     endif()
-    # Check if the original is the same as what we generated
-    if (EXISTS "${orig}")
-        execute_process(
-            COMMAND diff -q "${orig}" "${temp}"
-            RESULT_VARIABLE exit_status
-            OUTPUT_QUIET
-            ERROR_QUIET
-        )
-        if (NOT ("${exit_status}" EQUAL 0))
-            message(FATAL_ERROR "Dependent tutorial file ${template} has been modified, unable to distinguish "
-                                "between local changes to it and local version at ${dest}, please regenerate "
-                                "tutorial")
-        endif()
-    endif()
-    # Move and make the original
-    Rename("${temp}" "${orig}")
+    CopyIfUpdated(${temp} ${dest} ${orig})
     # Determine the relative portion of the destination from what we believe the
     # users working directory (CMAKE_BINARY_DIR) to be
     file(RELATIVE_PATH rel "${CMAKE_BINARY_DIR}" "${dest}")
-    # If the destination does not exist then make it, otherwise do not overwrite
-    # as the user may have made changes to it
-    if(NOT (EXISTS "${dest}"))
-        Copy("${orig}" "${dest}")
-    endif()
     if(is_template)
         set_property(GLOBAL APPEND PROPERTY template_files "${rel}")
     else()
