@@ -68,7 +68,21 @@ def _init_build_directory(config, tut, solution, directory, tute_directory, outp
     return sh.cmake(['..'], _cwd = directory, _out=output)
 
 
+def _init_tute_directory(config, tut, solution, directory, output=None):
+    with open(os.path.join(directory, ".tute_config"), 'w') as file:
+        file.write("set(TUTE_COMMAND \"%s\")" %
+            ';'.join(["python", os.path.join(get_tutorial_dir(), "template.py"),
+        "--tut-file", os.path.join(get_tutorial_dir(), "tutorials/%s/%s.yaml" % (tut,tut)),
+        "--out-dir", "${output_dir}",
+        "--input-files", "${input_files}",
+        "--output-files", "${output_files}",
+        "--solution" if solution else ""]))
+    return
+
+
 def init_directories(config, tut, solution, tute_directory, build_directory, output=None):
+    os.chdir(tute_directory)
+    _init_tute_directory(config, tut, solution, tute_directory, output=sys.stdout)
     os.chdir(build_directory)
     return _init_build_directory(config, tut, solution, build_directory, tute_directory, output)
 
