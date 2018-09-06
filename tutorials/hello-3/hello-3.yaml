@@ -1,0 +1,4 @@
+render:
+  - src/main.c
+  - CMakeLists.txt
+

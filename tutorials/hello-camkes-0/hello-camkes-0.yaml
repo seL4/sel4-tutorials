@@ -1,0 +1,6 @@
+render:
+  - components/Client/src/client.c
+  - components/Client/Client.camkes
+  - CMakeLists.txt
+  - README.md
+  - hello-camkes-0.camkes

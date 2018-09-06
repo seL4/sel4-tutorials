@@ -1,0 +1,8 @@
+render:
+  - hello-camkes-timer.camkes
+  - CMakeLists.txt
+  - interfaces/timer.camkes
+  - components/Timer/src/timer.c
+  - components/Timer/Timer.camkes
+  - components/Client/src/client.c
+  - components/Client/Client.camkes
