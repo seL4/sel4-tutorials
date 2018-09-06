@@ -88,3 +88,67 @@ function(CopyIfUpdated input output old)
     file(REMOVE ${input})
 
 endfunction()
+
+# Update all the unmodified files in target dir with source_dir if they haven't changed with respect to old_dir
+# Report a conflict if a file in source_dir and target_dir are different with respect to old_dir
+function(UpdateGeneratedFiles source_dir target_dir old_dir files)
+
+    separate_arguments(file_list NATIVE_COMMAND ${files})
+    foreach(file ${file_list})
+        string(REPLACE ${source_dir} ${old_dir} old ${file})
+        string(REPLACE ${source_dir} ${target_dir} target ${file})
+        CopyIfUpdated(${file} ${target} ${old})
+    endforeach()
+
+endfunction()
+
+# Run the command located in .tute_config in the input_dir.
+# This command is expected to generate files in output_dir and report
+# a list of dependent input files and generated output files.
+# the reported input files will be added as a cmake dependency and will
+# trigger the generation if they are modified.
+function(ExecuteGenerationProcess input_dir output_dir generated_files)
+    set(input_files ${CMAKE_CURRENT_BINARY_DIR}/input_files)
+    set(output_files ${CMAKE_CURRENT_BINARY_DIR}/output_files)
+
+    include(${CMAKE_SOURCE_DIR}/${input_dir}/.tute_config)
+
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E env ${TUTE_COMMAND}
+        OUTPUT_VARIABLE OUTPUT
+        ERROR_VARIABLE OUTPUT
+        RESULT_VARIABLE res
+    )
+    if (res)
+        message(FATAL_ERROR "Failed to render: ${TUTE_COMMAND}, ${OUTPUT}")
+    endif()
+    # Set cmake to regenerate if any of the input files to the TUTE_COMMAND are updated
+    file(READ "${input_files}" files)
+    separate_arguments(file_list NATIVE_COMMAND ${files})
+    set_property(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${file_list}")
+    file(READ "${output_files}" files)
+    set(${generated_files} ${files} PARENT_SCOPE)
+endfunction()
+
+# Generate a tutorial in dir.
+# This will run a CMAKE_COMMAND in .tute_config from inside dir.
+# It will copy the generated files into dir.
+# If GenerateTutorial is rerun, any generated files that change
+# will be updated in dir, unless there is a conflict.  A conflict
+# is when the file in dir has been modified since the last generation.
+function(GenerateTutorial dir)
+
+    if (EXISTS ${CMAKE_SOURCE_DIR}/${dir}/.tute_config)
+        set(output_dir ${CMAKE_CURRENT_BINARY_DIR}/${dir}/gen)
+        set(old_output_dir ${CMAKE_CURRENT_BINARY_DIR}/${dir}/old)
+        set(target_dir ${CMAKE_SOURCE_DIR}/${dir})
+
+        ExecuteGenerationProcess(${dir} ${output_dir} generated_files)
+        UpdateGeneratedFiles(${output_dir} ${target_dir} ${old_output_dir} ${generated_files})
+    endif()
+    if (NOT EXISTS ${CMAKE_SOURCE_DIR}/${dir}/CMakeLists.txt)
+        message(FATAL_ERROR "Could not find: ${CMAKE_SOURCE_DIR}/${dir}/CMakeLists.txt"
+                "It is required that ${CMAKE_SOURCE_DIR}/${dir} contains a CMakeLists.txt")
+    endif()
+
+endfunction()
