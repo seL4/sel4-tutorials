@@ -1,0 +1,9 @@
+render:
+  - CMakeLists.txt
+  - hello-camkes-2.camkes
+  - include/str_buf.h
+  - README.md
+  - components/Echo/src/echo.c
+  - components/Echo/Echo.camkes
+  - components/Client/src/client.c
+  - components/Client/Client.camkes

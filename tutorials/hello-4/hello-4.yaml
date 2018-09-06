@@ -1,0 +1,5 @@
+render:
+  - src/main.c
+  - CMakeLists.txt
+  - hello-4-app/src/main.c
+  - hello-4-app/CMakeLists.txt
