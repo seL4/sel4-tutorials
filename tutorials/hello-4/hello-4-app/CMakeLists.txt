@@ -12,7 +12,7 @@
 
 cmake_minimum_required(VERSION 3.7.2)
 
-add_tutorials_executable(hello-4-app TEMPLATE_SOURCES src/main.c)
+add_executable(hello-4-app src/main.c)
 
 set_property(TARGET hello-4-app APPEND_STRING PROPERTY LINK_FLAGS " -u __vsyscall_ptr ")
 

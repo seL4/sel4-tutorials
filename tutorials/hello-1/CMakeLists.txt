@@ -14,7 +14,7 @@ cmake_minimum_required(VERSION 3.7.2)
 
 project(hello-1 C)
 
-add_tutorials_executable(hello-1 TEMPLATE_SOURCES src/main.c)
+add_executable(hello-1 src/main.c)
 
 target_link_libraries(hello-1
     sel4
