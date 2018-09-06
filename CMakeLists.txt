@@ -40,7 +40,15 @@ include(cmake/helpers.cmake)
 
 
 add_subdirectory(libsel4tutorials)
-add_subdirectory(tutorials/${TUTORIAL})
+
+# Save the TUTORIAL_DIR to the cache so that it persists across reruns
+set(TUTORIAL_DIR ${TUTORIAL_DIR} CACHE INTERNAL "")
+
+# generate tutorial sources into directory
+GenerateTutorial(${TUTORIAL_DIR})
+
+# Add the tutorial directory the same as any other project
+add_subdirectory(${CMAKE_SOURCE_DIR}/${TUTORIAL_DIR} ${CMAKE_BINARY_DIR}/${TUTORIAL_DIR})
 
 if (CAMKES)
     GenerateCAmkESRootserver()
