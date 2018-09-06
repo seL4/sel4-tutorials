@@ -14,29 +14,25 @@ cmake_minimum_required(VERSION 3.8.2)
 
 project(sel4_tutorials C)
 
-include(cmake/settings.cmake)
-
-# Ensure we have the python script for processing the templates
-RequireFile(TemplateTool "template.py")
-# Force cmake to rerun if the template tool changes
-set_property(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${TemplateTool}")
-
-# Save the tutorial directory as this is where we want to define all our tutorial paths to
-# be relative to.
-set(tutorial_base_dir "${CMAKE_CURRENT_SOURCE_DIR}/tutorials")
-
-include(cmake/helpers.cmake)
-
-
 add_subdirectory(libsel4tutorials)
 
-# Save the TUTORIAL_DIR to the cache so that it persists across reruns
-set(TUTORIAL_DIR ${TUTORIAL_DIR} CACHE INTERNAL "")
+# Only do the following if TUTORIAL_DIR is set, which indicates a tutorial
+# to generate and run
+if (NOT "${TUTORIAL_DIR}" STREQUAL "")
+    # Save the TUTORIAL_DIR to the cache so that it persists across reruns
+    set(TUTORIAL_DIR ${TUTORIAL_DIR} CACHE INTERNAL "")
 
-# generate tutorial sources into directory
-GenerateTutorial(${TUTORIAL_DIR})
+    # Include cache settings and cmake tutorial helper functions
+    include(cmake/settings.cmake)
+    include(cmake/helpers.cmake)
 
-# Add the tutorial directory the same as any other project
-add_subdirectory(${CMAKE_SOURCE_DIR}/${TUTORIAL_DIR} ${CMAKE_BINARY_DIR}/${TUTORIAL_DIR})
+    # generate tutorial sources into directory
+    GenerateTutorial(${TUTORIAL_DIR})
 
-GenerateSimulateScript()
+    # Add the tutorial directory the same as any other project
+    add_subdirectory(${CMAKE_SOURCE_DIR}/${TUTORIAL_DIR} ${CMAKE_BINARY_DIR}/${TUTORIAL_DIR})
+
+    # generate a simulate script. This is here because we assume that all tutorials are simulatable
+    GenerateSimulateScript()
+
+endif()
