@@ -52,28 +52,3 @@ GenerateTutorial(${TUTORIAL_DIR})
 add_subdirectory(${CMAKE_SOURCE_DIR}/${TUTORIAL_DIR} ${CMAKE_BINARY_DIR}/${TUTORIAL_DIR})
 
 GenerateSimulateScript()
-
-# Print out any information regarding to sources that were constructed
-# whilst processing the tutorial. This is guarded by a config option so that
-# it can be toggled externally to prevent the instructions printing out every
-# time cmake runs.
-if (TUTORIALS_PRINT_INSTRUCTIONS)
-    get_property(template_files GLOBAL PROPERTY template_files)
-    get_property(companion_files GLOBAL PROPERTY companion_files)
-    if (NOT ("${companion_files}" STREQUAL ""))
-        message("The following files do not require modifications but are copied to provide context:")
-        foreach(file IN LISTS companion_files)
-            message("\t${file}")
-        endforeach()
-    endif()
-    if (NOT ("${template_files}" STREQUAL ""))
-        if (BUILD_SOLUTIONS)
-            message("Tutorial solutions placed in:")
-        else()
-            message("The following files need to be modified to complete the tutorial")
-        endif()
-        foreach(file IN LISTS template_files)
-            message("\t${file}")
-        endforeach()
-    endif()
-endif()

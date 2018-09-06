@@ -66,10 +66,6 @@ def main():
     if result.exit_code != 0:
         logging.error("Failed to initialize build directory.")
         return -1
-    # Run cmake again but show the tutorial information (to do this we run it in the foreground)
-    sh.cmake(['-DTUTORIALS_PRINT_INSTRUCTIONS=TRUE', '..'], _fg=True)
-    # Run again in the background but turn of printing
-    sh.cmake(['-DTUTORIALS_PRINT_INSTRUCTIONS=FALSE', '..'])
     # Inform the user about any subdirectory we might have made
     print("Tutorials created in subdirectory \"%s\"." % os.path.basename(tute_dir))
     print("Build directory initialised in \"%s\"." % os.path.basename(build_dir))
