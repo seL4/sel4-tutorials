@@ -34,6 +34,8 @@ def main():
     parser.add_argument('--plat', type=str, choices=common.ALL_CONFIGS, required=True)
     parser.add_argument('--tut', type=str, choices=common.ALL_TUTORIALS, required=True)
     parser.add_argument('--solution', action='store_true', help="Generate pre-made solutions", default=False)
+    parser.add_argument('tutedir', nargs='?', default=os.getcwd())
+
     args = parser.parse_args()
     common.setup_logger(__name__)
     common.set_log_level(args.verbose, True)
@@ -43,7 +45,11 @@ def main():
         return -1
     # Check that the current working directory is empty. If not create a suitably
     # named build directory and switch to it
-    if len(os.listdir(os.getcwd())) != 0:
+    dir_contents = os.listdir(args.tutedir)
+    initialised = False
+    if ".tute_config" in dir_contents:
+        initialised = True
+    if len(dir_contents) != 0 and ".tute_config" not in dir_contents:
         # Check that we are in the tutorial root directory before we decide to start
         # Making new directories
         if not os.access(os.getcwd() + "/init", os.X_OK):
@@ -53,16 +59,17 @@ def main():
         tute_dir = tempfile.mkdtemp(dir=os.getcwd(), prefix=('%s' % (args.tut)))
         os.chdir(tute_dir)
     else:
-        tute_dir = os.getcwd()
+        tute_dir = args.tutedir
     # Check that our parent directory is an expected tutorial root directory
     if not os.access(os.getcwd() + "/../init", os.X_OK):
         logging.error("Parent directory is not tutorials root directory")
         return -1
     # Initialize cmake. Output will be supressed as it defaults to the background
     build_dir = "%s_build" % tute_dir
-    os.mkdir(build_dir)
+    if not initialised:
+        os.mkdir(build_dir)
 
-    result = common.init_directories(args.plat, args.tut, args.solution, tute_dir, build_dir, sys.stdout)
+    result = common.init_directories(args.plat, args.tut, args.solution, initialised, tute_dir, build_dir, sys.stdout)
     if result.exit_code != 0:
         logging.error("Failed to initialize build directory.")
         return -1
