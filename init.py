@@ -34,6 +34,7 @@ def main():
     parser.add_argument('--plat', type=str, choices=common.ALL_CONFIGS, required=True)
     parser.add_argument('--tut', type=str, choices=common.ALL_TUTORIALS, required=True)
     parser.add_argument('--solution', action='store_true', help="Generate pre-made solutions", default=False)
+    parser.add_argument('--task', help="Generate pre-made solutions")
     parser.add_argument('tutedir', nargs='?', default=os.getcwd())
 
     args = parser.parse_args()
@@ -69,7 +70,7 @@ def main():
     if not initialised:
         os.mkdir(build_dir)
 
-    result = common.init_directories(args.plat, args.tut, args.solution, initialised, tute_dir, build_dir, sys.stdout)
+    result = common.init_directories(args.plat, args.tut, args.solution, args.task, initialised, tute_dir, build_dir, sys.stdout)
     if result.exit_code != 0:
         logging.error("Failed to initialize build directory.")
         return -1
