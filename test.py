@@ -89,7 +89,7 @@ def run_single_test(config, tutorial, timeout):
     # run the test, storting output in a temporary file
     temp_file = tempfile.NamedTemporaryFile(delete=True)
     logging.info("Running ./simulate")
-    test = pexpect.spawn("sh", args=["simulate"], cwd=build_dir)
+    test = pexpect.spawn("python", args=["simulate"], cwd=build_dir)
     test.logfile = temp_file
     expect_strings = [completion_text] + FAILURE_TEXTS
     result = test.expect(expect_strings, timeout=timeout)
