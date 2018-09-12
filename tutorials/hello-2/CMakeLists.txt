@@ -22,3 +22,4 @@ target_link_libraries(hello-2
     sel4muslcsys sel4platsupport sel4utils sel4debug sel4allocman)
 
 DeclareRootserver(hello-2)
+/*? macros.cmake_check_script(state) ?*/
