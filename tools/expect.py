@@ -1,0 +1,74 @@
+#!/usr/bin/env python
+#
+# Copyright 2017, Data61
+# Commonwealth Scientific and Industrial Research Organisation (CSIRO)
+# ABN 41 687 119 230.
+#
+# This software may be distributed and modified according to the terms of
+# the BSD 2-Clause license. Note that NO WARRANTY is provided.
+# See "LICENSE_BSD2.txt" for details.
+#
+# @TAG(DATA61_BSD)
+#
+
+import os
+import sys
+import pexpect
+import argparse
+
+# This file contains a function that wraps a simulation call in a pexpect
+# context and matches for completion or failure strings. Can also be templated
+# by CMake to create a custom script that takes no arguments.
+
+
+# List of strings whose appearence in test output indicates test failure
+FAILURE_TEXTS = [
+    pexpect.EOF,
+    pexpect.TIMEOUT,
+    "Ignoring call to sys_exit_group"
+]
+
+
+def simulate_with_checks(dir, completion_text, failure_list=FAILURE_TEXTS, logfile=sys.stdout):
+
+    test = pexpect.spawn("sh", args=["simulate"], cwd=dir)
+    test.logfile = logfile
+    for i in completion_text.split('\n') + ["\n"]:
+        expect_strings = [i] + failure_list
+        result = test.expect(expect_strings, timeout=5)
+
+        # result is the index in the completion text list corresponding to the
+        # text that was produced
+        if result == 0:
+            continue
+        else:
+            print("<failure type='failure'>")
+            return result
+    return 0
+
+
+def main():
+    finish_completion_text = """@FINISH_COMPLETION_TEXT@"""
+    start_completion_text = """@START_COMPLETION_TEXT@"""
+    parser = argparse.ArgumentParser(
+                description="Initialize a build directory for completing a tutorial. Invoke from "
+                            "an empty sub directory, or the tutorials directory, in which case a "
+                            "new build directory will be created for you.")
+
+    parser.add_argument('--start-text', default=start_completion_text,
+                        help="Output everything including debug info")
+    args = parser.parse_args()
+    if args.start_text:
+        completion_text = start_completion_text
+    else:
+        completion_text = finish_completion_text
+    build_dir = os.path.dirname(__file__)
+    if simulate_with_checks(build_dir, completion_text) is 0:
+        print("Success!")
+        return 0
+    else:
+        print("Failure!")
+        return 1
+
+if __name__ == '__main__':
+    sys.exit(main())
