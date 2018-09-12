@@ -70,28 +70,14 @@ extern void name_thread(seL4_CPtr tcb, char *name);
 
 /* function to run in the new thread */
 void thread_2(void) {
-    /* TASK 15: print something */
-    /* hint: printf() */
-/*- if solution -*/
-    printf("thread_2: hallo wereld\n");
-/*- endif -*/
-    /* never exit */
-    while (1);
+    /*? include_task_type_append(["task-15"]) ?*/
+
 }
 
 int main(void) {
     UNUSED int error = 0;
 
-    /* TASK 1: get boot info */
-    /* hint: platsupport_get_bootinfo()
-     * seL4_BootInfo* platsupport_get_bootinfo(void);
-     * @return Pointer to the bootinfo, NULL on failure
-     * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#task-1:
-     */
-/*- if solution -*/
-    info = platsupport_get_bootinfo();
-    ZF_LOGF_IF(info == NULL, "Failed to get bootinfo.");
-/*- endif -*/
+    /*? include_task("task-1") ?*/
 
     /* Set up logging and give us a name: useful for debugging if the thread faults */
     /* seL4_CapInitThreadTCB is a cap pointer to the root task's initial TCB.
@@ -100,209 +86,12 @@ int main(void) {
      */
     zf_log_set_tag_prefix("hello-2:");
     name_thread(seL4_CapInitThreadTCB, "hello-2");
+    /*- set tasks = [] -*/
+    /*-- for i in range(2,15) -*/
+    /*-- if tasks.append("task-%d" %i) -*/ /*- endif -*/
+    /*-- endfor -*/
+    /*? include_task_type_append(tasks) ?*/
 
-    /* TASK 2: init simple */
-    /* hint: simple_default_init_bootinfo()
-     * void simple_default_init_bootinfo(simple_t *simple, seL4_BootInfo *bi);
-     * @param simple Structure for the simple interface object. This gets initialised.
-     * @param bi Pointer to the bootinfo describing what resources are available
-     * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#task-2:
-     */
-/*- if solution -*/
-    simple_default_init_bootinfo(&simple, info);
-/*- endif -*/
-
-    /* TASK 3: print out bootinfo and other info about simple */
-    /* hint: simple_print()
-     * void simple_print(simple_t *simple);
-     * @param simple Pointer to simple interface.
-     * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#task-3:
-     */
-/*- if solution -*/
-    simple_print(&simple);
-/*- endif -*/
-
-    /* TASK 4: create an allocator */
-    /* hint: bootstrap_use_current_simple()
-     * allocman_t *bootstrap_use_current_simple(simple_t *simple, uint32_t pool_size, char *pool);
-     * @param simple Pointer to simple interface.
-     * @param pool_size Size of the initial memory pool.
-     * @param pool Initial memory pool.
-     * @return returns NULL on error
-     * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#task-4:
-     */
-/*- if solution -*/
-    allocman = bootstrap_use_current_simple(&simple, ALLOCATOR_STATIC_POOL_SIZE, allocator_mem_pool);
-/*- endif -*/
-    ZF_LOGF_IF(allocman == NULL, "Failed to initialize alloc manager.\n"
-               "\tMemory pool sufficiently sized?\n"
-               "\tMemory pool pointer valid?\n");
-
-    /* TASK 5: create a vka (interface for interacting with the underlying allocator) */
-    /* hint: allocman_make_vka()
-     * void allocman_make_vka(vka_t *vka, allocman_t *alloc);
-     * @param vka Structure for the vka interface object.  This gets initialised.
-     * @param alloc allocator to be used with this vka
-     * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#task-5:
-     */
-/*- if solution -*/
-    allocman_make_vka(&vka, allocman);
-/*- endif -*/
-
-    /* TASK 6: get our cspace root cnode */
-    /* hint: simple_get_cnode()
-     * seL4_CPtr simple_get_cnode(simple_t *simple);
-     * @param simple Pointer to simple interface.
-     * @return The cnode backing the simple interface. no failure.
-     * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#task-6:
-     */
-/*- if solution -*/
-    seL4_CPtr cspace_cap;
-    cspace_cap = simple_get_cnode(&simple);
-/*- endif -*/
-
-    /* TASK 7: get our vspace root page diretory */
-    /* hint: simple_get_pd()
-     * seL4_CPtr simple_get_pd(simple_t *simple);
-     * @param simple Pointer to simple interface.
-     * @return The vspace (PD) backing the simple interface. no failure.
-     * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#task-7:
-     */
-/*- if solution -*/
-    seL4_CPtr pd_cap;
-    pd_cap = simple_get_pd(&simple);
-/*- endif -*/
-
-    /* TASK 8: create a new TCB */
-    /* hint: vka_alloc_tcb()
-     * int vka_alloc_tcb(vka_t *vka, vka_object_t *result);
-     * @param vka Pointer to vka interface.
-     * @param result Structure for the TCB object.  This gets initialised.
-     * @return 0 on success
-     * https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#task-8:
-     */
-/*- if solution -*/
-    vka_object_t tcb_object = {0};
-    error = vka_alloc_tcb(&vka, &tcb_object);
-/*- endif -*/
-    ZF_LOGF_IFERR(error, "Failed to allocate new TCB.\n"
-                  "\tVKA given sufficient bootstrap memory?");
-
-    /* TASK 9: initialise the new TCB */
-    /* hint 1: seL4_TCB_Configure()
-     * int seL4_TCB_Configure(seL4_TCB _service, seL4_Word fault_ep, seL4_CNode cspace_root, seL4_Word cspace_root_data, seL4_CNode vspace_root, seL4_Word vspace_root_data, seL4_Word buffer, seL4_CPtr bufferFrame)
-     * @param service Capability to the TCB which is being operated on.
-     * @param fault_ep Endpoint which receives IPCs when this thread faults (must be in TCB's cspace).
-     * @param cspace_root The new CSpace root.
-     * @param cspace_root_data Optionally set the guard and guard size of the new root CNode. If set to zero, this parameter has no effect.
-     * @param vspace_root The new VSpace root.
-     * @param vspace_root_data Has no effect on IA-32 or ARM processors.
-     * @param buffer Address of the thread's IPC buffer. Must be 512-byte aligned. The IPC buffer may not cross a page boundary.
-     * @param bufferFrame Capability to a page containing the thread?s IPC buffer.
-     * @return 0 on success.
-     * Note: this function is generated during build.  It is generated from the following definition:
-     * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#task-9:
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-latest.pdf
-     *
-     * hint 2: use seL4_CapNull for the fault endpoint
-     * hint 3: use seL4_NilData for cspace and vspace data
-     * hint 4: we don't need an IPC buffer frame or address yet
-     */
-/*- if solution -*/
-    error = seL4_TCB_Configure(tcb_object.cptr, seL4_CapNull,  cspace_cap, seL4_NilData, pd_cap, seL4_NilData, 0, 0);
-/*- endif -*/
-    ZF_LOGF_IFERR(error, "Failed to configure the new TCB object.\n"
-                  "\tWe're running the new thread with the root thread's CSpace.\n"
-                  "\tWe're running the new thread in the root thread's VSpace.\n"
-                  "\tWe will not be executing any IPC in this app.\n");
-
-    /* Set the priority of the new thread to be equal to our priority. This ensures it will run
-     * in round robin with us. By default it has priority of 0 and so would never run unless we block */
-    error = seL4_TCB_SetPriority(tcb_object.cptr, simple_get_tcb(&simple), 255);
-    ZF_LOGF_IFERR(error, "Failed to set the priority for the new TCB object.\n");
-    /* TASK 10: give the new thread a name */
-    /* hint: we've done thread naming before */
-/*- if solution -*/
-    name_thread(tcb_object.cptr, "hello-2: thread_2");
-/*- endif -*/
-
-    /*
-     * set start up registers for the new thread:
-     */
-
-    UNUSED seL4_UserContext regs = {0};
-
-    /* TASK 11: set instruction pointer where the thread shoud start running */
-    /* hint 1: sel4utils_set_instruction_pointer()
-     * void sel4utils_set_instruction_pointer(seL4_UserContext *regs, seL4_Word value);
-     * @param regs Data structure in which to set the instruction pointer value
-     * @param value New instruction pointer value
-     * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#task-11:
-     *
-     * hint 2: we want the new thread to run the function "thread_2"
-     */
-/*- if solution -*/
-    sel4utils_set_instruction_pointer(&regs, (seL4_Word)thread_2);
-/*- endif -*/
-
-    /* check that stack is aligned correctly */
-    const int stack_alignment_requirement = sizeof(seL4_Word) * 2;
-    uintptr_t thread_2_stack_top = (uintptr_t)thread_2_stack + sizeof(thread_2_stack);
-    ZF_LOGF_IF(thread_2_stack_top % (stack_alignment_requirement) != 0,
-               "Stack top isn't aligned correctly to a %dB boundary.\n"
-               "\tDouble check to ensure you're not trampling.",
-               stack_alignment_requirement);
-
-    /* TASK 12: set stack pointer for the new thread */
-    /* hint 1: sel4utils_set_stack_pointer()
-     * void sel4utils_set_stack_pointer(seL4_UserContext *regs, seL4_Word value);
-     * @param regs  Data structure in which to set the stack pointer value
-     * @param value New stack pointer value
-     * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#task-12:
-     *
-     * hint 2: remember the stack grows down!
-     */
-/*- if solution -*/
-    sel4utils_set_stack_pointer(&regs, thread_2_stack_top);
-/*- endif -*/
-
-    /* TASK 13: actually write the TCB registers.  We write 2 registers:
-     * instruction pointer is first, stack pointer is second. */
-    /* hint: seL4_TCB_WriteRegisters()
-     * int seL4_TCB_WriteRegisters(seL4_TCB service, seL4_Bool resume_target, seL4_Uint8 arch_flags, seL4_Word count, seL4_UserContext *regs)
-     * @param service Capability to the TCB which is being operated on.
-     * @param resume_target The invocation should also resume the destination thread.
-     * @param arch_flags Architecture dependent flags. These have no meaning on either IA-32 or ARM.
-     * @param count The number of registers to be set.
-     * @param regs Data structure containing the new register values.
-     * @return 0 on success
-     *
-     * Note: this function is generated during build.  It is generated from the following definition:
-     * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#task-13:
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-latest.pdf
-     */
-/*- if solution -*/
-    error = seL4_TCB_WriteRegisters(tcb_object.cptr, 0, 0, 2, &regs);
-/*- endif -*/
-    ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
-                  "\tDid you write the correct number of registers? See arg4.\n");
-
-    /* TASK 14: start the new thread running */
-    /* hint: seL4_TCB_Resume()
-     * int seL4_TCB_Resume(seL4_TCB service)
-     * @param service Capability to the TCB which is being operated on.
-     * @return 0 on success
-     *
-     * Note: this function is generated during build.  It is generated from the following definition:
-     * Links to source: https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#task-14:
-     * You can find out more about it in the API manual: http://sel4.systems/Info/Docs/seL4-manual-latest.pdf
-     */
-/*- if solution -*/
-    error = seL4_TCB_Resume(tcb_object.cptr);
-/*- endif -*/
-    ZF_LOGF_IFERR(error, "Failed to start new thread.\n");
-
-    /* we are done, say hello */
     printf("main: hello world\n");
 
     return 0;
