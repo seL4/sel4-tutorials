@@ -21,7 +21,8 @@ import shutil
 import os.path
 import xml.sax.saxutils
 import sh
-
+import tools
+from tools import expect
 import common
 
 # this assumes this script is in a directory inside the tutorial directory
@@ -91,10 +92,7 @@ def run_single_test(config, tutorial, timeout):
     # run the test, storting output in a temporary file
     temp_file = tempfile.NamedTemporaryFile(delete=True)
     logging.info("Running ./simulate")
-    test = pexpect.spawn("sh", args=["simulate"], cwd=build_dir)
-    test.logfile = temp_file
-    expect_strings = [completion_text] + FAILURE_TEXTS
-    result = test.expect(expect_strings, timeout=timeout)
+    result = expect.simulate_with_checks(build_dir, completion_text, logfile=temp_file)
 
     # result is the index in the completion text list corresponding to the
     # text that was produced
