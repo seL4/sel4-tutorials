@@ -22,3 +22,7 @@ DeclareCAmkESComponent(Echo INCLUDES include SOURCES components/Echo/src/echo.c)
 DeclareCAmkESRootserver(hello-camkes-2.camkes)
 
 GenerateCAmkESRootserver()
+/*? declare_task_ordering(['1']) ?*/
+/*- filter TaskContent("1", TaskContentType.BEFORE, completion="Caught cap fault in send phase") -*//*- endfilter -*/
+/*- filter TaskContent("1", TaskContentType.COMPLETED, completion="FAULT HANDLER: data fault from client.control") -*//*- endfilter -*/
+/*? macros.cmake_check_script(state) ?*/

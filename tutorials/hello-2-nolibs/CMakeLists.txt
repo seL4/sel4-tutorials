@@ -22,3 +22,8 @@ target_link_libraries(hello-2-nolibs
     sel4muslcsys sel4platsupport sel4utils sel4debug)
 
 DeclareRootserver(hello-2-nolibs)
+
+/*? declare_task_ordering(['1']) ?*/
+/*- filter TaskContent("1", TaskContentType.BEFORE, completion="Caught cap fault in send phase") -*//*- endfilter -*/
+/*- filter TaskContent("1", TaskContentType.COMPLETED, completion="(thread_2: hallo wereld)|(main: hello world)") -*//*- endfilter -*/
+/*? macros.cmake_check_script(state) ?*/

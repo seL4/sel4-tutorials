@@ -24,3 +24,7 @@ DeclareCAmkESComponent(EmptyComponent)
 DeclareCAmkESRootserver(hello-camkes-1.camkes)
 
 GenerateCAmkESRootserver()
+/*? declare_task_ordering(['1']) ?*/
+/*- filter TaskContent("1", TaskContentType.BEFORE, completion="Caught cap fault in send phase") -*//*- endfilter -*/
+/*- filter TaskContent("1", TaskContentType.COMPLETED, completion="Component echo saying: hello world") -*//*- endfilter -*/
+/*? macros.cmake_check_script(state) ?*/

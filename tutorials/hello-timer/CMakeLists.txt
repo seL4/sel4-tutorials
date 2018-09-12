@@ -26,3 +26,7 @@ target_link_libraries(hello-timer
     sel4muslcsys sel4platsupport sel4utils sel4debug sel4allocman)
 
 DeclareRootserver(hello-timer)
+/*? declare_task_ordering(['1']) ?*/
+/*- filter TaskContent("1", TaskContentType.BEFORE, completion="Caught cap fault in send phase") -*//*- endfilter -*/
+/*- filter TaskContent("1", TaskContentType.COMPLETED, completion="timer client wakes up: got the current timer tick:") -*//*- endfilter -*/
+/*? macros.cmake_check_script(state) ?*/
