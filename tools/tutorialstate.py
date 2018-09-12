@@ -147,9 +147,9 @@ class TuteState(object):
         if the current_task is less than the provided task otherwise the BEFORE content will be returned.
         '''
         if self.solution:
-            key = TaskContentType.BEFORE if task < self.current_task else TaskContentType.COMPLETED
+            key = TaskContentType.COMPLETED if task <= self.current_task else TaskContentType.BEFORE
         else:
-            key = TaskContentType.BEFORE if task <= self.current_task else TaskContentType.COMPLETED
+            key = TaskContentType.COMPLETED if task < self.current_task else TaskContentType.BEFORE
         content = None
         try:
             content = task.get_content(key, subtask)
@@ -166,9 +166,9 @@ class TuteState(object):
         '''
         def task_get_completion(task, key):
             try:
-                return self.current_task.get_completion(key)
+                return task.get_completion(key)
             except KeyError:
-                return self.current_task.get_completion(TaskContentType.ALL)
+                return task.get_completion(TaskContentType.ALL)
 
         key = content_type
         try:
@@ -176,5 +176,5 @@ class TuteState(object):
         except KeyError:
             if key == TaskContentType.BEFORE:
                 assert self.current_task.index > 0
-                return task_get_completion(self.get_task_by_index(self.current_task.index), TaskContentType.COMPLETED)
+                return task_get_completion(self.get_task_by_index(self.current_task.index-1), TaskContentType.COMPLETED)
             raise # Reraise the error if we weren't requesting BEFORE. We require completion text defined for every stage

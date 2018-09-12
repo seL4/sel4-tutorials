@@ -106,6 +106,7 @@ def main():
     parser = argparse.ArgumentParser(description='Tutorial script template parser. Template is read from '
         'stdin and outout is placed in stdout')
     parser.add_argument('-s','--solution', action='store_true', default=False)
+    parser.add_argument('--docsite', action='store_true')
     parser.add_argument('--tut-file')
     parser.add_argument('--task')
     parser.add_argument('--out-dir')

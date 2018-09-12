@@ -55,13 +55,15 @@ def main():
                             "an empty sub directory, or the tutorials directory, in which case a "
                             "new build directory will be created for you.")
 
-    parser.add_argument('--start-text', default=start_completion_text,
+    parser.add_argument('--text', default=finish_completion_text,
+                        help="Output everything including debug info")
+    parser.add_argument('--start', action='store_true',
                         help="Output everything including debug info")
     args = parser.parse_args()
-    if args.start_text:
+    if args.start:
         completion_text = start_completion_text
     else:
-        completion_text = finish_completion_text
+        completion_text = args.text
     build_dir = os.path.dirname(__file__)
     if simulate_with_checks(build_dir, completion_text) is 0:
         print("Success!")
