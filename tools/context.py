@@ -25,7 +25,7 @@ def File(context, content, filename):
     Declare content to be written directly to a file
     '''
     args = context['args']
-    if args.out_dir:
+    if args.out_dir and not args.docsite:
         filename = os.path.join(args.out_dir, filename)
         if not os.path.exists(os.path.dirname(filename)):
             os.makedirs(os.path.dirname(filename))
@@ -146,7 +146,15 @@ def include_task_type_append(context, task_names):
             i = i[0]
         task = state.get_task(i)
         if task <= state.current_task:
-            result.append(state.print_task(task, subtask))
+            content = ""
+            try:
+                print(task.name)
+                content = state.print_task(task, subtask)
+            except KeyError:
+                if state.solution:
+                    raise # In solution mode we require content.
+
+            result.append(content)
     return '\n'.join(result)
 
 
@@ -158,7 +166,16 @@ def declare_task_ordering(context, task_names):
     '''
     state = context['state']
     state.declare_tasks(task_names)
-    return
+    args = context['args']
+    if args.out_dir and not args.docsite:
+        filename = os.path.join(args.out_dir,".tasks")
+        print(filename, file=args.output_files)
+        if not os.path.exists(os.path.dirname(filename)):
+            os.makedirs(os.path.dirname(filename))
+        task_file = open(filename, 'w')
+        for i in task_names:
+            print(i,file=task_file)
+    return ""
 
 
 '''

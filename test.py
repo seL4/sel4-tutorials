@@ -29,30 +29,6 @@ import common
 TUTORIAL_DIR = common.get_tutorial_dir()
 TOP_LEVEL_DIR = common.get_project_root()
 
-# timeout per test in seconds
-DEFAULT_TIMEOUT = 1800
-
-# Completion text for each test
-COMPLETION = {
-    "hello-1": "hello world",
-    "hello-2": "(thread_2: hallo wereld)|(main: hello world)",
-    "hello-2-nolibs": "(thread_2: hallo wereld)|(main: hello world)",
-    "hello-3": "main: got a reply: 0xffff*9e9e",
-    "hello-3-nolibs": "main: got a reply: 0xffff*9e9e",
-    "hello-4": "process_2: got a reply: 0xffff*9e9e",
-    "hello-timer": "timer client wakes up: got the current timer tick:",
-    "hello-camkes-0": "Hello CAmkES World",
-    "hello-camkes-1": "Component echo saying: hello world",
-    "hello-camkes-2": "FAULT HANDLER: data fault from client.control",
-    "hello-camkes-timer": "After the client: wakeup",
-}
-
-# List of strings whose appearence in test output indicates test failure
-FAILURE_TEXTS = [
-    pexpect.EOF,
-    pexpect.TIMEOUT,
-    "Ignoring call to sys_exit_group"
-]
 
 def print_pexpect_failure(failure):
     if failure == pexpect.EOF:
@@ -60,60 +36,61 @@ def print_pexpect_failure(failure):
     elif failure == pexpect.TIMEOUT:
         print("Test timed out")
 
-def run_single_test(config, tutorial, timeout):
+def run_single_test_iteration(build_dir, solution, logfile):
+    # Build
+    result = sh.ninja(_out=logfile, _cwd=build_dir)
+    if result.exit_code != 0:
+        logging.error("Failed to build. Not deleting build directory %s" % build_dir)
+        sys.exit(1)
+
+    check = sh.Command(os.path.join(build_dir, "check"))
+    if solution:
+        result = check(_out=logfile, _cwd=build_dir)
+    else:
+        # We check the start state if not solution
+        result = check("--start", _out=logfile, _cwd=build_dir)
+    for proc in psutil.process_iter():
+        if "qemu" in proc.name():
+            proc.kill()
+    return result.exit_code
+
+
+def run_single_test(config, tutorial, temp_file):
     """
     Builds and runs the solution to a given tutorial application for a given
     configuration, checking that the result matches the completion text
     """
-
-    try:
-        completion_text = COMPLETION[tutorial]
-    except KeyError:
-        logging.error("No completion text provided for %s." % tutorial)
-        sys.exit(1)
-
     # Create temporary directory for working in (make this a common helper to share with init.py)
     tute_dir = tempfile.mkdtemp(dir=TOP_LEVEL_DIR, prefix='tute_')
     build_dir = "%s_build" % tute_dir
     os.mkdir(build_dir)
 
     # Initialize directories
-    result = common.init_directories(config, tutorial, True, None, False, tute_dir, build_dir, sys.stdout)
+    result = common.init_directories(config, tutorial, False, None, False, tute_dir, build_dir, temp_file)
     if result.exit_code != 0:
         logging.error("Failed to initialize tute directory. Not deleting tute directory %s" % build_dir)
         sys.exit(1)
 
-    # Build
-    result = sh.ninja(_out=sys.stdout, _cwd=build_dir)
-    if result.exit_code != 0:
-        logging.error("Failed to build. Not deleting build directory %s" % build_dir)
-        sys.exit(1)
+    tasks = open(os.path.join(tute_dir, ".tasks"),'r').read()
+    for task in tasks.strip().split('\n'):
+        for solution in [False, True]:
+            print("Testing: task: %s solution: %s" % (task, "True" if solution else "False"))
+            result = common.init_directories(config, tutorial, solution, task, True, tute_dir, build_dir, temp_file)
+            if result.exit_code != 0:
+                logging.error("Failed to initialize tute directory. Not deleting tute directory %s" % build_dir)
+                sys.exit(1)
+            if run_single_test_iteration(build_dir, solution, temp_file):
+                print("<failure type='failure'>")
+                return 1
+            else:
+                logging.info("Success!")
 
-    # run the test, storting output in a temporary file
-    temp_file = tempfile.NamedTemporaryFile(delete=True)
-    logging.info("Running ./simulate")
-    result = expect.simulate_with_checks(build_dir, completion_text, logfile=temp_file)
 
-    # result is the index in the completion text list corresponding to the
-    # text that was produced
-    if result == 0:
-        logging.info("Success!")
-    else:
-        print("<failure type='failure'>")
-        # print the log file's contents to help debug the failure
-        temp_file.seek(0)
-        print(xml.sax.saxutils.escape(temp_file.read()))
-        print_pexpect_failure(expect_strings[result])
-        print("</failure>")
 
-    for proc in psutil.process_iter():
-        if "qemu" in proc.name():
-            proc.kill()
-    temp_file.close()
     shutil.rmtree(build_dir)
     shutil.rmtree(tute_dir)
 
-def run_tests(tests, timeout):
+def run_tests(tests):
     """
     Builds and runs a list of tests
     """
@@ -121,7 +98,13 @@ def run_tests(tests, timeout):
     print('<testsuite>')
     for (config, app) in tests:
         print("<testcase classname='sel4tutorials' name='%s_%s'>" % (config,app))
-        run_single_test(config, app, timeout)
+        temp_file = tempfile.NamedTemporaryFile(delete=True)
+        try:
+            run_single_test(config, app, temp_file)
+        except:
+            temp_file.seek(0)
+            print(temp_file.read())
+            raise
     print('</testsuite>')
 
 def main():
@@ -132,7 +115,6 @@ def main():
                         help="Output everything including debug info")
     parser.add_argument('--quiet', action='store_true',
                         help="Suppress output except for junit xml")
-    parser.add_argument('--timeout', type=int, default=DEFAULT_TIMEOUT)
     parser.add_argument('--config', type=str, choices=common.ALL_CONFIGS)
     parser.add_argument('--app', type=str, choices=common.ALL_TUTORIALS)
 
@@ -149,7 +131,7 @@ def main():
                (args.config is None or args.config == config):
                 tests = tests + [(config, tutorial)]
 
-    run_tests(tests, args.timeout)
+    run_tests(tests)
     return 0
 
 if __name__ == '__main__':
