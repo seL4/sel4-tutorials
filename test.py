@@ -78,7 +78,7 @@ def run_single_test(config, tutorial, timeout):
     os.mkdir(build_dir)
 
     # Initialize directories
-    result = common.init_directories(config, tutorial, True, False, tute_dir, build_dir, sys.stdout)
+    result = common.init_directories(config, tutorial, True, None, False, tute_dir, build_dir, sys.stdout)
     if result.exit_code != 0:
         logging.error("Failed to initialize tute directory. Not deleting tute directory %s" % build_dir)
         sys.exit(1)
