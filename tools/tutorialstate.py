@@ -100,6 +100,7 @@ class TuteState(object):
         self.additional_files = []
         self.current_task = current_task
         self.solution = solution_mode
+        self.stash = Stash()
 
     def declare_tasks(self, task_names):
         '''
@@ -178,3 +179,15 @@ class TuteState(object):
                 assert self.current_task.index > 0
                 return task_get_completion(self.get_task_by_index(self.current_task.index-1), TaskContentType.COMPLETED)
             raise # Reraise the error if we weren't requesting BEFORE. We require completion text defined for every stage
+
+
+class Stash(object):
+    def __init__(self):
+        self.elfs = {}
+        self.objects = {}
+        self.special_pages = {}
+        self.caps = {}
+        self.unclaimed_caps = []
+        self.unclaimed_special_pages = []
+
+

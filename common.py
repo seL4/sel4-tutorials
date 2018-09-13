@@ -70,7 +70,8 @@ def _init_build_directory(config, initialised, directory, tute_directory, output
 def _init_tute_directory(config, tut, solution, task, directory, output=None):
     with open(os.path.join(directory, ".tute_config"), 'w') as file:
         file.write("set(TUTE_COMMAND \"%s\")" %
-            ';'.join(["python", os.path.join(get_tutorial_dir(), "template.py"),
+            ';'.join(["PYTHONPATH=${PYTHON_CAPDL_PATH}"
+        ,"python", os.path.join(get_tutorial_dir(), "template.py"),
         "--tut-file", os.path.join(get_tutorial_dir(), "tutorials/%s/%s" % (tut,tut)),
         "--out-dir", "${output_dir}",
         "--input-files", "${input_files}",
