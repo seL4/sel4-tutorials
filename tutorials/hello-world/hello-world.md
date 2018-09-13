@@ -1,22 +1,27 @@
 /*? declare_task_ordering(['hello-world', 'hello-world-mod']) ?*/
 # Hello, World!
 
-## Getting started
+This tutorial guides you through getting a simple "Hello World" program running as a user-level application on seL4. 
+It allows you to test your local set up and make sure all the tools are working before moving onto more detailed tutorials.
 
-1. Install [Host Dependencies](https://docs.sel4.systems/HostDependencies). It may be fastest to use the docker image
-that we provide.
+## Prerequisites
+
+1. [Set up your machine](https://docs.sel4.systems/HostDependencies). 
 
 ## Building your first program
 
-seL4 is not an operating system. This means that it doesn't have many services out of the box. In order to run our first
-program, we need to compile it as the root task---the initial userlevel program that is loaded once the kernel has booted.
-At this point we can only really print to serial using a debug seL4 syscall `seL4_DebugPutCHar()` that printf is hooked up to.
+seL4 is a microkernel, not an operating system, and as a result only provides very minimal services. 
+After the kernel boots, an initial thread called the *root task* is started, which is then responsible for
+ setting up the user-level system.
+When the root task starts there are no available drivers, however a minimal C library is provided. 
+Behind the scenes, `printf` uses  `seL4_DebugPutChar`, a debugging utility provided by the kernel, to output characters. 
 
-All we need to do is build and run it.
+The tutorial is already set up to print "Hello, world!", so at this point 
+all you need to do is build and run the tutorial:
 
 /*? macros.ninja_block() ?*/
 
-If successful, we should see the final ninja rule passing:
+If successful, you should see the final ninja rule passing:
 ```
 [150/150] objcopy kernel into bootable elf
 $
@@ -25,7 +30,9 @@ $
 The final image can be run by:
 /*? macros.simulate_block() ?*/
 
-This will run the result on a qemu instance. If everything has worked, you should see:
+This will run the result on an instance of the [QEMU](https://www.qemu.org) simulator. 
+If everything has worked, you should see:
+
 ```
 Booting all finished, dropped to user space
 /*- filter TaskCompletion("hello-world", TaskContentType.ALL) -*/
@@ -35,13 +42,48 @@ Hello, World!
 
 ## Looking at the sources
 
-In your tutorial directory, you fill find a `CMakeLists.txt` file and a `main.c` located in `src`.
+In your tutorial directory, you will find  files:
+ * `CMakeLists.txt` - the file that incorporates the root task into the wider seL4 build system.
+ * `src/main.c` - the single source file for the initial task.
+
+### `CMakeLists.txt`
+
+Every application and library in an seL4 project requires a `CMakeLists.txt` file in order to be
+ incorporated into the project build system.
+ 
+```cmake
+/*- filter File("CMakeLists.txt") -*/
+# @TAG(DATA61_BSD)
+cmake_minimum_required(VERSION 3.7.2)
+# declare the hello-world CMake project and the languages it is written in (just C)
+project(hello-world C)
+
+# Name the executable and list source files required to build it
+add_executable(hello-world src/main.c)
+
+# List of libraries to link with the application.
+target_link_libraries(hello-world
+    sel4
+    muslc utils sel4tutorials
+    sel4muslcsys sel4platsupport sel4utils sel4debug)
+
+# Tell the build system that this application is the root task. 
+DeclareRootserver(hello-world)
+
+# utility CMake functions for the tutorials (not required in normal, non-tutorial applications) 
+/*? macros.cmake_check_script(state) ?*/
+/*- endfilter -*/
+```
+
+### `main.c`
+
+The main C is a very typical C file. For a basic root server application, the only requirement is that 
+a `main` function is provided. 
 
 ```c
 #include <stdio.h>
 
 /*- filter TaskContent("hello-world", TaskContentType.ALL) -*/
-
 int main(int argc, char *argv[]) {
     printf("Hello, World!\n");
 
@@ -50,12 +92,12 @@ int main(int argc, char *argv[]) {
 /*- endfilter -*/
 ```
 
+## Making a change
 
-### Making a change
+Test making a change to `main.c` by adding a second printf to output `"Second hello\n"`.
 
 ```c
 /*- filter TaskContent("hello-world-mod", TaskContentType.COMPLETED) -*/
-
 int main(int argc, char *argv[]) {
     printf("Hello, World!\n");
 
@@ -64,7 +106,13 @@ int main(int argc, char *argv[]) {
 }
 /*- endfilter -*/
 ```
-You should see something like the following if it is successful
+Once you have made your change, rerun `ninja` to rebuild the project:
+/*? macros.ninja_block() ?*/
+Then run the simulator again:
+
+/*? macros.simulate_block() ?*/
+
+On success, you should see the following:
 
 ```
 /*- filter TaskCompletion("hello-world-mod", TaskContentType.COMPLETED) -*/
@@ -85,25 +133,4 @@ Second hello
 /*- endfilter -*/
 ```
 
-```cmake
-/*- filter File("CMakeLists.txt") -*/
-# @TAG(DATA61_BSD)
-
-cmake_minimum_required(VERSION 3.7.2)
-
-project(hello-world C)
-
-add_executable(hello-world src/main.c)
-
-target_link_libraries(hello-world
-    sel4
-    muslc utils sel4tutorials
-    sel4muslcsys sel4platsupport sel4utils sel4debug)
-
-DeclareRootserver(hello-world)
-
-/*? macros.cmake_check_script(state) ?*/
-
-/*- endfilter -*/
-```
 /*- endfilter -*/
