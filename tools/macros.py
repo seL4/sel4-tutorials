@@ -43,6 +43,16 @@ def ninja_simulate_block():
 ninja && ./simulate
 ```'''
 
+
+def help_block():
+	return '''
+## Getting help
+Stuck? See the resources below. 
+* [FAQ](https://docs.sel4.systems/FrequentlyAskedQuestions)
+* [Debugging guide](https://docs.sel4.systems/DebuggingGuide.html)
+* [Developer's mailing list](https://sel4.systems/lists/listinfo/devel)
+'''
+
 def cmake_check_script(state):
 	return '''set(FINISH_COMPLETION_TEXT "%s")
 set(START_COMPLETION_TEXT "%s")

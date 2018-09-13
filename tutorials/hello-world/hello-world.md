@@ -72,15 +72,7 @@ Second hello
 /*- endfilter -*/
 ```
 
-### Welcome to the 
-
-## Troubleshooting
-
-
-## Documentation
-
-## Asking for help
-
+/*? macros.help_block() ?*/
 
 /*- filter ExcludeDocs() -*/
 
