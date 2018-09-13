@@ -27,6 +27,7 @@ ALL_CONFIGS = PLAT_CONFIG.keys()
 # Declare each tutorial and the configs they support
 TUTORIALS = {
     'hello-world': ALL_CONFIGS,
+    'seL4-circus': ALL_CONFIGS,
     'hello-1': ALL_CONFIGS,
     'hello-2': ALL_CONFIGS,
     'hello-2-nolibs': ALL_CONFIGS,
