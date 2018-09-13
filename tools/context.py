@@ -18,6 +18,16 @@ from jinja2 import contextfilter, contextfunction
 import macros
 import tutorialstate
 from tutorialstate import TaskContentType
+from capdl import seL4_TCBObject, seL4_EndpointObject, \
+    seL4_NotificationObject, seL4_CanRead, seL4_CanWrite, seL4_AllRights, \
+    seL4_ARM_SmallPageObject, seL4_FrameObject, seL4_IRQControl, \
+    seL4_UntypedObject, seL4_IA32_IOPort, seL4_IA32_IOSpace, \
+    seL4_ARM_IOSpace, seL4_ASID_Pool, \
+    seL4_ARM_SectionObject, seL4_ARM_SuperSectionObject, \
+    seL4_SchedContextObject, seL4_SchedControl, seL4_RTReplyObject
+
+from pickle import load, dumps
+
 
 @contextfilter
 def File(context, content, filename):
@@ -178,6 +188,88 @@ def declare_task_ordering(context, task_names):
     return ""
 
 
+@contextfunction
+def RecordObject(context, object, name, cap_symbol=None, **kwargs):
+    print("Cap registered")
+    state = context['state']
+    stash = state.stash
+    write = []
+    if name in stash.objects:
+        assert stash.objects[name][0] is object
+        stash.objects[name][1].update(kwargs)
+    else:
+        if object is seL4_FrameObject:
+            stash.unclaimed_special_pages.append((kwargs['symbol'], kwargs['size'], kwargs['alignment'], kwargs['section']))
+            write.append("extern void *%s;\n" % kwargs['symbol'])
+        elif object is not None:
+            stash.objects[name] = (object, kwargs)
+
+    stash.unclaimed_caps.append((cap_symbol, name, kwargs))
+    write.append("extern seL4_CPtr %s;" % cap_symbol)
+    return "\n".join(write)
+
+@contextfilter
+def ELF(context, content, name):
+    '''
+    Declares a ELF object containing content with name.
+    '''
+    print("here")
+    state = context['state']
+    args = context['args']
+    stash = state.stash
+
+    print(content, name, context)
+    if args.out_dir and not args.docsite:
+        filename = os.path.join(args.out_dir, "%s.c" % name)
+        if not os.path.exists(os.path.dirname(filename)):
+            os.makedirs(os.path.dirname(filename))
+
+        elf_file = open(filename, 'w')
+        print(filename, file=args.output_files)
+
+        elf_file.write(content)
+        # elf_file.write("#line 1 \"thing\"\n" + content)
+
+        stash.caps[name] = stash.unclaimed_caps
+        stash.unclaimed_caps = []
+        stash.elfs[name] = {"filename" :"%s.c" % name}
+        stash.special_pages[name] = [("stack", 16*0x1000, 0x1000, 'guarded'),
+        ("mainIpcBuffer", 0x1000, 0x1000, 'guarded'),
+        ] + stash.unclaimed_special_pages
+        stash.unclaimed_special_pages = []
+
+    print("end")
+    return content
+
+@contextfunction
+def write_manifest(context, file='manifest.py'):
+    state = context['state']
+    args = context['args']
+    stash = state.stash
+    if args.out_dir and not args.docsite:
+        filename = os.path.join(args.out_dir, file)
+        if not os.path.exists(os.path.dirname(filename)):
+            os.makedirs(os.path.dirname(filename))
+
+        file = open(filename, 'w')
+        print(filename, file=args.output_files)
+
+
+        manifest = """
+import pickle
+
+serialised = \"\"\"%s\"\"\"
+
+# (OBJECTS, CSPACE_LAYOUT, SPECIAL_PAGES) = pickle.loads(serialised)
+# print((OBJECTS, CSPACE_LAYOUT, SPECIAL_PAGES))
+print(serialised)
+
+        """
+        file.write(manifest % dumps((stash.objects, stash.caps, stash.special_pages)))
+    return ""
+
+
+
 '''
 These are for potential extra template functions, that haven't been required
 by templating requirements yet.
@@ -223,7 +315,31 @@ def get_context(args, state):
             "TaskContentType": TaskContentType,
             "ExternalFile": ExternalFile,
             "declare_task_ordering": declare_task_ordering,
-            "macros": macros
+            "macros": macros,
+            "RecordObject": RecordObject,
+            "write_manifest": write_manifest,
+
+            # capDL objects
+            'seL4_EndpointObject':seL4_EndpointObject,
+            'seL4_NotificationObject':seL4_NotificationObject,
+            'seL4_TCBObject':seL4_TCBObject,
+            'seL4_ARM_SmallPageObject':seL4_ARM_SmallPageObject,
+            'seL4_ARM_SectionObject':seL4_ARM_SectionObject,
+            'seL4_ARM_SuperSectionObject':seL4_ARM_SuperSectionObject,
+            'seL4_FrameObject':seL4_FrameObject,
+            'seL4_UntypedObject':seL4_UntypedObject,
+            'seL4_IA32_IOPort':seL4_IA32_IOPort,
+            'seL4_IA32_IOSpace':seL4_IA32_IOSpace,
+            'seL4_ARM_IOSpace':seL4_ARM_IOSpace,
+            'seL4_SchedContextObject':seL4_SchedContextObject,
+            'seL4_SchedControl':seL4_SchedControl,
+            'seL4_RTReplyObject':seL4_RTReplyObject,
+            'seL4_ASID_Pool':seL4_ASID_Pool,
+            'seL4_CanRead':seL4_CanRead,
+            'seL4_CanWrite':seL4_CanWrite,
+            'seL4_AllRights':seL4_AllRights,
+            'seL4_IRQControl':seL4_IRQControl,
+
     }
 
 
@@ -233,6 +349,7 @@ def get_filters():
         'TaskContent': TaskContent,
         'TaskCompletion': TaskCompletion,
         'ExcludeDocs': ExcludeDocs,
+        'ELF': ELF,
     }
 
 

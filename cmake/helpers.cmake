@@ -10,19 +10,30 @@
 # @TAG(DATA61_BSD)
 #
 
+# We are including camkes from a non standard location and need to give some paths
+# This is a very non standard way of using CAmkES as normally you would use the
+# default top level CMakeLists.txt from CAmkES, but as we wish to switch CAmkES on and
+# off this is not possible, hence we have to do this mangling here ourselves.
+set(PYTHON_CAPDL_PATH "${CMAKE_SOURCE_DIR}/projects/camkes/capdl/python-capdl-tool")
+set(CAPDL_TOOL_HELPERS "${CMAKE_SOURCE_DIR}/projects/camkes/capdl/capDL-tool/capDL-tool.cmake")
+find_program(TPP_TOOL tpp PATHS "${CMAKE_SOURCE_DIR}/tools/camkes/tools")
+
+macro(ImportCapDL)
+    set(CapDLLoaderMaxObjects 20000 CACHE STRING "" FORCE)
+    set(KernelRootCNodeSizeBits 17 CACHE STRING "" FORCE)
+    set(KernelNumDomains 1 CACHE STRING "" FORCE)
+    add_subdirectory("${CMAKE_SOURCE_DIR}/projects/camkes/capdl/capdl-loader-app" capdl-loader-app)
+    include(${CAPDL_TOOL_HELPERS})
+    CapDLToolInstall(install_capdl_tool CAPDL_TOOL_BINARY)
+    include("${CAPDL_LOADER_BUILD_HELPERS}")
+
+endmacro()
+
 # Import camkes functions into caller scope
 macro(ImportCamkes)
     set(CapDLLoaderMaxObjects 20000 CACHE STRING "" FORCE)
     set(KernelRootCNodeSizeBits 17 CACHE STRING "" FORCE)
     set(KernelNumDomains 1 CACHE STRING "" FORCE)
-
-    # We are including camkes from a non standard location and need to give some paths
-    # This is a very non standard way of using CAmkES as normally you would use the
-    # default top level CMakeLists.txt from CAmkES, but as we wish to switch CAmkES on and
-    # off this is not possible, hence we have to do this mangling here ourselves.
-    set(PYTHON_CAPDL_PATH "${CMAKE_SOURCE_DIR}/projects/camkes/capdl/python-capdl-tool")
-    set(CAPDL_TOOL_HELPERS "${CMAKE_SOURCE_DIR}/projects/camkes/capdl/capDL-tool/capDL-tool.cmake")
-    find_program(TPP_TOOL tpp PATHS "${CMAKE_SOURCE_DIR}/tools/camkes/tools")
     include("${CMAKE_SOURCE_DIR}/tools/camkes/camkes.cmake")
     add_subdirectory("${CMAKE_SOURCE_DIR}/projects/camkes/capdl/capdl-loader-app" capdl-loader-app)
     include("${CMAKE_SOURCE_DIR}/projects/camkes/global-components/global-components.cmake")
@@ -151,4 +162,73 @@ function(GenerateTutorial dir)
                 "It is required that ${CMAKE_SOURCE_DIR}/${dir} contains a CMakeLists.txt")
     endif()
 
+endfunction()
+
+
+file(GLOB_RECURSE capdl_python ${PYTHON_CAPDL_PATH}/*.py)
+
+
+set(python_with_capdl ${CMAKE_COMMAND} -E env PYTHONPATH=${PYTHON_CAPDL_PATH} python)
+set(capdl_linker_tool ${python_with_capdl} ${CMAKE_SOURCE_DIR}/projects/camkes/capdl/cdl_utils/capdl_linker.py)
+
+function(DeclareCDLRootImage cdl cdl_target)
+    cmake_parse_arguments(PARSE_ARGV 2 CDLROOTTASK "" "" "ELF;ELF_DEPENDS")
+    if (NOT "${CDLROOTTASK_UNPARSED_ARGUMENTS}" STREQUAL "")
+        message(FATAL_ERROR "Unknown arguments to DeclareCDLRootImage")
+    endif()
+
+    CapDLToolCFileGen(${cdl_target}_cspec ${cdl_target}_cspec.c ${cdl} "${CAPDL_TOOL_BINARY}"
+        MAX_IRQS ${CapDLLoaderMaxIRQs}
+        DEPENDS ${cdl_target} install_capdl_tool "${CAPDL_TOOL_BINARY}")
+
+    # Ask the CapDL tool to generate an image with our given copied/mangled instances
+    BuildCapDLApplication(
+        C_SPEC "${cdl_target}_cspec.c"
+        ELF ${CDLROOTTASK_ELF}
+        DEPENDS ${CDLROOTTASK_ELF_DEPENDS} ${cdl_target}_cspec
+        OUTPUT "capdl-loader"
+    )
+    DeclareRootserver("capdl-loader")
+endfunction()
+
+
+
+function(cdl_ld outfile output_target)
+    cmake_parse_arguments(PARSE_ARGV 2 CDL_LD "" "" "ELF;MANIFESTS;DEPENDS")
+    if (NOT "${CDL_LD_UNPARSED_ARGUMENTS}" STREQUAL "")
+        message(FATAL_ERROR "Unknown arguments to cdl_ld")
+    endif()
+
+    add_custom_command(OUTPUT "${outfile}"
+        COMMAND ${capdl_linker_tool}
+            --arch=${KernelSel4Arch}
+            gen_cdl
+            --manifest-in ${CDL_LD_MANIFESTS}
+            --outfile ${outfile}
+            --elffile ${CDL_LD_ELF}
+        DEPENDS ${CDL_LD_ELF} ${capdl_python} ${CDL_LD_MANIFESTS})
+    add_custom_target(${output_target}
+        DEPENDS "${outfile}")
+    add_dependencies(${output_target} ${CDL_LD_DEPENDS})
+
+endfunction()
+
+
+function(cdl_pp manifest_in manifest_out target)
+    cmake_parse_arguments(PARSE_ARGV 3 CDL_PP "" "" "ELF;CFILE;DEPENDS")
+    if (NOT "${CDL_PP_UNPARSED_ARGUMENTS}" STREQUAL "")
+        message(FATAL_ERROR "Unknown arguments to cdl_pp")
+    endif()
+
+    add_custom_command(OUTPUT ${CDL_PP_CFILE} ${manifest_out}
+        COMMAND ${python_with_capdl} ${manifest_in} |
+        ${capdl_linker_tool}
+                --arch=${KernelSel4Arch}
+                build_cnode
+                --manifest=-
+                --manifest-out=${manifest_out}
+                --ccspace ${CDL_PP_CFILE}
+                --elffile ${CDL_PP_ELF}
+        DEPENDS  ${capdl_python} ${manifest_in} )
+    add_custom_target(${target} DEPENDS ${CDL_PP_CFILE} ${manifest_out})
 endfunction()
