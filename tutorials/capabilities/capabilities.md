@@ -7,7 +7,7 @@ This tutorial provides a basic introduction to seL4 capabilities.
 
 ## Prerequisites
 
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies). 
+1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
 2. You need to know what a *root task* is, if not, do the `hello-world` tutorial first.
 3. You need to know how to build and simulate tutorials, if not, do the `hello-world` tutorial.
 
@@ -26,12 +26,12 @@ By the end of this tutorial, you should be familiar with:
 A *capability* is a unique, unforgeable token that gives the possessor
 permission to access an entity or object in system. In seL4, capabilities to all resources
 controlled by seL4 are given to the root task on initialisation. To change the state of any 
-resources, users use the kernel API, available in `libsel4` to request an operation on a specific 
+resources, users use the kernel API, available in `libsel4` to request an operation on a specific
  capability. 
  
-For example, the root task is provided with a capability to its own thread control block (TCB), 
-`seL4_CapInitThreadTCB`, a constant defined by `libsel4`. To change the properties of the initial TCB, 
-one can use any of the [TCB API methods](https://docs.sel4.systems/ApiDoc.html#sel4_tcb) on this capability.
+For example, the root task is provided with a capability to its own thread control block (TCB),
+ `seL4_CapInitThreadTCB`, a constant defined by `libsel4`. To change the properties of the initial TCB,
+ one can use any of the [TCB API methods](https://docs.sel4.systems/ApiDoc.html#sel4_tcb) on this capability.
 Below is an example which changes the stack pointer of the root task's TCB, a common operation in the 
 root task if a larger stack is needed:
 
@@ -66,10 +66,10 @@ Each CSlot in a CNode can be in the following state:
 
 By convention the 0th CSlot is kept empty, for the same reasons as keeping NULL unmapped in
  process virtual address spaces: to avoid errors when uninitialised slots are used unintentionally.
- 
+
  CSlots are `1u << seL4_SlotBits` in size, and as a result the number of slots in a CNode can be calculated
- by `CNodeSize / << seL4_SlotBits`. 
- 
+ by `CNodeSize / (1u << seL4_SlotBits)`. 
+
 ### CSpaces
 
 A *CSpace* (capability-space) is the full range of capabilities accessible to a thread, which may be 
@@ -105,7 +105,8 @@ occurs by invoking a CNode capability, which itself is indexed from the CSpace r
 * *_service/root* A capability to the CNode to operate on.
 * *index* The index of the CSlot in the CNode to address.
 * *depth* How far to traverse the CNode before resolving the CSlot. 
-For a single-level CSpace, this value is always `seL4_WordBits`. For invocations, the depth is always `seL4_WordBits`.
+For the initial, single-level CSpace, the *depth* value is always `seL4_WordBits`. For invocations, the depth is always
+ implicitly `seL4_WordBits`.
 More on CSpace depth will be discussed in future tutorials.
 
 In the example below, we directly address the root task's TCB to make a copy of it in the 0th slot in the cspace root. 
@@ -135,20 +136,19 @@ resources manages by seL4. We have already seen several capabilities in the root
 The initial state of this tutorial provides you with the BootInfo structure,
 and calculates the size (in bytes) of the initial CNode object.
 ```c
-/*- filter TaskContent("cnode-start", TaskContentType.ALL, subtask='init', completion='Initial CNode is 4096 bytes in size') -*/
+/*-- filter TaskContent("cnode-start", TaskContentType.ALL, subtask='init', completion='Initial CNode is 4096 bytes in size') -*/
 int main(int argc, char *argv[]) {
 
     /* parse the location of the seL4_BootInfo data structure from
     the environment variables set up by the default crt0.S */
     seL4_BootInfo *info = platsupport_get_bootinfo();
-    
+
     size_t initial_cnode_object_size = BIT(info->initThreadCNodeSizeBits);
     printf("Initial CNode is %zu bytes in size\n", initial_cnode_object_size);
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 When you run the tutorial without changes, you will see something like the following output:
- 
-```bash
+```
 Booting all finished, dropped to user space
 Initial CNode is 4096 bytes in size
 The CSpace has 0 CSlots
@@ -156,7 +156,6 @@ The CSpace has 0 CSlots
 main@main.c:33 [Cond failed: error]
 	Failed to set priority
 ```
-
 By the end of the tutorial all of the output will make sense. For now, the first line is from the kernel.
 The second is the `printf`, telling you the size of the initial CNode.
 The third line stating the number of slots in the CSpace, is incorrect, and your first task is to fix that.
@@ -165,24 +164,24 @@ The third line stating the number of slots in the CSpace, is incorrect, and your
 
 * **Exercise:** refer to the background above, and calculate the number of slots in the initial thread's CSpace. 
 ```c
-/*- filter TaskContent("cnode-start", TaskContentType.BEFORE, subtask='size', completion='The CSpace has 0 slots') -*/
+/*-- filter TaskContent("cnode-start", TaskContentType.BEFORE, subtask='size', completion='The CSpace has 0 slots') -*/
     size_t num_initial_cnode_slots = 0; // TODO calculate this.
     printf("The CSpace has %zu CSlots\n", num_initial_cnode_slots);
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
-/*- filter ExcludeDocs() -*/
+/*-- filter ExcludeDocs() -*/
 ```c
-/*- filter TaskContent("cnode-size", TaskContentType.COMPLETED, subtask='size', completion='The CSpace has 1024 slots') -*/
+/*-- filter TaskContent("cnode-size", TaskContentType.COMPLETED, subtask='size', completion='The CSpace has 1024 slots') -*/
     size_t num_initial_cnode_slots = initial_cnode_object_size / (1u << seL4_SlotBits);
     printf("The CSpace has %zu CSlots\n", num_initial_cnode_slots);
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
-/*- endfilter -*/
+/*-- endfilter -*/
 
 ### Copy a capability between CSlots
 
 After the output showing the number of CSlots in the CSpace, you will see an error:
-```bash
+```
 <<seL4(CPU 0) [decodeInvocation/530 T0xffffff801ffb5400 "rootserver" @401397]: Attempted to invoke a null cap #4095.>>
 main@main.c:33 [Cond failed: error]
 	Failed to set priority
@@ -193,7 +192,7 @@ The error occurs as the existing code tries to set the priority of the initial t
 
 * **Exercise:** fix this problem by making another copy of the TCB capability into the last slot in the CNode.
  ```c
-/*- filter TaskContent("cnode-start", TaskContentType.BEFORE, subtask='copy', completion='Failed to set priority') -*/
+/*-- filter TaskContent("cnode-start", TaskContentType.BEFORE, subtask='copy', completion='Failed to set priority') -*/
     seL4_CPtr first_free_slot = info->empty.start;
     seL4_Error error = seL4_CNode_Copy(seL4_CapInitThreadCNode, first_free_slot, seL4_WordBits,
                                        seL4_CapInitThreadCNode, seL4_CapInitThreadTCB, seL4_WordBits,
@@ -201,15 +200,15 @@ The error occurs as the existing code tries to set the priority of the initial t
     ZF_LOGF_IF(error, "Failed to copy cap!");
     seL4_CPtr last_slot = info->empty.end - 1;
     // TODO use seL4_CNode_Copy to make another copy of the initial TCB capability to the last slot in the CSpace
-    
+
     // set the priority of the root task
     error = seL4_TCB_SetPriority(last_slot, last_slot, 10);
     ZF_LOGF_IF(error, "Failed to set priority");
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
-/*- filter ExcludeDocs() -*/
+/*-- filter ExcludeDocs() -*/
 ```c
-/*- filter TaskContent("cnode-copy", TaskContentType.COMPLETED, subtask='copy', completion='First free slot is not empty') -*/
+/*-- filter TaskContent("cnode-copy", TaskContentType.COMPLETED, subtask='copy', completion='First free slot is not empty') -*/
     seL4_CPtr first_free_slot = info->empty.start;
     seL4_Error error = seL4_CNode_Copy(seL4_CapInitThreadCNode, first_free_slot, seL4_WordBits,
                                        seL4_CapInitThreadCNode, seL4_CapInitThreadTCB, seL4_WordBits,
@@ -225,12 +224,11 @@ The error occurs as the existing code tries to set the priority of the initial t
     // set the priority of the root task
     error = seL4_TCB_SetPriority(last_slot, last_slot, 10);
     ZF_LOGF_IF(error, "Failed to set priority);
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
-/*- endfilter -*/
-
+/*-- endfilter -*/
 On success, you will now see the output:
-```bash
+```
 <<seL4(CPU 0) [decodeCNodeInvocation/94 T0xffffff801ffb5400 "rootserver" @401397]: CNode Copy/Mint/Move/Mutate: Destination not empty.>>
 main@main.c:44 [Cond failed: error != seL4_FailedLookup]
 	first_free_slot is not empty
@@ -249,7 +247,7 @@ by a neat hack: by attempting to move the CSlots onto themselves. This should fa
   * `seL4_CNode_Revoke` on the original capability to achieve this.   
  
  ```c
-/*- filter TaskContent("cnode-start", TaskContentType.BEFORE, subtask='delete', completion='first free slot is not empty') -*/
+/*-- filter TaskContent("cnode-start", TaskContentType.BEFORE, subtask='delete', completion='first free slot is not empty') -*/
     // TODO delete the created TCB capabilities
 
     // check first_free_slot is empty
@@ -261,11 +259,11 @@ by a neat hack: by attempting to move the CSlots onto themselves. This should fa
     error = seL4_CNode_Move(seL4_CapInitThreadCNode, last_slot, seL4_WordBits,
                             seL4_CapInitThreadCNode, last_slot, seL4_WordBits);
     ZF_LOGF_IF(error != seL4_FailedLookup, "last_slot is not empty");
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
-/*- filter ExcludeDocs() -*/
+/*-- filter ExcludeDocs() -*/
 ```c
-/*- filter TaskContent("cnode-delete", TaskContentType.COMPLETED, subtask='delete', completion='Failed to suspend the current thread') -*/
+/*-- filter TaskContent("cnode-delete", TaskContentType.COMPLETED, subtask='delete', completion='Failed to suspend the current thread') -*/
     // delete the created TCB capabilities
     seL4_CNode_Revoke(seL4_CapInitThreadCNode, seL4_CapInitThreadTCB, seL4_WordBits);
 
@@ -278,11 +276,11 @@ by a neat hack: by attempting to move the CSlots onto themselves. This should fa
     error = seL4_CNode_Move(seL4_CapInitThreadCNode, last_slot, seL4_WordBits,
                             seL4_CapInitThreadCNode, last_slot, seL4_WordBits);
     ZF_LOGF_IF(error != seL4_FailedLookup, "last_slot is not empty");
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
-/*- endfilter -*/
+/*-- endfilter -*/
 On success, the output will now show:
-```bash
+```
 <<seL4(CPU 0) [decodeCNodeInvocation/106 T0xffffff801ffb5400 "rootserver" @401397]: CNode Copy/Mint/Move/Mutate: Source slot invalid or empty.>>
 <<seL4(CPU 0) [decodeCNodeInvocation/106 T0xffffff801ffb5400 "rootserver" @401397]: CNode Copy/Mint/Move/Mutate: Source slot invalid or empty.>>
 Suspending current thread
@@ -293,21 +291,21 @@ main@main.c:56 Failed to suspend current thread
 
 * **Exercise** Use `seL4_TCB_Suspend` to try and suspend the current thread. 
 ```c
-/*- filter TaskContent("cnode-start", TaskContentType.ALL, subtask='invoke', completion='Failed to suspend current thread') -*/
+/*-- filter TaskContent("cnode-start", TaskContentType.ALL, subtask='invoke', completion='Failed to suspend current thread') -*/
     printf("Suspending current thread\n");
     // TODO suspend the current thread
     ZF_LOGF("Failed to suspend current thread\n");
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
-/*- filter ExcludeDocs() -*/
+/*-- filter ExcludeDocs() -*/
 ```c
-/*- filter TaskContent("cnode-invoke", TaskContentType.COMPLETED, subtask='invoke', completion='Suspending current thread') -*/
+/*-- filter TaskContent("cnode-invoke", TaskContentType.COMPLETED, subtask='invoke', completion='Suspending current thread') -*/
     printf("Suspending current thread\n");
     seL4_TCB_Suspend(seL4_CapInitThreadTCB);
     ZF_LOGF_IF("Failed to suspend current thread\n");
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
-/*- endfilter -*/
+/*-- endfilter -*/
 
 On success, the output will be as follows:
 ```bash
@@ -315,9 +313,6 @@ On success, the output will be as follows:
 <<seL4(CPU 0) [decodeCNodeInvocation/106 T0xffffff801ffb5400 "rootserver" @401397]: CNode Copy/Mint/Move/Mutate: Source slot invalid or empty.>>
 Suspending current thread
 ```
-Since the root task is now suspended, seL4 will switch to the idle thread and keep running. Since we did not exit
-with a failure (and abort, which calls `seL4_DebugHalt` is not called), the simulator keeps running. To quit, 
-use `Ctrl+AX`.
 
 ### Further exercises
 
@@ -329,10 +324,9 @@ to become more familiar with cspaces.
 * Experiment with other [CNode invocations](https://docs.sel4.systems/ApiDoc.html#sel4_cnode).
 
 /*? macros.help_block() ?*/
-
-/*- filter ExcludeDocs() -*/
+/*-- filter ExcludeDocs() -*/
 ```c
-/*- filter File("src/main.c") -*/
+/*-- filter File("src/main.c") -*/
 #include <stdio.h>
 #include <sel4/sel4.h>
 #include <sel4platsupport/bootinfo.h>
@@ -347,10 +341,10 @@ to become more familiar with cspaces.
 
     return 0;
 }
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 ```cmake
-/*- filter File("CMakeLists.txt") -*/
+/*-- filter File("CMakeLists.txt") -*/
 # @TAG(DATA61_BSD)
 cmake_minimum_required(VERSION 3.7.2)
 project(capabilities C)
@@ -369,6 +363,6 @@ DeclareRootserver(capabilities)
 
 # utility CMake functions for the tutorials (not required in normal, non-tutorial applications) 
 /*? macros.cmake_check_script(state) ?*/
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
-/*- endfilter -*/
+/*-- endfilter -*/
