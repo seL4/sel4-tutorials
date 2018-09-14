@@ -51,7 +51,7 @@ class Task(object):
         Set content of a certain content_type for a task or subtask
         '''
         if subtask:
-            if name not in self.subtask_content:
+            if subtask not in self.subtask_content:
                  self.subtask_content[subtask] = {}
             self.subtask_content[subtask][content_type] = content
         else:
