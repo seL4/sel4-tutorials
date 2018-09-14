@@ -46,6 +46,7 @@ ninja && ./simulate
 
 def help_block():
 	return '''
+---
 ## Getting help
 Stuck? See the resources below. 
 * [FAQ](https://docs.sel4.systems/FrequentlyAskedQuestions)
