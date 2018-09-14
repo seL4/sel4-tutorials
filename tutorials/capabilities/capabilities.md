@@ -162,7 +162,7 @@ The third line stating the number of slots in the CSpace, is incorrect, and your
 
 ### How big is your CSpace?
 
-* **Exercise:** refer to the background above, and calculate the number of slots in the initial thread's CSpace. 
+**Exercise:** refer to the background above, and calculate the number of slots in the initial thread's CSpace. 
 ```c
 /*-- filter TaskContent("cnode-start", TaskContentType.BEFORE, subtask='size', completion='The CSpace has 0 slots') -*/
     size_t num_initial_cnode_slots = 0; // TODO calculate this.
@@ -190,7 +190,7 @@ The error occurs as the existing code tries to set the priority of the initial t
  invoking the last CSlot in the CSpace, which is currently empty. seL4 then returns an error code, 
  and our check that the operation succeeded fails.
 
-* **Exercise:** fix this problem by making another copy of the TCB capability into the last slot in the CNode.
+**Exercise:** fix this problem by making another copy of the TCB capability into the last slot in the CNode.
  ```c
 /*-- filter TaskContent("cnode-start", TaskContentType.BEFORE, subtask='copy', completion='Failed to set priority') -*/
     seL4_CPtr first_free_slot = info->empty.start;
@@ -242,9 +242,10 @@ true, as you copied TCB capabilities into those CSLots. Checking if SClots are e
 by a neat hack: by attempting to move the CSlots onto themselves. This should fail with an error code
 `seL4_FailedLookup` if the source CSLot is empty, and an `seL4_DeleteFirst` if not.
 
-* **Exercise:** delete both copies of the TCB capability.
+**Exercise:** delete both copies of the TCB capability.
   * You can either use `seL4_CNode_Delete` on the copies, or
-  * `seL4_CNode_Revoke` on the original capability to achieve this.   
+  * `seL4_CNode_Revoke` on the original capability to achieve this.
+
  
  ```c
 /*-- filter TaskContent("cnode-start", TaskContentType.BEFORE, subtask='delete', completion='first free slot is not empty') -*/
@@ -289,7 +290,7 @@ main@main.c:56 Failed to suspend current thread
 
 #### Invoking capabilities
 
-* **Exercise** Use `seL4_TCB_Suspend` to try and suspend the current thread. 
+**Exercise** Use `seL4_TCB_Suspend` to try and suspend the current thread. 
 ```c
 /*-- filter TaskContent("cnode-start", TaskContentType.ALL, subtask='invoke', completion='Failed to suspend current thread') -*/
     printf("Suspending current thread\n");
