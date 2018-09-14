@@ -38,7 +38,8 @@ TUTORIALS = {
     'hello-camkes-1': ALL_CONFIGS,
     'hello-camkes-2': ALL_CONFIGS,
     'hello-camkes-timer': ['zynq7000'],
-    'capabilities': ALL_CONFIGS
+    'capabilities': ALL_CONFIGS,
+    'untyped': ALL_CONFIGS,
 }
 
 ALL_TUTORIALS = TUTORIALS.keys()
