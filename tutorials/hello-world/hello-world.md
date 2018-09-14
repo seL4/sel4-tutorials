@@ -8,6 +8,14 @@ It allows you to test your local set up and make sure all the tools are working 
 
 1. [Set up your machine](https://docs.sel4.systems/HostDependencies). 
 
+## Outcomes
+
+By the end of this tutorial, you should:
+
+* Be familiar with the jargon *root task*.
+* Be able to build and simulate seL4 projects.
+* Have a basic understanding of the role of the `CMakeLists.txt` file in applications.
+
 ## Building your first program
 
 seL4 is a microkernel, not an operating system, and as a result only provides very minimal services. 
