@@ -31,7 +31,7 @@ FAILURE_TEXTS = [
 
 def simulate_with_checks(dir, completion_text, failure_list=FAILURE_TEXTS, logfile=sys.stdout):
 
-    test = pexpect.spawn("sh", args=["simulate"], cwd=dir)
+    test = pexpect.spawn("python", args=["simulate"], cwd=dir)
     test.logfile = logfile
     for i in completion_text.split('\n') + ["\n"]:
         expect_strings = [i] + failure_list
@@ -42,7 +42,6 @@ def simulate_with_checks(dir, completion_text, failure_list=FAILURE_TEXTS, logfi
         if result == 0:
             continue
         else:
-            print("<failure type='failure'>")
             return result
     return 0
 
