@@ -218,7 +218,9 @@ int main(void) {
 
     /* Set the priority of the new thread to be equal to our priority. This ensures it will run
      * in round robin with us. By default it has priority of 0 and so would never run unless we block */
+/*- if solution -*/
     error = seL4_TCB_SetPriority(tcb_object.cptr, simple_get_tcb(&simple), 255);
+/*- endif -*/
     ZF_LOGF_IFERR(error, "Failed to set the priority for the new TCB object.\n");
     /* TASK 10: give the new thread a name */
     /* hint: we've done thread naming before */
