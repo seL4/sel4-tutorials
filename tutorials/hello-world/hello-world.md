@@ -22,7 +22,6 @@ seL4 is a microkernel, not an operating system, and as a result only provides ve
 After the kernel boots, an initial thread called the *root task* is started, which is then responsible for
  setting up the user-level system.
 When the root task starts there are no available drivers, however a minimal C library is provided. 
-Behind the scenes, `printf` uses  `seL4_DebugPutChar`, a debugging utility provided by the kernel, to output characters. 
 
 The tutorial is already set up to print "Hello, world!", so at this point 
 all you need to do is build and run the tutorial:
