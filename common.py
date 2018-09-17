@@ -40,6 +40,7 @@ TUTORIALS = {
     'hello-camkes-timer': ['zynq7000'],
     'capabilities': ALL_CONFIGS,
     'untyped': ALL_CONFIGS,
+    'mapping': ['pc99'],
 }
 
 ALL_TUTORIALS = TUTORIALS.keys()
