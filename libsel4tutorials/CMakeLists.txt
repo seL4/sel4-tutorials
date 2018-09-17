@@ -12,7 +12,7 @@
 
 cmake_minimum_required(VERSION 3.8.2)
 
-add_library(sel4tutorials STATIC EXCLUDE_FROM_ALL src/lib.c src/alloc.c)
+add_library(sel4tutorials STATIC EXCLUDE_FROM_ALL src/constructors.c src/alloc.c)
 
 target_link_libraries(sel4tutorials Configuration muslc sel4 sel4platsupport sel4muslcsys)
 
