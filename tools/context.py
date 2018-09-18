@@ -104,36 +104,49 @@ def include_task_type_replace(context, task_names):
     Takes a list of task names and displays only the one that is
     active in the tutorial
     '''
+    def normalise_task_name(task_name):
+        subtask = None
+        if isinstance(task_name,tuple):
+            # Subtask
+            subtask = task_name[1]
+            task_name = task_name[0]
+        return (task_name, subtask)
+
+
     if not isinstance(task_names, list):
         task_names = [task_names]
     state = context["state"]
-    previous_task = None
-    previous_subtask = None
 
     for (i, name) in enumerate(task_names):
-        subtask = None
-        if isinstance(name,tuple):
-            # Subclass
-            subtask = name[1]
-            name = name[0]
+        (name, subtask) = normalise_task_name(name)
         task = state.get_task(name)
-
-        # Take the current task or the last task in the list.
-        if not state.is_current_task(task) and i is not len(task_names) -1:
-            previous_task = task
-            previous_subtask = subtask
-
+        if task > state.get_current_task():
+            if i is 0:
+                # If we aren't up to any of the tasks yet we return nothing
+                return ""
+            # Use previous task
+            (name, subtask) = normalise_task_name(task_names[i-1])
+            task = state.get_task(name)
+        elif task == state.get_current_task() or i is len(task_names) -1:
+            # Use task as it is either the current task or there aren't more tasks to check
+            pass
         else:
-            try:
-                content = state.print_task(task, subtask)
-                return content
+            # Check next task
+            continue
 
-            except KeyError:
-                # If the start of task isn't defined then we print the previous task
-                if i > 0:
-                    return state.print_task(previous_task, previous_subtask)
-                else:
-                    return ""
+        # We have a task, now we want to print it
+        try:
+            content = state.print_task(task, subtask)
+            return content
+
+        except KeyError:
+            # If the start of task isn't defined then we print the previous task
+            if i > 0:
+                (name, subtask) = normalise_task_name(task_names[i-1])
+                task = state.get_task(name)
+                return state.print_task(task, subtask)
+            else:
+                return ""
 
 
     raise Exception("Could not find thing")
