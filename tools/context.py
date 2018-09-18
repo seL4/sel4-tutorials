@@ -218,9 +218,24 @@ def capdl_my_vspace(context, elf_name, cap_symbol):
     return RecordObject(context, None, "vspace_%s" % elf_name, cap_symbol=cap_symbol)
 
 @contextfunction
+def capdl_my_tcb(context, elf_name, cap_symbol):
+    return RecordObject(context, None, "tcb_%s" % elf_name, cap_symbol=cap_symbol)
+
+@contextfunction
 def capdl_empty_slot(context, cap_symbol):
     return RecordObject(context, None, None, cap_symbol=cap_symbol)
 
+@contextfunction
+def capdl_declare_stack(context, size_bytes, stack_base_sym, stack_top_sym=None):
+    declaration = RecordObject(context, seL4_FrameObject, seL4_FrameObject,
+                   symbol=stack_base_sym, size=size_bytes, alignment=4096*2, section="guarded")
+    stack_top = "" if stack_top_sym is None else "static const uintptr_t %s = (const uintptr_t)&%s + sizeof(%s);" % (stack_top_sym, stack_base_sym, stack_base_sym)
+    return "\n".join([declaration, stack_top])
+
+@contextfunction
+def capdl_declare_ipc_buffer(context, cap_symbol, symbol):
+    return RecordObject(context, seL4_FrameObject, seL4_FrameObject, cap_symbol=cap_symbol,
+    symbol=symbol, size=4096, alignment=4096, section="guarded")
 
 @contextfilter
 def ELF(context, content, name):
@@ -334,7 +349,10 @@ def get_context(args, state):
             "write_manifest": write_manifest,
             "capdl_my_cspace": capdl_my_cspace,
             "capdl_my_vspace": capdl_my_vspace,
+            "capdl_my_tcb": capdl_my_tcb,
             "capdl_empty_slot": capdl_empty_slot,
+            "capdl_declare_stack": capdl_declare_stack,
+            "capdl_declare_ipc_buffer": capdl_declare_ipc_buffer,
 
             # capDL objects
             'seL4_EndpointObject':seL4_EndpointObject,
