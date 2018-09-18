@@ -117,7 +117,9 @@ def include_task_type_replace(context, task_names):
             subtask = name[1]
             name = name[0]
         task = state.get_task(name)
-        if not state.is_current_task(task):
+
+        # Take the current task or the last task in the list.
+        if not state.is_current_task(task) and i is not len(task_names) -1:
             previous_task = task
             previous_subtask = subtask
 
