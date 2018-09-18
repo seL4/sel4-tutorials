@@ -124,6 +124,13 @@ class TuteState(object):
         '''
         return self.tasks[name]
 
+    def get_current_task(self):
+        '''
+        Get a Task based on its name
+        '''
+        return self.current_task
+
+
     def is_current_task(self, task):
         '''
         Is a task the current task of the tutorial
