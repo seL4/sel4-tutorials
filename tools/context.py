@@ -200,7 +200,7 @@ def RecordObject(context, object, name, cap_symbol=None, **kwargs):
     else:
         if object is seL4_FrameObject:
             stash.unclaimed_special_pages.append((kwargs['symbol'], kwargs['size'], kwargs['alignment'], kwargs['section']))
-            write.append("extern void *%s;\n" % kwargs['symbol'])
+            write.append("extern const void *%s;\n" % kwargs['symbol'])
         elif object is not None:
             stash.objects[name] = (object, kwargs)
 
