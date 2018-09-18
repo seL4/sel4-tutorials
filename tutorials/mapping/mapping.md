@@ -165,7 +165,7 @@ Note that in the above output, the number of failed bits has changed from `30` t
 /*-- filter ExcludeDocs() -*/
 ```c
 /*-- filter TaskContent("mapping-pt", TaskContentType.COMPLETED, subtask='pt', completion='Caught cap fault') -*/
-    error = seL4_X86_PageTable_Map(pd, seL4_CapInitThreadVSpace, TEST_VADDR, seL4_X86_Default_VMAttributes);
+    error = seL4_X86_PageTable_Map(pt, seL4_CapInitThreadVSpace, TEST_VADDR, seL4_X86_Default_VMAttributes);
     assert(error == seL4_NoError);
 /*-- endfilter -*/
 ```
@@ -207,7 +207,7 @@ that the fault occured on (address).
 /*-- filter ExcludeDocs() -*/
 ```c
 /*-- filter TaskContent("mapping-remap", TaskContentType.COMPLETED, subtask='remap', completion='Success!') -*/
-    error = seL4_X86_Page_Remap(pd, seL4_CapInitThreadVSpace, seL4_ReadWrite, seL4_X86_Default_VMAttributes);
+    error = seL4_X86_Page_Remap(frame, seL4_CapInitThreadVSpace, seL4_ReadWrite, seL4_X86_Default_VMAttributes);
     assert(error == seL4_NoError);
 /*-- endfilter -*/
 ```
