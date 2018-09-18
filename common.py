@@ -44,6 +44,7 @@ TUTORIALS = {
     'mapping': ['pc99'],
     'camkes-vm-linux': ['pc99'],
     'camkes-vm-crossvm': ['pc99'],
+    'threads': ALL_CONFIGS,
 }
 
 ALL_TUTORIALS = TUTORIALS.keys()
