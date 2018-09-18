@@ -208,6 +208,19 @@ def RecordObject(context, object, name, cap_symbol=None, **kwargs):
     write.append("extern seL4_CPtr %s;" % cap_symbol)
     return "\n".join(write)
 
+@contextfunction
+def capdl_my_cspace(context, elf_name, cap_symbol):
+    return RecordObject(context, None, "cnode_%s" % elf_name, cap_symbol=cap_symbol)
+
+@contextfunction
+def capdl_my_vspace(context, elf_name, cap_symbol):
+    return RecordObject(context, None, "vspace_%s" % elf_name, cap_symbol=cap_symbol)
+
+@contextfunction
+def capdl_empty_slot(context, cap_symbol):
+    return RecordObject(context, None, None, cap_symbol=cap_symbol)
+
+
 @contextfilter
 def ELF(context, content, name):
     '''
@@ -318,6 +331,9 @@ def get_context(args, state):
             "macros": macros,
             "RecordObject": RecordObject,
             "write_manifest": write_manifest,
+            "capdl_my_cspace": capdl_my_cspace,
+            "capdl_my_vspace": capdl_my_vspace,
+            "capdl_empty_slot": capdl_empty_slot,
 
             # capDL objects
             'seL4_EndpointObject':seL4_EndpointObject,
