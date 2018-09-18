@@ -205,7 +205,8 @@ def RecordObject(context, object, name, cap_symbol=None, **kwargs):
             stash.objects[name] = (object, kwargs)
 
     stash.unclaimed_caps.append((cap_symbol, name, kwargs))
-    write.append("extern seL4_CPtr %s;" % cap_symbol)
+    if cap_symbol:
+        write.append("extern seL4_CPtr %s;" % cap_symbol)
     return "\n".join(write)
 
 @contextfunction
