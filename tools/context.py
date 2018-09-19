@@ -252,7 +252,7 @@ def capdl_declare_stack(context, size_bytes, stack_base_sym, stack_top_sym=None)
     declaration = RecordObject(context, seL4_FrameObject, seL4_FrameObject,
                    symbol=stack_base_sym, size=size_bytes, alignment=4096*2, section="guarded")
     stack_top = "" if stack_top_sym is None else "static const uintptr_t %s = (const uintptr_t)&%s + sizeof(%s);" % (stack_top_sym, stack_base_sym, stack_base_sym)
-    return "\n".join([declaration, stack_top])
+    return "\n".join([declaration.strip(), stack_top])
 
 @contextfunction
 def capdl_declare_frame(context, cap_symbol, symbol, size=4096):
