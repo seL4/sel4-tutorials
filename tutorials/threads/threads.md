@@ -1,6 +1,7 @@
-/*? declare_task_ordering(['threads-start','threads-configure','threads-priority',
+/*? declare_task_ordering(['threads-start','threads-retype','threads-configure','threads-priority',
                            'threads-context', 'threads-resume', 'threads-context-2',
                            'threads-fault']) -?*/
+/*- set progname = "threads" -*/
 
 # Threads
 
@@ -10,55 +11,58 @@ This is a tutorial for using threads on seL4.
 
 1. [Set up your machine](https://docs.sel4.systems/HostDependencies). 
 2. You need to know how to address capabilities.
-3. You need to know what a *root task* is. 
+3. You need to know the jargon *root task*, CSpace and VSpace.
 
 ## Outcomes
 
-1. Know the jargon TCB,
-2. Know how to start a thread in the same address space
-3. Reading and writing TCB register state
-4. Know how to suspend and resume a thread
-5. Thread priorities and the kernel's scheduler.
-6. A brief understanding of thread exceptions and the kernel's debug fault handlers
-
+1. Know the jargon TCB.
+2. Learn how to start a thread in the same address space.
+3. Understand how to read and update TCB register state.
+4. Learn how to suspend and resume a thread.
+5. Understand thread priorities and their interaction with the seL4 scheduler.
+6. Gain a basic understanding of exceptions and debug fault handlers.
 
 ## Background
 
-### TCB (Thread Control Blocks)
+### Thread Control Blocks
 
-seL4 provides threads to represent an execution context and manage processor time. A
-thread is represented in seL4 by its thread control block object (TCB).
-The base TCB structure contains accounting information for scheduling and IPC in addition
-to the register set and floating-point context. Additionally, the TCB contains capabilities
-to objects that are required for a thread to be able to run. These capabilities include
-the top-level cnode, top-level page directory, IPC buffer, Fault endpoint and Reply cap slot. 
-The last three objects are closely related to IPC and will be explained in more detail in a later
-tutorial.
+seL4 provides threads to represent an execution context and manage processor time. Threads in 
+seL4 are realised by *thread control block* objects (TCBs), one for each kernel thread. 
+
+TCBs contain the following information:
+* a priority and maximum control priority,
+* register state and floating-point context,
+* CSpace capability,
+* VSpace capability, 
+* endpoint capability to send fault messages to,
+* and the reply capability slot.
 
 ### Scheduling model
 
-The scheduler in seL4 is used to pick which runnable thread should run next on a specific
-processing core, and is a priority-based round-robin scheduler with 256 priorities (0-255).
-At a scheduling decision, the kernel chooses the head of the highest-priority, non-empty
-list.
-
-#### Round robin
-
-Kernel time is accounted for in fixed-time quanta referred to as ticks, and each TCB has
-a timeslice field which represents the number of ticks that TCB is eligible to execute
-until preempted. The kernel timer driver is configured to fire a periodic interrupt which
-marks each tick, and when the timeslice is exhausted the thread is appended to the relevant
-scheduler queue, with a replenished timeslice. Threads can surrender their current tick using
-the seL4_Yield system call, which simulates timeslice exhaustion.
+The seL4 scheduler chooses the next thread to run on a specific
+processing core, and is a priority-based round-robin scheduler. The scheduler picks
+threads that are runnable: that is, resumed, and not blocked on any IPC operation.
 
 #### Priorities
 
-Like any priority-based kernel without temporal isolation mechanisms, time is only guaranteed
-to the highest priority threads. Priorities in seL4 act as informal capabilities: threads
-cannot create threads at priorities higher than their current priority, but can create threads at
-the same or lower priorities. If threads at higher priority levels never block, lower priority
-threads in the system will not run. As a result, a single thread running at the highest priority
-has access to 100% of processing time.
+The scheduler picks the highest-priority, runnable thread. seL4 provides a priority range of 0-255, where
+255 is the maximum priority (encoded in `libsel4` as `seL4_MinPrio` and `seL4_MaxPrio`). 
+
+TCBs also have a *maximum control priority* (MCP), which acts as an informal capability over priorities.
+When setting the priority of a TCB, an explicit TCB capability must be provided to derive the 
+authority from to set the priority. The priority being set is checked against the authority TCB's
+MCP and the targer priority is greater, the operation fails. The root task starts with both priority and 
+MCP set to `seL4_MaxPrio`.
+
+#### Round robin
+
+When multiple TCBs are runnable and have the same priority, the are scheduled in a 
+ first-in first-out round-robin fashion. In more detail, kernel time
+ is accounted for in fixed-time quanta referred to as ticks, and each TCB has
+a timeslice field which represents the number of ticks that TCB is eligible to execute
+until preempted. The kernel timer driver is configured to fire a periodic interrupt which
+marks each tick, and when the timeslice is exhausted round robin scheduling is applied.
+Threads can surrender their current tick using the `seL4_Yield` system call.
 
 #### Domain scheduling
 
@@ -151,12 +155,13 @@ seL4_Error seL4_TCB_UnbindNotification(seL4_TCB _service)
 
 ## Exercises
 
-This tutorial will guide you through using TCB invocations to create and pass variable to a new
-thread in the same address space. Additionally, you will learn about how to debug a virtual memory
+This tutorial will guide you through using TCB invocations to create a new thread in the same 
+address space and pass arguments to the new thread.
+Additionally, you will learn about how to debug a virtual memory
 fault.
 
-By the end of this tutorial you want to spawn a new thread to call this function, passing in a
-third function and argument that this thread will then call. 
+By the end of this tutorial you want to spawn a new thread to call the function in the code example 
+ below. 
 
 ```c
 /*-- filter TaskContent("threads-start", TaskContentType.ALL, subtask='fault') -*/
@@ -170,17 +175,23 @@ int new_thread(void *arg1, void *arg2, void *arg3) {
 /*- endfilter -*/
 ```
 
+### CapDL Loader
+
 Previous tutorials have taken place in the root task where the starting CSpace layout is set by the
-kernel. For this tutorial we will use the capDL-loader-app as the root task. This root task takes
-a static description of all the capabilities in the system the relevant ELF binaries required to
-set up a static system. It is primarily used in [Camkes](https://docs.sel4.systems/CAmkES/) projects
-but we will also use it here to remove a lot of object allocation and retyping boilerplate.
-The program that you construct will end up with its own CSpace and address space that are separate
-from the initial seL4 root task (which will be the capdl-loader-app.
+seL4 boot protocol. This tutorial uses a the *capDL loader*, a root task which allocates statically 
+ configured objects and capabilities.
 
-Some information about CapDL projects can be found [here](https://docs.sel4.systems/CapDL.html).
+The capDL loader parses 
+a static description of the system and the relevant ELF binaries.
+It is primarily used in [Camkes](https://docs.sel4.systems/CAmkES/) projects
+but we also use it in the tutorials to reduce redundant code.
+The program that you construct will end up with its own CSpace and VSpace, which are separate
+from the root task, meaning CSlots like `seL4_CapInitThreadVSpace` have no meaning 
+in applications loaded by the capDL loader.
 
-### Retype and configure a thread (vspace root, cspace roots, ipc buffer)
+Information about CapDL projects can be found [here](https://docs.sel4.systems/CapDL.html).
+
+### Configure a TCB
 
 When you first build and run the tutorial, you should see something like the following:
 ```
@@ -188,101 +199,127 @@ Hello, World!
 Dumping all tcbs!
 Name                                        State           IP                       Prio    Core
 --------------------------------------------------------------------------------------
-tcb_tcb_tute                                running         0x4012ef    254                 0
+tcb_threads                                running         0x4012ef    254                 0
 idle_thread                                 idle            (nil)   0                   0
 rootserver                                  inactive        0x4024c2    255                 0
-<<seL4(CPU 0) [decodeInvocation/530 T0xffffff8008140c00 "tcb_tcb_tute" @4012ef]: Attempted to invoke a >
-main@tcb_tute.c:42 [Cond failed: result]
+<<seL4(CPU 0) [decodeInvocation/530 T0xffffff8008140c00 "tcb_threads" @4012ef]: Attempted to invoke a >
+main@threads.c:42 [Cond failed: result]
 /*-- filter TaskCompletion("threads-start", TaskContentType.ALL) -*/
 Failed to retype thread: 2
 /*- endfilter --*/
 ```
 
-This is generated by the source below. It should be clear that `Hello, World!` comes from `printf`.
 `Dumping all tcbs!` and the following table is generated by a debug syscall called `seL4_DebugDumpScheduler()`.
 seL4 has a series of debug syscalls that are available in debug kernel builds. The available debug syscalls
 can be found in [libsel4](https://docs.sel4.systems/ApiDoc.html#debugging-system-calls). `seL4_DebugDumpScheduler()`
 is used to dump the current state of the scheduler and can be useful to debug situations where a
-system seems to have hung.  Finally, our `seL4_Untyped_Retype` invocation is failing due to invalid
-arguments.
-
-The goal for this task is to create a TCB object and configure it to have the same CSpace and VSpace
-as the current thread. The loader has been configured to create capabilities for the following objects:
-- `root_cnode`: Cap for the root CSpace of the current thread
-- `root_vspace`: Cap for the root VSpace of the current thread
-- `root_tcb`: Cap for the TCB of the current thread
-- `tcb_untyped`: Untyped object large enough to create a new TCB object
-- `tcb_cap_slot`: Empty slot for the new TCB object
-- `tcb_ipc_frame`: Cap for a frame mapping to be used as the IPC Buffer
-
-Additionally there are two page mappings that have been created:
-- `thread_ipc_buff_sym`: Symbol for the IPC buffer in the address space
-- `tcb_stack_top`: Symbol for the top of a 16 * 4KiB stack mapping
-
-You can use the above objects to create a new TCB object referred to by a cap in `tcb_cap_slot`.
-Once the thread has been created it will show up in the `seL4_DebugDumpScheduler()` output. Throughout
-the tutorial you can use this syscall to debug some of the TCB attributes that you set.
-
-Once the TCB has been created, the next step is to configure it with a CSpace, VSpace and IPC buffer.
-We don't set a fault handler as the kernel will print any fault we receive with a debug build.
-Use `seL4_TCB_Configure` to configure the TCB object.
+system seems to have hung. 
+ 
+After the TCB table, you can see the `seL4_Untyped_Retype` invocation is failing due to invalid arguments.
+The loader has been configured to set up the following capabilities and symbols:
 
 ```c
-/*-- filter TaskContent("threads-start", TaskContentType.ALL, subtask='configure') -*/
+/*-- filter TaskContent("threads-start", TaskContentType.ALL, subtask='init') -*/
+// the root CNode of the current thread
+/*? capdl_my_cspace(progname, "root_cnode") ?*/
+// VSpace of the current thread
+/*? capdl_my_vspace(progname, "root_vspace") ?*/
+// TCB of the current thread
+/*? capdl_my_tcb(progname, "root_tcb") ?*/
+// Untyped object large enough to create a new TCB object
+/*? RecordObject(seL4_UntypedObject, "tcb_untyped", cap_symbol="tcb_untyped", size_bits= 11)?*/
+// Empty slot for the new TCB object
+/*? capdl_empty_slot("tcb_cap_slot") ?*/
+// Symbol for the IPC buffer mapping in the VSpace, and capability to the mapping
+/*? capdl_declare_ipc_buffer("tcb_ipc_frame", "thread_ipc_buff_sym") ?*/
+// Symbol for the top of a 16 * 4KiB stack mapping, and capability to the mapping
+/*? capdl_declare_stack(16 * 4096, "tcb_stack_base", "tcb_stack_top") ?*/
+/*-- endfilter -*/
+```
+
+**Exercise** Fix the `seL4_Untyped_Retype` call (shown below) using the capabilities provided above, such 
+that a new TCB object is created in `tcb_cap_slot`.
+
+```c
+/*-- filter TaskContent("threads-start", TaskContentType.ALL, subtask='start') -*/
 int main(int c, char* arbv[]) {
 
     printf("Hello, World!\n");
 
     seL4_DebugDumpScheduler();
-    seL4_Error result = seL4_Untyped_Retype(seL4_CapNull, seL4_TCBObject, seL4_TCBBits, seL4_CapNull, seL4_CapNull, 0, seL4_CapNull, 1);
+/*-- endfilter -*/
+/*-- filter TaskContent("threads-start", TaskContentType.ALL, subtask='retype') -*/
+    // TODO fix the parameters in this invocation
+    seL4_Error result = seL4_Untyped_Retype(seL4_CapNull, seL4_TCBObject, seL4_TCBBits, seL4_CapNull, 0, 0, seL4_CapNull, 1);
     ZF_LOGF_IF(result, "Failed to retype thread: %d", result);
     seL4_DebugDumpScheduler();
+/*-- endfilter -*/
+/*-- filter ExcludeDocs() -*/
+/*-- filter TaskContent("threads-retype", TaskContentType.COMPLETED, subtask='retype', completion="Failed to configure thread") -*/
+    seL4_Error result = seL4_Untyped_Retype(tcb_untyped, seL4_TCBObject, seL4_TCBBits, root_cnode, 0, 0, tcb_cap_slot, 1);
+    ZF_LOGF_IF(result, "Failed to retype thread: %d", result);
+    seL4_DebugDumpScheduler();
+/*-- endfilter -*/
+/*-- endfilter -*/
+```
 
+Once the TCB has been created it will show up in the `seL4_DebugDumpScheduler()` output as 
+`child of: 'tcb_threads'`. Throughout the tutorial you can use this syscall to debug some of the TCB attributes 
+that you set.
+
+After the scheduler table, you should see a another error:
+
+```
+  <<seL4(CPU 0) [decodeInvocation/530 T0xffffff800813fc00 "tcb_threads" @4004bf]: Attempted to invoke a null cap #0.>>
+main@threads.c:46 [Cond failed: result]
+	Failed to configure thread: 2
+```
+
+**Exercise** Now that you have a TCB object, configure it to have the same CSpace and VSpace
+as the current thread. Use the IPC buffer we have provided, but don't set a fault handler, 
+ as the kernel will print any fault we receive with a debug build.
+ 
+```c
+/*-- filter TaskContent("threads-start", TaskContentType.ALL, subtask='configure') -*/
+    //TODO fix the parameters in this invocation
     result = seL4_TCB_Configure(seL4_CapNull, seL4_CapNull, 0, seL4_CapNull, 0, 0, (seL4_Word) NULL, seL4_CapNull);
     ZF_LOGF_IF(result, "Failed to configure thread: %d", result);
-
 /*-- endfilter -*/
 ```
 /*- filter ExcludeDocs() -*/
 
 ```c
-/*-- filter TaskContent("threads-configure", TaskContentType.COMPLETED, subtask='configure', completion="child of: 'tcb_tcb_tute'") -*/
-int main(int c, char* arbv[]) {
-
-    printf("Hello, World!\n");
-
-    seL4_DebugDumpScheduler();
-    seL4_Error result = seL4_Untyped_Retype(thread_untyped, seL4_TCBObject, seL4_TCBBits, root_cnode, tcb_cap_slot, 0, tcb_cap_slot, 1);
-    ZF_LOGF_IF(result, "Failed to retype thread: %d", result);
-    seL4_DebugDumpScheduler();
-
+/*-- filter TaskContent("threads-configure", TaskContentType.COMPLETED, subtask='configure', completion="child of: 'tcb_threads'") -*/
     result = seL4_TCB_Configure(tcb_cap_slot, seL4_CapNull, root_cnode, 0, root_vspace, 0, (seL4_Word) thread_ipc_buff_sym, tcb_ipc_frame);
     ZF_LOGF_IF(result, "Failed to configure thread: %d", result);
-
 /*-- endfilter -*/
 ```
 /*- endfilter -*/
 
+
 You should now be getting the following error:
 ```
-<<seL4(CPU 0) [decodeSetPriority/1035 T0xffffff8008140c00 "tcb_tcb_tute" @4012ef]: Set priority: author>
-main@tcb_tute.c:51 [Cond failed: result]
+<<seL4(CPU 0) [decodeSetPriority/1035 T0xffffff8008140c00 "tcb_threads" @4012ef]: Set priority: author>
+main@threads.c:51 [Cond failed: result]
 /*-- filter TaskCompletion("threads-priority", TaskContentType.BEFORE) -*/
 Failed to set the priority for the new TCB object.
 /*- endfilter --*/
 ```
 
-### Change a threads priority via `seL4_TCB_SetPriority`
+### Change priority via `seL4_TCB_SetPriority`
 
-A newly created thread will have a priority of 0. In order for it to run, it will need to have its
-priority increased such that it will eventually end up being a highest priority runnable thread.
-You need to use `seL4_TCB_SetPriority` to set the priority. Remember that to set a thread's priority,
-the calling thread must have the authority to do so. The main thread has a priority of 254 and is
-configured with the same maximum controlled priority attribute.
+A newly created thread will have a priority of 0, while the thread created by the loader is at 
+a priority of 254.  You need to change the priority of your new thread such that it will be 
+ scheduled round-robin with the current thread. 
 
+**Exercise** use `seL4_TCB_SetPriority` to set the priority. Remember that to set a thread's priority,
+the calling thread must have the authority to do so. In this case, the main thread can use its own 
+TCB capability, which has an MCP of 254.
 
 ```c
 /*-- filter TaskContent("threads-start", TaskContentType.ALL, subtask='priority') -*/
+    // TODO fix the call to set priority using the authority of the current thread
+    // and change the priority to 254
     result = seL4_TCB_SetPriority(tcb_cap_slot, seL4_CapNull, 0);
     ZF_LOGF_IF(result, "Failed to set the priority for the new TCB object.\n");
     seL4_DebugDumpScheduler();
@@ -306,53 +343,53 @@ set to the same as the main thread in the next `seL4_DebugDumpScheduler()` call.
 ```
 Name                                        State           IP                       Prio    Core
 --------------------------------------------------------------------------------------
-child of: 'tcb_tcb_tute'                    inactive        (nil)   254                 0
-tcb_tcb_tute                                running         0x4012ef    254                 0
+child of: 'tcb_threads'                    inactive        (nil)   254                 0
+tcb_threads                                running         0x4012ef    254                 0
 idle_thread                                 idle            (nil)   0                   0
 rootserver                                  inactive        0x4024c2    255                 0
-<<seL4(CPU 0) [decodeInvocation/530 T0xffffff8008140c00 "tcb_tcb_tute" @4012ef]: Attempted to invoke a >
-main@tcb_tute.c:57 [Err seL4_InvalidCapability]:
+<<seL4(CPU 0) [decodeInvocation/530 T0xffffff8008140c00 "tcb_threads" @4012ef]: Attempted to invoke a >
+main@threads.c:57 [Err seL4_InvalidCapability]:
 /*-- filter TaskCompletion("threads-priority", TaskContentType.COMPLETED) -*/
 Failed to read the new thread's register set.
 /*- endfilter --*/
 ```
 
-### Set initial register state (a stack and initial program counter, arguments)
+### Set initial register state 
 
-The only thing left before starting a thread is to set its initial registers. You need to set the
-program counter and stack pointer in order for the thread to be able to run without immediately
-crashing.
-
+The TCB is nearly ready to run, except for its initial registers. You need to set the
+program counter and stack pointer to valid values, otherwise your thread will crash immediately.
+ 
 `libsel4utils` contains some functions for setting register contents in a platform agnostic manner.
 You can use these methods to set the program counter (instruction pointer) and stack pointer in
 this way.  _Note: It is assumed that the stack grows downwards on all platforms._
 
-Set up the new thread to call `new_thread`.  You can use the debug syscall to verify that
+**Exercise** Set up the new thread to call the function `new_thread`. You can use the debug syscall to verify that
 you have at least set the instruction pointer (IP) correctly.
-
 
 ```c
 /*-- filter TaskContent("threads-start", TaskContentType.ALL, subtask='context') -*/
-    UNUSED seL4_UserContext regs = {0};
-    int error = seL4_TCB_ReadRegisters(seL4_CapNull, 0, 0, 0, &regs);
+    seL4_UserContext regs = {0};
+    int error = seL4_TCB_ReadRegisters(tcb_cap_slot, 0, 0, sizeof(regs)/sizeof(seL4_Word), &regs);
     ZF_LOGF_IFERR(error, "Failed to read the new thread's register set.\n");
 
+    // TODO use valid instruction pointer
     sel4utils_set_instruction_pointer(&regs, (seL4_Word)NULL);
+    // TODO use valid stack pointer
     sel4utils_set_stack_pointer(&regs, NULL);
+    // TODO fix parameters to this invocation
     error = seL4_TCB_WriteRegisters(seL4_CapNull, 0, 0, 0, &regs);
-    ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n");
+    ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
+                  "\tDid you write the correct number of registers? See arg4.\n");
     seL4_DebugDumpScheduler();
 
 /*-- endfilter -*/
 ```
-/*- filter ExcludeDocs() -*/
-
+/*-- filter ExcludeDocs() -*/
 ```c
 /*-- filter TaskContent("threads-context", TaskContentType.COMPLETED, subtask='context', completion='Failed to start new thread') -*/
-    UNUSED seL4_UserContext regs = {0};
+    seL4_UserContext regs = {0};
     int error = seL4_TCB_ReadRegisters(tcb_cap_slot, 0, 0, sizeof(regs)/sizeof(seL4_Word), &regs);
-    ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
-                  "\tDid you write the correct number of registers? See arg4.\n");
+    ZF_LOGF_IFERR(error, "Failed to read the new thread's register set.\n");
 
     sel4utils_set_instruction_pointer(&regs, (seL4_Word)new_thread);
     sel4utils_set_stack_pointer(&regs, tcb_stack_top);
@@ -360,43 +397,53 @@ you have at least set the instruction pointer (IP) correctly.
     ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
                   "\tDid you write the correct number of registers? See arg4.\n");
     seL4_DebugDumpScheduler();
-
 /*-- endfilter -*/
 ```
-/*- endfilter -*/
+/*-- endfilter -*/
 
-### Resume a thread
+On success, you will see the following output:
+```
+<<seL4(CPU 0) [decodeInvocation/530 T0xffffff800813fc00 "tcb_threads" @4004bf]: Attempted to invoke a null cap #0.>>
+main@threads.c:63 [Err seL4_InvalidCapability]:
+	Failed to start new thread.
+```
 
-If everything has been configured correctly, resuming the thread should result in a new print
-output.
+### Start the thread
+
+Finally you are ready to start the thread, which makes the TCB runnable and eligible to be picked by 
+ the seL4 scheduler. This can be done by changing the second argument of 
+`seL4_TCB_WriteRegisters` to 1 and removing the `seL4_TCB_Resume` call, or by fixing the resume call below.
+
+**Exercise** resume the new thread.
 
 ```c
 /*-- filter TaskContent("threads-start", TaskContentType.ALL, subtask='resume') -*/
-
+    // TODO resume the new thread
     error = seL4_TCB_Resume(seL4_CapNull);
     ZF_LOGF_IFERR(error, "Failed to start new thread.\n");
-
-
 /*-- endfilter -*/
 ```
 /*- filter ExcludeDocs() -*/
-
 ```c
 /*-- filter TaskContent("threads-resume", TaskContentType.COMPLETED, subtask='resume', completion='Hello2: arg1 0, arg2 0, arg3 0') -*/
-
+    // resume the new thread
     error = seL4_TCB_Resume(tcb_cap_slot);
     ZF_LOGF_IFERR(error, "Failed to start new thread.\n");
-
 /*-- endfilter -*/
 ```
-/*- endfilter -*/
+/*-- endfilter -*/
 
-### Set arguments directly, or use a function to abstract over achitecture.
+If everything has been configured correctly, resuming the thread should result in the string 
+`Hello2: arg1 0, arg2 0, arg3 0` followed by a fault.
 
-You will notice that all of the arguments to the new thread are 0. We can use another helper function
-to set the registers to some dummy values. Changing the argument registers will change the arguments
-that the new thread's function will be called with. If you want, you can try setting the exact
-registers in the seL4_UserContext for your chosen architecture.
+### Passing arguments
+
+You will notice that all of the arguments to the new thread are 0. You can set the arguments by
+using the helper function `sel4utils_arch_init_local_context` or by directly manipulating the registers
+for your target architecture.
+
+**Exercise** update the values written with `seL4_TCB_WriteRegisters` to pass the values 1, 2, 3 as arg1,
+arg2, and arg3 respectively. 
 
 ```c
 /*-- filter TaskContent("threads-context-2", TaskContentType.ALL, subtask='context', completion='Hello2: arg1 0x1, arg2 0x2, arg3 0x3') -*/
@@ -405,37 +452,38 @@ registers in the seL4_UserContext for your chosen architecture.
     ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
                   "\tDid you write the correct number of registers? See arg4.\n");
 
-
     sel4utils_arch_init_local_context((void*)new_thread,
                                   (void *)1, (void *)2, (void *)3,
                                   (void *)tcb_stack_top, &regs);
     error = seL4_TCB_WriteRegisters(tcb_cap_slot, 0, 0, sizeof(regs)/sizeof(seL4_Word), &regs);
     ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
                   "\tDid you write the correct number of registers? See arg4.\n");
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
-### Resolving a thread fault
+### Resolving a fault
 
 At this point, you have created and configured a new thread, and given it initial arguments.
-The last part of this tutorial is what to do when your thread faults. In another tutorial you
-can learn how to recover from faulting threads using a fault handler, but for now you can rely on the
-kernel printing a fault message for any faulting thread that doesn't have a fault handler set.
-
+The last part of this tutorial is what to do when your thread faults. We provide further detail
+ on fault handling in a future tutorial, but for now you can rely on the
+kernel printing a fault message, as the thread you have created does not have a fault handler.
+ 
 In the output below you can see a cap fault has occurred. The first part of the error is that
 the kernel was unable to send a fault to a fault handler as it is set to `(nil)`. The kernel
-then prints out the fault it was trying to send. It is a virtual memory fault. The error indicates
-that a child thread of thread `tcb_tcb_tute` tried to access data at address `0x2` which does not
-have a mapping set up. The program counter of this thread was `0x401e66`. It is further possible
-to look up the status of the fault in the relevant architecture manual for your platform to decode
-what sort of data fault occurred. Additionally, the kernel prints a literal stack trace with the top
-being the current value of the stack pointer.  The kernel can be configured to print out more or
-less items in the trace by changing `KernelUserStackTraceLength`. By default it is 16.
+then prints out the fault it was trying to send. In this case, the fault is a virtual memory fault.
+The new thread has tried to access data at address `0x2` which is an invalid and unmapped address.
+The output shows that the program counter of the thread when it faulted was `0x401e66`.
+ 
+The fault status register is also output, which can be decoded by 
+using the relevant architecture manual.
+Additionally, the kernel prints a raw stack dump from the current stack pointer.
+The size of the stack dump is configurable, using the 
+ `KernelUserStackTraceLength` cmake variable.
 
 ```
 Caught cap fault in send phase at address (nil)
 while trying to handle:
 vm fault on data at address 0x2 with status 0x4
-in thread 0xffffff8008140400 "child of: 'tcb_tcb_tute'" at address 0x401e66
+in thread 0xffffff8008140400 "child of: 'tcb_threads'" at address 0x401e66
 With stack:
 0x439fc0: 0x0
 0x439fc8: 0x3
@@ -455,23 +503,25 @@ With stack:
 0x43a038: 0x0
 ```
 
-Once you have this fault information you can look what happened by using a tool such as `objdump`
-on the ELF file that was loaded. In our case, the ELF file is located at `./<BUILD_DIR>/<TUTORIAL_BUILD_DIR>/tcb_tute`.
-(In normal project structures, the location of the ELF will be in the same place as its source directory, but in the
-build directory.)
+To investigate the fault, you can use a tool such as `objdump` on the ELF file that was loaded to 
+inspect the instruction that caused the fault.
+ In this case, the ELF file is located at `./<BUILD_DIR>/<TUTORIAL_BUILD_DIR>/threads`.
 
-By looking up the faulting IP you can see that `arg2` is being dereferenced to be passed to a function
-call. Fixing this fault will require initialising `arg2` to some valid memory. Set it to some memory
-location controlled by the main thread, such as the address of a global variable. Stack variables
-wont work here.
+You should be able to see that `arg2` is being dereferenced, but does not point to valid memory.
 
-You likely noticed that the new thread also tries to dereference `arg1` as a function to call. Letting
-this happen will lead to a different vm fault type which you can test out.  Fixing this will require
-creating a new function to pass in from the main thread.
+**Exercise** pass a valid arg2, by passing the address of a global variable.
+
+Next, another fault will occur as the new thread expects `arg1` to be a pointer to a function.
+
+**Exercise** Pass the address of a function which outputs the argument which is passed to it, as `arg2`.
+
+Now you should have a new thread, which immediately calls the function passed in `arg2`.
 
 ### Further exercises
 
-That's it. The tutorial is finished. For further exercises you could try:
+That's all for the detailed content of this tutorial. Below we list other ideas for exercises you can try, 
+to become more familiar with TCBs and threading in seL4.
+
 - Using different TCB invocations to change the new thread's attributes or objects
 - Investigate how setting different priorities affects when the threads are scheduled to run
 - Implementing synchronisation primitives using global memory.
@@ -485,7 +535,6 @@ That's it. The tutorial is finished. For further exercises you could try:
 
 ```c
 /*-- filter TaskContent("threads-fault", TaskContentType.COMPLETED, subtask='fault') -*/
-
 int data = 42;
 
 int new_thread(void *arg1, void *arg2, void *arg3) {
@@ -494,7 +543,7 @@ int new_thread(void *arg1, void *arg2, void *arg3) {
     func(*(int *)arg2);
     while(1);
 }
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 ```c
@@ -502,7 +551,7 @@ int new_thread(void *arg1, void *arg2, void *arg3) {
 int call_once(int arg) {
     printf("Hello 3 %d\n", arg);
 }
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 ```c
@@ -524,46 +573,26 @@ int call_once(int arg) {
 ```
 
 ```c
-/*- set progname = "tcb_tute" -*/
-/*- filter ELF(progname) --*/
-
+/*-- filter ELF(progname) --*/
 #include <stdio.h>
 #include <sel4/sel4.h>
 #include <utils/util.h>
 #include <sel4utils/util.h>
 #include <sel4utils/helpers.h>
-
-/*? capdl_my_cspace(progname, "root_cnode") ?*/
-/*? capdl_my_vspace(progname, "root_vspace") ?*/
-/*? capdl_my_tcb(progname, "root_tcb") ?*/
-
-/*? RecordObject(seL4_UntypedObject, "tcb_untyped", cap_symbol="thread_untyped", size_bits= 11)?*/
-
-/*? capdl_empty_slot("tcb_cap_slot") ?*/
-
-/*? capdl_declare_ipc_buffer("tcb_ipc_frame", "thread_ipc_buff_sym") ?*/
-/*? capdl_declare_stack(16 * 4096, "tcb_stack_base", "tcb_stack_top") ?*/
-
+/*? include_task_type_append([("threads-start", 'init')]) ?*/
 /*? include_task_type_append([("threads-fault", 'func2')]) ?*/
-
-
 /*? include_task_type_replace([("threads-start", 'fault'), ("threads-fault", 'fault')]) ?*/
-
-
+/*? include_task_type_append([("threads-start", 'start')]) ?*/
+/*? include_task_type_replace([("threads-start", 'retype'), ("threads-retype", 'retype')]) ?*/
 /*? include_task_type_replace([("threads-start", 'configure'), ("threads-configure", 'configure')]) ?*/
-
 /*? include_task_type_replace([("threads-start", 'priority'), ("threads-priority", 'priority')]) ?*/
-
 /*? include_task_type_replace([("threads-start", 'context'), ("threads-context", 'context'),
                               ("threads-context-2", 'context'), ("threads-fault", 'context')]) ?*/
-
 /*? include_task_type_replace([("threads-start", 'resume'), ("threads-resume", 'resume')]) ?*/
-
     while(1);
     return 0;
 }
-
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 ```cmake
