@@ -56,7 +56,7 @@ amount between the sender and receiver IPC buffer.
 ### Data transfer
 
 The IPC buffer contains a bounded area of message registers (MR) used to transmit data on IPC. Each
-register is the machine word size, and the maximum message size is a available in the
+register is the machine word size, and the maximum message size is available in the
 `seL4_MsgMaxLength` constant provided by `libsel4`.
 
 Messages can be loaded into the IPC buffer using `seL4_GetMR` and extracted using `seL4_SetMR`.
