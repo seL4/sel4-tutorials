@@ -4,7 +4,8 @@
 ## Prerequisites
 
 1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-1. Capabilities tutorial
+1. Capabilities tutorial.
+1. Threads tutorial.
 
 ## Initialising
 
@@ -144,7 +145,7 @@ to be very fast. In order to use the fastpath, an IPC must meet the following co
 
 ## Exercises
 
-This tutorial has several processes set up already, two clients and a server. All processes have
+This tutorial has several processes set up by the capDL loader, two clients and a server. All processes have
 access to a single endpoint capability, which provides access to the same endpoint object.
 
 In this tutorial, you will construct a server which echos the contents of messages sent by clients. You
