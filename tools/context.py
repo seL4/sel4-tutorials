@@ -372,6 +372,7 @@ def get_context(args, state):
             "capdl_empty_slot": capdl_empty_slot,
             "capdl_declare_stack": capdl_declare_stack,
             "capdl_declare_ipc_buffer": capdl_declare_ipc_buffer,
+            'tab':"\t",
 
             # capDL objects
             'seL4_EndpointObject':seL4_EndpointObject,
