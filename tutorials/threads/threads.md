@@ -87,71 +87,7 @@ seL4_Error seL4_DomainSet_Set(seL4_DomainSet _service, seL4_Uint8 domain, seL4_T
 
 ### Thread Attributes
 
-seL4 threads are configured by invocations on the TCB object. 
-
-#### Scheduling configuration
-
-```c
-/* libsel4 api: https://docs.sel4.systems/ApiDoc.html#sel4_tcb */
-
-/* Scheduling attributes */
-/* Suspend and resume */
-seL4_Error seL4_TCB_Suspend(seL4_TCB _service)
-
-seL4_Error seL4_TCB_Resume(seL4_TCB _service)
-
-
-/* Priority and Maximum controlled priority */
-seL4_Error seL4_TCB_SetPriority(seL4_TCB _service, seL4_CPtr authority, seL4_Word priority)
-seL4_Error seL4_TCB_SetMCPriority(seL4_TCB _service, seL4_CPtr authority, seL4_Word mcp)
-seL4_Error seL4_TCB_SetSchedParams(seL4_TCB _service, seL4_CPtr authority, seL4_Word mcp,
-                                   seL4_Word priority)
-/* Set affinity */
-seL4_Error seL4_TCB_SetAffinity(seL4_TCB _service, seL4_Word affinity)
-
-
-```
-
-#### Execution context
-```c
-
-/* Execution context */
-seL4_Error seL4_TCB_ReadRegisters(seL4_TCB _service, seL4_Bool suspend_source,
-                                  seL4_Uint8 arch_flags, seL4_Word count, seL4_UserContext *regs)
-
-seL4_Error seL4_TCB_WriteRegisters(seL4_TCB _service, seL4_Bool resume_target,
-                                  seL4_Uint8 arch_flags, seL4_Word count, seL4_UserContext *regs)
-
-
-```
-
-### Thread objects 
-
-#### Configuring CSpace, VSpace, IPC Buffer, Fault endpoint
-
-```c
-seL4_Error seL4_TCB_Configure(seL4_TCB _service, seL4_Word fault_ep, seL4_CNode cspace_root,
-                              seL4_Word cspace_root_data, seL4_CNode vspace_root,
-                              seL4_Word vspace_root_data, seL4_Word buffer, seL4_CPtr bufferFrame)
-
-seL4_Error seL4_TCB_SetSpace(seL4_TCB _service, seL4_Word fault_ep, seL4_CNode cspace_root,
-                             seL4_Word cspace_root_data, seL4_CNode vspace_root,
-                             seL4_Word vspace_root_data)
-
-seL4_Error seL4_TCB_SetIPCBuffer(seL4_TCB _service, seL4_Word buffer, seL4_CPtr bufferFrame)
-
-
-```
-
-#### Bound notification
-```c
-
-seL4_Error seL4_TCB_BindNotification(seL4_TCB _service, seL4_CPtr notification)
-
-seL4_Error seL4_TCB_UnbindNotification(seL4_TCB _service)
-
-```
-
+seL4 threads are configured by [invocations on the TCB object](https://docs.sel4.systems/ApiDoc.html#sel4_tcb).
 
 ## Exercises
 
