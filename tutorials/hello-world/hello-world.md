@@ -59,7 +59,7 @@ Every application and library in an seL4 project requires a `CMakeLists.txt` fil
  incorporated into the project build system.
  
 ```cmake
-/*- filter File("CMakeLists.txt") -*/
+/*-- set build_file -*/
 # @TAG(DATA61_BSD)
 cmake_minimum_required(VERSION 3.7.2)
 # declare the hello-world CMake project and the languages it is written in (just C)
@@ -76,10 +76,8 @@ target_link_libraries(hello-world
 
 # Tell the build system that this application is the root task. 
 DeclareRootserver(hello-world)
-
-# utility CMake functions for the tutorials (not required in normal, non-tutorial applications) 
-/*? macros.cmake_check_script(state) ?*/
-/*- endfilter -*/
+/*- endset -*/
+/*? build_file ?*/
 ```
 
 ### `main.c`
@@ -139,5 +137,12 @@ Second hello
 
 /*- endfilter -*/
 ```
+```cmake
+/*- filter File("CMakeLists.txt") -*/
+/*? build_file ?*/
 
+# utility CMake functions for the tutorials (not required in normal, non-tutorial applications)
+/*? macros.cmake_check_script(state) ?*/
+/*- endfilter -*/
+```
 /*- endfilter -*/
