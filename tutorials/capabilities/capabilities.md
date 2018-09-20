@@ -140,7 +140,7 @@ resources manages by seL4. We have already seen several capabilities in the root
 The initial state of this tutorial provides you with the BootInfo structure,
 and calculates the size (in bytes) of the initial CNode object.
 ```c
-/*-- filter TaskContent("cnode-start", TaskContentType.ALL, subtask='init', completion='Initial CNode is 4096 bytes in size') -*/
+/*-- filter TaskContent("cnode-start", TaskContentType.ALL, subtask='init') -*/
 int main(int argc, char *argv[]) {
 
     /* parse the location of the seL4_BootInfo data structure from
@@ -168,14 +168,14 @@ The third line stating the number of slots in the CSpace, is incorrect, and your
 
 **Exercise:** refer to the background above, and calculate the number of slots in the initial thread's CSpace. 
 ```c
-/*-- filter TaskContent("cnode-start", TaskContentType.BEFORE, subtask='size', completion='The CSpace has 0 slots') -*/
+/*-- filter TaskContent("cnode-start", TaskContentType.ALL, subtask='size') -*/
     size_t num_initial_cnode_slots = 0; // TODO calculate this.
     printf("The CSpace has %zu CSlots\n", num_initial_cnode_slots);
 /*-- endfilter -*/
 ```
 /*-- filter ExcludeDocs() -*/
 ```c
-/*-- filter TaskContent("cnode-size", TaskContentType.COMPLETED, subtask='size', completion='The CSpace has 1024 slots') -*/
+/*-- filter TaskContent("cnode-size", TaskContentType.COMPLETED, subtask='size', completion='The CSpace has [0-9]+ CSlots') -*/
     size_t num_initial_cnode_slots = initial_cnode_object_size / (1u << seL4_SlotBits);
     printf("The CSpace has %zu CSlots\n", num_initial_cnode_slots);
 /*-- endfilter -*/
@@ -196,7 +196,7 @@ The error occurs as the existing code tries to set the priority of the initial t
 
 **Exercise:** fix this problem by making another copy of the TCB capability into the last slot in the CNode.
  ```c
-/*-- filter TaskContent("cnode-start", TaskContentType.BEFORE, subtask='copy', completion='Failed to set priority') -*/
+/*-- filter TaskContent("cnode-start", TaskContentType.ALL, subtask='copy', completion='Failed to set priority') -*/
     seL4_CPtr first_free_slot = info->empty.start;
     seL4_Error error = seL4_CNode_Copy(seL4_CapInitThreadCNode, first_free_slot, seL4_WordBits,
                                        seL4_CapInitThreadCNode, seL4_CapInitThreadTCB, seL4_WordBits,
@@ -212,13 +212,13 @@ The error occurs as the existing code tries to set the priority of the initial t
 ```
 /*-- filter ExcludeDocs() -*/
 ```c
-/*-- filter TaskContent("cnode-copy", TaskContentType.COMPLETED, subtask='copy', completion='First free slot is not empty') -*/
+/*-- filter TaskContent("cnode-copy", TaskContentType.COMPLETED, subtask='copy', completion='first_free_slot is not empty') -*/
     seL4_CPtr first_free_slot = info->empty.start;
     seL4_Error error = seL4_CNode_Copy(seL4_CapInitThreadCNode, first_free_slot, seL4_WordBits,
                                        seL4_CapInitThreadCNode, seL4_CapInitThreadTCB, seL4_WordBits,
                                        seL4_AllRights);
     ZF_LOGF_IF(error, "Failed to copy cap!");
-    seL4_CPtr last_slot = info->empty.end;
+    seL4_CPtr last_slot = info->empty.end - 1;
     
     // use seL4_CNode_Copy to make another copy of the initial TCB capability to the last slot in the CSpace
     error = seL4_CNode_Copy(seL4_CapInitThreadCNode, last_slot, seL4_WordBits,
@@ -227,7 +227,7 @@ The error occurs as the existing code tries to set the priority of the initial t
     
     // set the priority of the root task
     error = seL4_TCB_SetPriority(last_slot, last_slot, 10);
-    ZF_LOGF_IF(error, "Failed to set priority);
+    ZF_LOGF_IF(error, "Failed to set priority");
 /*-- endfilter -*/
 ```
 /*-- endfilter -*/
@@ -252,7 +252,7 @@ by a neat hack: by attempting to move the CSlots onto themselves. This should fa
 
  
  ```c
-/*-- filter TaskContent("cnode-start", TaskContentType.BEFORE, subtask='delete', completion='first free slot is not empty') -*/
+/*-- filter TaskContent("cnode-start", TaskContentType.ALL, subtask='delete') -*/
     // TODO delete the created TCB capabilities
 
     // check first_free_slot is empty
@@ -268,7 +268,7 @@ by a neat hack: by attempting to move the CSlots onto themselves. This should fa
 ```
 /*-- filter ExcludeDocs() -*/
 ```c
-/*-- filter TaskContent("cnode-delete", TaskContentType.COMPLETED, subtask='delete', completion='Failed to suspend the current thread') -*/
+/*-- filter TaskContent("cnode-delete", TaskContentType.COMPLETED, subtask='delete', completion='Failed to suspend current thread') -*/
     // delete the created TCB capabilities
     seL4_CNode_Revoke(seL4_CapInitThreadCNode, seL4_CapInitThreadTCB, seL4_WordBits);
 
@@ -296,7 +296,7 @@ main@main.c:56 Failed to suspend current thread
 
 **Exercise** Use `seL4_TCB_Suspend` to try and suspend the current thread. 
 ```c
-/*-- filter TaskContent("cnode-start", TaskContentType.ALL, subtask='invoke', completion='Failed to suspend current thread') -*/
+/*-- filter TaskContent("cnode-start", TaskContentType.ALL, subtask='invoke') -*/
     printf("Suspending current thread\n");
     // TODO suspend the current thread
     ZF_LOGF("Failed to suspend current thread\n");
@@ -307,7 +307,7 @@ main@main.c:56 Failed to suspend current thread
 /*-- filter TaskContent("cnode-invoke", TaskContentType.COMPLETED, subtask='invoke', completion='Suspending current thread') -*/
     printf("Suspending current thread\n");
     seL4_TCB_Suspend(seL4_CapInitThreadTCB);
-    ZF_LOGF_IF("Failed to suspend current thread\n");
+    ZF_LOGF("Failed to suspend current thread\n");
 /*-- endfilter -*/
 ```
 /*-- endfilter -*/
