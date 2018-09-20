@@ -232,15 +232,15 @@ def RecordObject(context, object, name, cap_symbol=None, **kwargs):
     return "\n".join(write)
 
 @contextfunction
-def capdl_my_cspace(context, elf_name, cap_symbol):
+def capdl_elf_cspace(context, elf_name, cap_symbol):
     return RecordObject(context, None, "cnode_%s" % elf_name, cap_symbol=cap_symbol)
 
 @contextfunction
-def capdl_my_vspace(context, elf_name, cap_symbol):
+def capdl_elf_vspace(context, elf_name, cap_symbol):
     return RecordObject(context, None, "vspace_%s" % elf_name, cap_symbol=cap_symbol)
 
 @contextfunction
-def capdl_my_tcb(context, elf_name, cap_symbol):
+def capdl_elf_tcb(context, elf_name, cap_symbol):
     return RecordObject(context, None, "tcb_%s" % elf_name, cap_symbol=cap_symbol)
 
 @contextfunction
@@ -369,9 +369,9 @@ def get_context(args, state):
             "macros": macros,
             "RecordObject": RecordObject,
             "write_manifest": write_manifest,
-            "capdl_my_cspace": capdl_my_cspace,
-            "capdl_my_vspace": capdl_my_vspace,
-            "capdl_my_tcb": capdl_my_tcb,
+            "capdl_elf_cspace": capdl_elf_cspace,
+            "capdl_elf_vspace": capdl_elf_vspace,
+            "capdl_elf_tcb": capdl_elf_tcb,
             "capdl_empty_slot": capdl_empty_slot,
             "capdl_declare_stack": capdl_declare_stack,
             "capdl_declare_ipc_buffer": capdl_declare_ipc_buffer,
