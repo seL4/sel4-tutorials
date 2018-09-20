@@ -42,6 +42,7 @@ TUTORIALS = {
     'capabilities': ALL_CONFIGS,
     'untyped': ALL_CONFIGS,
     'mapping': ['pc99'],
+    'camkes-vm-linux': ['pc99'],
 }
 
 ALL_TUTORIALS = TUTORIALS.keys()

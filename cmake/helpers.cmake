@@ -40,6 +40,12 @@ macro(ImportCamkes)
     add_subdirectory("${CMAKE_SOURCE_DIR}/tools/camkes/libsel4camkes" libsel4camkes)
 endmacro()
 
+macro(ImportCamkesVM)
+    ImportCamkes()
+    add_subdirectory("${CMAKE_SOURCE_DIR}/projects/camkes/vm" vm)
+    add_subdirectory("${CMAKE_SOURCE_DIR}/projects/camkes/vm-linux" vm-linux)
+endmacro()
+
 # Helper that takes a filename and makes the directory where that file would go if
 function(EnsureDir filename)
     get_filename_component(dir "${filename}" DIRECTORY)
