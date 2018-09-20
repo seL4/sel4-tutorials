@@ -219,11 +219,14 @@ def RecordObject(context, object, name, cap_symbol=None, **kwargs):
     else:
         if object is seL4_FrameObject:
             stash.unclaimed_special_pages.append((kwargs['symbol'], kwargs['size'], kwargs['alignment'], kwargs['section']))
-            write.append("extern const char %s[%d];\n" % (kwargs['symbol'], kwargs['size']))
+            write.append("extern const char %s[%d];" % (kwargs['symbol'], kwargs['size']))
         elif object is not None:
-            stash.objects[name] = (object, kwargs)
-
-    stash.unclaimed_caps.append((cap_symbol, name, kwargs))
+            kwargs_new = {}
+            kwargs_new.update(kwargs)
+            stash.objects[name] = (object, kwargs_new)
+    kwargs_new = {}
+    kwargs_new.update(kwargs)
+    stash.unclaimed_caps.append((cap_symbol, name, kwargs_new))
     if cap_symbol:
         write.append("extern seL4_CPtr %s;" % cap_symbol)
     return "\n".join(write)
