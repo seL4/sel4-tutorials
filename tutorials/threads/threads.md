@@ -157,11 +157,11 @@ The loader has been configured to set up the following capabilities and symbols:
 ```c
 /*-- filter TaskContent("threads-start", TaskContentType.ALL, subtask='init') -*/
 // the root CNode of the current thread
-/*? capdl_my_cspace(progname, "root_cnode") ?*/
+/*? capdl_elf_cspace(progname, "root_cnode") ?*/
 // VSpace of the current thread
-/*? capdl_my_vspace(progname, "root_vspace") ?*/
+/*? capdl_elf_vspace(progname, "root_vspace") ?*/
 // TCB of the current thread
-/*? capdl_my_tcb(progname, "root_tcb") ?*/
+/*? capdl_elf_tcb(progname, "root_tcb") ?*/
 // Untyped object large enough to create a new TCB object
 /*? RecordObject(seL4_UntypedObject, "tcb_untyped", cap_symbol="tcb_untyped", size_bits= 11)?*/
 // Empty slot for the new TCB object
