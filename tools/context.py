@@ -12,7 +12,7 @@
 
 from __future__ import print_function
 
-import os
+import os, stat
 from jinja2 import contextfilter, contextfunction
 
 import macros
@@ -30,7 +30,7 @@ from pickle import load, dumps
 
 
 @contextfilter
-def File(context, content, filename):
+def File(context, content, filename, **kwargs):
     '''
     Declare content to be written directly to a file
     '''
@@ -43,6 +43,10 @@ def File(context, content, filename):
         elf_file = open(filename, 'w')
         print(filename, file=args.output_files)
         elf_file.write(content)
+        if "mode" in kwargs:
+            if "executable" == kwargs["mode"]:
+                st = os.stat(filename)
+                os.chmod(filename, st.st_mode | stat.S_IEXEC)
 
     return content
 
