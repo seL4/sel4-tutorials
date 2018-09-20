@@ -43,6 +43,7 @@ TUTORIALS = {
     'untyped': ALL_CONFIGS,
     'mapping': ['pc99'],
     'camkes-vm-linux': ['pc99'],
+    'camkes-vm-crossvm': ['pc99'],
 }
 
 ALL_TUTORIALS = TUTORIALS.keys()
