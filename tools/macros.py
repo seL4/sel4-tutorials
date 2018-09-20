@@ -59,3 +59,17 @@ def cmake_check_script(state):
 set(START_COMPLETION_TEXT "%s")
 configure_file(${CMAKE_SOURCE_DIR}/projects/sel4-tutorials/tools/expect.py ${CMAKE_BINARY_DIR}/check @ONLY)
 ''' % (state.print_completion(TaskContentType.COMPLETED), state.print_completion(TaskContentType.BEFORE))
+
+def tutorial_init(name):
+	return '''```sh
+# Follow these instructions to initialise the tutorial
+# creating a Tutorial directory
+mkdir %s
+cd %s
+# initialising the build directory with a tutorial exercise
+../init --plat pc99 --tut %s
+# building the tutorial exercise
+cd ../%s_build
+ninja
+```
+''' % (name, name, name, name)

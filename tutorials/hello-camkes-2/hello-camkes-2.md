@@ -5,6 +5,10 @@ This tutorial is an introduction to
 CAmkES: bootstrapping a basic static CAmkES application, describing its
 components, and linking them together.
 
+## Initialising
+
+/*? macros.tutorial_init("hello-camkes-2") ?*/
+
 ## Required Reading
  While it's possible to successfully complete the
 CAmkES tutorials without having read the

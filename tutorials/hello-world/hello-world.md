@@ -8,6 +8,10 @@ It allows you to test your local set up and make sure all the tools are working 
 
 1. [Set up your machine](https://docs.sel4.systems/HostDependencies). 
 
+## Initialising
+
+/*? macros.tutorial_init("hello-world") ?*/
+
 ## Outcomes
 
 By the end of this tutorial, you should:
