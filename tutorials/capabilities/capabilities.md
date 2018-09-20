@@ -11,6 +11,10 @@ This tutorial provides a basic introduction to seL4 capabilities.
 2. You need to know what a *root task* is, if not, do the `hello-world` tutorial first.
 3. You need to know how to build and simulate tutorials, if not, do the `hello-world` tutorial.
 
+## Initialising
+
+/*? macros.tutorial_init("capabilities") ?*/
+
 ## Outcomes
 
 By the end of this tutorial, you should be familiar with:

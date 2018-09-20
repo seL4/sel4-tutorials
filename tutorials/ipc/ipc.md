@@ -6,6 +6,10 @@
 1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
 1. Capabilities tutorial
 
+## Initialising
+
+/*? macros.tutorial_init("ipc") ?*/
+
 ## Outcomes
 
 1. Be able to use IPC to send data and capabilities between processes.
