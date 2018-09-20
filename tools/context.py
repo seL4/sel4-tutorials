@@ -255,9 +255,13 @@ def capdl_declare_stack(context, size_bytes, stack_base_sym, stack_top_sym=None)
     return "\n".join([declaration, stack_top])
 
 @contextfunction
-def capdl_declare_ipc_buffer(context, cap_symbol, symbol):
+def capdl_declare_frame(context, cap_symbol, symbol, size=4096):
     return RecordObject(context, seL4_FrameObject, seL4_FrameObject, cap_symbol=cap_symbol,
-    symbol=symbol, size=4096, alignment=4096, section="guarded")
+    symbol=symbol, size=size, alignment=size, section="guarded")
+
+@contextfunction
+def capdl_declare_ipc_buffer(context, cap_symbol, symbol):
+    return capdl_declare_frame(context, cap_symbol, symbol)
 
 @contextfilter
 def ELF(context, content, name):
@@ -375,8 +379,8 @@ def get_context(args, state):
             "capdl_empty_slot": capdl_empty_slot,
             "capdl_declare_stack": capdl_declare_stack,
             "capdl_declare_ipc_buffer": capdl_declare_ipc_buffer,
+            "capdl_declare_frame": capdl_declare_frame,
             'tab':"\t",
-
             # capDL objects
             'seL4_EndpointObject':seL4_EndpointObject,
             'seL4_NotificationObject':seL4_NotificationObject,
