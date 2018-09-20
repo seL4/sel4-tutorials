@@ -132,7 +132,7 @@ The root task has a CSpace, set up by seL4 during boot, which contains capabilit
 resources manages by seL4. We have already seen several capabilities in the root cspace: `seL4_CapInitThreadTCB`, 
  and `seL4_CapInitThreadCNode`. Both of these are specified by constants in `libsel4`, however not all initial 
  capabilities are statically specified. Other capabilities are described by the `seL4_BootInfo` data structure, 
- described in `libsel4` and initialised by seL4. `seL4_BootInfo` describes ranges of initial capabilities,  
+ described in `libsel4` and initialised by seL4. `seL4_BootInfo` describes ranges of initial capabilities,
  including free slots available in the initial CSpace.
  
 ## Exercises 
