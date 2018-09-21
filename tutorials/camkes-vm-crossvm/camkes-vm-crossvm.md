@@ -99,37 +99,37 @@ which initialize and interact with cross vm connections. To build and use these 
 project provides an overlay target you can use. We can start on the CMake side by replacing the line:
 
 ```cmake
-/*- filter TaskContent("vm-cmake-start", TaskContentType.ALL, completion='buildroot login') -*/
+/*-- filter TaskContent("vm-cmake-start", TaskContentType.ALL, completion='buildroot login') -*/
 AddToFileServer("rootfs.cpio" ${default_rootfs_file})
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 in our apps CMakeLists.txt file with the following:
 
 ```cmake
-/*- filter TaskContent("vm-cmake-crossvm-overlay", TaskContentType.COMPLETED, completion='buildroot login') -*/
+/*-- filter TaskContent("vm-cmake-crossvm-overlay", TaskContentType.COMPLETED, completion='buildroot login') -*/
 set(CAmkESVMDefaultBuildrootOverlay ON CACHE BOOL "" FORCE)
 AddOverlayDirToRootfs(default_buildroot_overlay ${default_rootfs_file} "buildroot" "rootfs_install"
     rootfs_file rootfs_target)
 AddToFileServer("rootfs.cpio" ${rootfs_file})
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 Next we will work on our CAmkES file. Edit our `crossvm_tutorial.camkes` by replacing
 the Init0 component definition:
 
 ```c
-/*- filter TaskContent("vm-camkes-init0-start", TaskContentType.ALL, completion='buildroot login') --*/
+/*-- filter TaskContent("vm-camkes-init0-start", TaskContentType.ALL, completion='buildroot login') -*/
 component Init0 {
     VM_INIT_DEF()
 }
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 with the following definition:
 
 ```c
-/*- filter TaskContent("vm-camkes-init0-end", TaskContentType.COMPLETED, completion='buildroot login') --*/
+/*-- filter TaskContent("vm-camkes-init0-end", TaskContentType.COMPLETED, completion='buildroot login') -*/
 component Init0 {
   VM_INIT_DEF()
 
@@ -139,7 +139,7 @@ component Init0 {
   consumes DonePrinting done_printing;
   has mutex cross_vm_event_mutex;
 }
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 These interfaces will eventually be made visible to processes running in
@@ -149,14 +149,14 @@ between the VMM and guest.
 Now, we'll define the print server component. Add the following to
 our `crossvm_tutorial.camkes` file, after our `Init0` definition:
 ```c
-/*- filter TaskContent("vm-camkes-printserver", TaskContentType.COMPLETED, completion='buildroot login') --*/
+/*-- filter TaskContent("vm-camkes-printserver", TaskContentType.COMPLETED, completion='buildroot login') -*/
 component PrintServer {
   control;
   dataport Buf(4096) data;
   consumes DoPrint do_print;
   emits DonePrinting done_printing;
 }
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 We'll get around to actually implementing this soon. First, let's
@@ -164,18 +164,18 @@ instantiate the print server and connect it to the VMM. Replace our `composition
 definition:
 
 ```c
-/*- filter TaskContent("vm-camkes-composition-start", TaskContentType.ALL, completion='buildroot login') --*/
+/*-- filter TaskContent("vm-camkes-composition-start", TaskContentType.ALL, completion='buildroot login') -*/
     composition {
         VM_COMPOSITION_DEF()
         VM_PER_VM_COMP_DEF(0)
     }
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 with the following:
 
 ```c
-/*- filter TaskContent("vm-camkes-composition-end", TaskContentType.COMPLETED, completion='buildroot login') --*/
+/*-- filter TaskContent("vm-camkes-composition-end", TaskContentType.COMPLETED, completion='buildroot login') -*/
     composition {
         VM_COMPOSITION_DEF()
         VM_PER_VM_COMP_DEF(0)
@@ -189,7 +189,7 @@ with the following:
         connection seL4SharedDataWithCaps conn_data(from print_server.data,
                                                     to vm0.data);
     }
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 The only thing unusual about that was the [seL4SharedDataWithCaps](/seL4SharedDataWithCaps)
@@ -208,11 +208,11 @@ two lines in the configuration section
 ```c
     configuration {
     ...
-/*- filter TaskContent("vm-camkes-configuration", TaskContentType.COMPLETED, completion='buildroot login') -*/
+/*-- filter TaskContent("vm-camkes-configuration", TaskContentType.COMPLETED, completion='buildroot login') -*/
         // Add the following 2 lines:
         vm0.data_id = 1; // ids must be contiguous, starting from 1
         vm0.data_size = 4096;
-/*- endfilter -*/
+/*-- endfilter -*/
     }
 ```
 
@@ -220,7 +220,7 @@ Now let's implement our print server. Add the file
 `components/print_server.c` with the following:
 
 ```c
-/*- filter TaskContent("vm-printserver", TaskContentType.COMPLETED, completion='buildroot login') --*/
+/*-- filter TaskContent("vm-printserver", TaskContentType.COMPLETED, completion='buildroot login') -*/
 #include <camkes.h>
 #include <stdio.h>
 
@@ -236,7 +236,7 @@ int run(void) {
 
     return 0;
 }
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 This component loops forever, waiting for an event, printing a string
@@ -253,7 +253,7 @@ We need to create another c file that tells the VMM about our cross vm connectio
 Add a file `src/cross_vm.c` with the following contents:
 
 ```c
-/*- filter TaskContent("vm-crossvm-src", TaskContentType.COMPLETED, completion='buildroot login') --*/
+/*-- filter TaskContent("vm-crossvm-src", TaskContentType.COMPLETED, completion='buildroot login') -*/
 #include <sel4/sel4.h>
 #include <camkes.h>
 #include <camkes_mutex.h>
@@ -305,22 +305,22 @@ int cross_vm_consumes_events_init(vmm_t *vmm, vspace_t *vspace, seL4_Word irq_ba
     return cross_vm_consumes_events_init_common(vmm, vspace, &cross_vm_event_mutex,
             consumed_events, sizeof(consumed_events)/sizeof(consumed_events[0]), irq_badge);
 }
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 To make this build we need to update our applications CMakeLists file. Make the following changes
 in `CMakeLists.txt` by firstly replacing the declaration of Init0:
 
 ```cmake
-/*- filter TaskContent("vm-cmake-init0", TaskContentType.ALL, completion='buildroot login') --*/
+/*-- filter TaskContent("vm-cmake-init0", TaskContentType.ALL, completion='buildroot login') -*/
 DeclareCAmkESVM(Init0)
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 with the following declaration
 
 ```cmake
-/*- filter TaskContent("vm-cmake-init0-crossvm", TaskContentType.COMPLETED, completion='buildroot login') --*/
+/*-- filter TaskContent("vm-cmake-init0-crossvm", TaskContentType.COMPLETED, completion='buildroot login') -*/
 # Retrieve Init0 cross vm src files
 file(GLOB init0_extra src/*.c)
 # Declare VM component: Init0
@@ -328,16 +328,16 @@ DeclareCAmkESVM(Init0
     EXTRA_SOURCES ${init0_extra}
     EXTRA_LIBS crossvm
 )
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 Also following this, add a declaration for a PrintServer component:
 
 ```cmake
-/*- filter TaskContent("vm-cmake-printserver", TaskContentType.COMPLETED, completion='buildroot login') --*/
+/*-- filter TaskContent("vm-cmake-printserver", TaskContentType.COMPLETED, completion='buildroot login') -*/
 # Declare the CAmkES PrintServer component
 DeclareCAmkESComponent(PrintServer SOURCES components/print_server.c)
-/*- endfilter --*/
+/*-- endfilter -*/
 ```
 
 Here we extend our definition of the Init component with our `cross_vm connector` source and the crossvm
@@ -349,7 +349,7 @@ a shell script that is executed as linux is initialized. Add a file
 `camkes_init` with the following:
 
 ```bash
-/*- filter TaskContent("vm-init-crossvm", TaskContentType.COMPLETED, completion='buildroot login') --*/
+/*-- filter TaskContent("vm-init-crossvm", TaskContentType.COMPLETED, completion='buildroot login') -*/
 #!/bin/sh
 # Initialises linux-side of cross vm connections.
 
@@ -362,7 +362,7 @@ dataport_init /dev/camkes_data 4096
 # event with id n according to the camkes vmm.
 consumes_event_init /dev/camkes_done_printing
 emits_event_init /dev/camkes_do_print
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 Each of these commands creates device nodes associated with a particular
@@ -383,7 +383,7 @@ mkdir -p pkgs/print_client
 Create `pkgs/print_client/print_client.c`:
 
 ```c
-/*- filter TaskContent("vm-pkg-print_client-src", TaskContentType.COMPLETED, completion='buildroot login') --*/
+/*-- filter TaskContent("vm-pkg-print_client-src", TaskContentType.COMPLETED, completion='buildroot login') -*/
 #include <string.h>
 #include <assert.h>
 
@@ -425,7 +425,7 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 This program prints each of its arguments on a separate line, by sending
@@ -435,7 +435,7 @@ file for our program.
 Create `pkgs/print_client/CMakeLists.txt` for our client program:
 
 ```cmake
-/*- filter TaskContent("vm-pkg-print_client-cmake", TaskContentType.COMPLETED, completion='buildroot login') --*/
+/*-- filter TaskContent("vm-pkg-print_client-cmake", TaskContentType.COMPLETED, completion='buildroot login') -*/
 cmake_minimum_required(VERSION 3.8.2)
 
 project(print_client C)
@@ -444,7 +444,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../../projects/camkes/vm-linux/c
 
 add_executable(print_client print_client.c)
 target_link_libraries(print_client camkeslinux)
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 Next we need to update our vm apps `CMakeLists.txt`. Below the line:
@@ -456,7 +456,7 @@ AddToFileServer("bzimage" ${decompressed_kernel} DEPENDS extract_linux_kernel)
 add the `ExternalProject` declaration:
 
 ```cmake
-/*- filter TaskContent("vm-cmake-printclient-proj", TaskContentType.COMPLETED, completion='buildroot login') --*/
+/*-- filter TaskContent("vm-cmake-printclient-proj", TaskContentType.COMPLETED, completion='buildroot login') -*/
 # Get Custom toolchain for 32 bit Linux
 FindCustomPollyToolchain(LINUX_32BIT_TOOLCHAIN "linux-gcc-32bit-pic")
 # Declare our print server app external project
@@ -474,16 +474,16 @@ ExternalProject_Add(print_client-app
 # Add the print client app to our overlay ('default_buildroot_overlay')
 AddExternalProjFilesToOverlay(print_client-app ${CMAKE_BINARY_DIR}/print_client-app default_buildroot_overlay "usr/sbin"
     FILES print_client)
-/*- endfilter --*/
+/*-- endfilter --*/
 ```
 
 Directly below this we also want to add our `camkes_init` script into the overlay. We place this into the VMs `init.d` directory so
 the script is run on start up:
 
 ```cmake
-/*- filter TaskContent("vm-cmake-camkes_init", TaskContentType.COMPLETED, completion='buildroot login') --*/
+/*-- filter TaskContent("vm-cmake-camkes_init", TaskContentType.COMPLETED, completion='buildroot login') -*/
 AddFileToOverlayDir("S90camkes_init" ${CMAKE_CURRENT_LIST_DIR}/camkes_init "etc/init.d" default_buildroot_overlay)
-/*- endfilter --*/
+/*-- endfilter -*/
 ```
 
 After building and running the application you should see:
