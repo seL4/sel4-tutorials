@@ -253,7 +253,7 @@ does not respond, or wait for new messages from this point.
 
 At this point, you should see a single word output to the console in a loop.
 ```
-/*-- filter TaskCompletion("ipc-echo", TaskContentType.ALL) -*/
+/*-- filter TaskCompletion("ipc-echo", TaskContentType.COMPLETED) -*/
 the
 the
 the
