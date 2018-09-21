@@ -286,7 +286,7 @@ rootserver                                  inactive        0x4024c2    255     
 <<seL4(CPU 0) [decodeInvocation/530 T0xffffff8008140c00 "tcb_threads" @4012ef]: Attempted to invoke a >
 main@threads.c:57 [Err seL4_InvalidCapability]:
 /*-- filter TaskCompletion("threads-priority", TaskContentType.COMPLETED) -*/
-Failed to read the new thread's register set.
+Failed to write the new thread's register set.
 /*- endfilter --*/
 ```
 
