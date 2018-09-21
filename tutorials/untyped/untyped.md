@@ -157,7 +157,7 @@ This error is because we are trying to create an untyped of size 0.
 **Exercise** Calculate the size of the child untyped required, such that the child untyped can be used 
  to create all of the objects lists in the `objects` array.
 ```c
-/*-- filter TaskContent("untyped-start", TaskContentType.ALL, subtask='setup', completion='Failed to retype.') -*/
+/*-- filter TaskContent("untyped-start", TaskContentType.ALL, subtask='setup', completion='Failed to retype') -*/
     // list of general seL4 objects
     seL4_Word objects[] = {seL4_TCBObject, seL4_EndpointObject, seL4_NotificationObject};
     // list of general seL4 object size_bits
@@ -209,7 +209,7 @@ The priority check is failing as `child_tcb` is an empty CSlot.
 **Exercise** fix this by creating a TCB object from `child_untyped` placed in `child_tcb` CSlot.
 
 ```c
-/*-- filter TaskContent("untyped-start", TaskContentType.ALL, subtask='tcb', completion='Failed to set priority.') -*/
+/*-- filter TaskContent("untyped-start", TaskContentType.ALL, subtask='tcb') -*/
     seL4_CPtr child_tcb = child_untyped + 1;
     /* TODO create a TCB in CSlot child_tcb */
     
@@ -220,10 +220,10 @@ The priority check is failing as `child_tcb` is an empty CSlot.
 ```
 /*-- filter ExcludeDocs() -*/
 ```c
-/*-- filter TaskContent("untyped-tcb", TaskContentType.COMPLETED, subtask='tcb', completion='Requested UntypedItem size too small.') -*/
+/*-- filter TaskContent("untyped-tcb", TaskContentType.COMPLETED, subtask='tcb', completion='Endpoint cap is null cap') -*/
     seL4_CPtr child_tcb = child_untyped + 1;
-    seL4_UntypedRetype(child_untyped, seL4_TCBObject, 0, seL4_CapInitThreadCNode, 0, 0, child_tcb, 1);
-    
+    seL4_Untyped_Retype(child_untyped, seL4_TCBObject, 0, seL4_CapInitThreadCNode, 0, 0, child_tcb, 1);
+
     // try to set the TCB priority
     error = seL4_TCB_SetPriority(child_tcb, seL4_CapInitThreadTCB, 10);
     ZF_LOGF_IF(error != seL4_NoError, "Failed to set priority");
@@ -231,41 +231,39 @@ The priority check is failing as `child_tcb` is an empty CSlot.
 ```
 /*-- endfilter -*/
 
-On success, the tutorial will progress further, printing "Failed to set space".
+On success, the tutorial will progress further, printing "Endpoint cap is null cap".
 ### Create an endpoint object
 
 The error you see now is caused be an invalid endpoint capability.
 
 **Exercise** Create an endpoint object from `child_untyped` and place it in the `child_ep` CSlot.
 ```c
-/*-- filter TaskContent("untyped-start", TaskContentType.ALL, subtask='ep', completion='Failed to set space.') -*/
+/*-- filter TaskContent("untyped-start", TaskContentType.ALL, subtask='ep') -*/
     seL4_CPtr child_ep = child_tcb + 1;
     /* TODO create an endpoint in CSlot child_ep */
 
-    // try to use child_ep
-    error = seL4_TCB_SetSpace(child_tcb, seL4_CapInitThreadCNode, 0, seL4_CapInitThreadVSpace, 0, child_ep);
-    ZF_LOGF_IF(error != seL4_NoError, "Failed to set space");
+    // identify the type of child_ep
+    uint32_t cap_id = seL4_DebugCapIdentify(child_ep);
+    ZF_LOGF_IF(cap_id == 0, "Endpoint cap is null cap");
 /*-- endfilter -*/
-```
 /*-- filter ExcludeDocs() -*/
-```c
 /*-- filter TaskContent("untyped-ep", TaskContentType.COMPLETED, subtask='ep', completion='Failed to bind notification.') -*/
     seL4_CPtr child_ep = child_tcb + 1;
-    seL4_UntypedRetype(child_untyped, seL4_EndpointObject, 0, seL4_CapInitThreadCNode, 0, 0, child_ep, 1);
+    seL4_Untyped_Retype(child_untyped, seL4_EndpointObject, 0, seL4_CapInitThreadCNode, 0, 0, child_ep, 1);
 
-    // try to use child_ep
-    error = seL4_TCB_SetSpace(child_tcb, child_ep, seL4_CapInitThreadCNode, 0, seL4_CapInitThreadVSpace);
-    ZF_LOGF_IF(error != seL4_NoError, "Failed to set space");
+    // identify the type of child_ep
+    uint32_t cap_id = seL4_DebugCapIdentify(child_ep);
+    ZF_LOGF_IF(cap_id == 0, "Endpoint cap is null cap");
 /*-- endfilter -*/
 ```
 /*-- endfilter -*/
-On success, 'Failed to bind notification' should be output. 
+On success, 'Failed to bind notification' should be output.
 ### Create a notification object
 The next part of the tutorial attempts to use a notification object that does not yet exist.
 
 **Exercise** create a notification object from `child_untyped` and place it in the `child_ntfn` CSlot.
 ```c
-/*-- filter TaskContent("untyped-start", TaskContentType.ALL, subtask='ntfn', completion='Failed to bind notification.') -*/
+/*-- filter TaskContent("untyped-start", TaskContentType.ALL, subtask='ntfn') -*/
     seL4_CPtr child_ntfn = child_ep + 1;
     // TODO create a notification object in CSlot child_ntfn
 
@@ -276,10 +274,10 @@ The next part of the tutorial attempts to use a notification object that does no
 ```
 /*-- filter ExcludeDocs() -*/
 ```c
-/*-- filter TaskContent("untyped-ntfn", TaskContentType.COMPLETED, subtask='ntfn', completion='TODO.') -*/
+/*-- filter TaskContent("untyped-ntfn", TaskContentType.COMPLETED, subtask='ntfn', completion='Failed to create endpoints..') -*/
     seL4_CPtr child_ntfn = child_ep + 1;
-    seL4_UntypedRetype(child_untyped, seL4_NotificationObject, 0, seL4_CapInitThreadCNode, 0, 0, child_ntfn, 1);
-    
+    seL4_Untyped_Retype(child_untyped, seL4_NotificationObject, 0, seL4_CapInitThreadCNode, 0, 0, child_ntfn, 1);
+
     // try to use child_ntfn
     error = seL4_TCB_BindNotification(child_tcb, child_ntfn);
     ZF_LOGF_IF(error != seL4_NoError, "Failed to bind notification.");
@@ -292,7 +290,7 @@ entire untyped object. However, this fails, because the untyped is already compl
 
 **Exercise** revoke the child untyped, so we can create new objects from it that use up the whole thing.
 ```c
-/*-- filter TaskContent("untyped-start", TaskContentType.ALL, subtask='revoke', completion='Failed to create endpoints.') -*/
+/*-- filter TaskContent("untyped-start", TaskContentType.ALL, subtask='revoke') -*/
     // TODO revoke the child untyped
 
     // allocate the whole child_untyped as endpoints
@@ -310,7 +308,6 @@ entire untyped object. However, this fails, because the untyped is already compl
     assert(error == seL4_NoError);
 
      // allocate the whole child_untyped as endpoints
-    seL4_Word untyped_size_bits = seL4_TCBBits + 1;
     seL4_Word num_eps = BIT(untyped_size_bits - seL4_EndpointBits);
     error = seL4_Untyped_Retype(child_untyped, seL4_EndpointObject, 0, seL4_CapInitThreadCNode, 0, 0, child_tcb, num_eps);
     ZF_LOGF_IF(error != seL4_NoError, "Failed to create endpoints.");
@@ -343,12 +340,12 @@ int main(int argc, char *argv[]) {
     /* parse the location of the seL4_BootInfo data structure from
     the environment variables set up by the default crt0.S */
     seL4_BootInfo *info = platsupport_get_bootinfo();
- 
+
 /*? include_task_type_append([("untyped-start", 'init')]) ?*/
     seL4_Error error;
-/*? include_task_type_append([("untyped-start", 'setup')]) ?*/
+/*? include_task_type_replace([("untyped-start", 'setup'), ("untyped-next", 'setup')]) ?*/
     // create an untyped big enough to retype all of the above objects from
-/*? include_task_type_replace([("untyped-start", 'retype'), ("untyped-next", 'retype')]) ?*/
+/*? include_task_type_append([("untyped-start", 'retype')]) ?*/
     ZF_LOGF_IF(error != seL4_NoError, "Failed to retype");
 /*? include_task_type_replace([("untyped-start", 'tcb'), ("untyped-tcb", 'tcb')]) ?*/
 /*? include_task_type_replace([("untyped-start", 'ep'), ("untyped-ep", 'ep')]) ?*/
