@@ -55,7 +55,7 @@ different vm app will have its own assembly implementation, where the guest envi
 Our apps configuration is defined in `vm_tutorial.camkes`:
 
 ```
-/*- filter File("vm_tutorial.camkes") -*/
+/*-- filter File("vm_tutorial.camkes") -*/
 import <VM/vm.camkes>;
 
 #include <configurations/vm.h>
@@ -87,7 +87,7 @@ assembly {
         vm0.iospace_domain = 0x0f;
     }
 }
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 Most of the work here is done by five C preprocessor macros:
@@ -248,21 +248,21 @@ mkdir -p pkg/hello
 2.  Add a simple C program in `pkg/hello/hello.c`:
 
 ```c
-/*- filter TaskContent("vm-pkg-hello-c", TaskContentType.COMPLETED, completion='buildroot login') -*/
+/*-- filter TaskContent("vm-pkg-hello-c", TaskContentType.COMPLETED, completion='buildroot login') -*/
 #include <stdio.h>
 
 int main(int argc, char *argv[]) {
     printf("Hello, World!\n");
     return 0;
 }
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 3.  We want to target our application to run in a 32-bit x86 Linux VM. To achieve this we need to build our application as an external
 project. Firstly we need to add a CMake file at `pkg/hello/CMakeLists.txt`:
 
 ```cmake
-/*- filter TaskContent("vm-pkg-hello-cmake", TaskContentType.COMPLETED, completion='buildroot login') -*/
+/*-- filter TaskContent("vm-pkg-hello-cmake", TaskContentType.COMPLETED, completion='buildroot login') -*/
 cmake_minimum_required(VERSION 3.8.2)
 
 project(hello C)
@@ -270,18 +270,18 @@ project(hello C)
 add_executable(hello hello.c)
 
 target_link_libraries(hello -static)
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 4.  Update our vm apps CMakeList file (CMakeLists.txt) to declare our hello application as an
 external project and add it to our overlay. Replace the line `AddToFileServer("rootfs.cpio" ${default_rootfs_file})` with the following:
 
 ```cmake
-/*- filter TaskContent("vm-cmake-hello", TaskContentType.COMPLETED, subtask='toolchain', completion='buildroot login') -*/
+/*-- filter TaskContent("vm-cmake-hello", TaskContentType.COMPLETED, subtask='toolchain', completion='buildroot login') -*/
 # Get Custom toolchain for 32 bit Linux
 FindCustomPollyToolchain(LINUX_32BIT_TOOLCHAIN "linux-gcc-32bit-pic")
-/*- endfilter -*/
-/*- filter TaskContent("vm-cmake-hello", TaskContentType.COMPLETED, subtask='hello', completion='buildroot login') -*/
+/*-- endfilter -*/
+/*-- filter TaskContent("vm-cmake-hello", TaskContentType.COMPLETED, subtask='hello', completion='buildroot login') -*/
 # Declare our hello app external project
 ExternalProject_Add(hello-app
     URL file:///${CMAKE_CURRENT_SOURCE_DIR}/pkg/hello
@@ -301,7 +301,7 @@ AddExternalProjFilesToOverlay(hello-app ${CMAKE_BINARY_DIR}/hello-app vm-overlay
 AddOverlayDirToRootfs(vm-overlay ${default_rootfs_file} "buildroot" "rootfs_install"
     rootfs_file rootfs_target)
 AddToFileServer("rootfs.cpio" ${rootfs_file} DEPENDS rootfs_target)
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 5.  Rebuild the app:
@@ -336,7 +336,7 @@ we'll make it so when a special file associated with this module is
 written to, the vmm gets poked.
 
 ```c
-/*- filter TaskContent("vm-module-poke-c", TaskContentType.COMPLETED, completion='buildroot login') -*/
+/*-- filter TaskContent("vm-module-poke-c", TaskContentType.COMPLETED, completion='buildroot login') -*/
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -372,13 +372,13 @@ static void __exit poke_exit(void) {
 
 module_init(poke_init);
 module_exit(poke_exit);
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 3.  And a makefile in `modules/poke/Makefile`:
 
 ```make
-/*- filter TaskContent("vm-module-poke-make", TaskContentType.COMPLETED, completion='buildroot login') -*/
+/*-- filter TaskContent("vm-module-poke-make", TaskContentType.COMPLETED, completion='buildroot login') -*/
 obj-m += poke.o
 
 all:
@@ -386,7 +386,7 @@ all:
 
 clean:
 /*?tab-?*/make -C $(KHEAD) M=$(PWD) clean
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 4. Create a CMakeLists.txt file to define our linux module. We will again be compiling our module
@@ -395,7 +395,7 @@ from the `vm-linux` project to help us define our Linux module. Create the follo
 `modules/CMakeLists.txt`:
 
 ```cmake
-/*- filter TaskContent("vm-module-poke-cmake", TaskContentType.COMPLETED, completion='buildroot login') -*/
+/*-- filter TaskContent("vm-module-poke-cmake", TaskContentType.COMPLETED, completion='buildroot login') -*/
 cmake_minimum_required(VERSION 3.8.2)
 
 if(NOT MODULE_HELPERS_FILE)
@@ -405,7 +405,7 @@ endif()
 include("${MODULE_HELPERS_FILE}")
 
 DefineLinuxModule(poke)
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 5. Update our vm apps CMakeList file to declare our poke module as an
@@ -414,14 +414,14 @@ external project and add it to our overlay. Add the following:
 At the top of the file include our linux helpers:
 
 ```cmake
-/*- filter TaskContent("vm-cmake-poke", TaskContentType.COMPLETED, subtask='includes', completion='buildroot login') -*/
+/*-- filter TaskContent("vm-cmake-poke", TaskContentType.COMPLETED, subtask='includes', completion='buildroot login') -*/
 include("../projects/camkes/vm-linux/linux-source-helpers.cmake")
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 Below our includes we can add:
 ```cmake
-/*- filter TaskContent("vm-cmake-poke", TaskContentType.COMPLETED, subtask='module', completion='buildroot login') -*/
+/*-- filter TaskContent("vm-cmake-poke", TaskContentType.COMPLETED, subtask='module', completion='buildroot login') -*/
 # Setup Linux Sources
 GetDefaultLinuxMajor(linux_major)
 GetDefaultLinuxMinor(linux_minor)
@@ -451,14 +451,14 @@ ExternalProject_Add(poke-module
 # Add our module binary to the overlay
 AddExternalProjFilesToOverlay(poke-module ${CMAKE_BINARY_DIR}/poke-module vm-overlay "lib/modules/4.8.16/kernel/drivers/vmm"
     FILES poke.ko)
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 6.  We want the new module to be loaded during initialization. To do this we can write our own custom init script, create a file called `init` in
 our tutorial directory with the following:
 
 ```bash
-/*- filter TaskContent("vm-init-poke", TaskContentType.COMPLETED,completion='buildroot login') --*/
+/*-- filter TaskContent("vm-init-poke", TaskContentType.COMPLETED,completion='buildroot login') --*/
 #!/bin/sh
 # devtmpfs does not get automounted for initramfs
 /bin/mount -t devtmpfs devtmpfs /dev
@@ -468,7 +468,7 @@ exec 2>/dev/console
 
 insmod /lib/modules/4.8.16/kernel/drivers/vmm/poke.ko
 exec /sbin/init $*
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 Note that in the `init` script we load our new `poke` module.
@@ -477,9 +477,9 @@ Note that in the `init` script we load our new `poke` module.
 overlay. After our call to `AddExternalProjFilesToOverlay` for the poke module we can add:
 
 ```cmake
-/*- filter TaskContent("vm-cmake-poke", TaskContentType.COMPLETED, subtask='init_overlay', completion='buildroot login') -*/
+/*-- filter TaskContent("vm-cmake-poke", TaskContentType.COMPLETED, subtask='init_overlay', completion='buildroot login') -*/
 AddFileToOverlayDir("init" ${CMAKE_CURRENT_LIST_DIR}/init "." vm-overlay)
-/*- endfilter -*/
+/*-- endfilter -*/
 ```
 
 and give the script executable permissions:
@@ -540,9 +540,7 @@ Password:
 # echo > /dev/poke
 POKE!!!
 ```
-
-/*- filter ExcludeDocs() -*/
-
+/*-- filter ExcludeDocs() -*/
 ```cmake
 /*- filter File("CMakeLists.txt") -*/
 cmake_minimum_required(VERSION 3.8.2)
@@ -561,25 +559,21 @@ ImportCamkesVM()
 /*? include_task_type_append([("vm-cmake-start", 'post_rootfs')]) ?*/
 /*- endfilter -*/
 ```
-
 ```c
 /*- filter File("pkg/hello/hello.c") -*/
 /*? include_task_type_append(["vm-pkg-hello-c"]) ?*/
 /*- endfilter -*/
 ```
-
 ```cmake
 /*- filter File("pkg/hello/CMakeLists.txt") -*/
 /*? include_task_type_append(["vm-pkg-hello-cmake"]) ?*/
 /*- endfilter -*/
 ```
-
 ```c
 /*- filter File("modules/poke/poke.c") -*/
 /*? include_task_type_append(["vm-module-poke-c"]) ?*/
 /*- endfilter -*/
 ```
-
 ```make
 /*- filter File("modules/poke/Makefile") -*/
 /*? include_task_type_append(["vm-module-poke-make"]) ?*/
@@ -590,12 +584,9 @@ ImportCamkesVM()
 /*? include_task_type_append(["vm-module-poke-cmake"]) ?*/
 /*- endfilter -*/
 ```
-
 ```bash
 /*- filter File("init", mode="executable") --*/
 /*? include_task_type_append(["vm-init-poke"]) ?*/
 /*- endfilter -*/
 ```
-
-
-/*- endfilter -*/
+/*-- endfilter -*/
