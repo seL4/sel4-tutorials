@@ -2,101 +2,96 @@
 
 # CAmkES VM: Cross VM Connectors
 
-This tutorial provides an introduction to using the cross VM connector facilities on seL4/CAmkES in order
-to connect process in your guest Linux to regular CAmkES components.
+This tutorial provides an introduction to using the cross virtual machine (VM) connector mechanisms
+provided by seL4 and Camkes in order to connect processes in a guest Linux instance to Camkes components.
 
 ## Prerequisites
 
 1. [Set up your machine](https://docs.sel4.systems/HostDependencies#camkes-build-dependencies).
-2. Familiar with the sytanx, basic structures and file layout of a CAmkES application
+2. Familiarity with the sytanx, basic structures and file layout of a CAmkES application
 3. A basic understanding of building seL4 projects (e.g. using `CMakeLists.txt`)
-4. Familiar with creating guest Linux VM components in CAmkES. See tutorial [CAmkes VM: Adding a Linux Guest]()
+4. Familiarity with creating guest Linux VM components in CAmkES. See tutorial [CAmkes VM: Adding a Linux Guest]()
 
 ## Outcomes
 
-By the end of this tutorial, you should be familiar with:
+By the end of this tutorial, you should be able to:
 
-* Configuring processes in the guest Linux VM to communicate with regular CAmkES components
+* Configure processes in a Linux guest VM to communicate with CAmkES components
 
 ## Background
 
-Connecting processes in the guest linux to regular CAmkES
-components is achieved with the addition of 3 kernel modules to the
-guest linux. This in turn allows device files to be created that correspond to
-CAmkES connections. Depending on the type of connection, there are some
-file operations defined for these files that can be used to communicate
-with the other end of the connection.
-
-The kernel modules are included in the root filesystem by default:
+In order to connect guest Linux instances to CAmkES components,
+three additional kernel modules must be installed in the guest.
+These modules are included in the root filesystem by default:
 
 - `dataport`: facilitates setting up shared memory between the guest
-and CAmkES components
+and CAmkES components.
 - `consumes_event`: allows a process in the guest to wait or poll
-for an event sent by a CAmkES component
-- `emits_event`: allows a process to emit an event to a CAmkES component
+for an event sent by a CAmkES component.
+- `emits_event`: allows a process to emit an event to a CAmkES component.
 
-### Implementation Details
+Each type of module can be statically assigned to one or more file descriptors to associate that
+file descriptor with a specific instance of an interface. `ioctl` can then be used to
+manipulate that file descriptor and use the module.
 
-#### Dataports
+### Dataports
 
+Dataports are the mechanism which allows guests and components to share memory.
+The dataport initialisation process is as follows:
 
-In order for linux to use a dataport, it must first be initialized. To
-initialize a dataport, a linux process makes a particular `ioctl` call on
-the file associated with the dataport, specifying the page-aligned size
-of the dataport. The dataport kernel module then allocates a
-page-aligned buffer of the appropriate size, and makes a hypercall to
-the VMM, passing it the guest physical address of this buffer, along
-with the id of the dataport, determined by the file on which ioctl was
-called. The VMM then modifies the guest's address space, updating the
-mappings from the specified gpaddr to point to the physical memory
-backing the dataport seen by the other end of the connection. This
-results in a region of shared memory existing between a camkes component
-and the guest. Linux processes can then map this memory into their own
-address space by calling `mmap` on the file associated with the dataport.
+- The guest process uses `ioctl` on on the file associated with the dataport and specify a
+ page-aligned size for the shared memory.
+- The dataport kernel module in the guest then allocates a page-aligned buffer of the requested size,
+  and makes a hypercall to the VMM, with the guest physical address and id of the data port.
+  The ID is derived from the file on which `ioctl` was called.
+- The virtual machine manager (VMM) then modifies the guest's address space, creating the shared memory region.
+ between a camkes component and the guest.
+- Linux processes can then map this memory into their own address space by calling `mmap` on the file
+  associated with the dataport.
 
-#### Emitting Events
+### Emitting Events
 
+Guest processes can emit events by using `ioctl` on files associated with the event interface.
+This results in the `emits_event` kernel module in the guest making a
+making a hypercall to the VMM, which triggers the event and resumes the guest.
 
-A guest process emits an event by making `ioctl` call on the file
-associated with the event interface. This results in the emits_event
-kernel module making a hypercall to the VMM, passing it the id of the
-event interface determined by the file being ioctl'd. The VMM then emits
-the real event (which doesn't block - events are notifications), and
-then immediately resumes the guest running.
+### Consuming Events
 
-#### Consuming Events
-
-
-Consuming events is complicated because we'd like for a process in the
-guest to be able to block, waiting for an event, without blocking the
-entire VM. A linux process can wait or poll for an event by calling poll
+Linux process can wait or poll for an event by calling `poll`
 on the file associated with that event, using the timeout argument to
 specify whether or not it should block. The event it polls for is
-POLLIN. When the VMM receives an event destined for the guest, it places
+`POLLIN`. When the VMM receives an event destined for the guest, it places
 the event id in some memory shared between the VMM and the
 `consumes_event` kernel module, and then injects an interrupt into the
 guest. The `consumes_event` kernel module is registered to handle this
-interrupt, which reads the event id from shared memory, and wakes a
+interrupt, which reads the event ID from shared memory, and wakes a
 thread blocked on the corresponding event file. If no threads are
 blocked on the file, some state is set in the module such that the next
 time a process waits on that file, it returns immediately and clears the
 state, mimicking the behaviour of notifications.
 
-### Using Cross VM Connections
+## Exercises
 
-We'll create a program that runs in the guest, and prints a string by
-sending it to a CAmkES component. The guest program will write a string
+In this tutorial you will
+create a program that runs in the guest, and sends a string
+to a CAmkES component to output. To achieve this, the guest program will write a string
 to a shared buffer between itself and a CAmkES component. When its ready
 for the string to be printed, it will emit an event, received by the
 CAmkES component. The CAmkES component will print the string, then send
 an event to the guest process so the guest knows it's safe to send a new
 string.
 
+### Add modules to the guest
+
 There is a library in `projects/camkes/vm-linux/camkes-linux-artifacts/camkes-linux-apps/camkes-connector-apps/libs`
-containing linux syscall wrappers, and some utility programs in
+containing Linux system call wrappers, and some utility programs in
 `projects/camkes/vm-linux/camkes-linux-artifacts/camkes-linux-apps/camkes-connector-apps/pkgs/{dataport,consumes_event,emits_event}`
-which initialize and interact with cross vm connections. To build and use these modules in your rootfs the vm-linux
-project provides an overlay target you can use. We can start on the CMake side by replacing the line:
+which initialize and interact with cross VM connections. To build and use these modules in your rootfs the vm-linux
+project provides an overlay target you can use.
+
+**Exercise** First add the `dataport`, `consumes_event` and `emits_event` kernel modules to the  rootfs in the guest.
+
+Start by replacing the line:
 
 ```cmake
 /*-- filter TaskContent("vm-cmake-start", TaskContentType.ALL, completion='buildroot login') -*/
@@ -104,7 +99,7 @@ AddToFileServer("rootfs.cpio" ${default_rootfs_file})
 /*-- endfilter -*/
 ```
 
-in our apps CMakeLists.txt file with the following:
+in the target applications `CMakeLists.txt` file with the following:
 
 ```cmake
 /*-- filter TaskContent("vm-cmake-crossvm-overlay", TaskContentType.COMPLETED, completion='buildroot login') -*/
@@ -115,8 +110,9 @@ AddToFileServer("rootfs.cpio" ${rootfs_file})
 /*-- endfilter -*/
 ```
 
-Next we will work on our CAmkES file. Edit our `crossvm_tutorial.camkes` by replacing
-the Init0 component definition:
+### Define interfaces in the VMM
+
+**Exercise** Update the CAmkES file, `crossvm_tutorial.camkes` by replacing the Init0 component definition:
 
 ```c
 /*-- filter TaskContent("vm-camkes-init0-start", TaskContentType.ALL, completion='buildroot login') -*/
@@ -133,10 +129,13 @@ with the following definition:
 component Init0 {
   VM_INIT_DEF()
 
-  // Add the following four lines:
+  // this is the data port for shared memory between the component and guest process
   dataport Buf(4096) data;
+  // this event tells the component that there is data ready to print
   emits DoPrint do_print;
+  // this event tells the guest process that priting is complete
   consumes DonePrinting done_printing;
+  // this mutex protects access to shared state between the VMM and the guest Linux
   has mutex cross_vm_event_mutex;
 }
 /*-- endfilter -*/
@@ -146,8 +145,10 @@ These interfaces will eventually be made visible to processes running in
 the guest linux. The mutex is used to protect access to shared state
 between the VMM and guest.
 
-Now, we'll define the print server component. Add the following to
-our `crossvm_tutorial.camkes` file, after our `Init0` definition:
+### Define the component interface
+
+**Exercise** Define the print server component by adding the following to
+the `crossvm_tutorial.camkes` file, after the `Init0` definition:
 ```c
 /*-- filter TaskContent("vm-camkes-printserver", TaskContentType.COMPLETED, completion='buildroot login') -*/
 component PrintServer {
@@ -159,9 +160,9 @@ component PrintServer {
 /*-- endfilter -*/
 ```
 
-We'll get around to actually implementing this soon. First, let's
-instantiate the print server and connect it to the VMM. Replace our `composition`
-definition:
+### Instantiate the print server
+
+**Exercise** Replace the `composition` definition:
 
 ```c
 /*-- filter TaskContent("vm-camkes-composition-start", TaskContentType.ALL, completion='buildroot login') -*/
@@ -192,18 +193,16 @@ with the following:
 /*-- endfilter -*/
 ```
 
-The only thing unusual about that was the [seL4SharedDataWithCaps](/seL4SharedDataWithCaps)
-connector. This is a dataport connector much like seL4SharedData. The
-only difference is that the "to" side of the connection gets access to
-the caps to the frames backing the dataport. This is necessary from
-cross vm dataports, as the VMM must be able to establish shared memory
-at runtime, by inserting new mappings into the guest's address space,
-which requires caps to the physical memory being mapped in.
+The [seL4SharedDataWithCaps](/seL4SharedDataWithCaps) connector is a dataport connector much like `seL4SharedData`.
+ However, the `to` side of the connection also receives access to
+the capabilities to the frames backing the dataport, which is required
+for cross VM dataports, as the VMM must be able to establish shared memory
+at runtime by inserting new mappings into the guest's address space.
 
-Interfaces connected with [seL4SharedDataWithCaps](/seL4SharedDataWithCaps) must be
-configured with an integer specifying the id of the dataport, and the
-size of the dataport. In our `crossvm_tutorial.camkes` file, add the following
-two lines in the configuration section
+**Exercise** Interfaces connected with [seL4SharedDataWithCaps](/seL4SharedDataWithCaps) must be
+configured with an integer specifying the ID and size of the dataport.
+ Do this now by modifying `crossvm_tutorial.camkes` with the following
+two lines in the configuration section:
 
 ```c
     configuration {
@@ -216,9 +215,9 @@ two lines in the configuration section
     }
 ```
 
-Now let's implement our print server. Add the file
-`components/print_server.c` with the following:
+### Implement the print server
 
+**Exercise** Add the file `components/print_server.c` with the following contents:
 ```c
 /*-- filter TaskContent("vm-printserver", TaskContentType.COMPLETED, completion='buildroot login') -*/
 #include <camkes.h>
@@ -227,10 +226,12 @@ Now let's implement our print server. Add the file
 int run(void) {
 
     while (1) {
+        // wait for the next event
         do_print_wait();
 
         printf("%s\n", (char*)data);
 
+        // signal that we are done printing
         done_printing_emit();
     }
 
@@ -239,18 +240,20 @@ int run(void) {
 /*-- endfilter -*/
 ```
 
-This component loops forever, waiting for an event, printing a string
-from shared memory, then emitting an event. It assumes that the shared
-buffer will contain a valid, null-terminated c string. Obviously this is
-risky, but will serve for our example here.
+This provides a very simple component definition that loops forever, printing a string from
+shared memory whenever an event is received then emitting an event.
+The example code assumes that the shared buffer will contain a valid, null-terminated c string, which is not
+ something you should do in practice.
 
-We need to create another c file that tells the VMM about our cross vm connections. This file must define 3 functions which initialize each type of cross vm interface:
+### Implement the VMM side of the connection
+Create another c file that tells the VMM about the cross VM connections.
+ This file must define 3 functions which initialize each type of cross vm interface:
 
 - `cross_vm_dataports_init`
 - `cross_vm_emits_events_init`
 - `cross_vm_consumes_events_init`
 
-Add a file `src/cross_vm.c` with the following contents:
+**Exercise** Add a file `src/cross_vm.c` with the following contents:
 
 ```c
 /*-- filter TaskContent("vm-crossvm-src", TaskContentType.COMPLETED, completion='buildroot login') -*/
@@ -308,8 +311,9 @@ int cross_vm_consumes_events_init(vmm_t *vmm, vspace_t *vspace, seL4_Word irq_ba
 /*-- endfilter -*/
 ```
 
-To make this build we need to update our applications CMakeLists file. Make the following changes
-in `CMakeLists.txt` by firstly replacing the declaration of Init0:
+### Update the build system
+
+**Exercise** Make the following changes in `CMakeLists.txt` by firstly replacing the declaration of Init0:
 
 ```cmake
 /*-- filter TaskContent("vm-cmake-init0", TaskContentType.ALL, completion='buildroot login') -*/
@@ -317,7 +321,7 @@ DeclareCAmkESVM(Init0)
 /*-- endfilter -*/
 ```
 
-with the following declaration
+with the following declaration:
 
 ```cmake
 /*-- filter TaskContent("vm-cmake-init0-crossvm", TaskContentType.COMPLETED, completion='buildroot login') -*/
@@ -331,7 +335,7 @@ DeclareCAmkESVM(Init0
 /*-- endfilter -*/
 ```
 
-Also following this, add a declaration for a PrintServer component:
+Also add a declaration for a PrintServer component:
 
 ```cmake
 /*-- filter TaskContent("vm-cmake-printserver", TaskContentType.COMPLETED, completion='buildroot login') -*/
@@ -340,13 +344,12 @@ DeclareCAmkESComponent(PrintServer SOURCES components/print_server.c)
 /*-- endfilter -*/
 ```
 
-Here we extend our definition of the Init component with our `cross_vm connector` source and the crossvm
-library. We additionally define our new CAmkES component `PrintServer`.
+This extends the definition of the Init component with the `cross_vm connector` source and the crossvm
+library, and defines the new CAmkES component `PrintServer`.
 
-The app should now build but we're not done yet. Now
-we'll make these interfaces available to the guest linux. We will create
-a shell script that is executed as linux is initialized. Add a file
-`camkes_init` with the following:
+### Add interfaces to the Guest
+
+**Exercise** Create the following `camkes_init` shell script that is executed as Linux is initialized:
 
 ```bash
 /*-- filter TaskContent("vm-init-crossvm", TaskContentType.COMPLETED, completion='buildroot login') -*/
@@ -366,21 +369,25 @@ emits_event_init /dev/camkes_do_print
 ```
 
 Each of these commands creates device nodes associated with a particular
-linux kernel module supporting cross vm communication. Each command
-takes a list of device nodes to create, which must correspond to the ids
-assigned to interfaces in the `crossvm_tutorial.camkes` and `cross_vm.c`. The
+Linux kernel module supporting cross VM communication. Each command
+takes a list of device nodes to create, which must correspond to the IDs
+assigned to interfaces in `crossvm_tutorial.camkes` and `cross_vm.c`. The
 `dataport_init` command must also be passed the size of each dataport.
 
 These changes will cause device nodes to be created which correspond to
-the interfaces we added to the VMM component.
+the interfaces you added to the VMM component.
 
-Now let's make an app that uses these nodes to communicate with the
-print server. Will we need to create a new directory:
+### Create a process
+
+Now make a process that uses the device nodes to communicate with the
+print server.
+
+**Exercise** First create a new directory:
 ```
 mkdir -p pkgs/print_client
 ```
 
-Create `pkgs/print_client/print_client.c`:
+with the following file `pkgs/print_client/print_client.c`:
 
 ```c
 /*-- filter TaskContent("vm-pkg-print_client-src", TaskContentType.COMPLETED, completion='buildroot login') -*/
@@ -429,10 +436,9 @@ int main(int argc, char *argv[]) {
 ```
 
 This program prints each of its arguments on a separate line, by sending
-each argument to the print server one at a time. We next need to create our CMakeLists.txt
-file for our program.
+each argument to the print server one at a time.
 
-Create `pkgs/print_client/CMakeLists.txt` for our client program:
+**Exercise** create `pkgs/print_client/CMakeLists.txt` for our client program:
 
 ```cmake
 /*-- filter TaskContent("vm-pkg-print_client-cmake", TaskContentType.COMPLETED, completion='buildroot login') -*/
@@ -447,13 +453,13 @@ target_link_libraries(print_client camkeslinux)
 /*-- endfilter -*/
 ```
 
-Next we need to update our vm apps `CMakeLists.txt`. Below the line:
+**Exercise** Update our the VM apps `CMakeLists.txt`. Below the line:
 
 ```cmake
 AddToFileServer("bzimage" ${decompressed_kernel} DEPENDS extract_linux_kernel)
 ```
 
-add the `ExternalProject` declaration:
+add the `ExternalProject` declaration to include the print application:
 
 ```cmake
 /*-- filter TaskContent("vm-cmake-printclient-proj", TaskContentType.COMPLETED, completion='buildroot login') -*/
@@ -486,7 +492,7 @@ AddFileToOverlayDir("S90camkes_init" ${CMAKE_CURRENT_LIST_DIR}/camkes_init "etc/
 /*-- endfilter -*/
 ```
 
-After building and running the application you should see:
+That's it. Build and run the system, and you should see the following output:
 
 ```
 ...
