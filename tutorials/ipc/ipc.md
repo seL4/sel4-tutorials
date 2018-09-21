@@ -236,7 +236,7 @@ does not respond, or wait for new messages from this point.
 **Exercise** Your next task is to implement the echo part of the server.
 
 ```c
-/*-- filter TaskContent("ipc-start", TaskContentType.ALL, subtask="echo", completion="received badged endpoint") -*/
+/*-- filter TaskContent("ipc-start", TaskContentType.ALL, subtask="echo") -*/
              // TODO use printf to print out the message sent by the client
              // followed by a new line
 /*-- endfilter -*/
