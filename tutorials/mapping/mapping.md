@@ -136,7 +136,7 @@ the number of bits in the virtual address that could not be resolved due to miss
 ```
 /*-- filter ExcludeDocs() -*/
 ```c
-/*-- filter TaskContent("mapping-pd", TaskContentType.COMPLETED, subtask='pd') -*/
+/*-- filter TaskContent("mapping-pd", TaskContentType.COMPLETED, subtask='pd',completion='Failed to map page') -*/
     error = seL4_X86_PageDirectory_Map(pd, seL4_CapInitThreadVSpace, TEST_VADDR, seL4_X86_Default_VMAttributes);
     assert(error == seL4_NoError);
 /*-- endfilter -*/
@@ -158,7 +158,7 @@ Note that in the above output, the number of failed bits has changed from `30` t
 **Exercise** Map in the `pt` structure using [`seL4_PageTable_Map`](https://docs.sel4.systems/ApiDoc.html#map-6).
 
 ```c
-/*-- filter TaskContent("mapping-start", TaskContentType.ALL, subtask='pt', completion='Failed to map page') -*/
+/*-- filter TaskContent("mapping-start", TaskContentType.ALL, subtask='pt') -*/
     // TODO map a page table object
 /*-- endfilter -*/
 ```
@@ -263,13 +263,13 @@ int main(int argc, char *argv[]) {
     seL4_Word *x = (seL4_Word *) TEST_VADDR;
     printf("Read x: %lu\n", *x);
 
-/*? include_task_type_replace([("mapping-start", 'remap'), ("mapping-pt", 'remap')]) ?*/
+/*? include_task_type_replace([("mapping-start", 'remap'), ("mapping-remap", 'remap')]) ?*/
 
     /* write to the page we mapped */
     printf("Set x to 5\n");
     *x = 5;
 
-    printf("Success!");
+    printf("Success!\n");
 
     return 0;
 }
