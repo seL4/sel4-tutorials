@@ -574,6 +574,9 @@ void echo__init(void) {
 
 
 ```
+/*- filter TaskCompletion("hello", TaskContentType.BEFORE) --*/
+client: the next instruction will cause a vm fault due to permissions
+/*-- endfilter -*/
 /*- filter TaskCompletion("hello", TaskContentType.ALL) --*/
 FAULT HANDLER: data fault from client.control
 /*-- endfilter -*/
@@ -596,7 +599,7 @@ DeclareCAmkESRootserver(hello-2.camkes)
 
 GenerateCAmkESRootserver()
 
-# utility CMake functions for the tutorials (not required in normal, non-tutorial applications) 
+# utility CMake functions for the tutorials (not required in normal, non-tutorial applications)
 /*? macros.cmake_check_script(state) ?*/
 /*-- endfilter -*/
 ```
