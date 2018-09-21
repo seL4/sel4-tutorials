@@ -2,7 +2,7 @@
 
 # CAmkES VM: Adding a Linux Guest
 
-This tutorial provides an introduction to creating VM applications on seL4 using CAmkES.
+This tutorial provides an introduction to creating VM guests and applications on seL4 using CAmkES.
 
 ## Prerequisites
 
@@ -14,45 +14,45 @@ This tutorial provides an introduction to creating VM applications on seL4 using
 
 By the end of this tutorial, you should be familiar with:
 
-* Creating, configuring and building guest Linux VM components in CAmkES
-* Building and installing your own Linux VM user-level programs and kernel modules
+* Creating, configuring and building guest Linux VM components in CAmkES.
+* Building and installing your own Linux VM user-level programs and kernel modules.
 
-## Starting Point
-This tutorial is set up with a basic CAmkES VM configuration that we can add to. Our
-starting application should boot a single, very basic Linux guest.
+## Background
 
-To build our starting point we can simply run:
+This tutorial is set up with a basic CAmkES VM configuration for you to build upon.
+The starting application should boot a single, very basic Linux guest.
+
+To build the tutorial, run:
 /*? macros.ninja_block() ?*/
 
-We can then either boot our CAmkES VM project on an x86 hardware platform with the multiboot boot loader
-of your choice or in an instance of the [QEMU](https://www.qemu.org) simulator. **Note if using QEMU
+You can boot the tutorial on an x86 hardware platform with a multiboot boot loader, 
+or use the [QEMU](https://www.qemu.org) simulator. **Note if you are using QEMU
 it is important to ensure that your host machine has VT-x support and [KVM](https://www.linux-kvm.org/page/Main_Page)
-installed. It is also important to also ensure you have enabled nested virtulisation with KVM guests as described
+installed. You also need to ensure you have enabled nested virtulisation with KVM guests as described
 [here](https://www.linux-kvm.org/page/Nested_Guests).**
 
-To simulate our image we can run the provided simulation script with some additional parameters:
+To simulate the image you can run the provided simulation script with some additional parameters:
 
 ```sh
 # In the build directory
 sudo ./simulate --cpu Haswell --machine q35,accel=kvm,kernel-irqchip=split --mem-size 2G --extra-cpu-opts +vmx --extra-qemu-args="-enable-kvm -device intel-iommu,intremap=off"
 ```
 
-When simulating our image you should see the following login prompt:
+When first simulating the image you should see the following login prompt:
 ```
 Welcome to Buildroot
 buildroot login:
 ```
 
-The Linux running here was built using [buildroot](https://buildroot.org/). This tool
-creates a compatible kernel and root filesystem with busybox and not
-much else, and runs on a ramdisk (the actual hard drive isn't mounted).
-Login with the username `root` and the password `root`.
+You can login with the username `root` and the password `root`.
 
-## Looking at the sources
+The Linux guest was built using [buildroot](https://buildroot.org/), which 
+creates a compatible kernel and minimal root filesystem containing busybox and a in-memory file system (a ramdisk).
 
-Our starting point is a very simple app, with a single vm, and nothing else. Each
-different vm app will have its own assembly implementation, where the guest environment is configured.
-Our apps configuration is defined in `vm_tutorial.camkes`:
+## VM Components
+
+Each VM component has its own assembly implementation, where the guest environment is configured.
+The provided VM configuration is defined in `vm_tutorial.camkes`:
 
 ```
 /*-- filter File("vm_tutorial.camkes") -*/
@@ -92,7 +92,7 @@ assembly {
 
 Most of the work here is done by five C preprocessor macros:
 `VM_INIT_DEF`, `VM_COMPOSITION_DEF`, `VM_PER_VM_COMP_DEF`,
-`VM_CONFIGURATION_DEF`, `VM_PER_VM_CONFIG_DEF`
+`VM_CONFIGURATION_DEF`, `VM_PER_VM_CONFIG_DEF`.
 
 These are all defined in `projects/camkes/vm/components/VM/configurations/vm.h`,
 and are concerned with specifying and configuring components that all
@@ -108,16 +108,19 @@ instance of `Init0`. The C source code for`InitI` components is in
 named `InitI` for *I* in `0..VM_NUM_VM - 1`.
 
 The values of `vm0.kernel_cmdline`, `vm0.kernel_image` and `vm0.initrd_image` are all
-strings specifying the guest linux boot arguments, the name of the guest linux kernel image file,
-and the name of the guest linux initrd file (root filesystem to use during system initialization).
+strings specifying:
+ - boot arguments to the guest Linux,
+ - the name of the guest Linux kernel image file,
+ - and the name of the guest Linux initrd file (the root filesystem to use during system initialization).
+ 
 The kernel command-line is defined in the `VM_GUEST_CMDLINE` macro. The kernel image
-and rootfs names will be defined in the applications CMakeLists file.
+and rootfs names are defined in the applications `CMakeLists.txt` file.
 These are the names of files in a CPIO archive that gets created by the build system, and
-linked into the VMM. In our simple app configuration the VMM uses
+linked into the VMM. In the simple configuration for thie tutorial, the VMM uses
 the `bzimage` and `rootfs.cpio` names to find the appropriate files
-in this archive when preparing to boot the guest.
+in this archive.
 
-To see how we define our `Init` components and the CPIO archive within the build system we can
+To see how the `Init` component and CPIO archive are definied within the build system,
 look at the app's `CMakeList.txt`:
 
 ```cmake
@@ -162,44 +165,38 @@ DeclareCAmkESVMRootServer(vm_tutorial.camkes)
 GenerateCAmkESRootserver()
 /*- endfilter -*/
 ```
-To access a series of helper functions for defining our CAmkES VM project we need to
-include the `projects/camkes/vm/camkes_vm_helpers.cmake` file.
-This firstly enables us to call `DeclareCAmkESVM(Init0)` to define our `Init0` VM component.
-With each Init component we define in the CAmkES configuration we need to correspondingly define
-the component with the `DeclareCAmkESVM` function.
 
-To find a kernel and rootfs image we use the `GetDefaultLinuxKernelFile` helper (defined in
-`projects/camkes/vm-linux/vm-linux-helpers.cmake`) to retrieve the location of the vm images provided
-in the `projects/vm-linux` folder. This project contains some tools for building new linux kernel
+The file `projects/camkes/vm/camkes_vm_helpers.cmake` provides helper functions for the VM projects, 
+including  `DeclareCAmkESVM(Init0)`, which is used to define the `Init0` VM component.
+Each Init component requires a corresponding `DeclareCAmkESVM` function.
+
+`GetDefaultLinuxKernelFile` (defined in `projects/camkes/vm-linux/vm-linux-helpers.cmake`) 
+is a helper function that retrieves the location of the vm images provided
+in the `projects/vm-linux` folder, which contains some tools for building new linux kernel
 and root filesystem images, as well as the images that these tools
 produce. A fresh checkout of this project will contain some pre-built
-images (`bzimage` and `rootfs.cpio`), to speed up build times. We call the
-`DecompressLinuxKernel` helper to extract the vmlinux image. Lastly we add the
-decompressed kernel image and rootfs to the fileserver through the `AddToFileServer` helper. These are
-placed in the file server under the names we wish to access them
-by in the archive. In our case this is `bzimage` and `rootfs.cpio`.
-
+images (`bzimage` and `rootfs.cpio`), to speed up build times.
+ 
+`DecompressLinuxKernel` is used to extract the vmlinux image, which `AddToFileServer` then places 
+in the fileserver along with the rootfs.
+ 
 ## Adding to the guest
 
 In the simple buildroot guest image, the
 initrd (rootfs.cpio) is also the filesystem you get access to after
-logging in. To make new programs available to the guest we need to add them to the
+logging in. To make new programs available to the guest you need to add them to the
 rootfs.cpio archive. Similarly, to make new kernel modules available to
-the guest they must be added to the rootfs.cpio archive also. In this task we will look
-at how we can install new programs into our guest VMs.
+the guest they must be added to the rootfs.cpio archive also. 
 
-### Background
+In this tutorial you will  install new programs into the guest VM.
+
+### vm-linux-helpers.cmake
 
 The `projects/camkes/vm-linux` directory contains CMake helpers to
 overlay rootfs.cpio archives with a desired set of programs, modules
-and scripts.
+and scripts. 
 
-Here's a summary of some of the CMake helpers that are available to help you add your own files
-to the rootfs image:
-
-#### vm-linux-helpers.cmake
-
-##### `AddFileToOverlayDir(filename file_location root_location overlay_name)`
+#### `AddFileToOverlayDir(filename file_location root_location overlay_name)`
 This helper allows you to overlay specific files onto a rootfs image. The caller specifies
 the file they wish to install in the rootfs image (`file_location`), the name they want the file
 to be called in the rootfs (`filename`) and the location they want the file to installed in the
@@ -207,7 +204,7 @@ rootfs (`root_location`), e.g "usr/bin". Lastly the caller passes in a unique ta
 (`overlay_name`). You can repeatedly call this helper with different files for a given target to build
 up a set of files to be installed on a rootfs image.
 
-##### `AddOverlayDirToRootfs(rootfs_overlay rootfs_image rootfs_distro rootfs_overlay_mode output_rootfs_location target_name)`
+#### `AddOverlayDirToRootfs(rootfs_overlay rootfs_image rootfs_distro rootfs_overlay_mode output_rootfs_location target_name)`
 This helper allows you to install a defined overlay target onto a given rootfs image. The caller specifies
 the rootfs overlay target name (`rootfs_overlay`), the rootfs image they wish to install their files onto
 (`rootfs_image`), the distribution of their rootfs image (`rootfs_distro`, only 'buildroot' and 'debian' is
@@ -220,33 +217,32 @@ won't be present after the VM boots.
 install the artifacts permanently onto the VM. The downside to this is that writes to the overlayed root do not persist between boots. This
 mode is benefitial for debugging purposes and live VM images.
 * `fs_install`: The files are permanently installed on the VM's file system, after the root has been mounted.
-##### `AddExternalProjFilesToOverlay(external_target external_install_dir overlay_target overlay_root_location)`
+#### `AddExternalProjFilesToOverlay(external_target external_install_dir overlay_target overlay_root_location)`
 This helper allows you to add files generated from an external CMake project to an overlay target. This is mainly a wrapper around
 `AddOverlayDirToRootfs` which in addition creates a target for the generated file in the external project. The caller passes the external
 project target (`external_target`), the external projects install directory (`external_install_dir`), the overlay target you want to add the
 file to (`overlay_target`) and the location you wish to install the file within the rootfs image (`overlay_root_location`).
 
-#### linux-source-helpers.cmake
+### linux-source-helpers.cmake
 
-##### `DownloadLinux(linux_major linux_minor linux_md5 linux_out_dir linux_out_target)`
+#### `DownloadLinux(linux_major linux_minor linux_md5 linux_out_dir linux_out_target)`
 This is a helper function for downloading the linux source. This is needed if we wish to build our own kernel modules.
 
-##### `ConfigureLinux(linux_dir linux_config_location linux_symvers_location configure_linux_target)`
+#### `ConfigureLinux(linux_dir linux_config_location linux_symvers_location configure_linux_target)`
 This helper function is used for configuring downloaded linux source with a given Kbuild defconfig (`linux_config_location`)
 and symvers file (`linux_symvers_location`).
 
-## Adding a program
+## Exercises 
 
- Let's add a simple program!
+### Adding a program
 
-1.  Make a new directory:
+This exercise guides you through adding a new program to the Linux guest user-level environment.
 
+First, make a new directory:
 ```bash
 mkdir -p pkg/hello
 ```
-
-2.  Add a simple C program in `pkg/hello/hello.c`:
-
+Then a simple C program in `pkg/hello/hello.c`:
 ```c
 /*-- filter TaskContent("vm-pkg-hello-c", TaskContentType.COMPLETED, completion='buildroot login') -*/
 #include <stdio.h>
@@ -257,9 +253,7 @@ int main(int argc, char *argv[]) {
 }
 /*-- endfilter -*/
 ```
-
-3.  We want to target our application to run in a 32-bit x86 Linux VM. To achieve this we need to build our application as an external
-project. Firstly we need to add a CMake file at `pkg/hello/CMakeLists.txt`:
+Then create a build file for the program at `pkg/hello/CMakeLists.txt`:
 
 ```cmake
 /*-- filter TaskContent("vm-pkg-hello-cmake", TaskContentType.COMPLETED, completion='buildroot login') -*/
@@ -272,9 +266,10 @@ add_executable(hello hello.c)
 target_link_libraries(hello -static)
 /*-- endfilter -*/
 ```
-
-4.  Update our vm apps CMakeList file (CMakeLists.txt) to declare our hello application as an
-external project and add it to our overlay. Replace the line `AddToFileServer("rootfs.cpio" ${default_rootfs_file})` with the following:
+Now integrate the new program with the build system. 
+Update the vm apps `CMakeLists.txt` to declare the hello application as an
+external project and add it to our overlay.
+ Do this by replacing the line `AddToFileServer("rootfs.cpio" ${default_rootfs_file})` with the following:
 
 ```cmake
 /*-- filter TaskContent("vm-cmake-hello", TaskContentType.COMPLETED, subtask='toolchain', completion='buildroot login') -*/
@@ -303,12 +298,10 @@ AddOverlayDirToRootfs(vm-overlay ${default_rootfs_file} "buildroot" "rootfs_inst
 AddToFileServer("rootfs.cpio" ${rootfs_file} DEPENDS rootfs_target)
 /*-- endfilter -*/
 ```
-
-5.  Rebuild the app:
-
+Now rebuild the project...
 /*? macros.ninja_block() ?*/
-
-6.  Run the app (use `root` as username and password):
+..and run it (use `root` as username and password).
+You should be able to use the new program. 
 
 ```
 Welcome to Buildroot
@@ -320,21 +313,15 @@ Hello, World!
 
 ## Adding a kernel module
 
-We're going to add a new kernel module that lets us poke the vmm.
+The next exercise guides you through the addition of a new kernel module that provides
+guest to VMM communication. This is a very simply module: you'll create a special file
+associated with the new module, which when written to causes the VMM to print message.
 
-1.  Make a new directory:
-
+First, make a new directory:
 ```
 mkdir -p modules/poke
 ```
-
-2.  Implement the module in `modules/poke/poke.c`.
-
-Initially we'll just get the module building and running, and then take
-care of communicating between the module and the vmm. For simplicity,
-we'll make it so when a special file associated with this module is
-written to, the vmm gets poked.
-
+Then create the following file for the module in `modules/poke/poke.c`.
 ```c
 /*-- filter TaskContent("vm-module-poke-c", TaskContentType.COMPLETED, completion='buildroot login') -*/
 #include <linux/module.h>
@@ -374,8 +361,7 @@ module_init(poke_init);
 module_exit(poke_exit);
 /*-- endfilter -*/
 ```
-
-3.  And a makefile in `modules/poke/Makefile`:
+Now add a Makefile for building the module in `modules/poke/Makefile`:
 
 ```make
 /*-- filter TaskContent("vm-module-poke-make", TaskContentType.COMPLETED, completion='buildroot login') -*/
@@ -389,11 +375,7 @@ clean:
 /*-- endfilter -*/
 ```
 
-4. Create a CMakeLists.txt file to define our linux module. We will again be compiling our module
-as an external CMake project. We will import a special helper file (`linux-module-helpers.cmake`)
-from the `vm-linux` project to help us define our Linux module. Create the following at
-`modules/CMakeLists.txt`:
-
+Create a `modules/CMakeLists.txt` to define the new Linux module with the following content:
 ```cmake
 /*-- filter TaskContent("vm-module-poke-cmake", TaskContentType.COMPLETED, completion='buildroot login') -*/
 cmake_minimum_required(VERSION 3.8.2)
@@ -407,19 +389,17 @@ include("${MODULE_HELPERS_FILE}")
 DefineLinuxModule(poke)
 /*-- endfilter -*/
 ```
+Update the vm `CMakeLists.txt` file to declare the new poke module as an
+external project and add it to the overlay. 
 
-5. Update our vm apps CMakeList file to declare our poke module as an
-external project and add it to our overlay. Add the following:
-
-At the top of the file include our linux helpers:
+At the top of the file include our linux helpers, add the following:
 
 ```cmake
 /*-- filter TaskContent("vm-cmake-poke", TaskContentType.COMPLETED, subtask='includes', completion='buildroot login') -*/
 include("../projects/camkes/vm-linux/linux-source-helpers.cmake")
 /*-- endfilter -*/
 ```
-
-Below our includes we can add:
+Below the includes add:
 ```cmake
 /*-- filter TaskContent("vm-cmake-poke", TaskContentType.COMPLETED, subtask='module', completion='buildroot login') -*/
 # Setup Linux Sources
@@ -454,8 +434,8 @@ AddExternalProjFilesToOverlay(poke-module ${CMAKE_BINARY_DIR}/poke-module vm-ove
 /*-- endfilter -*/
 ```
 
-6.  We want the new module to be loaded during initialization. To do this we can write our own custom init script, create a file called `init` in
-our tutorial directory with the following:
+Write a custom init script that loads the new module during initialization. 
+Create a file called `init` in our tutorial directory with the following:
 
 ```bash
 /*-- filter TaskContent("vm-init-poke", TaskContentType.COMPLETED,completion='buildroot login') --*/
@@ -470,29 +450,21 @@ insmod /lib/modules/4.8.16/kernel/drivers/vmm/poke.ko
 exec /sbin/init $*
 /*-- endfilter -*/
 ```
-
-Note that in the `init` script we load our new `poke` module.
-
-7. Update our apps CMakeList file to add our init script to the
-overlay. After our call to `AddExternalProjFilesToOverlay` for the poke module we can add:
+Now update our the VM apps `CMakeLists.txt` file to add the new init script to the
+overlay. After our call to `AddExternalProjFilesToOverlay` for the poke module add the following:
 
 ```cmake
 /*-- filter TaskContent("vm-cmake-poke", TaskContentType.COMPLETED, subtask='init_overlay', completion='buildroot login') -*/
 AddFileToOverlayDir("init" ${CMAKE_CURRENT_LIST_DIR}/init "." vm-overlay)
 /*-- endfilter -*/
 ```
-
 and give the script executable permissions:
-
 ```bash
 chmod +x init
 ```
-
-8.  Rebuild the app:
-
+Rebuild the project:
 /*? macros.ninja_block() ?*/
-
-9.  Run the app:
+Run the following commands to see the module being used:
 
 ```
 Welcome to Buildroot
@@ -506,12 +478,12 @@ Password:
 -sh: write error: Bad address    # the shell complains, but our module is being invoked!
 ```
 
-**Extra Exercise: Let's make it talk to the vmm**.
+### Create a hypercall
 
-7.  In modules/poke/poke.c, replace `printk("hi\n");` with `kvm_hypercall1(4, 0);`.
-The choice of 4 is because 0..3 are taken by other hypercalls.
+In `modules/poke/poke.c`, replace `printk("hi\n");` with `kvm_hypercall1(4, 0);`.
+The choice of 4 is because 0..3 are already used by existing hypercalls.
 
-8.  Now register a handler for this hypercall in `projects/camkes/vm/components/Init/src/main.c`:.
+Then register a handler for this hypercall in `projects/camkes/vm/components/Init/src/main.c`:.
 Add a new function at the top of the file:
 
 ```
@@ -521,7 +493,7 @@ static int poke_handler(vmm_vcpu_t *vmm_vcpu) {
 }
 ```
 
-In the function main_continued register \`poke_handler\`:
+In the function `main_continued` register \`poke_handler\`:
 
 ```
 reg_new_handler(&vmm, poke_handler, 4); // <--- added
@@ -530,8 +502,8 @@ reg_new_handler(&vmm, poke_handler, 4); // <--- added
 vmm_run(&vmm);
 ```
 
-9.  Finally re-run build-rootfs, make, and run:
-
+Rebuild the project and try out the hypercall + module:
+/*? macros.ninja_block() ?*/
 ```
 Welcome to Buildroot
 buildroot login: root
