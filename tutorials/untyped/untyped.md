@@ -229,9 +229,11 @@ The priority check is failing as `child_tcb` is an empty CSlot.
     ZF_LOGF_IF(error != seL4_NoError, "Failed to set priority");
 /*-- endfilter -*/
 ```
+/*-- endfilter -*/
+
 On success, the tutorial will progress further, printing "Failed to set space".
 ### Create an endpoint object
-/*-- endfilter -*/
+
 The error you see now is caused be an invalid endpoint capability.
 
 **Exercise** Create an endpoint object from `child_untyped` and place it in the `child_ep` CSlot.
