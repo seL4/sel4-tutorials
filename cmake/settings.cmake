@@ -36,6 +36,7 @@ elseif(${TUT_BOARD} STREQUAL "zynq7000")
     set(KernelArch "arm" CACHE STRING "" FORCE)
     set(KernelArmSel4Arch "aarch32" CACHE STRING "" FORCE)
     set(KernelARMPlatform "zynq7000" CACHE STRING "" FORCE)
+    ApplyData61ElfLoaderSettings(${KernelARMPlatform} ${KernelArmSel4Arch})
 else()
     message(FATAL_ERROR "Unsupported board ${TUT_BOARD}.")
 endif()
@@ -54,6 +55,5 @@ ApplyCommonReleaseVerificationSettings(FALSE FALSE)
 
 # We will attempt to generate a simulation script, so try and generate a simulation
 # compatible configuration
-ApplyCommonSimulationSettings()
+ApplyCommonSimulationSettings(${KernelArch})
 
-ApplyData61ElfLoaderSettings()
