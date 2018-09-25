@@ -22,8 +22,7 @@ if (NOT "${TUTORIAL_DIR}" STREQUAL "")
     # Save the TUTORIAL_DIR to the cache so that it persists across reruns
     set(TUTORIAL_DIR ${TUTORIAL_DIR} CACHE INTERNAL "")
 
-    # Include cache settings and cmake tutorial helper functions
-    include(cmake/settings.cmake)
+    # Include cmake tutorial helper functions
     include(cmake/helpers.cmake)
 
     # generate tutorial sources into directory
