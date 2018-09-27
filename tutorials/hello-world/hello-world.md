@@ -48,14 +48,15 @@ If everything has worked, you should see:
 Booting all finished, dropped to user space
 /*- filter TaskCompletion("hello-world", TaskContentType.ALL) -*/
 Hello, World!
-/*- endfilter -*/
+/*- endfilter --*/
 ```
 
 ## Looking at the sources
 
-In your tutorial directory, you will find  files:
+In your tutorial directory, you will find the following files:
  * `CMakeLists.txt` - the file that incorporates the root task into the wider seL4 build system.
  * `src/main.c` - the single source file for the initial task.
+ * `hello-world.md` - A generated README for the tutorial.
 
 ### `CMakeLists.txt`
 
@@ -63,7 +64,7 @@ Every application and library in an seL4 project requires a `CMakeLists.txt` fil
  incorporated into the project build system.
  
 ```cmake
-/*-- set build_file -*/
+/*-- set build_file --*/
 # @TAG(DATA61_BSD)
 cmake_minimum_required(VERSION 3.7.2)
 # declare the hello-world CMake project and the languages it is written in (just C)
@@ -92,13 +93,13 @@ a `main` function is provided.
 ```c
 #include <stdio.h>
 
-/*- filter TaskContent("hello-world", TaskContentType.ALL) -*/
+/*-- filter TaskContent("hello-world", TaskContentType.ALL) -*/
 int main(int argc, char *argv[]) {
     printf("Hello, World!\n");
 
     return 0;
 }
-/*- endfilter -*/
+/*- endfilter --*/
 ```
 
 ## Making a change
@@ -106,14 +107,14 @@ int main(int argc, char *argv[]) {
 Test making a change to `main.c` by adding a second printf to output `"Second hello\n"`.
 
 ```c
-/*- filter TaskContent("hello-world-mod", TaskContentType.COMPLETED) -*/
+/*-- filter TaskContent("hello-world-mod", TaskContentType.COMPLETED) -*/
 int main(int argc, char *argv[]) {
     printf("Hello, World!\n");
 
     printf("Second hello\n");
     return 0;
 }
-/*- endfilter -*/
+/*- endfilter --*/
 ```
 Once you have made your change, rerun `ninja` to rebuild the project:
 /*? macros.ninja_block() ?*/
@@ -134,7 +135,7 @@ Second hello
 /*- filter ExcludeDocs() -*/
 
 ```c
-/*- filter File("src/main.c") -*/
+/*-- filter File("src/main.c") -*/
 #include <stdio.h>
 
 /*? include_task_type_replace(["hello-world", "hello-world-mod"]) ?*/

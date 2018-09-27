@@ -438,7 +438,7 @@ Write a custom init script that loads the new module during initialization.
 Create a file called `init` in our tutorial directory with the following:
 
 ```bash
-/*-- filter TaskContent("vm-init-poke", TaskContentType.COMPLETED,completion='buildroot login') --*/
+/*-- filter TaskContent("vm-init-poke", TaskContentType.COMPLETED,completion='buildroot login') -*/
 #!/bin/sh
 # devtmpfs does not get automounted for initramfs
 /bin/mount -t devtmpfs devtmpfs /dev

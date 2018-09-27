@@ -46,7 +46,7 @@ shows how to print out the initial untyped capabilities provided from `seL4_Boot
     printf("    CSlot   \tPaddr           \tSize\tType\n");
     for (seL4_CPtr slot = info->untyped.start; slot != info->untyped.end; slot++) {
         seL4_UntypedDesc *desc = &info->untypedList[slot - info->untyped.start];
-        printf("%8p\t%16p\t2^%d\t%s\n", (void *) slot, (void *) desc->paddr, desc->sizeBits, desc->isDevice ? "untyped" : "device untyped");
+        printf("%8p\t%16p\t2^%d\t%s\n", (void *) slot, (void *) desc->paddr, desc->sizeBits, desc->isDevice ? "device untyped" : "untyped");
     }
 /*-- endfilter -*/
 ```
@@ -197,6 +197,7 @@ This error is because we are trying to create an untyped of size 0.
     }
 /*-- endfilter -*/
 /*-- endfilter -*/
+```
 On success, the tutorial will progress further, printing "Failed to set priority"
 
 ### Create a TCB Object
@@ -252,8 +253,8 @@ The error you see now is caused be an invalid endpoint capability.
     uint32_t cap_id = seL4_DebugCapIdentify(child_ep);
     ZF_LOGF_IF(cap_id == 0, "Endpoint cap is null cap");
 /*-- endfilter -*/
-```
 /*-- endfilter -*/
+```
 On success, 'Failed to bind notification' should be output.
 ### Create a notification object
 The next part of the tutorial attempts to use a notification object that does not yet exist.
@@ -279,8 +280,8 @@ The next part of the tutorial attempts to use a notification object that does no
     error = seL4_TCB_BindNotification(child_tcb, child_ntfn);
     ZF_LOGF_IF(error != seL4_NoError, "Failed to bind notification.");
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+/*-- endfilter -*/
 ### Delete the objects
 The final part of the tutorial attempts to create enough endpoint objects from `child_untyped` to consume the
 entire untyped object. However, this fails, because the untyped is already completely consumed by the previous allocations.

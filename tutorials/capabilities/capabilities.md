@@ -203,9 +203,9 @@ The error occurs as the existing code tries to set the priority of the initial t
                                        seL4_AllRights);
     ZF_LOGF_IF(error, "Failed to copy cap!");
     seL4_CPtr last_slot = info->empty.end - 1;
-    // TODO use seL4_CNode_Copy to make another copy of the initial TCB capability to the last slot in the CSpace
+    /* TODO use seL4_CNode_Copy to make another copy of the initial TCB capability to the last slot in the CSpace */
 
-    // set the priority of the root task
+    /* set the priority of the root task */
     error = seL4_TCB_SetPriority(last_slot, last_slot, 10);
     ZF_LOGF_IF(error, "Failed to set priority");
 /*-- endfilter -*/
@@ -220,12 +220,12 @@ The error occurs as the existing code tries to set the priority of the initial t
     ZF_LOGF_IF(error, "Failed to copy cap!");
     seL4_CPtr last_slot = info->empty.end - 1;
     
-    // use seL4_CNode_Copy to make another copy of the initial TCB capability to the last slot in the CSpace
+    /* use seL4_CNode_Copy to make another copy of the initial TCB capability to the last slot in the CSpace */
     error = seL4_CNode_Copy(seL4_CapInitThreadCNode, last_slot, seL4_WordBits,
                       seL4_CapInitThreadCNode, first_free_slot, seL4_WordBits, seL4_AllRights);
     ZF_LOGF_IF(error, "Failed to copy cap!");
     
-    // set the priority of the root task
+    /* set the priority of the root task */
     error = seL4_TCB_SetPriority(last_slot, last_slot, 10);
     ZF_LOGF_IF(error, "Failed to set priority");
 /*-- endfilter -*/
@@ -242,7 +242,7 @@ Which will be fixed in the next exercise.
 ### How do you delete capabilities?
 
 The provided code checks that both `first_free_slot` and `last_slot` are empty, which of course is not
-true, as you copied TCB capabilities into those CSLots. Checking if SClots are empty is done
+true, as you copied TCB capabilities into those CSlots. Checking if CSlots are empty is done
 by a neat hack: by attempting to move the CSlots onto themselves. This should fail with an error code
 `seL4_FailedLookup` if the source CSLot is empty, and an `seL4_DeleteFirst` if not.
 
