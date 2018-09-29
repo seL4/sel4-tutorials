@@ -31,7 +31,7 @@ sender sends a message, that sender is now queued.
 
 ### System calls
 
- Threads can send messages on endpoints with the system call `seL4_Send`, which blocks until the message has been
+Threads can send messages on endpoints with the system call `seL4_Send`, which blocks until the message has been
 consumed by another thread. `seL4_NBSend` can also be used, which performs a polling send: the send is only
 successful if a receiver is already blocked waiting for a message, and otherwise fails. To avoid a
 back channel, `seL4_NBSend` does not return a result indicating if the message was sent or not.
