@@ -35,7 +35,11 @@ To simulate the image you can run the provided simulation script with some addit
 
 ```sh
 # In the build directory
-sudo ./simulate --cpu Haswell --machine q35,accel=kvm,kernel-irqchip=split --mem-size 2G --extra-cpu-opts +vmx --extra-qemu-args="-enable-kvm -device intel-iommu,intremap=off"
+# You will need to set up a tap device first:
+# ip tuntap add tap0 mode tap
+# ip addr add 10.0.120.100/24 dev tap0
+# ip link set dev tap0 up
+sudo ./simulate --machine q35,accel=kvm,kernel-irqchip=split --mem-size 2G --extra-cpu-opts "+vmx" --extra-qemu-args="-enable-kvm -device intel-iommu,intremap=off -net nic,model=e1000 -net tap,script=no,ifname=tap0"
 ```
 
 When first simulating the image you should see the following login prompt:
