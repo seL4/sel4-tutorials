@@ -22,6 +22,10 @@ PLAT_CONFIG = {
     'zynq7000': ['-DAARCH32=TRUE', '-DTUT_BOARD=zynq7000'],
 }
 
+CAMKES_VM_CONFIG = {
+    'pc99': ['-DTUT_BOARD=pc', '-DTUT_ARCH=x86_64', "-DFORCE_IOMMU=ON"],
+}
+
 ALL_CONFIGS = PLAT_CONFIG.keys()
 
 # Declare each tutorial and the configs they support
@@ -59,10 +63,10 @@ def get_project_root():
     # assume default location of this project in projects/sel4-tutorials
     return os.path.join(get_tutorial_dir(), '..', '..')
 
-def _init_build_directory(config, initialised, directory, tute_directory, output=None):
+def _init_build_directory(config, initialised, directory, tute_directory, output=None, config_dict=PLAT_CONFIG):
     if not initialised:
         tute_dir = "-DTUTORIAL_DIR=" + os.path.basename(tute_directory)
-        args = ['-DCMAKE_TOOLCHAIN_FILE=../kernel/gcc.cmake', '-G', 'Ninja'] + PLAT_CONFIG[config] + [tute_dir]
+        args = ['-DCMAKE_TOOLCHAIN_FILE=../kernel/gcc.cmake', '-G', 'Ninja'] + config_dict[config] + [tute_dir]
         result = sh.cmake(args + ['..'], _cwd = directory, _out=output, _err=output)
         if result.exit_code != 0:
             return result
@@ -90,7 +94,12 @@ def init_directories(config, tut, solution, task, initialised, tute_directory, b
     os.chdir(tute_directory)
     _init_tute_directory(config, tut, solution, task, tute_directory, output=sys.stdout)
     os.chdir(build_directory)
-    return _init_build_directory(config, initialised, build_directory, tute_directory, output)
+    config_dict = None
+    if "camkes-vm" in tut:
+        config_dict = CAMKES_VM_CONFIG
+    else:
+        config_dict = PLAT_CONFIG
+    return _init_build_directory(config, initialised, build_directory, tute_directory, output, config_dict=config_dict)
 
 def set_log_level(verbose, quiet):
     if verbose:
