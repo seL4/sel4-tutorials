@@ -31,7 +31,7 @@ def main():
                         help="Output everything including debug info", default=False)
     parser.add_argument('--quiet', action='store_true',
                         help="Suppress output except for tutorial completion information", default=True)
-    parser.add_argument('--plat', type=str, choices=common.ALL_CONFIGS, required=True)
+    parser.add_argument('--plat', type=str, choices=common.ALL_CONFIGS, default='pc99')
     parser.add_argument('--tut', type=str, choices=common.ALL_TUTORIALS, required=True)
     parser.add_argument('--solution', action='store_true', help="Generate pre-made solutions", default=False)
     parser.add_argument('--task', help="Generate pre-made solutions")
@@ -57,7 +57,11 @@ def main():
             logging.error("Current dir %s is invalid" % os.getcwd())
             parser.print_help(sys.stderr)
             return -1
-        tute_dir = tempfile.mkdtemp(dir=os.getcwd(), prefix=('%s' % (args.tut)))
+        tute_dir = os.path.join(os.getcwd(), args.tut)
+        if os.path.exists(tute_dir):
+            tute_dir = tempfile.mkdtemp(dir=os.getcwd(), prefix=('%s' % (args.tut)))
+        else:
+            os.mkdir(tute_dir)
         os.chdir(tute_dir)
     else:
         tute_dir = args.tutedir
