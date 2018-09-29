@@ -280,8 +280,8 @@ FindCustomPollyToolchain(LINUX_32BIT_TOOLCHAIN "linux-gcc-32bit-pic")
 /*-- filter TaskContent("vm-cmake-hello", TaskContentType.COMPLETED, subtask='hello', completion='buildroot login') -*/
 # Declare our hello app external project
 ExternalProject_Add(hello-app
-    URL file:///${CMAKE_CURRENT_SOURCE_DIR}/pkg/hello
-    BINARY_DIR ${CMAKE_BINARY_DIR}/hello-app
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/pkg/hello
+    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/hello-app
     BUILD_ALWAYS ON
     STAMP_DIR ${CMAKE_CURRENT_BINARY_DIR}/hello-app-stamp
     EXCLUDE_FROM_ALL
@@ -291,7 +291,7 @@ ExternalProject_Add(hello-app
         -DCMAKE_TOOLCHAIN_FILE=${LINUX_32BIT_TOOLCHAIN}
 )
 # Add the hello world app to our overlay ('vm-overlay')
-AddExternalProjFilesToOverlay(hello-app ${CMAKE_BINARY_DIR}/hello-app vm-overlay "usr/sbin"
+AddExternalProjFilesToOverlay(hello-app ${CMAKE_CURRENT_BINARY_DIR}/hello-app vm-overlay "usr/sbin"
     FILES hello)
 # Add the overlay directory to our default rootfs image
 AddOverlayDirToRootfs(vm-overlay ${default_rootfs_file} "buildroot" "rootfs_install"
@@ -416,10 +416,10 @@ ConfigureLinux(${vm_linux_extract_dir} ${linux_config} ${linux_symvers} configur
 )
 # Add the external poke module project
 ExternalProject_Add(poke-module
-    URL file:///${CMAKE_CURRENT_SOURCE_DIR}/modules
-    BINARY_DIR ${CMAKE_BINARY_DIR}/poke-module
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/modules
+    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/poke-module
     BUILD_ALWAYS ON
-    STAMP_DIR ${CMAKE_CURRENT_BINARY_DIR}/poke-module
+    STAMP_DIR ${CMAKE_CURRENT_BINARY_DIR}/poke-module-stamp
     EXCLUDE_FROM_ALL
     INSTALL_COMMAND ""
     DEPENDS download_vm_linux configure_vm_linux
@@ -430,7 +430,7 @@ ExternalProject_Add(poke-module
         -DMODULE_HELPERS_FILE=${CMAKE_CURRENT_SOURCE_DIR}/../projects/camkes/vm-linux/linux-module-helpers.cmake
 )
 # Add our module binary to the overlay
-AddExternalProjFilesToOverlay(poke-module ${CMAKE_BINARY_DIR}/poke-module vm-overlay "lib/modules/4.8.16/kernel/drivers/vmm"
+AddExternalProjFilesToOverlay(poke-module ${CMAKE_CURRENT_BINARY_DIR}/poke-module vm-overlay "lib/modules/4.8.16/kernel/drivers/vmm"
     FILES poke.ko)
 /*-- endfilter -*/
 ```
@@ -487,7 +487,7 @@ The choice of 4 is because 0..3 are already used by existing hypercalls.
 Then register a handler for this hypercall in `projects/camkes/vm/components/Init/src/main.c`:.
 Add a new function at the top of the file:
 
-```
+```c
 static int poke_handler(vmm_vcpu_t *vmm_vcpu) {
     printf("POKE!!!n");
     return 0;
@@ -496,7 +496,7 @@ static int poke_handler(vmm_vcpu_t *vmm_vcpu) {
 
 In the function `main_continued` register \`poke_handler\`:
 
-```
+```c
 reg_new_handler(&vmm, poke_handler, 4); // <--- added
 
 /* Now go run the event loop */
