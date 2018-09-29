@@ -137,9 +137,6 @@ include("../projects/camkes/vm-linux/vm-linux-helpers.cmake")
 /*- endfilter -*/
 
 /*- filter TaskContent("vm-cmake-start", TaskContentType.ALL, subtask='pre_rootfs', completion='buildroot login') -*/
-# Define kernel config options
-set(KernelX86Sel4Arch x86_64 CACHE STRING "" FORCE)
-set(KernelMaxNumNodes 1 CACHE STRING "" FORCE)
 
 # Declare VM component: Init0
 DeclareCAmkESVM(Init0)
