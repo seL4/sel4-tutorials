@@ -366,8 +366,8 @@ to become more familiar with IPC.
 #include <utils/util.h>
 
 /*? RecordObject(seL4_EndpointObject, "endpoint", cap_symbol="endpoint", read=True, write=True, grant=True) ?*/
-/*? RecordObject(None, "cnode_client_1", cap_symbol="cnode", read=True, write=True) ?*/
-/*? RecordObject(None, None, cap_symbol="badged_endpoint") ?*/
+/*? capdl_elf_cspace("client_1", cap_symbol="cnode") ?*/
+/*? capdl_empty_slot("badged_endpoint") ?*/
 
 const char *messages[] = {"quick", "fox", "over", "lazy"};
 
@@ -390,8 +390,8 @@ int main(int c, char *argv[]) {
 #include <utils/util.h>
 
 /*? RecordObject(seL4_EndpointObject, "endpoint", cap_symbol="endpoint", read=True, write=True, grant=True) ?*/
-/*? RecordObject(None, "cnode_client_2", cap_symbol="cnode", read=True, write=True) ?*/
-/*? RecordObject(None, None, cap_symbol="badged_endpoint") ?*/
+/*? capdl_elf_cspace("client_2", cap_symbol="cnode") ?*/
+/*? capdl_empty_slot("badged_endpoint") ?*/
 
 const char *messages[] = {"the", "brown", "jumps", "the", "dog"};
 
@@ -415,9 +415,9 @@ int main(int c, char *argv[]) {
 // cslot containing IPC endpoint capability
 /*? RecordObject(seL4_EndpointObject, "endpoint", cap_symbol="endpoint", read=True, write=True, grant=True) ?*/
 // cslot containing a capability to the cnode of the server
-/*? RecordObject(None, "cnode_server", cap_symbol="cnode", read=True, write=True) ?*/
+/*? capdl_elf_cspace("server", cap_symbol="cnode") ?*/
 // empty cslot
-/*? RecordObject(None, None, cap_symbol="free_slot") ?*/
+/*? capdl_empty_slot("free_slot") ?*/
 
 int main(int c, char *argv[]) {
 
