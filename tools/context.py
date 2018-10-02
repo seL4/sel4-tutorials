@@ -264,7 +264,7 @@ def capdl_declare_ipc_buffer(context, cap_symbol, symbol):
     return capdl_declare_frame(context, cap_symbol, symbol)
 
 @contextfilter
-def ELF(context, content, name):
+def ELF(context, content, name, passive=False):
     '''
     Declares a ELF object containing content with name.
     '''
@@ -287,7 +287,7 @@ def ELF(context, content, name):
 
         stash.caps[name] = stash.unclaimed_caps
         stash.unclaimed_caps = []
-        stash.elfs[name] = {"filename" :"%s.c" % name}
+        stash.elfs[name] = {"filename" :"%s.c" % name, "passive" : passive}
         stash.special_pages[name] = [("stack", 16*0x1000, 0x1000, 'guarded'),
         ("mainIpcBuffer", 0x1000, 0x1000, 'guarded'),
         ] + stash.unclaimed_special_pages
@@ -320,7 +320,7 @@ serialised = \"\"\"%s\"\"\"
 print(serialised)
 
         """
-        file.write(manifest % dumps((stash.objects, stash.caps, stash.special_pages)))
+        file.write(manifest % dumps((stash.objects, stash.caps, stash.special_pages, stash.elfs)))
     return ""
 
 
