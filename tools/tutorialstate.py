@@ -185,7 +185,8 @@ class TuteState(object):
             if key == TaskContentType.BEFORE:
                 assert self.current_task.index > 0
                 return task_get_completion(self.get_task_by_index(self.current_task.index-1), TaskContentType.COMPLETED)
-            raise # Reraise the error if we weren't requesting BEFORE. We require completion text defined for every stage
+            # Reraise the error if we weren't requesting BEFORE. We require completion text defined for every stage
+            raise Exception("Failed to find completion for task {0}".format(self.current_task.name))
 
 
 class Stash(object):
