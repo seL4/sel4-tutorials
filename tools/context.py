@@ -18,14 +18,7 @@ from jinja2 import contextfilter, contextfunction
 import macros
 import tutorialstate
 from tutorialstate import TaskContentType
-from capdl import seL4_TCBObject, seL4_EndpointObject, \
-    seL4_NotificationObject, seL4_CanRead, seL4_CanWrite, seL4_AllRights, \
-    seL4_ARM_SmallPageObject, seL4_FrameObject, seL4_IRQControl, \
-    seL4_UntypedObject, seL4_IA32_IOPort, seL4_IA32_IOSpace, \
-    seL4_ARM_IOSpace, seL4_ASID_Pool, \
-    seL4_ARM_SectionObject, seL4_ARM_SuperSectionObject, \
-    seL4_SchedContextObject, seL4_SchedControl, seL4_RTReplyObject
-
+from capdl import ObjectType, ObjectRights
 from pickle import load, dumps
 
 
@@ -217,7 +210,7 @@ def RecordObject(context, object, name, cap_symbol=None, **kwargs):
         assert stash.objects[name][0] is object
         stash.objects[name][1].update(kwargs)
     else:
-        if object is seL4_FrameObject:
+        if object is ObjectType.seL4_FrameObject:
             stash.unclaimed_special_pages.append((kwargs['symbol'], kwargs['size'], kwargs['alignment'], kwargs['section']))
             write.append("extern const char %s[%d];" % (kwargs['symbol'], kwargs['size']))
         elif object is not None:
@@ -249,14 +242,14 @@ def capdl_empty_slot(context, cap_symbol):
 
 @contextfunction
 def capdl_declare_stack(context, size_bytes, stack_base_sym, stack_top_sym=None):
-    declaration = RecordObject(context, seL4_FrameObject, seL4_FrameObject,
+    declaration = RecordObject(context, ObjectType.seL4_FrameObject, ObjectType.seL4_FrameObject,
                    symbol=stack_base_sym, size=size_bytes, alignment=4096*2, section="guarded")
     stack_top = "" if stack_top_sym is None else "static const uintptr_t %s = (const uintptr_t)&%s + sizeof(%s);" % (stack_top_sym, stack_base_sym, stack_base_sym)
     return "\n".join([declaration.strip(), stack_top])
 
 @contextfunction
 def capdl_declare_frame(context, cap_symbol, symbol, size=4096):
-    return RecordObject(context, seL4_FrameObject, seL4_FrameObject, cap_symbol=cap_symbol,
+    return RecordObject(context, ObjectType.seL4_FrameObject, ObjectType.seL4_FrameObject, cap_symbol=cap_symbol,
     symbol=symbol, size=size, alignment=size, section="guarded")
 
 @contextfunction
@@ -360,7 +353,7 @@ def hide_after_task(context, task_names):
 
 
 def get_context(args, state):
-    return {
+    context = {
             "solution": args.solution,
             "args": args,
             "state": state,
@@ -381,28 +374,15 @@ def get_context(args, state):
             "capdl_declare_ipc_buffer": capdl_declare_ipc_buffer,
             "capdl_declare_frame": capdl_declare_frame,
             'tab':"\t",
-            # capDL objects
-            'seL4_EndpointObject':seL4_EndpointObject,
-            'seL4_NotificationObject':seL4_NotificationObject,
-            'seL4_TCBObject':seL4_TCBObject,
-            'seL4_ARM_SmallPageObject':seL4_ARM_SmallPageObject,
-            'seL4_ARM_SectionObject':seL4_ARM_SectionObject,
-            'seL4_ARM_SuperSectionObject':seL4_ARM_SuperSectionObject,
-            'seL4_FrameObject':seL4_FrameObject,
-            'seL4_UntypedObject':seL4_UntypedObject,
-            'seL4_IA32_IOPort':seL4_IA32_IOPort,
-            'seL4_IA32_IOSpace':seL4_IA32_IOSpace,
-            'seL4_ARM_IOSpace':seL4_ARM_IOSpace,
-            'seL4_SchedContextObject':seL4_SchedContextObject,
-            'seL4_SchedControl':seL4_SchedControl,
-            'seL4_RTReplyObject':seL4_RTReplyObject,
-            'seL4_ASID_Pool':seL4_ASID_Pool,
-            'seL4_CanRead':seL4_CanRead,
-            'seL4_CanWrite':seL4_CanWrite,
-            'seL4_AllRights':seL4_AllRights,
-            'seL4_IRQControl':seL4_IRQControl,
-
     }
+
+    # add all capDL object types
+    context.update(ObjectType.__members__.items())
+
+    # add all capDL object rights
+    context.update(ObjectRights.__members__.items())
+
+    return context
 
 
 def get_filters():
