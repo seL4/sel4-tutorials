@@ -43,15 +43,6 @@ def File(context, content, filename, **kwargs):
 
     return content
 
-@contextfunction
-def ExternalFile(context, filename):
-    '''
-    Declare an additional file to be processed by the template renderer.
-    '''
-    state = context['state']
-    state.additional_files.append(filename)
-    return
-
 
 @contextfilter
 def TaskContent(context, content, task_name, content_type=TaskContentType.COMPLETED, subtask=None, completion=None):
@@ -84,6 +75,50 @@ def ExcludeDocs(context, content):
     and filters will still occur
     '''
     return ""
+
+
+@contextfilter
+def ELF(context, content, name, passive=False):
+    '''
+    Declares a ELF object containing content with name.
+    '''
+    print("here")
+    state = context['state']
+    args = context['args']
+    stash = state.stash
+
+    print(content, name, context)
+    if args.out_dir and not args.docsite:
+        filename = os.path.join(args.out_dir, "%s.c" % name)
+        if not os.path.exists(os.path.dirname(filename)):
+            os.makedirs(os.path.dirname(filename))
+
+        elf_file = open(filename, 'w')
+        print(filename, file=args.output_files)
+
+        elf_file.write(content)
+        # elf_file.write("#line 1 \"thing\"\n" + content)
+
+        stash.caps[name] = stash.unclaimed_caps
+        stash.unclaimed_caps = []
+        stash.elfs[name] = {"filename" :"%s.c" % name, "passive" : passive}
+        stash.special_pages[name] = [("stack", 16*0x1000, 0x1000, 'guarded'),
+        ("mainIpcBuffer", 0x1000, 0x1000, 'guarded'),
+        ] + stash.unclaimed_special_pages
+        stash.unclaimed_special_pages = []
+
+    print("end")
+    return content
+
+
+@contextfunction
+def ExternalFile(context, filename):
+    '''
+    Declare an additional file to be processed by the template renderer.
+    '''
+    state = context['state']
+    state.additional_files.append(filename)
+    return
 
 @contextfunction
 def include_task(context, task_name, subtask=None):
@@ -256,38 +291,6 @@ def capdl_declare_frame(context, cap_symbol, symbol, size=4096):
 def capdl_declare_ipc_buffer(context, cap_symbol, symbol):
     return capdl_declare_frame(context, cap_symbol, symbol)
 
-@contextfilter
-def ELF(context, content, name, passive=False):
-    '''
-    Declares a ELF object containing content with name.
-    '''
-    print("here")
-    state = context['state']
-    args = context['args']
-    stash = state.stash
-
-    print(content, name, context)
-    if args.out_dir and not args.docsite:
-        filename = os.path.join(args.out_dir, "%s.c" % name)
-        if not os.path.exists(os.path.dirname(filename)):
-            os.makedirs(os.path.dirname(filename))
-
-        elf_file = open(filename, 'w')
-        print(filename, file=args.output_files)
-
-        elf_file.write(content)
-        # elf_file.write("#line 1 \"thing\"\n" + content)
-
-        stash.caps[name] = stash.unclaimed_caps
-        stash.unclaimed_caps = []
-        stash.elfs[name] = {"filename" :"%s.c" % name, "passive" : passive}
-        stash.special_pages[name] = [("stack", 16*0x1000, 0x1000, 'guarded'),
-        ("mainIpcBuffer", 0x1000, 0x1000, 'guarded'),
-        ] + stash.unclaimed_special_pages
-        stash.unclaimed_special_pages = []
-
-    print("end")
-    return content
 
 @contextfunction
 def write_manifest(context, file='manifest.py'):
