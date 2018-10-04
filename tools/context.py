@@ -13,25 +13,28 @@
 from __future__ import print_function
 
 import inspect
-import os, stat
+import os
+import stat
+from pickle import dumps
+
 from jinja2 import contextfilter, contextfunction
 
 import macros
-import tutorialstate
-from tutorialstate import TaskContentType
 from capdl import ObjectType, ObjectRights
-from pickle import load, dumps
+from tutorialstate import TaskContentType
 
 
 class TutorialFilters:
-    """Class containing all tutorial filters. Add new static functions here to be included in the tutorial jinja2 context"""
+    """
+    Class containing all tutorial filters. Add new static functions here to be included in the tutorial jinja2 context
+    """
 
     @staticmethod
     @contextfilter
     def File(context, content, filename, **kwargs):
-        '''
+        """
         Declare content to be written directly to a file
-        '''
+        """
         args = context['args']
         if args.out_dir and not args.docsite:
             filename = os.path.join(args.out_dir, filename)
@@ -51,9 +54,9 @@ class TutorialFilters:
     @staticmethod
     @contextfilter
     def TaskContent(context, content, task_name, content_type=TaskContentType.COMPLETED, subtask=None, completion=None):
-        '''
+        """
         Declare task content for a task. Optionally takes content type argument
-        '''
+        """
         state = context["state"]
         task = state.get_task(task_name)
         task.set_content(content_type, content, subtask)
@@ -65,9 +68,9 @@ class TutorialFilters:
     @staticmethod
     @contextfilter
     def TaskCompletion(context, content, task_name, content_type):
-        '''
+        """
         Declare completion text for a particular content_type
-        '''
+        """
         state = context["state"]
         task = state.get_task(task_name)
         task.set_completion(content_type, content)
@@ -76,18 +79,18 @@ class TutorialFilters:
     @staticmethod
     @contextfilter
     def ExcludeDocs(context, content):
-        '''
+        """
         Hides the contents from the documentation. Side effects from other functions
         and filters will still occur
-        '''
+        """
         return ""
 
     @staticmethod
     @contextfilter
     def ELF(context, content, name, passive=False):
-        '''
+        """
         Declares a ELF object containing content with name.
-        '''
+        """
         print("here")
         state = context['state']
         args = context['args']
@@ -117,14 +120,15 @@ class TutorialFilters:
         return content
 
 class TutorialFunctions:
-    """Class containing all tutorial functions. Add new static functions here to be included in the tutorial jinja2 context"""
+    """Class containing all tutorial functions. Add new static functions here to be included in the tutorial jinja2
+    context """
 
     @staticmethod
     @contextfunction
     def ExternalFile(context, filename):
-        '''
+        """
         Declare an additional file to be processed by the template renderer.
-        '''
+        """
         state = context['state']
         state.additional_files.append(filename)
         return
@@ -132,21 +136,20 @@ class TutorialFunctions:
     @staticmethod
     @contextfunction
     def include_task(context, task_name, subtask=None):
-        '''
+        """
         Prints a task out
-        '''
+        """
         state = context["state"]
         task = state.get_task(task_name)
         return state.print_task(task, subtask)
 
-
     @staticmethod
     @contextfunction
     def include_task_type_replace(context, task_names):
-        '''
+        """
         Takes a list of task names and displays only the one that is
         active in the tutorial
-        '''
+        """
         def normalise_task_name(task_name):
             subtask = None
             if isinstance(task_name,tuple):
@@ -154,7 +157,6 @@ class TutorialFunctions:
                 subtask = task_name[1]
                 task_name = task_name[0]
             return (task_name, subtask)
-
 
         if not isinstance(task_names, list):
             task_names = [task_names]
@@ -191,16 +193,15 @@ class TutorialFunctions:
                 else:
                     return ""
 
-
         raise Exception("Could not find thing")
 
     @staticmethod
     @contextfunction
     def include_task_type_append(context, task_names):
-        '''
+        """
         Takes a list of task_names and appends the task content based on the position in
         the tutorial.
-        '''
+        """
         if not isinstance(task_names, list):
             task_names = [task_names]
         args = context['args']
@@ -226,14 +227,13 @@ class TutorialFunctions:
                 result.append(content)
         return '\n'.join(result)
 
-
     @staticmethod
     @contextfunction
     def declare_task_ordering(context, task_names):
-        '''
+        """
         Declare the list of tasks that the tutorial contains.
         Their ordering in the array implies their ordering in the tutorial.
-        '''
+        """
         state = context['state']
         state.declare_tasks(task_names)
         args = context['args']
@@ -246,7 +246,6 @@ class TutorialFunctions:
             for i in task_names:
                 print(i,file=task_file)
         return ""
-
 
     @staticmethod
     @contextfunction
@@ -372,8 +371,6 @@ def hide_after_task(context, task_names):
     pass
 
 '''
-
-
 
 
 def get_context(args, state):
