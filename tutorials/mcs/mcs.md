@@ -1,5 +1,6 @@
-# IPC
-/*? declare_task_ordering(['ipc-start', 'ipc-badge', 'ipc-echo', 'ipc-reply', 'ipc-order']) ?*/
+# MCS Extensions
+/*? declare_task_ordering(['mcs-start','mcs-periodic', 'mcs-unbind', 'mcs-bind', 'mcs-sporadic', 
+'mcs-server','mcs-badge','mcs-fault']) ?*/
 
 ## Prerequisites
 
@@ -9,430 +10,598 @@
 
 ## Initialising
 
+This tutorial runs on a different branch of the seL4 kernel. First, check out this branch:
+
+<!-- TODO update mcs version -->
+
+```bash
+cd kernel
+git fetch seL4 9.0.0-mcs 
+git checkout 9.0.0-mcs
+```
+
+Then initialise the tutorial:
+
 /*? macros.tutorial_init("ipc") ?*/
+
+Note that the other tutorials will not build on this version of the kernel, make sure you 
+ checkout `master` before completing other tutorials.
 
 ## Outcomes
 
-1. Be able to use IPC to send data and capabilities between processes.
-2. Learn the jargon *cap transfer*.
-3. Be able to differentiate requests via badged capabilities.
-4. Know how to design protocols that use the IPC fastpath.
+This tutorial presents the features in the upcoming MCS extensions for seL4, which are currently undergoing
+verification. For further context on the new features, please see the 
+[paper](http://ts.data61.csiro.au/publications/csiro_full_text//Lyons_MAH_18.pdf) or [phd](TODO)
+ which provides a comprehensive background on the changes.
+
+1. Learn about the MCS new kernel API.
+1. Be able to create and configure scheduling contexts.
+2. Learn the jargon *passive server*.
+3. Spawn round-robin and periodic threads.
 
 ## Background
 
-Interprocess communication (IPC) is the microkernel mechanism for synchronous transmission of small amounts of data
-and capabilities between processes. In seL4, IPC is facilitated by small kernel objects known as *endpoints*, which
-act as general communication ports. Invocations on endpoint objects are used to send and receive IPC messages.
+The MCS extensions provide capability-based access to CPU time, and provide mechanisms to limit the upper
+bound of execution of a thread. 
 
-Endpoints consist of a queue of threads waiting to send, or waiting to receive messages. To understand
-this, consider an example where *n* threads are waiting for a message on an endpoint. If *n* threads
-send messages on the endpoint, all *n* waiting threads will receive the message and wake up. If an *n+1*th
-sender sends a message, that sender is now queued.
+### Scheduling Contexts
 
-### System calls
+Scheduling contexts are a new object type in the kernel, which contain scheduling parameters amoung other 
+accounting details. Most importantly, scheduling contexts contain a *budget* and a *period*, which 
+represent an upper bound on execution time allocated: the kernel will enforce that threads cannot execute
+for more than *budget* microseconds out of *period* microseconds. 
 
- Threads can send messages on endpoints with the system call `seL4_Send`, which blocks until the message has been
-consumed by another thread. `seL4_NBSend` can also be used, which performs a polling send: the send is only
-successful if a receiver is already blocked waiting for a message, and otherwise fails. To avoid a
-back channel, `seL4_NBSend` does not return a result indicating if the message was sent or not.
+### SchedControl
 
-`seL4_Recv` can be used to receive messages, and `seL4_NBRecv` can be used to poll for messages.
+Parameters for scheduling contexts are configured by invoking `seL4_SchedControl` capabilities, one of 
+which is provided per CPU. The invoked `seL4_SchedControl` determines which processing core that specific 
+scheduling context provides access to.
 
-`seL4_Call` is a system call that essentially combines an `seL4_Send` and an `seL4_Recv` with one
-major difference: in the receive phase, thread which uses this function is blocked on a one-time capability termed a
-*reply capability*, and not the endpoint itself. In a client-server scenario, where clients use
-`seL4_Call` to make requests, the server can explicitly reply to the correct client.
+Scheduling contexts can be configured as *full* or *partial*. Full scheduling contexts have `budget == 
+period` and grant access to 100% of CPU time. Partial scheduling contexts grant access to an upper bound of
+ `budget/period` CPU time.
 
-The reply capability is stored internally in the thread control block (TCB) of the receiver. The system
-call `seL4_Reply` invokes this capability, which sends an IPC to the client and wakes it up. `seL4_ReplyRecv`
-does the same, except it sends the reply and blocks on the provided endpoint in a combined system call.
-
-Since TCBs have a single space to store a reply capability, if servers need to service multiple
-requests (e.g saving requests to reply at a later time, after hardware operations have been completed),
-[`seL4_CNode_SaveCaller`](https://docs.sel4.systems/ApiDoc.html#save-caller) can be used to save
-the reply capability to an empty slot in the receivers CSpace.
-
-### IPC Buffer
-
-Each thread has a buffer (referred to as the *IPC buffer*), which contains the payload of the IPC message,
-consisting of data and capabilities. Senders specify a message length and the kernel copies this (bounded)
-amount between the sender and receiver IPC buffer.
-
-### Data transfer
-
-The IPC buffer contains a bounded area of message registers (MR) used to transmit data on IPC. Each
-register is the machine word size, and the maximum message size is available in the
-`seL4_MsgMaxLength` constant provided by `libsel4`.
-
-Messages can be loaded into the IPC buffer using `seL4_GetMR` and extracted using `seL4_SetMR`.
-Small messages are sent in registers and do not require a copy operation. The amount of words
-that fit in registers is available in the `seL4_FastMessageRegisters` constant.
-
-The amount of data being transferred, in terms of the number of message registers used, must be
-set in as the `length` field in the `seL4_MessageInfo_t` data structure.
-
-### Cap transfer
-
-Along with data, IPC can be used to send capabilities between processes per message. This is referred to as
- *cap transfer*. The number of capabilities being transferred is encoded in the `seL4_MessageInfo_t`
-structure as `extraCaps`. Below is an example for sending a capability via IPC:
+The code example below configures a 
+scheduling context with a budget and period both equal to 1000us. Because the budget and period are equal, 
+the scheduling context is treated as round-robin 
 
 ```c
-   seL4_MessageInfo info = seL4_MessageInfo_new(0, 0, 1, 0);
-   seL4_SetCap(0, free_slot);
-   seL4_Call(endpoint, info);
+/*-- filter TaskContent("mcs-start", TaskContentType.ALL, subtask='configure') -*/
+    error = seL4_SchedControl_Configure(sched_control, sched_context, US_IN_S, US_IN_S, 0, 0);
+    ZF_LOGF_IF(error != seL4_NoError, "Failed to configure schedcontext");
+/*-- endfilter --*/
 ```
 
-To receive a capability, the receiver must specify a cspace address to place the capability in. This is
-shown in the code example below:
+### SchedContext Binding
+
+Thread control blocks (TCBs) must have a scheduling context configured with non-zero budget and period
+ in order to be picked by the scheduler. This 
+can by invoking the scheduling context capability with the `seL4_SchedContext_Bind` invocation, or by
+using `seL4_TCB_SetSchedParams`, which takes a scheduling context capability. Below is example code for
+binding a TCB and a scheduling context.
 
 ```c
-    seL4_SetCapReceivePath(cnode, badged_endpoint, seL4_WordBits);
-    seL4_Recv(endpoint, &sender);
+/*-- filter TaskContent("mcs-start", TaskContentType.ALL, subtask='bind_yield') -*/
+    error = seL4_SchedContext_Bind(sched_context, spinner_tcb);
+    ZF_LOGF_IF(error != seL4_NoError, "Failed to bind sched_context to round_robin_tcb");
+/*-- endfilter --*/
 ```
 
-The access rights of the received capability are the same as  by the rights that the receiver has to the endpoint.
-Note that while senders can send multiple capabilities, receivers can only receive one at a time.
+TCB's can only be bound to one scheduling context at a time, and vice versa. If a scheduling context has not
+been configured with any time, then although the TCB has a scheduling context it will remain ineligible 
+for scheduling. 
 
-### Capability unwrapping
+### Bounding execution
 
-seL4 can also *unwrap* capabilities on IPC.
-If the n-th capability in the message refers to the endpoint through which the message
-is sent, the capability is unwrapped: its badge is placed into the n-th position of the
-receiver's IPC buffer (in the field `caps_or_badges`), and the kernel sets the n-th bit
-(counting from the least significant) in the `capsUnwrapped` field of `seL4_MessageInfo_t`.
+For partial scheduling contexts, an upper bound on execution is enforced by seL4 using the *sporadic server*
+algorithm, which work by guaranteeing the *sliding window* constrain, meaning that during any period, the
+budget cannot be exceeded. This is achieved by tracking the eligible budget in chunks called 
+*replenishments* (abbreviated to `refills` in the API for brevity). A replenishment is simply an amount 
+ of time, and a timestamp from which that time can be consumed. We explain this now through an example:
 
-### Message Info
+Consider a scheduling context with period *T* and budget *C*. Initially, the scheduling context has 
+a single replenishment of size *C* which is eligible to be used from time *t*. 
 
-The `seL4_MessageInfo_t` data structure is used to encode the description of an IPC message into a single word.
-It is used to describe a message to be sent to seL4, and for seL4 to describe the message that was
-sent to the receiver.
-It contains the following fields:
+The scheduling context is scheduled at time *t* and blocks at time *t + n*. A new replenishment is then scheduled
+for time *t+T* for *n*. The existing replenishment is updated to *C - n*, subtracting the amount consumed.
+For further details on the sporadic server algorithm, see the 
+[original paper](https://dl.acm.org/citation.cfm?id=917665).
 
-* `length` the amount of message registers (data) in the message (`seL4_MsgMaxLength` maximum),
-* `extraCaps` the number of capabilities in the message (`seL4_MsgMaxExtraCaps`)
-* `capsUnwrapped` marks any capabilities unwrapped by the kernel.
-* `label` data that is transferred unmodified by the kernel from sender to receiver,
+If the replenishment data structure is full, replenishments are merged and the upper bound on execution is
+reduced. For this reason, the bound on execution is configurable with the `extra_refills` parameter
+on scheduling contexts. By default, scheduling contexts contain only two parameters, meaning if a 
+scheduling context is blocked, switched or preempted more than twice, the rest of the budget is forfeit until 
+the next period. `extra_refills` provides more replenishment data structures in a scheduling context. Note 
+that the higher the number of replenishments the more fragmentation of budget can occur, which will increase
+scheduling overhead.
 
-### Badges
+`extra_refills` itself is bounded by the size of a scheduling context, which is itself configurable. 
+On scheduling context creation a size can be specified, and must be `> seL4_MinSchedContextBits`. The 
+maximum number of extra refills that can fit into a specific scheduling context size can be calculated
+with the function `seL4_MaxExtraRefills()` provided in `libsel4`.
 
-Along with the message the kernel additionally delivers the badge of the endpoint capability
-that the sender invoked to send the message. Endpoints can be badged using
-[`seL4_CNode_Mint`](https://docs.sel4.systems/ApiDoc.html#mint) or
- [`seL4_CNode_Mutate`](https://docs.sel4.systems/ApiDoc.html#mutate). Once an endpoint is badged,
-the badge of the endpoint is transferred to any receiver that receives messages on that endpoint.
-The code example below demonstrates this:
+Threads bound to scheduling contexts that do not have an available replenishment are placed into an ordered
+queue of threads, and woken once their next replenishment is ready.
 
-```c
-seL4_Word badge;
-seL4_Recv(endpoint, &badge);
-// once a message is received, the badge value is set by seL4 to the
-// badge of capability used by the sender to send the message
-```
+### Scheduler
 
-### Fastpath
+The seL4 scheduler is largely unchanged: the highest priority, non-blocked thread with a configured
+ scheduling context that has available budget is chosen by the scheduler to run.
 
-Fast IPC is essential to microkernel-based systems, as services are often separated from each other
-for isolation, with IPC one of the core mechanisms for communication between clients and services.
-Consequently, IPC has a fastpath -- a heavily optimised path in the kernel -- which allows these operations
-to be very fast. In order to use the fastpath, an IPC must meet the following conditions:
+### Passive servers
 
-* `seL4_Call` or `seL4_ReplyRecv` must be used.
-* The data in the message must fit into the `seL4_FastMessageRegisters` registers.
-* The processes must have valid address spaces.
-* No caps should be transferred.
-* No other threads in the scheduler of higher priority than the thread unblocked by the IPC can be running.
+The MCS extensions allow for RPC style servers to run on client TCBs' scheduling contexts. This is achived by 
+unbinding the scheduling context once a server is blocked on an endpoint, rendering the server *passive*. 
+Caller scheduling contexts are donated to the server on `seL4_Call` and returned on `seL4_ReplyRecv`.
 
+Passive servers can also receive scheduling contexts from their bound notification object, which is 
+achieved by binding a notification object using `seL4_SchedContext_Bind`.
+
+### Timeout faults
+
+Threads can register a timeout fault handler using `seL4_TCB_SetTimeoutEndpoint`. Timeout fault
+handlers are optional and are raised when a thread's replenishment expires *and* they have a valid handler
+registered. The timeout fault message from the kernel contains the data word which can be used to identify the
+scheduling context that the thread was using when the timeout fault occurred, and the amount of time
+consumed by the thread since the last fault or `seL4_SchedContext_Consumed`. 
+
+### New invocations
+
+* `seL4_SchedContext_Bind` - bind a TCB or Notification capability to the invoked scheduling context.
+* `seL4_SchedContext_Unbind` - unbind any objects from the invoked scheduling context.
+* `seL4_SchedContext_UnbindObject`- unbind a specific object from the invoked scheduling context.
+* `seL4_SchedContext_YieldTo` - if the thread running on the invoked scheduling context is 
+schedulable, place it at the head of the scheduling queue for its priority. For same priority threads, this 
+will result in the target thread being scheduled. Return the amount of time consumed by this scheduling 
+context since the last timeout fault, `YieldTo` or `Consumed` invocation.
+* `seL4_SchedContext_Consumed` - Return the amount of time consumed by this scheduling 
+context since the last timeout fault, `YieldTo` or `Consumed` invocation.
+* `seL4_TCB_SetTimeoutEndpoint` - Set the timeout fault endpoint for a TCB.
+
+### Reply objects
+
+The MCS API also makes the reply channel explicit: reply capabilities are now fully fledged objects 
+which must be provided by a thread on `seL4_Recv` operations. They are used to track the scheduling
+context donation chain and return donated scheduling contexts to callers.
+
+Please see the [release notes](https://docs.sel4.systems/sel4_release/seL4_9.0.0-mcs) and 
+[manual](https://docs.sel4.systems/sel4_release/seL4_9.0.0-mcs.html) for further details
+ on the API changes. 
+ 
 ## Exercises
 
-This tutorial has several processes set up by the capDL loader, two clients and a server. All processes have
-access to a single endpoint capability, which provides access to the same endpoint object.
+In the initial state of the tutorial, the main function in `mcs.c` is running in one process, and the 
+following loop from `spinner.c` is running in another process:
 
-In this tutorial, you will construct a server which echos the contents of messages sent by clients. You
-will also alter the ordering of replies from the clients to get the right message.
-
-When you run the tutorial, the output should be something like this:
 
 ```
-Client 2: waiting for badged endpoint
-Badged 2
-Assertion failed: seL4_MessageInfo_get_extraCaps(info) == 1 (../ipcCkQ6Ub/client_2.c: main: 22)
-Client 1: waiting for badged endpoint
-Badged 1
-Assertion failed: seL4_MessageInfo_get_extraCaps(info) == 1 (../ipcCkQ6Ub/client_1.c: main: 22)
+/*-- filter TaskContent("mcs-start", TaskContentType.ALL, subtask='yield') -*/
+    int i = 0;
+    while (1) {
+        printf("Yield\n");
+        seL4_Yield();
+    }
+/*-- endfilter -*/
 ```
 
+Both processes share the same priority. The code in `mcs.c` binds
+a scheduling context (`sched_context`) to the TCB of the spinner process (`spinner_tcb)` with round-robin scheduling parameters. As a result, you should see
+ something like the following output, which continues uninterrupted:
 
-On initialisation, both clients use the following protocol: they wait on the provided endpoint for
-a badged endpoint to be sent to them via cap transfer. All following messages sent by the client
-uses the badged endpoint, such that the server can identify the client. However, the server does not
-currently send the badged capability! We have provided code to badge the endpoint capability, and
-reply to the client.
+```
+/*-- filter TaskCompletion("mcs-start", TaskContentType.ALL) -*/
+Yield
+Yield
+Yield
+/*-- endfilter -*/
+```
 
-**Exercise** Your task is to set up the cap transfer such that the client successfully
-receives the badged endpoint.
+### Periodic threads
 
-```c
-/*-- filter TaskContent("ipc-start", TaskContentType.ALL, subtask="badge", completion="Assertion failed") -*/
-             /* No badge! give this sender a badged copy of the endpoint */
-             seL4_Word badge = seL4_GetMR(0);
-             seL4_Error error = seL4_CNode_Mint(cnode, free_slot, seL4_WordBits,
-                                                cnode, endpoint, seL4_WordBits,
-                                                seL4_AllRights, badge);
-             printf("Badged %lu\n", badge);
+**Exercise** Reconfigure `sched_context` with the following periodic scheduling parameters,
+ (budget = `0.9 * US_IN_S`, period = `1 * US_IN_S`).
 
-             // TODO use cap transfer to send the badged cap in the reply
-
-             /* reply to the sender and wait for the next message */
-             seL4_Reply(info);
-
-             /* now delete the transferred cap */
-             error = seL4_CNode_Delete(cnode, free_slot, seL4_WordBits);
-             assert(error == seL4_NoError);
-
-             /* wait for the next message */
-             info = seL4_Recv(endpoint, &sender);
+ ```c
+/*-- filter TaskContent("mcs-start", TaskContentType.ALL, subtask='periodic') -*/
+    //TODO reconfigure sched_context to be periodic
 /*-- endfilter -*/
 /*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("ipc-badge", TaskContentType.COMPLETED, subtask="badge", completion='received badged endpoint') -*/
-             /* No badge! give this sender a badged copy of the endpoint */
-             seL4_Word badge = seL4_GetMR(0);
-             seL4_Error error = seL4_CNode_Mint(cnode, free_slot, seL4_WordBits,
-                                                cnode, endpoint, seL4_WordBits,
-                                                seL4_AllRights, badge);
-             printf("Badged %lu\n", badge);
-
-             // use cap transfer to send the badged cap in the reply
-             seL4_SetCap(0, free_slot);
-             info = seL4_MessageInfo_new(0, 0, 1, 0);
-
-             /* reply to the sender and wait for the next message */
-             seL4_Reply(info);
-
-             /* now delete the transferred cap */
-             error = seL4_CNode_Delete(cnode, free_slot, seL4_WordBits);
-             assert(error == seL4_NoError);
-
-             /* wait for the next message */
-             info = seL4_Recv(endpoint, &sender);
+/*-- filter TaskContent("mcs-periodic", TaskContentType.COMPLETED, subtask='periodic') -*/
+    // reconfigure sched_context to be periodic
+    error = seL4_SchedControl_Configure(sched_control, sched_context, 0.9 * US_IN_S, 1 * US_IN_S, 0, 0);
+    ZF_LOGF_IF(error != seL4_NoError, "Failed to configure schedcontext");
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
 
-Now the output should look something like:
-```bash
-Booting all finished, dropped to user space
-Client 2: waiting for badged endpoint
-Badged 2
-Client 1: waiting for badged endpoint
-Badged 1
-Client 2: received badged endpoint
-Client 1: received badged endpoint
+By completing this task successfully, the output will not change, but the rate that the output is
+printed will slow: each subsequent line should be output once the period has elapsed. You should now
+be able to see the loop where the `mcs.c` process and `spinner.c` process alternate, until the `mcs.c` 
+process blocks, at which point `"Yield"` is emitted by `spinner.c` every second, as shown below:
+
 ```
+/*-- filter TaskCompletion("mcs-periodic", TaskContentType.ALL) -*/
+Yield
+Tick 0
+Yield
+Tick 1
+Yield
+Tick 2
+Yield
+Tick 3
+Yield
+Tick 4
+Yield
+Tick 5
+Yield
+Tick 6
+Yield
+Tick 7
+Yield
+Tick 8
+Yield
+Yield
+Yield
+/*-- endfilter -*/
+```
+Before you completed this task, the scheduling context was round-robin, and so was 
+schedulable immediately after the call to `seL4_Yield`. 
+By changing
+the scheduling parameters of `sched_context` to periodic parameters (budget < period), each time 
+`seL4_Yield()` is called the available budget in the scheduling context is abandoned, causing the 
+thread to sleep until the next replenishment, determined by the period.  
 
-Depending on timing, the messages may be different, the result is the same: the system hangs.
-This is because one of the clients has hit the else case, where the badge is set, and the server
-does not respond, or wait for new messages from this point.
+### Unbinding scheduling contexts
 
-**Exercise** Your next task is to implement the echo part of the server.
+You can cease a threads execution by unbinding the scheduling context.
+Unlike *suspending* a thread via `seL4_TCB_Suspend`, unbinding will not change the thread state. Using suspend
+cancels any system calls in process (e.g IPC) and renders the thread unschedulable by changing the
+thread state. Unbinding a scheduling context does not alter the thread state, but merely removes the thread
+from the scheduler queues.
 
+**Exercise** Unbind `sched_context` to stop the spinner process from running.
 ```c
-/*-- filter TaskContent("ipc-start", TaskContentType.ALL, subtask="echo") -*/
-             // TODO use printf to print out the message sent by the client
-             // followed by a new line
+/*-- filter TaskContent("mcs-start", TaskContentType.ALL, subtask='unbind') -*/
+    //TODO unbind sched_context to stop yielding thread 
+/*- endfilter --*/
+/*-- filter ExcludeDocs() --*/
+/*-- filter TaskContent("mcs-unbind", TaskContentType.COMPLETED, subtask='unbind') -*/
+    // unbind sched_context to stop the yielding thread
+    error = seL4_SchedContext_Unbind(sched_context);
+    ZF_LOGF_IF(error, "Failed to unbind sched_context");
+/*-- endfilter -*/
+/*-- filter TaskCompletion("mcs-unbind", TaskContentType.COMPLETED) -*/
+Tick 6
+Yield
+Tick 7
+Yield
+Tick 8
+
+/*-- endfilter --*/
+/*-- endfilter --*/
+```
+
+On success, you should see the output from the yielding thread stop.
+
+### Sporadic threads
+
+Your next task is to use a different process, `sender` to experiment with sporadic tasks. The 
+`sender` process is ready to run, and just needs a scheduling context in order to do so.
+
+**Exercise** First, bind `sched_context` to `sender_tcb`.
+
+ ```c
+/*-- filter TaskContent("mcs-start", TaskContentType.ALL, subtask='bind') -*/
+    //TODO bind sched_context to sender_tcb
 /*-- endfilter -*/
 /*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("ipc-echo", TaskContentType.COMPLETED, subtask="echo") -*/
-             for (int i = 0; i < seL4_MessageInfo_get_length(info); i++) {
-                 printf("%c", (char) seL4_GetMR(i));
-             }
-             printf("\n");
+/*-- filter TaskContent("mcs-bind", TaskContentType.COMPLETED, subtask='bind') -*/
+    // bind sched_context to sender_tcb
+    error = seL4_SchedContext_Bind(sched_context, sender_tcb);
+    ZF_LOGF_IF(error != seL4_NoError, "Failed to bind schedcontext");
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
 
-At this point, you should see a single word output to the console in a loop.
+The output should look like the following:
 ```
-/*-- filter TaskCompletion("ipc-echo", TaskContentType.COMPLETED) -*/
-the
-the
-the
+...
+/*-- filter TaskCompletion("mcs-bind", TaskContentType.COMPLETED) -*/
+Tock 3
+Tock 4
+Tock 5
+Tock 6
 /*-- endfilter -*/
 ```
 
-This is because the server does not reply to the client, and continues to spin in a loop
- repeating the last message.
-**Exercise**  Update the code to reply to the clients after printing the message.
+Note the rate of the output: currently, you should see 2 lines come out at a time, with roughly  
+a second break between (the period of the scheduling context you set earlier). This is because
+scheduling context only has the minimum sporadic refills (see background), and each time a context switch 
+occurs a refill is used up to schedule another. 
 
-```c
-/*-- filter TaskContent("ipc-start", TaskContentType.ALL, subtask="reply") -*/
-             // TODO reply to the client and wait for the next message
+**Exercise** Reconfigure the `sched_context` to an extra 6 refills, such that all of the `Tock` output 
+occurs in one go.
+
+ ```c
+/*-- filter TaskContent("mcs-start", TaskContentType.ALL, subtask='sporadic') -*/
+    //TODO reconfigure sched_context to be periodic with 6 extra refills
 /*-- endfilter -*/
 /*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("ipc-reply", TaskContentType.COMPLETED, subtask="reply", completion="lazy") -*/
-             info = seL4_ReplyRecv(endpoint, info, &sender);
+/*-- filter TaskContent("mcs-sporadic", TaskContentType.COMPLETED, subtask='sporadic') -*/
+    // reconfigure sched_context to be periodic with 6 extra refills
+    error = seL4_SchedControl_Configure(sched_control, sched_context, 0.9 * US_IN_S, 1 * US_IN_S, 6, 0);
+    ZF_LOGF_IF(error != seL4_NoError, "Failed to configure schedcontext");
+/*-- endfilter -*/
+/*-- filter TaskCompletion("mcs-sporadic", TaskContentType.ALL) -*/
+Tock 4
+Tock 5
+Tock 6
+Tock 7
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
 
-Now the output should be something like this:
+### Passive servers
 
-```
-Client 2: received badged endpoint
-the
-brown
-jumps
-the
-dog
-Client 1: received badged endpoint
-quick
-fox
-over
-lazy
-```
+Now look to the third process, `server.c`, which is a very basic echo server. It currently does 
+not have a scheduling context, and needs one to initialise.
 
-**Exercise** Currently each client is scheduled for its full timeslice until it is preempted. Alter
-your server to only print one message from each client, alternating. You will need to use
-[`seL4_CNode_SaveCaller`](https://docs.sel4.systems/ApiDoc.html#save-caller)  to save the reply
-capability for each sender. You can use `free_slot` to store the reply capabilities.
+**Exercise** Bind `sched_context` to `server_tcb`. 
+
+ ```c
+/*-- filter TaskContent("mcs-start", TaskContentType.ALL, subtask='server') -*/
+    //TODO bind sched_context to server_tcb
+/*-- endfilter -*/
 /*-- filter ExcludeDocs() -*/
-```c
-/*-- filter TaskContent("ipc-order", TaskContentType.COMPLETED, subtask="order", completion="dog") -*/
-              error = seL4_CNode_SaveCaller(cnode, free_slot, seL4_WordBits);
-              assert(error == 0);
-              info = seL4_Recv(endpoint, &sender);
-              for (int i = 0; i < seL4_MessageInfo_get_length(info); i++) {
-                 printf("%c", (char) seL4_GetMR(i));
-              }
-              printf("\n");
-              seL4_Send(free_slot, seL4_MessageInfo_new(0, 0, 0, 0));
+/*-- filter TaskContent("mcs-server", TaskContentType.COMPLETED, subtask='server') -*/
+    // bind the servers sched context
+    error = seL4_SchedContext_Bind(sched_context, server_tcb);
+    ZF_LOGF_IF(error != seL4_NoError, "Failed to bind sched_context to server_tcb");
+/*-- endfilter -*/
 /*-- endfilter -*/
 ```
-/*-- endfilter -*/
 
-Depending on your approach, successful output should look something like this:
+Now you should see the server initialise and echo the messages sent. Note the initialisation protocol:
+first, you bound `sched_context` to the server. At this point, in `server.c`, the server calls 
+`seL4_NBSendRecv` which sends an IPC message on `endpoint`, indicating that the server is now initialised.
+The output should be as follows
+
 ```
-Client 2: received badged endpoint
-the
-Client 1: received badged endpoint
-quick
-fox
-brown
-jumps
-over
-lazy
-the
-dog
+/*-- filter TaskCompletion("mcs-server", TaskContentType.COMPLETED) -*/
+Tock 8
+Starting server
+Wait for server
+Server initialising
+running
+passive
+echo server
+Yield
+/*-- endfilter -*/
+```
+
+The following code then converts the server to passive:
+
+```c 
+/*-- filter TaskContent("mcs-start", TaskContentType.ALL, subtask='passive') -*/
+    // convert to passive
+    error = seL4_SchedContext_Unbind(sched_context);
+/*-- endfilter -*/
+```
+
+From this point, the server runs on the `mcs` process's scheduling context.
+
+### Timeout Faults
+ 
+**Exercise** Set the data field of `sched_context` using `seL4_SchedControl_Configure` and set a 10s period, 1ms 
+budget and 0 extra refills.
+
+ ```c
+/*-- filter TaskContent("mcs-start", TaskContentType.ALL, subtask='badge') -*/
+    //TODO reconfigure sched_context with 10s period, 1ms budget, 0 extra refills and data of 5.
+/*-- endfilter -*/
+/*-- filter ExcludeDocs() -*/
+/*-- filter TaskContent("mcs-badge", TaskContentType.COMPLETED, subtask='badge') -*/
+
+    // reconfigure sched_context with 1s period, 100ms budget, 0 extra refills and data of 5.
+    error = seL4_SchedControl_Configure(sched_control, sched_context, US_IN_MS, US_IN_S, 0, 5);
+    ZF_LOGF_IF(error != seL4_NoError, "Failed to configure sched_context");
+/*-- endfilter -*/
+/*-- filter TaskCompletion("mcs-badge", TaskContentType.COMPLETED) -*/
+Tock 8
+Starting server
+Wait for server
+Server initialising
+running
+passive
+echo server
+/*-- endfilter -*/
+/*-- endfilter -*/
+```
+The code then binds the scheduling context back to `spinner_tcb`, which starts yielding again.
+
+**Exercise** set the timeout fault endpoint for `spinner_tcb`. 
+
+
+ ```c
+/*-- filter TaskContent("mcs-start", TaskContentType.ALL, subtask='fault') -*/
+    //TODO set endpoint as the timeout fault handler for spinner_tcb
+/*-- endfilter -*/
+/*-- filter ExcludeDocs() -*/
+/*-- filter TaskContent("mcs-fault", TaskContentType.COMPLETED, subtask='fault') -*/
+    // set endpoint as the timeout fault handler for spinner_tcb
+    error = seL4_TCB_SetTimeoutEndpoint(spinner_tcb, endpoint);
+    ZF_LOGF_IF(error != seL4_NoError, "Failed to set timeout fault endpoint for spinner");
+/*-- endfilter -*/
+/*-- endfilter -*/
+```
+
+When the `spinner` faults, you should see the following output:
+
+```
+/*-- filter TaskCompletion("mcs-fault", TaskContentType.COMPLETED) -*/
+Received timeout fault
+Success!
+/*-- endfilter -*/
 ```
 
 ### Further exercises
 
 That's all for the detailed content of this tutorial. Below we list other ideas for exercises you can try,
-to become more familiar with IPC.
+to become more familiar with the MCS extensions.
 
-* Try using `seL4_Send` and `seL4_Recv`.
-* Try the non-blocking variants, `seL4_NBSend` and `seL4_NBRecv`.
+* Set up a passive server with a timeout fault handlers, with policies for clients that exhaust their budget.
+* Experiment with notification binding on a passive server, by binding both a notification object to the 
+server TCB and an SC to the notification object.
 
 /*? macros.help_block() ?*/
 
 /*-- filter ExcludeDocs() -*/
 ```c
-/*-- filter TaskContent("ipc-start", TaskContentType.ALL, subtask="client") -*/
-    printf("Client %d: waiting for badged endpoint\n", id);
-    seL4_SetCapReceivePath(cnode, badged_endpoint, seL4_WordBits);
-    seL4_SetMR(0, id);
-    seL4_MessageInfo_t info = seL4_MessageInfo_new(0, 1, 0, 1);
-    info = seL4_Call(endpoint, info);
-    assert(seL4_MessageInfo_get_extraCaps(info) == 1);
-    /* wait for the server to send us an endpoint */
-    printf("Client %d: received badged endpoint\n", id);
-
-    for (int i = 0; i < ARRAY_SIZE(messages); i++) {
-        int j;
-        for (j = 0; messages[i][j] != '\0'; j++) {
-            seL4_SetMR(j, messages[i][j]);
-        }
-        info = seL4_MessageInfo_new(0, 0, 0, j);
-        seL4_Call(badged_endpoint, info);
-    }
-/*-- endfilter -*/
-```
-
-```c
-/*-- filter ELF("client_1") -*/
-#include <assert.h>
+/*-- filter ELF("spinner", passive=True) -*/
 #include <stdio.h>
 #include <sel4/sel4.h>
 #include <utils/util.h>
 
-/*? RecordObject(seL4_EndpointObject, "endpoint", cap_symbol="endpoint", read=True, write=True, grant=True) ?*/
-/*? RecordObject(None, "cnode_client_1", cap_symbol="cnode", read=True, write=True) ?*/
-/*? RecordObject(None, None, cap_symbol="badged_endpoint") ?*/
-
-const char *messages[] = {"quick", "fox", "over", "lazy"};
-
 int main(int c, char *argv[]) {
-
-    int id = 1;
-    /*? include_task_type_append([("ipc-start", 'client')]) ?*/
+/*? include_task_type_append([("mcs-start", 'yield')]) ?*/
     return 0;
 }
 /*-- endfilter -*/
-```
-
-
-
-```c
-/*-- filter ELF("client_2") -*/
-#include <assert.h>
+/*-- filter ELF("sender", passive=True) -*/
 #include <stdio.h>
 #include <sel4/sel4.h>
-#include <utils/util.h>
 
-/*? RecordObject(seL4_EndpointObject, "endpoint", cap_symbol="endpoint", read=True, write=True, grant=True) ?*/
-/*? RecordObject(None, "cnode_client_2", cap_symbol="cnode", read=True, write=True) ?*/
-/*? RecordObject(None, None, cap_symbol="badged_endpoint") ?*/
-
-const char *messages[] = {"the", "brown", "jumps", "the", "dog"};
-
+/*? RecordObject(seL4_EndpointObject, "endpoint", cap_symbol="endpoint", write=True, read=True, grant=True) ?*/
 int main(int c, char *argv[]) {
-
-    int id = 2;
-    /*? include_task_type_append([("ipc-start", 'client')]) ?*/
-    return 0;
-}
-/*-- endfilter -*/
-```
-
-```c
-/*-- filter ELF("server") -*/
-
-#include <assert.h>
-#include <sel4/sel4.h>
-#include <stdio.h>
-#include <utils/util.h>
-
-// cslot containing IPC endpoint capability
-/*? RecordObject(seL4_EndpointObject, "endpoint", cap_symbol="endpoint", read=True, write=True, grant=True) ?*/
-// cslot containing a capability to the cnode of the server
-/*? RecordObject(None, "cnode_server", cap_symbol="cnode", read=True, write=True) ?*/
-// empty cslot
-/*? RecordObject(None, None, cap_symbol="free_slot") ?*/
-
-int main(int c, char *argv[]) {
-
-	seL4_Word sender;
-    seL4_MessageInfo_t info = seL4_Recv(endpoint, &sender);
+    int i = 0;
     while (1) {
-	    seL4_Error error;
-        if (sender == 0) {
-/*? include_task_type_replace([("ipc-start", 'badge'), ("ipc-badge", 'badge')]) ?*/
-        } else {
-/*? include_task_type_replace([("ipc-start", 'echo'), ("ipc-echo", 'echo')]) ?*/
-/*? include_task_type_append([("ipc-order", 'order')]) ?*/
-/*? include_task_type_replace([("ipc-start", 'reply'), ("ipc-reply", 'reply')]) ?*/
-        }
+        seL4_MessageInfo_t info = seL4_MessageInfo_new(0, 0, 0, 1);
+        seL4_SetMR(0, i);
+        seL4_Send(endpoint, info);
+        i++;
     }
+    return 0;
+}
+/*-- endfilter -*/
+/*-- filter ELF("server", passive=True) -*/
+#include <stdio.h>
+#include <sel4/sel4.h>
+
+/*? RecordObject(seL4_EndpointObject, "endpoint", cap_symbol="endpoint", write=True, read=True, grant=True) ?*/
+/*? RecordObject(seL4_RTReplyObject, "reply", cap_symbol="reply", read=True, write=True, grant=True) ?*/ 
+
+int main(int c, char *argv[]) {
+
+    printf("Server initialising\n");
+    seL4_MessageInfo_t info = seL4_NBSendRecv(endpoint, info, endpoint, NULL, reply);
+    while (1) {
+        int i = 0;
+        for (; i < seL4_MsgMaxLength && i < seL4_MessageInfo_get_length(info); i++) {
+            seL4_DebugPutChar(seL4_GetMR(i));
+        }
+        seL4_DebugPutChar('\n');
+        seL4_SetMR(0, i);
+        info = seL4_ReplyRecv(endpoint, seL4_MessageInfo_new(0, 0, 0, i), NULL, reply);
+    }
+
+    return 0;
+}
+/*-- endfilter -*/
+/*-- filter ELF("mcs") -*/
+#include <assert.h>
+#include <sel4/sel4.h>
+#include <stdio.h>
+#include <string.h>
+#include <utils/util.h>
+
+// CSlots pre-initialised in this CSpace
+// capability to a scheduling context
+/*? RecordObject(seL4_SchedContextObject, "sched_context", cap_symbol="sched_context") ?*/
+// the seL4_SchedControl capabilty for the current core
+/*? capdl_sched_control("sched_control") ?*/
+// capability to the tcb of the server process
+/*? capdl_elf_tcb("server", "server_tcb") ?*/
+// capability to the tcb of the spinner process
+/*? capdl_elf_tcb("spinner", "spinner_tcb") ?*/
+// capability to the tcb of the sender process
+/*? capdl_elf_tcb("sender", "sender_tcb") ?*/
+// capability to an endpoint, shared with 'sender' and 'server' 
+/*? RecordObject(seL4_EndpointObject, "endpoint", cap_symbol="endpoint", write=True, read=True, grant=True) ?*/
+// capability to a reply object
+/*? RecordObject(seL4_RTReplyObject, "reply2", cap_symbol="reply", write=True, read=True, grant=True) ?*/
+
+int main(int c, char *argv[]) {
+    seL4_Error error;
+
+    // configure sc
+    /*? include_task_type_append([("mcs-start", 'configure')]) ?*/
+    // bind it to `spinner_tcb`
+    /*? include_task_type_append([("mcs-start", 'bind_yield')]) ?*/
+
+    int i = 0; 
+    for (; i < 9; i++) {
+        seL4_Yield();
+        printf("Tick %d\n", i);
+    }
+
+    /*? include_task_type_replace([("mcs-start", 'periodic'), ("mcs-periodic", 'periodic')]) ?*/
+    /*? include_task_type_replace([("mcs-start", 'unbind'), ("mcs-unbind", 'unbind')]) ?*/
+    /*? include_task_type_replace([("mcs-start", 'bind'), ("mcs-bind", 'bind')]) ?*/
+    /*? include_task_type_replace([("mcs-start", 'sporadic'), ("mcs-sporadic", 'sporadic')]) ?*/
+    for (int i = 0; i < 9; i++) {
+        seL4_Wait(endpoint, NULL);
+        printf("Tock %d\n", (int) seL4_GetMR(0));
+    }
+ 
+    
+    error = seL4_SchedContext_UnbindObject(sched_context, sender_tcb);
+    ZF_LOGF_IF(error, "Failed to unbind sched_context from sender_tcb");
+    
+    /* suspend the sender to get them off endpoint */
+    error = seL4_TCB_Suspend(sender_tcb);
+    ZF_LOGF_IF(error, "Failed to suspend sender_tcb");
+
+    error = seL4_TCB_SetPriority(server_tcb, server_tcb, 253);
+    ZF_LOGF_IF(error, "Failed to decrease server's priority");
+    printf("Starting server\n");
+    /*? include_task_type_replace([("mcs-start", 'server'), ("mcs-server", 'server')]) ?*/
+    // wait for it to initialise
+    printf("Wait for server\n"); 
+    seL4_Wait(endpoint, NULL);
+    printf("WTF\n");
+   
+    /*? include_task_type_append([("mcs-start", 'passive')]) ?*/
+    ZF_LOGF_IF(error != seL4_NoError, "Failed to unbind sched context");
+
+    const char *messages[] = {
+        "running", 
+        "passive",
+        "echo server",
+        NULL,
+    };
+ 
+    for (int i = 0; messages[i] != NULL; i++) {
+        int m = 0;
+        for (; m < strlen(messages[i]) && m < seL4_MsgMaxLength; m++) {
+            seL4_SetMR(m, messages[i][m]);
+        }
+        seL4_Call(endpoint, seL4_MessageInfo_new(0, 0, 0, m));
+    }
+
+    /*? include_task_type_replace([("mcs-start", 'badge'), ("mcs-badge", 'badge')]) ?*/
+    
+    error = seL4_SchedContext_Bind(sched_context, spinner_tcb);
+    ZF_LOGF_IF(error, "Failed to bind sched_context to spinner_tcb");
+
+    /*? include_task_type_replace([("mcs-start", 'fault'), ("mcs-fault", 'fault')]) ?*/
+    seL4_MessageInfo_t info = seL4_Recv(endpoint, NULL, reply);
+    /* parse the fault info from the message */
+    seL4_Fault_t fault = seL4_getArchFault(info);
+    ZF_LOGF_IF(seL4_Fault_get_seL4_FaultType(fault) != seL4_Fault_Timeout, "Not a timeout fault");
+    printf("Received timeout fault\n");
+    ZF_LOGF_IF(seL4_Fault_Timeout_get_data(fault) != 5, "Incorrect data");
+    
+    printf("Success!\n");
 
     return 0;
 }
