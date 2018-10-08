@@ -289,6 +289,16 @@ class TutorialFunctions:
 
     @staticmethod
     @contextfunction
+    def capdl_elf_sc(context, elf_name, cap_symbol):
+        return TutorialFunctions.RecordObject(context, None, "sc_%s" % elf_name, cap_symbol=cap_symbol)
+
+    @staticmethod
+    @contextfunction
+    def capdl_sched_control(context, cap_symbol):
+        return TutorialFunctions.RecordObject(context, ObjectType.seL4_SchedControl, "sched_control", cap_symbol=cap_symbol)
+
+    @staticmethod
+    @contextfunction
     def capdl_empty_slot(context, cap_symbol):
         return TutorialFunctions.RecordObject(context, None, None, cap_symbol=cap_symbol)
 
