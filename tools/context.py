@@ -53,10 +53,13 @@ class TutorialFilters:
 
     @staticmethod
     @contextfilter
-    def TaskContent(context, content, task_name, content_type=TaskContentType.COMPLETED, subtask=None, completion=None):
+    def TaskContent(context, content, task_name, content_type, subtask=None, completion=None):
         """
         Declare task content for a task. Optionally takes content type argument
         """
+        if not content_type or content_type not in TaskContentType:
+            raise Exception("Invalid content type")
+
         state = context["state"]
         task = state.get_task(task_name)
         task.set_content(content_type, content, subtask)
@@ -71,6 +74,8 @@ class TutorialFilters:
         """
         Declare completion text for a particular content_type
         """
+        if not content_type or content_type not in TaskContentType:
+            raise Exception("Invalid content type")
         state = context["state"]
         task = state.get_task(task_name)
         task.set_completion(content_type, content)
