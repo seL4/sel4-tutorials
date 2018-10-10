@@ -31,7 +31,7 @@ def main():
                         help="Output everything including debug info", default=False)
     parser.add_argument('--quiet', action='store_true',
                         help="Suppress output except for tutorial completion information", default=True)
-    parser.add_argument('--plat', type=str, choices=common.ALL_CONFIGS, default='pc99')
+    parser.add_argument('--plat', type=str, choices=common.ALL_CONFIGS)
     parser.add_argument('--tut', type=str, choices=common.ALL_TUTORIALS, required=True)
     parser.add_argument('--solution', action='store_true', help="Generate pre-made solutions", default=False)
     parser.add_argument('--task', help="Generate pre-made solutions")
@@ -41,6 +41,10 @@ def main():
     common.setup_logger(__name__)
     common.set_log_level(args.verbose, True)
     # Additional config/tutorial combination validation
+    if not args.plat:
+        # just pick the first platform that works for this tutorial
+        args.plat = common.TUTORIALS[args.tut][0]
+
     if args.plat not in common.TUTORIALS[args.tut]:
         logging.error("Tutorial %s not supported by platform %s. Valid platforms are %s: ", args.tut, args.plat, common.TUTORIALS[args.tut])
         return -1
