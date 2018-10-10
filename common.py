@@ -32,7 +32,6 @@ ALL_CONFIGS = PLAT_CONFIG.keys()
 TUTORIALS = {
     'hello-world': ALL_CONFIGS,
     'ipc': ALL_CONFIGS,
-    'hello-1': ALL_CONFIGS,
     'hello-2': ALL_CONFIGS,
     'hello-2-nolibs': ALL_CONFIGS,
     'hello-3': ALL_CONFIGS,
