@@ -50,7 +50,8 @@ TUTORIALS = {
     'camkes-vm-crossvm': ['pc99'],
     'threads': ALL_CONFIGS,
     'notifications': ['pc99'],
-    'mcs': ALL_CONFIGS
+    'mcs': ALL_CONFIGS,
+    'interrupts': ['zynq7000'],
 }
 
 ALL_TUTORIALS = TUTORIALS.keys()
