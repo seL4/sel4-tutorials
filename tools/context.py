@@ -299,6 +299,11 @@ class TutorialFunctions:
 
     @staticmethod
     @contextfunction
+    def capdl_irq_control(context, cap_symbol):
+        return TutorialFunctions.RecordObject(context, ObjectType.seL4_IRQControl, "irq_control", cap_symbol=cap_symbol)
+
+    @staticmethod
+    @contextfunction
     def capdl_empty_slot(context, cap_symbol):
         return TutorialFunctions.RecordObject(context, None, None, cap_symbol=cap_symbol)
 
