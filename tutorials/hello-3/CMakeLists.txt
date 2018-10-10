@@ -14,7 +14,7 @@ cmake_minimum_required(VERSION 3.7.2)
 
 project(hello-3 C)
 
-add_executable(hello-3 src/main.c)
+add_executable(hello-3 main.c)
 
 target_link_libraries(hello-3
     sel4
@@ -23,7 +23,4 @@ target_link_libraries(hello-3
 
 DeclareRootserver(hello-3)
 
-/*? declare_task_ordering(['1']) ?*/
-/*- filter TaskContent("1", TaskContentType.BEFORE, completion="Caught cap fault in send phase") -*//*- endfilter -*/
-/*- filter TaskContent("1", TaskContentType.COMPLETED, completion="main: got a reply: 0xffff*9e9e") -*//*- endfilter -*/
 /*? macros.cmake_check_script(state) ?*/
