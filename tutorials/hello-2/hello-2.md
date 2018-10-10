@@ -49,14 +49,12 @@ Uncomment them one by one as needed when going through the tasks.
         idea that a thread has a TCB, VSpace and CSpace, and that you
         must fill these out.
 
+
+## Initialising
+
+/*? macros.tutorial_init("hello-2") ?*/
+
 ## Walkthrough
-```
-# create a build directory
-mkdir build_hello_2
-cd build_hello_2
-# initialise your build directory
-../init --plat pc99 --tut hello-2
-```
 
 Look for `TASK` in the `hello-2/src` directory for each task.
 
