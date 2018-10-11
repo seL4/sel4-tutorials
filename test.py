@@ -61,7 +61,7 @@ def run_single_test(config, tutorial, temp_file):
     configuration, checking that the result matches the completion text
     """
     # Create temporary directory for working in (make this a common helper to share with init.py)
-    tute_dir = tempfile.mkdtemp(dir=TOP_LEVEL_DIR, prefix='tute_')
+    tute_dir = tempfile.mkdtemp(dir=TOP_LEVEL_DIR, prefix=tutorial)
     build_dir = "%s_build" % tute_dir
     os.mkdir(build_dir)
 
