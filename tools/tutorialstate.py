@@ -62,9 +62,9 @@ class Task(object):
         Return the content for a particular subtask and content type
         '''
         if subtask:
-            return self.subtask_content[subtask][content_type]
-        else:
-            return self.content[content_type]
+            subtask_content = self.subtask_content.get(subtask)
+            return subtask_content.get(content_type) if subtask_content else None
+        return self.content.get(content_type)
 
     def set_completion(self, content_type, content):
         '''
@@ -77,7 +77,7 @@ class Task(object):
         '''
         Get completion text for a task
         '''
-        return self.completion[content_type]
+        return self.completion.get(content_type)
 
 
 class TuteState(object):
@@ -158,10 +158,8 @@ class TuteState(object):
             key = TaskContentType.COMPLETED if task <= self.current_task else TaskContentType.BEFORE
         else:
             key = TaskContentType.COMPLETED if task < self.current_task else TaskContentType.BEFORE
-        content = None
-        try:
-            content = task.get_content(key, subtask)
-        except KeyError:
+        content = task.get_content(key, subtask)
+        if not content:
             content = task.get_content(TaskContentType.ALL, subtask)
 
         return content
@@ -173,20 +171,20 @@ class TuteState(object):
         completion text from the COMPLETED part of the previous task
         '''
         def task_get_completion(task, key):
-            try:
-                return task.get_completion(key)
-            except KeyError:
-                return task.get_completion(TaskContentType.ALL)
+            ret = task.get_completion(key)
+            if not ret:
+                ret = task.get_completion(TaskContentType.ALL)
+            return ret
 
         key = content_type
-        try:
-            return task_get_completion(self.current_task, key)
-        except KeyError:
-            if key == TaskContentType.BEFORE:
-                assert self.current_task.index > 0
-                return task_get_completion(self.get_task_by_index(self.current_task.index-1), TaskContentType.COMPLETED)
-            # Reraise the error if we weren't requesting BEFORE. We require completion text defined for every stage
+        completion = task_get_completion(self.current_task, key)
+        if not completion and key == TaskContentType.BEFORE:
+            assert self.current_task.index > 0
+            completion = task_get_completion(self.get_task_by_index(self.current_task.index-1), TaskContentType.COMPLETED)
+        # Reraise the error if we weren't requesting BEFORE. We require completion text defined for every stage
+        if not completion:
             raise Exception("Failed to find completion for task {0}".format(self.current_task.name))
+        return completion
 
 
 class Stash(object):
