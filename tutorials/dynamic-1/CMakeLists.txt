@@ -12,14 +12,14 @@
 
 cmake_minimum_required(VERSION 3.7.2)
 
-project(hello-2 C)
+project(dynamic-1 C)
 
-add_executable(hello-2 main.c)
+add_executable(dynamic-1 main.c)
 
-target_link_libraries(hello-2
+target_link_libraries(dynamic-1
     sel4
     muslc utils sel4tutorials
     sel4muslcsys sel4platsupport sel4utils sel4debug sel4allocman)
 
-DeclareRootserver(hello-2)
+DeclareRootserver(dynamic-1)
 /*? macros.cmake_check_script(state) ?*/

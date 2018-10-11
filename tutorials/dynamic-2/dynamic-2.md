@@ -2,7 +2,7 @@
 toc: true
 ---
 /*? declare_task_ordering(
-['task-1', 
+['task-1',
 'task-2',
 'task-3',
 'task-4',
@@ -61,13 +61,13 @@ they were covered by a previous tutorial in the series.
 
 ## Initialising
 
-/*? macros.tutorial_init("hello-3") ?*/
+/*? macros.tutorial_init("dynamic-2") ?*/
 
 
 ## Prerequisites
 
 1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-1. [Hello-2](/Tutorials/hello-2)
+1. [dynamic-1](/Tutorials/dynamic-1)
 
 ## Exercises
 
@@ -185,7 +185,7 @@ into a VSpace, and the mapping of a new page-table into a VSpace.
 
 On completion, the output will be as follows:
 ```
-hello-3: main@main.c:260 [Err seL4_FailedLookup]:
+dynamic-2: main@main.c:260 [Err seL4_FailedLookup]:
 /*--filter TaskCompletion("task-2", TaskContentType.COMPLETED)--*/
 	Failed to allocate new page table.
 /*-- endfilter -*/
@@ -291,7 +291,7 @@ On completion, you will see the following:
 /*--filter TaskCompletion("task-5", TaskContentType.COMPLETED)--*/
 main: hello world
 /*-- endfilter -*/
-hello-3: main@main.c:464 [Cond failed: seL4_MessageInfo_get_length(tag) != 1]
+dynamic-2: main@main.c:464 [Cond failed: seL4_MessageInfo_get_length(tag) != 1]
 	Response data from thread_2 was not the length expected.
 	How many registers did you set with seL4_SetMR within thread_2?
 ```
@@ -451,7 +451,7 @@ transmitted in the message.
 ```
 On completion, the output should change as follows:
 ```
-hello-3: main@main.c:472 [Cond failed: msg != ~MSG_DATA]
+dynamic-2: main@main.c:472 [Cond failed: msg != ~MSG_DATA]
 /*--filter TaskCompletion("task-8", TaskContentType.COMPLETED)--*/
 	Response data from thread_2's content was not what was expected.
 /*-- endfilter -*/
@@ -839,8 +839,8 @@ int main(void) {
     ZF_LOGF_IF(info == NULL, "Failed to get bootinfo.");
 
     /* Set up logging and give us a name: useful for debugging if the thread faults */
-    zf_log_set_tag_prefix("hello-3:");
-    name_thread(seL4_CapInitThreadTCB, "hello-3");
+    zf_log_set_tag_prefix("dynamic-2:");
+    name_thread(seL4_CapInitThreadTCB, "dynamic-2");
 
     /* init simple */
     simple_default_init_bootinfo(&simple, info);
@@ -934,7 +934,7 @@ int main(void) {
 
 
     /* give the new thread a name */
-    name_thread(tcb_object.cptr, "hello-3: thread_2");
+    name_thread(tcb_object.cptr, "dynamic-2: thread_2");
 
     /* set start up registers for the new thread */
     seL4_UserContext regs = {0};

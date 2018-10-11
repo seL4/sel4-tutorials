@@ -2,7 +2,7 @@
 toc: true
 ---
 /*? declare_task_ordering(
-['task-1', 
+['task-1',
 'task-2',
 'task-3',
 'task-4',
@@ -58,9 +58,9 @@ for your benefit so you can grasp some of the basic data structures.
 
 ## Initialising
 
-/*? macros.tutorial_init("hello-2") ?*/
+/*? macros.tutorial_init("dynamic-1") ?*/
 
-## Exercises 
+## Exercises
 
 When you first run the tutorial, you should see the following output:
 ```
@@ -108,7 +108,7 @@ It also sets up the IPC buffer so that it can perform some syscalls such as `seL
 ```
 On success, you should see the following:
 ```
-hello-2: main@main.c:124 [Cond failed: allocman == NULL]
+dynamic-1: main@main.c:124 [Cond failed: allocman == NULL]
 /*-- filter TaskCompletion("task-1", TaskContentType.COMPLETED) -*/
 	Failed to initialize alloc manager.
 	Memory pool sufficiently sized?
@@ -177,7 +177,7 @@ untypeds:        [316 --> 406)
 Initial thread domain: 0
 Initial thread cnode size: 12
 /*-- endfilter -*/
-hello-2: main@main.c:126 [Cond failed: allocman == NULL]
+dynamic-1: main@main.c:126 [Cond failed: allocman == NULL]
 ```
 
 ### Initialise an allocator
@@ -204,7 +204,7 @@ step.
      * @return returns NULL on error
      */
 /*-- endset -*/
-/*? task_4_desc ?*/ 
+/*? task_4_desc ?*/
 /*-- filter ExcludeDocs() -*/
 /*-- filter TaskContent("task-4", TaskContentType.COMPLETED, completion="main: hello world") -*/
     allocman = bootstrap_use_current_simple(&simple, ALLOCATOR_STATIC_POOL_SIZE, allocator_mem_pool);
@@ -213,8 +213,8 @@ step.
 ```
 The output should now be as follows:
 ```
-<<seL4(CPU 0) [decodeInvocation/530 T0xffffff801ffb5400 "hello-2" @401303]: Attempted to invoke a null cap #0.>>
-hello-2: main@main.c:199 [Err seL4_InvalidCapability]:
+<<seL4(CPU 0) [decodeInvocation/530 T0xffffff801ffb5400 "dynamic-1" @401303]: Attempted to invoke a null cap #0.>>
+dynamic-1: main@main.c:199 [Err seL4_InvalidCapability]:
 /*-- filter TaskCompletion("task-3", TaskContentType.COMPLETED) -*/
 	Failed to set the priority for the new TCB object.
 /*-- endfilter -*/
@@ -413,7 +413,7 @@ On successful completion this task, the output should not change.
 /*? task_10_desc ?*/
 /*-- filter ExcludeDocs() -*/
 /*-- filter TaskContent("task-10", TaskContentType.COMPLETED, completion="main: hello world") -*/
-    NAME_THREAD(tcb_object.cptr, "hello-2: thread_2");
+    NAME_THREAD(tcb_object.cptr, "dynamic-1: thread_2");
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
@@ -566,7 +566,7 @@ On success, you should see output from your new thread.
 - `allocman_t`:
       <https://github.com/seL4/seL4_libs/blob/master/libsel4allocman/include/allocman/allocman.h>
 - `name_thread()`:
-      <https://github.com/SEL4PROJ/sel4-tutorials/blob/master/exercises/hello-2/src/util.c>
+      <https://github.com/SEL4PROJ/sel4-tutorials/blob/master/exercises/dynamic-1/src/util.c>
 
 
 That's it for this tutorial.
@@ -659,8 +659,8 @@ int main(void) {
      * It is part of the root task's boot environment and defined in bootinfo.h from libsel4:
      * https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#globals-links:
      */
-    zf_log_set_tag_prefix("hello-2:");
-    NAME_THREAD(seL4_CapInitThreadTCB, "hello-2");
+    zf_log_set_tag_prefix("dynamic-1:");
+    NAME_THREAD(seL4_CapInitThreadTCB, "dynamic-1");
 
     /*? task_2_desc ?*/
     /*? include_task_type_append([("task-2")]) ?*/
