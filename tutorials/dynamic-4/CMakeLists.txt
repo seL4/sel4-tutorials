@@ -12,7 +12,7 @@
 
 cmake_minimum_required(VERSION 3.7.2)
 
-project(hello-timer C)
+project(dynamic-4 C)
 
 add_executable(client client.c)
 
@@ -26,12 +26,12 @@ target_link_libraries(client
 
 MakeCPIO(archive.o "$<TARGET_FILE:client>")
 
-add_executable(hello-timer archive.o main.c)
+add_executable(dynamic-4 archive.o main.c)
 
-target_link_libraries(hello-timer
+target_link_libraries(dynamic-4
     sel4
     muslc utils sel4tutorials
     sel4muslcsys sel4platsupport sel4utils sel4debug sel4allocman)
 
-DeclareRootserver(hello-timer)
+DeclareRootserver(dynamic-4)
 /*? macros.cmake_check_script(state) ?*/

@@ -35,7 +35,7 @@ TUTORIALS = {
     'dynamic-1': ALL_CONFIGS,
     'dynamic-2': ALL_CONFIGS,
     'dynamic-3': ALL_CONFIGS,
-    'hello-timer': ALL_CONFIGS,
+    'dynamic-4': ALL_CONFIGS,
     'hello-camkes-0': ALL_CONFIGS,
     'hello-camkes-1': ALL_CONFIGS,
     'hello-camkes-2': ALL_CONFIGS,
