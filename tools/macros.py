@@ -11,11 +11,11 @@
 #
 
 from tutorialstate import TaskContentType
+
+
 def ninja_block():
-	'''
-	Print ninja code block
-	'''
-	return '''
+    """Print ninja code block"""
+    return '''
 ```sh
 # In build directory
 ninja
@@ -23,10 +23,8 @@ ninja
 
 
 def simulate_block():
-	'''
-	Print simulate code block
-	'''
-	return '''
+    """Print simulate code block"""
+    return '''
 ```sh
 # In build directory
 ./simulate
@@ -34,10 +32,8 @@ def simulate_block():
 
 
 def ninja_simulate_block():
-	'''
-	Print simulate and ninja code block
-	'''
-	return '''
+    """Print simulate and ninja code block"""
+    return '''
 ```sh
 # In build directory
 ninja && ./simulate
@@ -45,23 +41,26 @@ ninja && ./simulate
 
 
 def help_block():
-	return '''
+    return '''
 ---
 ## Getting help
 Stuck? See the resources below. 
 * [FAQ](https://docs.sel4.systems/FrequentlyAskedQuestions)
+* [seL4 Manual](http://sel4.systems/Info/Docs/seL4-manual-latest.pdf)
 * [Debugging guide](https://docs.sel4.systems/DebuggingGuide.html)
 * [Developer's mailing list](https://sel4.systems/lists/listinfo/devel)
 '''
 
+
 def cmake_check_script(state):
-	return '''set(FINISH_COMPLETION_TEXT "%s")
+    return '''set(FINISH_COMPLETION_TEXT "%s")
 set(START_COMPLETION_TEXT "%s")
 configure_file(${CMAKE_SOURCE_DIR}/projects/sel4-tutorials/tools/expect.py ${CMAKE_BINARY_DIR}/check @ONLY)
 ''' % (state.print_completion(TaskContentType.COMPLETED), state.print_completion(TaskContentType.BEFORE))
 
+
 def tutorial_init(name):
-	return '''```sh
+    return '''```sh
 # Follow these instructions to initialise the tutorial
 # creating a Tutorial directory
 mkdir %s
