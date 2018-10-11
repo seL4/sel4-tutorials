@@ -12,7 +12,7 @@
 
 cmake_minimum_required(VERSION 3.7.2)
 
-project(hello-4 C)
+project(dynamic-3 C)
 
 add_executable(app app.c)
 target_link_libraries(app sel4 muslc utils sel4tutorials
@@ -21,12 +21,12 @@ set_property(TARGET app APPEND_STRING PROPERTY LINK_FLAGS " -u __vsyscall_ptr ")
 
 MakeCPIO(archive.o "$<TARGET_FILE:app>")
 
-add_executable(hello-4 archive.o main.c)
+add_executable(dynamic-3 archive.o main.c)
 
-target_link_libraries(hello-4
+target_link_libraries(dynamic-3
     sel4
     muslc utils sel4tutorials
     sel4muslcsys sel4platsupport sel4utils sel4debug sel4allocman)
 
-DeclareRootserver(hello-4)
+DeclareRootserver(dynamic-3)
 /*? macros.cmake_check_script(state) ?*/

@@ -32,9 +32,9 @@ ALL_CONFIGS = PLAT_CONFIG.keys()
 TUTORIALS = {
     'hello-world': ALL_CONFIGS,
     'ipc': ALL_CONFIGS,
-    'hello-2': ALL_CONFIGS,
-    'hello-3': ALL_CONFIGS,
-    'hello-4': ALL_CONFIGS,
+    'dynamic-1': ALL_CONFIGS,
+    'dynamic-2': ALL_CONFIGS,
+    'dynamic-3': ALL_CONFIGS,
     'hello-timer': ALL_CONFIGS,
     'hello-camkes-0': ALL_CONFIGS,
     'hello-camkes-1': ALL_CONFIGS,
