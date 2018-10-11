@@ -1,6 +1,0 @@
-render:
-  - src/main.c
-  - CMakeLists.txt
-  - hello-timer-client/src/main.c
-  - hello-timer-client/CMakeLists.txt
-
