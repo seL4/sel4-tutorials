@@ -24,7 +24,7 @@ page, if they were covered by a previous tutorial in the series.
 - Set up a timer provided by seL4 libs.
 - Use `seL4_libs` functions to manipulate timer and
       handle interrupts.
-      
+
 ## Initialising
 
 /*? macros.tutorial_init("dynamic-3") ?*/
@@ -63,7 +63,7 @@ timer client wakes up:
 ### Allocate a notification object
 
 The first task is to allocate a notification object to receive
-interrupts on. 
+interrupts on.
 ```c
 /*-- set task_1_desc -*/
     /* TASK 1: create a notification object for the timer interrupt */
@@ -181,8 +181,8 @@ main: got a message from 0x61 to sleep 2 seconds
         sel4platsupport_handle_timer_irq(&timer, badge);
 /*-- endfilter -*/
 /*-- endfilter -*/
-``` 
-After this task is completed you should see a 2 second wait, then output from the 
+```
+After this task is completed you should see a 2 second wait, then output from the
  client as follows:
 ```
 /*-- filter TaskCompletion("task-4", TaskContentType.COMPLETED) -*/
@@ -211,7 +211,7 @@ timer client wakes up:
     sel4platsupport_destroy_timer(&timer, &vka);
 /*-- endfilter -*/
 /*-- endfilter -*/
-``` 
+```
 The output should not change on successful completion of completing this task.
 
 That's it for this tutorial.
