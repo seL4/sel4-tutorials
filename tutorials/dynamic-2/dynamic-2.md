@@ -262,7 +262,7 @@ try again to finally map the IPC-buffer's frame object into the VSpace.
 Booting all finished, dropped to user space
 /*-- endfilter -*/
 /*-- endfilter -*/
-``` 
+```
 On completion, you will see another fault.
 
 ### Map a page
@@ -925,7 +925,7 @@ int main(void) {
                   "\tThink of a badge in this case as an IPC context cookie.\n");
 
     /* initialise the new TCB */
-    error = seL4_TCB_Configure(tcb_object.cptr, seL4_CapNull, 
+    error = seL4_TCB_Configure(tcb_object.cptr, seL4_CapNull,
                                cspace_cap, seL4_NilData, pd_cap, seL4_NilData,
                                ipc_buffer_vaddr, ipc_frame_object.cptr);
     ZF_LOGF_IFERR(error, "Failed to configure the new TCB object.\n"
