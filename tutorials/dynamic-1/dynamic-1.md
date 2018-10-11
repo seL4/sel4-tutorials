@@ -73,7 +73,7 @@ main@main.c:89 [Cond failed: info == NULL]
 
 ### Obtain BootInfo
 
-After bootstrapping the system, the seL4 kernel hands over control to the root task. 
+After bootstrapping the system, the seL4 kernel hands over control to the root task.
  to an init thread.
 This thread receives a structure from the kernel that describes all the
 resources available on the machine. This structure is called the
@@ -142,7 +142,7 @@ On successful completion this task, the output should not change.
 
 ### Use simple to print BootInfo
 
-Use a `simple` function to print-out the contents of seL4_BootInfo function. 
+Use a `simple` function to print-out the contents of seL4_BootInfo function.
 
 ```c
 /*-- set task_3_desc -*/
@@ -152,7 +152,7 @@ Use a `simple` function to print-out the contents of seL4_BootInfo function.
      * @param simple Pointer to simple interface.
      */
 /*-- endset -*/
-/*? task_3_desc ?*/ 
+/*? task_3_desc ?*/
 /*-- filter ExcludeDocs() -*/
 /*-- filter TaskContent("task-3", TaskContentType.COMPLETED, completion="main: hello world") -*/
     simple_print(&simple);
@@ -347,7 +347,7 @@ still manually fill it out.
 
 - <https://github.com/seL4/seL4_libs/blob/master/libsel4vka/include/vka/object.h>
 
-After completing this task, the errors should disappear, and you should see the following 
+After completing this task, the errors should disappear, and you should see the following
 output:
 ```
 /*-- filter TaskCompletion("task-8", TaskContentType.COMPLETED) -*/
@@ -705,7 +705,7 @@ int main(void) {
 
     /*? task_11_desc ?*/
     /*? include_task_type_append([("task-11")]) ?*/
-    
+
     /* check that stack is aligned correctly */
     const int stack_alignment_requirement = sizeof(seL4_Word) * 2;
     uintptr_t thread_2_stack_top = (uintptr_t)thread_2_stack + sizeof(thread_2_stack);
