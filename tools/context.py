@@ -146,7 +146,9 @@ class TutorialFunctions:
         """
         state = context["state"]
         task = state.get_task(task_name)
-        return state.print_task(task, subtask)
+        content = state.print_task(task, subtask)
+        if not content:
+            raise Exception("No content found for {0} {1}".format(task, str(subtask or '')))
 
     @staticmethod
     @contextfunction
@@ -185,18 +187,14 @@ class TutorialFunctions:
                 continue
 
             # We have a task, now we want to print it
-            try:
-                content = state.print_task(task, subtask)
-                return content
-
-            except KeyError:
+            content = state.print_task(task, subtask)
+            if not content:
                 # If the start of task isn't defined then we print the previous task
                 if i > 0:
                     (name, subtask) = normalise_task_name(task_names[i-1])
                     task = state.get_task(name)
-                    return state.print_task(task, subtask)
-                else:
-                    return ""
+                    content = state.print_task(task, subtask)
+            return str(content or '')
 
         raise Exception("Could not find thing")
 
@@ -221,15 +219,12 @@ class TutorialFunctions:
                 i = i[0]
             task = state.get_task(i)
             if task <= state.current_task:
-                content = ""
-                try:
-                    print(task.name)
-                    content = state.print_task(task, subtask)
-                except KeyError:
+                print(task.name)
+                content = state.print_task(task, subtask)
+                if not content:
                     if state.solution:
-                        raise # In solution mode we require content.
-
-                result.append(content)
+                        raise Exception("No content found for {0} {1}".format(task, str(subtask or '')))
+                result.append(str(content or ''))
         return '\n'.join(result)
 
     @staticmethod
