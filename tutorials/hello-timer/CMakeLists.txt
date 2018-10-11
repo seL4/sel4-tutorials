@@ -14,11 +14,19 @@ cmake_minimum_required(VERSION 3.7.2)
 
 project(hello-timer C)
 
-add_subdirectory(hello-timer-client)
+add_executable(client client.c)
 
-MakeCPIO(archive.o "$<TARGET_FILE:hello-timer-client>")
+set_property(TARGET client APPEND_STRING PROPERTY LINK_FLAGS " -u __vsyscall_ptr ")
 
-add_executable(hello-timer archive.o src/main.c)
+target_link_libraries(client
+    sel4
+    muslc utils sel4tutorials
+    sel4muslcsys sel4platsupport sel4utils sel4debug)
+
+
+MakeCPIO(archive.o "$<TARGET_FILE:client>")
+
+add_executable(hello-timer archive.o main.c)
 
 target_link_libraries(hello-timer
     sel4
@@ -26,7 +34,4 @@ target_link_libraries(hello-timer
     sel4muslcsys sel4platsupport sel4utils sel4debug sel4allocman)
 
 DeclareRootserver(hello-timer)
-/*? declare_task_ordering(['1']) ?*/
-/*- filter TaskContent("1", TaskContentType.BEFORE, completion="Caught cap fault in send phase") -*//*- endfilter -*/
-/*- filter TaskContent("1", TaskContentType.COMPLETED, completion="timer client wakes up: got the current timer tick:") -*//*- endfilter -*/
 /*? macros.cmake_check_script(state) ?*/
