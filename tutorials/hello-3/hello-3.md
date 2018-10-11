@@ -19,8 +19,9 @@ toc: true
 'task-15',
 ]) ?*/
 
-# seL4 Tutorial 3
-The third tutorial is designed to
+# seL4 Dynamic Libraries: IPC
+
+The tutorial is designed to
 teach the basics of seL4 IPC using Endpoint objects, and userspace
 paging management. You'll be led through the process of creating a new
 thread (retyping an untyped object into a TCB object), and also made to
@@ -29,7 +30,6 @@ for use as the shared memory buffer between your two threads.
 
 Don't gloss over the globals declared before `main()` -- they're declared
 for your benefit so you can grasp some of the basic data structures.
-Uncomment them one by one as needed when going through the tasks.
 
 You'll observe that the things you've already covered in the second
 tutorial are filled out and you don't have to repeat them: in much the
@@ -63,10 +63,15 @@ they were covered by a previous tutorial in the series.
 
 /*? macros.tutorial_init("hello-3") ?*/
 
+
+## Prerequisites
+
+1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
+1. [Hello-2](/Tutorials/hello-2)
+
 ## Exercises
 
 When you first run this tutorial, you will see a fault as follows:
-
 ```
 /*--filter TaskCompletion("task-1", TaskContentType.ALL)--*/
 Booting all finished, dropped to user space
@@ -80,9 +85,7 @@ With stack:
 0x43df78: 0x0
 ```
 
-Each task in the tutorial contains useful links to source.
-
-### TASK 1
+### Allocate an IPC buffer
 
 As we mentioned in passing before, threads in seL4 do their own memory
 management. You implement your own Virtual Memory Manager, essentially.
@@ -122,10 +125,9 @@ Booting all finished, dropped to user space
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
-
 On completion, the output will not change.
 
-### TASK 2
+### Try to map a page
 
 Take note of the line of code that precedes this: the one where a
 virtual address is randomly chosen for use. This is because, as we
@@ -178,12 +180,10 @@ into a VSpace, and the mapping of a new page-table into a VSpace.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
-
 - <https://github.com/seL4/seL4_libs/blob/master/libsel4vspace/arch_include/x86/vspace/arch/page.h>
 - <https://github.com/seL4/seL4/blob/master/libsel4/arch_include/x86/interfaces/sel4arch.xml>
 
 On completion, the output will be as follows:
-
 ```
 hello-3: main@main.c:260 [Err seL4_FailedLookup]:
 /*--filter TaskCompletion("task-2", TaskContentType.COMPLETED)--*/
@@ -191,7 +191,7 @@ hello-3: main@main.c:260 [Err seL4_FailedLookup]:
 /*-- endfilter -*/
 ```
 
-### TASK 3
+### Allocate a page table
 
 So just as you previously had to manually retype a new frame to use for
 your IPC buffer, you're also going to have to manually retype a new
@@ -220,10 +220,9 @@ Booting all finished, dropped to user space
 /*-- endfilter -*/
 /*-- endfilter -*/
  ```
-
 On completion, you will see another fault.
 
-### TASK 4
+### Map a page table
 
 If you successfully retyped a new page table from an untyped memory
 object, you can now map that new page table into your VSpace, and then
@@ -264,10 +263,10 @@ Booting all finished, dropped to user space
 /*-- endfilter -*/
 /*-- endfilter -*/
 ``` 
-
 On completion, you will see another fault.
 
-### TASK 5
+### Map a page
+
 Use `seL4_ARCH_Page_Map` to map the frame in.
 If everything was done correctly, there is no reason why this step
 should fail. Complete it and proceed.
@@ -297,7 +296,7 @@ hello-3: main@main.c:464 [Cond failed: seL4_MessageInfo_get_length(tag) != 1]
 	How many registers did you set with seL4_SetMR within thread_2?
 ```
 
-### TASK 6
+### Allocate an endpoint
 
 Now we have a (fully mapped) IPC buffer -- but no Endpoint object to
 send our IPC data across. We must retype an untyped object into a kernel
@@ -330,11 +329,9 @@ and proceed.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
-
 On completion, the output will not change.
 
-### TASK 7
-
+### Badge an endpoint
 
 Badges are used to uniquely identify a message queued on an endpoint as
 having come from a particular sender. Recall that in seL4, each thread
@@ -397,7 +394,7 @@ data, and know which sender you are. Complete the step and proceed.
 ```
 On completion, the output will not change.
 
-### TASK 8
+### Message registers
 
 Here we get a formal introduction to message registers. At first glance,
 you might wonder why the `sel4_SetMR()` calls don't specify a message
@@ -460,7 +457,7 @@ hello-3: main@main.c:472 [Cond failed: msg != ~MSG_DATA]
 /*-- endfilter -*/
 ```
 
-### TASK 9
+### IPC
 
 Now that you've constructed your message and badged the endpoint that
 you'll use to send it, it's time to send it. The `seL4_Call()` syscall
@@ -517,9 +514,7 @@ response message, if the sender doesn't want it to.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
-
 On completion, you should see thread_2 fault as follows:
-
 ```
 /*--filter TaskCompletion("task-9", TaskContentType.COMPLETED)--*/
 thread_2: hallo wereld
@@ -532,8 +527,7 @@ in thread 0xffffff801ffb4400 "child of: 'rootserver'" at address (nil)
 With stack:
 ```
 
-### TASK 10
-
+### Receive a reply
 
 While this task is out of order, since we haven't yet examined the
 receive-side of the operation here, it's fairly simple anyway: this task
@@ -559,11 +553,9 @@ designated, single IPC buffer.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
-
 On completion, the output should not change.
 
-### TASK 11
-
+### Receive an IPC
 
 We're now in the receiving thread. The `seL4_Recv()` syscall performs a
 blocking listen on an Endpoint or Notification capability. When new data
@@ -597,23 +589,19 @@ explicitly interested in distinguishing the sender.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
-
 On completion, the output should change slightly:
-
 ```
 /*--filter TaskCompletion("task-11", TaskContentType.COMPLETED)--*/
 thread_2: got a message 0 from 0x61
 /*-- endfilter -*/
 ```
 
-### TASK 12
-
+### Validate the message
 
 These two calls here are just verification of the fidelity of the
 transmitted message. It's very unlikely you'll encounter an error here.
 Complete them and proceed to the next step.
-
-<https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/shared_types_32.bf>
+- <https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/shared_types_32.bf>
 ```
 /*-- set task_12_desc -*/
     /* TASK 12: make sure it is what we expected */
@@ -642,12 +630,10 @@ Complete them and proceed to the next step.
 
 On completion, the output should not change.
 
-### TASK 13
-
+### Read the message registers
 
 Again, just reading the data from the Message Registers.
-
-<https://github.com/seL4/seL4/blob/master/libsel4/arch_include/x86/sel4/arch/functions.h>
+- <https://github.com/seL4/seL4/blob/master/libsel4/arch_include/x86/sel4/arch/functions.h>
 ```
 /*-- set task_13_desc -*/
     /* TASK 13: get the message stored in the first message register */
@@ -664,21 +650,17 @@ Again, just reading the data from the Message Registers.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
-
 On completion, the output should change slightly:
-
 ```
 /*--filter TaskCompletion("task-13", TaskContentType.COMPLETED)--*/
 thread_2: got a message 0x6161 from 0x61
 /*-- endfilter -*/
 ```
 
-### TASK 14
-
+### Write the message registers
 
 And writing Message Registers again.
-
-<https://github.com/seL4/seL4/blob/master/libsel4/arch_include/x86/sel4/arch/functions.h>
+- <https://github.com/seL4/seL4/blob/master/libsel4/arch_include/x86/sel4/arch/functions.h>
 ```
 /*-- set task_14_desc -*/
     /* TASK 14: copy the modified message back into the message register */
@@ -695,11 +677,9 @@ And writing Message Registers again.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
-
 On completion, the output should not change.
 
-### TASK 15
-
+### Reply to a message
 
 This is a formal introduction to the `Reply` capability which is
 automatically generated by the seL4 kernel, whenever an IPC message is
@@ -715,7 +695,6 @@ target the ability to send to it repeatedly, but would like to allow the
 receiver to respond to a specific message once, it can use `seL4_Call()`,
 and the seL4 kernel will facilitate this one-time permissive response.
 Complete the step and pat yourself on the back.
-
  - <https://github.com/seL4/seL4/blob/master/libsel4/sel4_arch_include/ia32/sel4/sel4_arch/syscalls.h>
  - <https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/shared_types_32.bf>
 ```
@@ -742,13 +721,11 @@ Complete the step and pat yourself on the back.
 /*-- endfilter -*/
 ```
 On completion, the output should change, with the fault message replaced with the following:
-
 ```
 /*--filter TaskCompletion("task-15", TaskContentType.COMPLETED)--*/
 main: got a reply: 0xffffffffffff9e9e
 /*-- endfilter -*/
 ```
-
 That's it for this tutorial.
 
 /*? macros.help_block() ?*/
