@@ -14,7 +14,7 @@ cmake_minimum_required(VERSION 3.7.2)
 
 project(hello-2 C)
 
-add_executable(hello-2 src/main.c)
+add_executable(hello-2 main.c)
 
 target_link_libraries(hello-2
     sel4
