@@ -301,7 +301,7 @@ int main(void) {
     ZF_LOGF_IF(info == NULL, "Failed to get bootinfo.");
 
     /* give us a name: useful for debugging if the thread faults */
-    name_thread(seL4_CapInitThreadTCB, "hello-timer");
+    name_thread(seL4_CapInitThreadTCB, "dynamic-4");
 
     /* init simple */
     simple_default_init_bootinfo(&simple, info);
@@ -339,7 +339,7 @@ int main(void) {
     assert(error == 0);
 
     /* give the new process's thread a name */
-    name_thread(new_process.thread.tcb.cptr, "hello-timer: timer_client");
+    name_thread(new_process.thread.tcb.cptr, "dynamic-4: timer_client");
 
     /* create an endpoint */
     vka_object_t ep_object = {0};
