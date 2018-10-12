@@ -1,5 +1,5 @@
 
-# CAmkES Hello World
+# CAmkES Tutorial 1
 /*? declare_task_ordering(['hello']) ?*/
 
 This tutorial is an introduction to
