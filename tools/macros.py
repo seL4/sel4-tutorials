@@ -63,13 +63,10 @@ configure_file(${CMAKE_SOURCE_DIR}/projects/sel4-tutorials/tools/expect.py ${CMA
 def tutorial_init(name):
     return '''```sh
 # Follow these instructions to initialise the tutorial
-# creating a Tutorial directory
-mkdir %s
-cd %s
 # initialising the build directory with a tutorial exercise
-../init --plat pc99 --tut %s
+./init --tut %s
 # building the tutorial exercise
-cd ../%s_build
+cd %s_build
 ninja
 ```
-''' % (name, name, name, name)
+''' % (name, name)
