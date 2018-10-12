@@ -7,6 +7,7 @@ static CAmkES application and describing its components.
 
 ## Prerequisites
 1. [Set up your machine](https://docs.sel4.systems/HostDependencies#camkes-build-dependencies).
+2. [Hello world](https://docs.sel4.systems/Tutorials/hello-world)
 2. Familiarize yourself with the [CAmkES manual](https://github.com/seL4/camkes-tool/blob/master/docs/index.md).
 Note that it's possible to successfully complete the CAmkES tutorial without having read the manual, however highly
 recommended.

@@ -5,8 +5,8 @@
 ## Prerequisites
 
 1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-1. Capabilities tutorial.
-1. Threads tutorial.
+2. You should be familiar with the seL4 Api. Otherwise do the [Mechanisms tutorials](https://docs.sel4.systems/Tutorials)
+
 
 ## Initialising
 

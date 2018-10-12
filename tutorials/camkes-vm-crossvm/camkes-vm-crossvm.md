@@ -8,9 +8,7 @@ provided by seL4 and Camkes in order to connect processes in a guest Linux insta
 ## Prerequisites
 
 1. [Set up your machine](https://docs.sel4.systems/HostDependencies#camkes-build-dependencies).
-2. Familiarity with the sytanx, basic structures and file layout of a CAmkES application
-3. A basic understanding of building seL4 projects (e.g. using `CMakeLists.txt`)
-4. Familiarity with creating guest Linux VM components in CAmkES. See tutorial [CAmkes VM: Adding a Linux Guest]()
+1. [Camkes VM](https://docs.sel4.systems/Tutorials/camkes-vm-linux)
 
 ## Outcomes
 

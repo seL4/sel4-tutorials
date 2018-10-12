@@ -8,11 +8,9 @@ components, and linking them together.
 
 ## Prerequisites
 
-While it's possible to successfully complete the
-CAmkES tutorials without having read the
-**[CAmkES manuals](https://github.com/seL4/camkes-tool/blob/master/docs/index.md)**, the manuals really explain everything in plain English,
-and any aspiring CAmkES dev should read the
-**[CAmkES manuals](https://github.com/seL4/camkes-tool/blob/master/docs/index.md)** before attempting to complete the tutorials.
+
+1. [Set up your machine](https://docs.sel4.systems/HostDependencies#camkes-build-dependencies).
+2. [Camkes hello world](https://docs.sel4.systems/Tutorials/hello-camkes-0)
 
 ## Initialising
 

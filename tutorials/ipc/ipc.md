@@ -4,8 +4,7 @@
 ## Prerequisites
 
 1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-1. Capabilities tutorial.
-1. Threads tutorial.
+2. [Capabilities tutorial](https://docs.sel4.systems/Tutorials/capabilities)
 
 ## Initialising
 

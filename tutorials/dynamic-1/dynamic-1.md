@@ -39,7 +39,7 @@ for your benefit so you can grasp some of the basic data structures.
 ## Prerequisites
 
 1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-1. [HelloWorld](/Tutorials/hello-world)
+2. [Hello world](https://docs.sel4.systems/Tutorials/hello-world)
 
 ## Outcomes:
 

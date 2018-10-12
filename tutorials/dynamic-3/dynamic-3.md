@@ -50,7 +50,7 @@ they were covered by a previous tutorial in the series.
 ## Prerequisites
 
 1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-1. [dynamic-2](/Tutorials/dynamic-2)
+1. [dynamic-2](https://docs.sel4.systems/Tutorials/dynamic-2)
 
 ## Exercises
 

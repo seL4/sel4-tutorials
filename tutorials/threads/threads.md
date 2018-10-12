@@ -10,8 +10,8 @@ This is a tutorial for using threads on seL4.
 ## Prerequisites
 
 1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-2. You need to know how to address capabilities.
-3. You need to know the jargon *root task*, CSpace and VSpace.
+1. [Capabilities tutorial](https://docs.sel4.systems/Tutorials/capabilities)
+1. [Mapping tutorial](https://docs.sel4.systems/Tutorials/mapping)
 
 ## Outcomes
 

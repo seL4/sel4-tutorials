@@ -7,8 +7,7 @@ This tutorial provides an introduction to creating VM guests and applications on
 ## Prerequisites
 
 1. [Set up your machine](https://docs.sel4.systems/HostDependencies#camkes-build-dependencies).
-2. Familiar with the sytanx, basic structures and file layout of a CAmkES application
-3. A basic understanding of building seL4 projects (e.g. using `CMakeLists.txt`)
+1. [Camkes VM](https://docs.sel4.systems/Tutorials/camkes-vm-linux)
 
 ## Outcomes
 

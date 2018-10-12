@@ -32,7 +32,7 @@ page, if they were covered by a previous tutorial in the series.
 ## Prerequisites
 
 1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-1. [dynamic-3](/Tutorials/dynamic-3)
+1. [dynamic-3](https://docs.sel4.systems/Tutorials/dynamic-3)
 
 ## Exercises
 

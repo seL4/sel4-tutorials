@@ -8,8 +8,7 @@ This tutorial provides a basic introduction to seL4 capabilities.
 ## Prerequisites
 
 1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-2. You need to know what a *root task* is, if not, do the `hello-world` tutorial first.
-3. You need to know how to build and simulate tutorials, if not, do the `hello-world` tutorial.
+2. [Hello world](https://docs.sel4.systems/Tutorials/hello-world)
 
 ## Initialising
 

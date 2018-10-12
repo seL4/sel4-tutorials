@@ -67,7 +67,7 @@ they were covered by a previous tutorial in the series.
 ## Prerequisites
 
 1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-1. [dynamic-1](/Tutorials/dynamic-1)
+1. [dynamic-1](https://docs.sel4.systems/Tutorials/dynamic-1)
 
 ## Exercises
 
