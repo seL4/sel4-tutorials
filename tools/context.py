@@ -147,8 +147,8 @@ class TutorialFunctions:
         state = context["state"]
         task = state.get_task(task_name)
         content = state.print_task(task, subtask)
-        if not content:
-            raise Exception("No content found for {0} {1}".format(task, str(subtask or '')))
+        if not task:
+            raise Exception("No content found for {0} {1}".format(task_name, str(subtask or '')))
 
     @staticmethod
     @contextfunction
