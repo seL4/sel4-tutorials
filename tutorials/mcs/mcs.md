@@ -31,7 +31,7 @@ Note that the other tutorials will not build on this version of the kernel, make
 
 This tutorial presents the features in the upcoming MCS extensions for seL4, which are currently undergoing
 verification. For further context on the new features, please see the 
-[paper](http://ts.data61.csiro.au/publications/csiro_full_text//Lyons_MAH_18.pdf) or [phd](TODO)
+[paper](http://ts.data61.csiro.au/publications/csiro_full_text//Lyons_MAH_18.pdf) or [phd](https://github.com/pingerino/phd/blob/master/phd.pdf)
  which provides a comprehensive background on the changes.
 
 1. Learn about the MCS new kernel API.
