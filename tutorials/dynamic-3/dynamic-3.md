@@ -1,6 +1,3 @@
----
-toc: true
----
 /*? declare_task_ordering(
 ['task-1',
 'task-2',
