@@ -439,7 +439,7 @@ That's it for this tutorial.
 /*-- filter ExcludeDocs() -*/
 /*? ExternalFile("CMakeLists.txt") ?*/
 ```
-/*-- filter ELF("main") -*/
+/*-- filter File("main.c") -*/
 /*
  * Copyright 2017, Data61
  * Commonwealth Scientific and Industrial Research Organisation (CSIRO)
@@ -625,7 +625,7 @@ int main(void) {
     return 0;
 }
 /*-- endfilter -*/
-/*-- filter ELF("app") -*/
+/*-- filter File("app.c") -*/
 /*
  * Copyright 2017, Data61
  * Commonwealth Scientific and Industrial Research Organisation (CSIRO)

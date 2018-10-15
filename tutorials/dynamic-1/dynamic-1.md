@@ -587,7 +587,7 @@ That's it for this tutorial.
 /*-- filter ExcludeDocs() -*/
 /*? ExternalFile("CMakeLists.txt") ?*/
 ```
-/*-- filter ELF("main") -*/
+/*-- filter File("main.c") -*/
 /*
  * Copyright 2018, Data61
  * Commonwealth Scientific and Industrial Research Organisation (CSIRO)
