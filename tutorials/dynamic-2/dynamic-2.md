@@ -516,10 +516,11 @@ On completion, you should see thread_2 fault as follows:
 /*--filter TaskCompletion("task-9", TaskContentType.COMPLETED)--*/
 thread_2: hallo wereld
 thread_2: got a message 0 from 0
+/*-- endfilter -*/
 Caught cap fault in send phase at address (nil)
 while trying to handle:
-/*-- endfilter -*/
 vm fault on data at address (nil) with status 0x4
+in thread 0xffffff801ffb4400 "child of: 'rootserver'" at address (nil)
 in thread 0xffffff801ffb4400 "child of: 'rootserver'" at address (nil)
 With stack:
 ```
@@ -614,7 +615,7 @@ Complete them and proceed to the next step.
 /*-- endset -*/
 /*? task_12_desc ?*/
 /*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-12", TaskContentType.COMPLETED, completion="thread-2: hallo wereld") -*/
+/*-- filter TaskContent("task-12", TaskContentType.COMPLETED, completion="thread_2: hallo wereld") -*/
     ZF_LOGF_IF(sender_badge != EP_BADGE,
                "Badge on the endpoint was not what was expected.\n");
 
