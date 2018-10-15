@@ -734,7 +734,7 @@ Complete the step and pat yourself on the back.
 On completion, the output should change, with the fault message replaced with the following:
 ```
 /*--filter TaskCompletion("task-15", TaskContentType.COMPLETED)--*/
-main: got a reply: 0xffffffffffff9e9e
+main: got a reply: [0xffff9e9e|0xffffffffffff9e9e]
 /*-- endfilter -*/
 ```
 That's it for this tutorial.
