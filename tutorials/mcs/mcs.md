@@ -82,7 +82,7 @@ the scheduling context is treated as round-robin
 /*-- filter TaskContent("mcs-start", TaskContentType.ALL, subtask='configure') -*/
     error = seL4_SchedControl_Configure(sched_control, sched_context, US_IN_S, US_IN_S, 0, 0);
     ZF_LOGF_IF(error != seL4_NoError, "Failed to configure schedcontext");
-/*-- endfilter --*/
+/*-- endfilter -*/
 ```
 
 ### SchedContext Binding
@@ -97,7 +97,7 @@ binding a TCB and a scheduling context.
 /*-- filter TaskContent("mcs-start", TaskContentType.ALL, subtask='bind_yield') -*/
     error = seL4_SchedContext_Bind(sched_context, spinner_tcb);
     ZF_LOGF_IF(error != seL4_NoError, "Failed to bind sched_context to round_robin_tcb");
-/*-- endfilter --*/
+/*-- endfilter -*/
 ```
 
 TCB's can only be bound to one scheduling context at a time, and vice versa. If a scheduling context has not
