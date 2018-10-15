@@ -61,10 +61,10 @@ for your benefit so you can grasp some of the basic data structures.
 
 When you first run the tutorial, you should see the following output:
 ```
-/*-- filter TaskCompletion("task-1", TaskContentType.BEFORE) -*/
 Booting all finished, dropped to user space
 main@main.c:89 [Cond failed: info == NULL]
-	Failed to get bootinfo.
+/*-- filter TaskCompletion("task-1", TaskContentType.BEFORE) -*/
+Failed to get bootinfo.
 /*-- endfilter -*/
 ```
 
@@ -151,7 +151,7 @@ Use a `simple` function to print-out the contents of seL4_BootInfo function.
 /*-- endset -*/
 /*? task_3_desc ?*/
 /*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-3", TaskContentType.COMPLETED, completion="main: hello world") -*/
+/*-- filter TaskContent("task-3", TaskContentType.COMPLETED) -*/
     simple_print(&simple);
 /*-- endfilter -*/
 /*-- endfilter -*/
@@ -212,7 +212,7 @@ The output should now be as follows:
 ```
 <<seL4(CPU 0) [decodeInvocation/530 T0xffffff801ffb5400 "dynamic-1" @401303]: Attempted to invoke a null cap #0.>>
 dynamic-1: main@main.c:199 [Err seL4_InvalidCapability]:
-/*-- filter TaskCompletion("task-3", TaskContentType.COMPLETED) -*/
+/*-- filter TaskCompletion("task-4", TaskContentType.COMPLETED) -*/
 	Failed to set the priority for the new TCB object.
 /*-- endfilter -*/
 ```
@@ -648,7 +648,7 @@ int main(void) {
     UNUSED int error = 0;
 
     /*? task_1_desc ?*/
-    /*? include_task("task-1") ?*/
+    /*? include_task_type_append([("task-1")]) ?*/
     ZF_LOGF_IF(info == NULL, "Failed to get bootinfo.");
 
     /* Set up logging and give us a name: useful for debugging if the thread faults */
