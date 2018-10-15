@@ -417,8 +417,8 @@ On success, you should see the following:
 /*-- filter TaskCompletion("task-8", TaskContentType.COMPLETED) -*/
 process_2: hey hey hey
 main: got a message 0x6161 from 0x61
-process_2: got a reply: 0xffffffffffff9e9e
 /*-- endfilter -*/
+process_2: got a reply: 0xffffffffffff9e9e
 ```
 That's it for this tutorial.
 
