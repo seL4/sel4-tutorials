@@ -359,12 +359,13 @@ to become more familiar with IPC.
 
 ```c
 /*-- filter ELF("client_1") -*/
+/*- set _ = state.stash.start_elf("client_1") -*/
 #include <assert.h>
 #include <stdio.h>
 #include <sel4/sel4.h>
 #include <utils/util.h>
 
-/*? RecordObject(seL4_EndpointObject, "endpoint", cap_symbol="endpoint", read=True, write=True, grant=True) ?*/
+/*? capdl_alloc_cap(seL4_EndpointObject, "endpoint", "endpoint", read=True, write=True, grant=True) ?*/
 /*? capdl_elf_cspace("client_1", cap_symbol="cnode") ?*/
 /*? capdl_empty_slot("badged_endpoint") ?*/
 
@@ -383,12 +384,13 @@ int main(int c, char *argv[]) {
 
 ```c
 /*-- filter ELF("client_2") -*/
+/*- set _ = state.stash.start_elf("client_2") -*/
 #include <assert.h>
 #include <stdio.h>
 #include <sel4/sel4.h>
 #include <utils/util.h>
 
-/*? RecordObject(seL4_EndpointObject, "endpoint", cap_symbol="endpoint", read=True, write=True, grant=True) ?*/
+/*? capdl_alloc_cap(seL4_EndpointObject, "endpoint", "endpoint", read=True, write=True, grant=True) ?*/
 /*? capdl_elf_cspace("client_2", cap_symbol="cnode") ?*/
 /*? capdl_empty_slot("badged_endpoint") ?*/
 
@@ -405,14 +407,14 @@ int main(int c, char *argv[]) {
 
 ```c
 /*-- filter ELF("server") -*/
-
+/*- set _ = state.stash.start_elf("server") -*/
 #include <assert.h>
 #include <sel4/sel4.h>
 #include <stdio.h>
 #include <utils/util.h>
 
 // cslot containing IPC endpoint capability
-/*? RecordObject(seL4_EndpointObject, "endpoint", cap_symbol="endpoint", read=True, write=True, grant=True) ?*/
+/*? capdl_alloc_cap(seL4_EndpointObject, "endpoint", "endpoint", read=True, write=True, grant=True) ?*/
 // cslot containing a capability to the cnode of the server
 /*? capdl_elf_cspace("server", cap_symbol="cnode") ?*/
 // empty cslot

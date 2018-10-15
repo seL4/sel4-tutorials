@@ -184,6 +184,7 @@ That's it for this tutorial.
 /*-- filter ExcludeDocs() -*/
 ```c
 /*-- filter ELF("client") -*/
+/*- set _ = state.stash.start_elf("client") -*/
 #include <stdio.h>
 #include <assert.h>
 
@@ -192,7 +193,7 @@ That's it for this tutorial.
 
 /* constants */
 // cslot containing the endpoint for the server
-/*? RecordObject(seL4_EndpointObject, "endpoint", cap_symbol="endpoint", write=True, read=True, grant=True, badge=61) ?*/
+/*? capdl_alloc_cap(seL4_EndpointObject, "endpoint", "endpoint", write=True, read=True, grant=True, badge=61) ?*/
 #define MSG_DATA 0x2 //  arbitrary data to send
 
 int main(int argc, char **argv) {
@@ -222,18 +223,18 @@ int main(int argc, char **argv) {
 }
 /*-- endfilter -*/
 /*-- filter ELF("timer") -*/
-
+/*- set _ = state.stash.start_elf("timer") -*/
 #include <stdio.h>
 #include <assert.h>
 #include <sel4/sel4.h>
 #include <platsupport/plat/timer.h>
 
 // CSlots pre-initialised in this CSpace
-/*? RecordObject(seL4_EndpointObject, "endpoint", cap_symbol="endpoint", write=True, read=True, grant=True) ?*/
+/*? capdl_alloc_cap(seL4_EndpointObject, "endpoint", "endpoint", write=True, read=True, grant=True) ?*/
 // capability to a reply object
-/*? RecordObject(seL4_NotificationObject, "ntfn", cap_symbol="ntfn", write=True, read=True, grant=True) ?*/
+/*? capdl_alloc_cap(seL4_NotificationObject, "ntfn", "ntfn", write=True, read=True, grant=True) ?*/
 // capability to the device untyped for the timer
-/*? RecordObject(seL4_UntypedObject, "device_untyped", cap_symbol="device_untyped", write=True, read=True, paddr=4160753664) ?*/
+/*? capdl_alloc_cap(seL4_UntypedObject, "device_untyped", "device_untyped", write=True, read=True, paddr=4160753664) ?*/
 // empty cslot for the frame
 /*? capdl_empty_slot("timer_frame") ?*/
 // cnode of this process

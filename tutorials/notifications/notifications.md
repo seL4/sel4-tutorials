@@ -113,7 +113,6 @@ mapping. We provide code below that sets up the shared page between producer 1 a
                                seL4_AllRights, seL4_ARCH_Default_VMAttributes);
     ZF_LOGF_IFERR(error, "Failed to map frame");
 
-    ; 
 /*-- endfilter -*/
 ```
 
@@ -223,6 +222,7 @@ to become more familiar with IPC.
     }
 /*-- endfilter -*/
 /*-- filter ELF("producer_1") -*/
+/*- set _ = state.stash.start_elf("producer_1") -*/
 #include <assert.h>
 #include <stdio.h>
 #include <sel4/sel4.h>
@@ -230,10 +230,10 @@ to become more familiar with IPC.
 #include <sel4utils/util.h>
 
 // caps to notification objects
-/*? RecordObject(seL4_NotificationObject, "buf1_empty", cap_symbol="empty", read=True, write=True) ?*/
-/*? RecordObject(seL4_NotificationObject, "full", cap_symbol="full", read=True, write=True, badge=1) ?*/
+/*? capdl_alloc_cap(seL4_NotificationObject, "buf1_empty", "empty", read=True, write=True) ?*/
+/*? capdl_alloc_cap(seL4_NotificationObject, "full", "full", read=True, write=True, badge=1) ?*/
 // caps to an endpoint object
-/*? RecordObject(seL4_EndpointObject, "endpoint", cap_symbol="endpoint", read=True, write=True) ?*/
+/*? capdl_alloc_cap(seL4_EndpointObject, "endpoint", "endpoint", read=True, write=True) ?*/
 
 int main(int c, char *argv[]) {
     int id = 1;
@@ -242,6 +242,7 @@ int main(int c, char *argv[]) {
 }
 /*-- endfilter -*/
 /*-- filter ELF("producer_2") -*/
+/*- set _ = state.stash.start_elf("producer_2") -*/
 #include <assert.h>
 #include <stdio.h>
 #include <sel4/sel4.h>
@@ -249,9 +250,9 @@ int main(int c, char *argv[]) {
 #include <sel4utils/util.h>
 
 // caps to notification objects
-/*? RecordObject(seL4_NotificationObject, "buf2_empty", cap_symbol="empty", read=True, write=True) ?*/
-/*? RecordObject(seL4_NotificationObject, "full", cap_symbol="full", read=True, write=True, badge=2) ?*/
-/*? RecordObject(seL4_EndpointObject, "endpoint", cap_symbol="endpoint", read=True, write=True) ?*/
+/*? capdl_alloc_cap(seL4_NotificationObject, "buf2_empty", "empty", read=True, write=True) ?*/
+/*? capdl_alloc_cap(seL4_NotificationObject, "full", "full", read=True, write=True, badge=2) ?*/
+/*? capdl_alloc_cap(seL4_EndpointObject, "endpoint", "endpoint", read=True, write=True) ?*/
 
 int main(int c, char *argv[]) {
     int id = 2;
@@ -260,6 +261,7 @@ int main(int c, char *argv[]) {
 }
 /*-- endfilter -*/
 /*-- filter ELF("consumer") -*/
+/*- set _ = state.stash.start_elf("consumer") -*/
 #include <assert.h>
 #include <sel4/sel4.h>
 #include <stdio.h>
@@ -267,10 +269,10 @@ int main(int c, char *argv[]) {
 #include <sel4utils/util.h>
 
 // notification object
-/*? RecordObject(seL4_NotificationObject, "buf1_empty", cap_symbol="buf1_empty", read=True, write=True, grant=True) ?*/
-/*? RecordObject(seL4_NotificationObject, "buf2_empty", cap_symbol="buf2_empty", read=True, write=True, grant=True) ?*/
-/*? RecordObject(seL4_NotificationObject, "full", cap_symbol="full", read=True, write=True, grant=True) ?*/
-/*? RecordObject(seL4_EndpointObject, "endpoint", cap_symbol="endpoint", read=True, write=True) ?*/
+/*? capdl_alloc_cap(seL4_NotificationObject, "buf1_empty", "buf1_empty", read=True, write=True, grant=True) ?*/
+/*? capdl_alloc_cap(seL4_NotificationObject, "buf2_empty", "buf2_empty", read=True, write=True, grant=True) ?*/
+/*? capdl_alloc_cap(seL4_NotificationObject, "full", "full", read=True, write=True, grant=True) ?*/
+/*? capdl_alloc_cap(seL4_EndpointObject, "endpoint", "endpoint", read=True, write=True) ?*/
 
 /*? capdl_declare_frame("buf1_frame_cap", "buf1_frame") ?*/
 /*? capdl_declare_frame("buf2_frame_cap", "buf2_frame") ?*/

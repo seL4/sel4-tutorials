@@ -458,6 +458,7 @@ server TCB and an SC to the notification object.
 /*-- filter ExcludeDocs() -*/
 ```c
 /*-- filter ELF("spinner", passive=True) -*/
+/*- set _ = state.stash.start_elf("spinner") -*/
 #include <stdio.h>
 #include <sel4/sel4.h>
 #include <utils/util.h>
@@ -468,10 +469,11 @@ int main(int c, char *argv[]) {
 }
 /*-- endfilter -*/
 /*-- filter ELF("sender", passive=True) -*/
+/*- set _ = state.stash.start_elf("sender") -*/
 #include <stdio.h>
 #include <sel4/sel4.h>
 
-/*? RecordObject(seL4_EndpointObject, "endpoint", cap_symbol="endpoint", write=True, read=True, grant=True) ?*/
+/*? capdl_alloc_cap(seL4_EndpointObject, "endpoint", "endpoint", write=True, read=True, grant=True) ?*/
 int main(int c, char *argv[]) {
     int i = 0;
     while (1) {
@@ -484,11 +486,12 @@ int main(int c, char *argv[]) {
 }
 /*-- endfilter -*/
 /*-- filter ELF("server", passive=True) -*/
+/*- set _ = state.stash.start_elf("server") -*/
 #include <stdio.h>
 #include <sel4/sel4.h>
 
-/*? RecordObject(seL4_EndpointObject, "endpoint", cap_symbol="endpoint", write=True, read=True, grant=True) ?*/
-/*? RecordObject(seL4_RTReplyObject, "reply", cap_symbol="reply", read=True, write=True, grant=True) ?*/ 
+/*? capdl_alloc_cap(seL4_EndpointObject, "endpoint", "endpoint", write=True, read=True, grant=True) ?*/
+/*? capdl_alloc_cap(seL4_RTReplyObject, "reply", "reply", read=True, write=True, grant=True) ?*/
 
 int main(int c, char *argv[]) {
 
@@ -508,6 +511,7 @@ int main(int c, char *argv[]) {
 }
 /*-- endfilter -*/
 /*-- filter ELF("mcs") -*/
+/*- set _ = state.stash.start_elf("mcs") -*/
 #include <assert.h>
 #include <sel4/sel4.h>
 #include <stdio.h>
@@ -516,7 +520,7 @@ int main(int c, char *argv[]) {
 
 // CSlots pre-initialised in this CSpace
 // capability to a scheduling context
-/*? RecordObject(seL4_SchedContextObject, "sched_context", cap_symbol="sched_context") ?*/
+/*? capdl_alloc_cap(seL4_SchedContextObject, "sched_context", "sched_context") ?*/
 // the seL4_SchedControl capabilty for the current core
 /*? capdl_sched_control("sched_control") ?*/
 // capability to the tcb of the server process
@@ -526,9 +530,9 @@ int main(int c, char *argv[]) {
 // capability to the tcb of the sender process
 /*? capdl_elf_tcb("sender", "sender_tcb") ?*/
 // capability to an endpoint, shared with 'sender' and 'server' 
-/*? RecordObject(seL4_EndpointObject, "endpoint", cap_symbol="endpoint", write=True, read=True, grant=True) ?*/
+/*? capdl_alloc_cap(seL4_EndpointObject, "endpoint", "endpoint", write=True, read=True, grant=True) ?*/
 // capability to a reply object
-/*? RecordObject(seL4_RTReplyObject, "reply2", cap_symbol="reply", write=True, read=True, grant=True) ?*/
+/*? capdl_alloc_cap(seL4_RTReplyObject, "reply2", "reply", write=True, read=True, grant=True) ?*/
 
 int main(int c, char *argv[]) {
     seL4_Error error;
