@@ -585,7 +585,6 @@ int main(int c, char *argv[]) {
     // wait for it to initialise
     printf("Wait for server\n"); 
     seL4_Wait(endpoint, NULL);
-    printf("WTF\n");
    
     /*? include_task_type_append([("mcs-start", 'passive')]) ?*/
     ZF_LOGF_IF(error != seL4_NoError, "Failed to unbind sched context");
