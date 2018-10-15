@@ -27,8 +27,8 @@ This tutorial runs on a different branch of the seL4 kernel. First, check out th
 
 ```bash
 cd kernel
-git fetch seL4 10.0.0-mcs 
-git checkout 10.0.0-mcs
+git fetch seL4 mcs-tutorials 
+git checkout mcs-tutorials
 ```
 
 Then initialise the tutorial:
