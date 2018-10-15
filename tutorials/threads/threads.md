@@ -169,6 +169,7 @@ The loader has been configured to set up the following capabilities and symbols:
 
 ```c
 /*-- filter TaskContent("threads-start", TaskContentType.ALL, subtask='init') -*/
+/*- set _ = state.stash.start_elf(progname) -*/
 // the root CNode of the current thread
 /*? capdl_elf_cspace(progname, "root_cnode") ?*/
 // VSpace of the current thread
@@ -176,7 +177,10 @@ The loader has been configured to set up the following capabilities and symbols:
 // TCB of the current thread
 /*? capdl_elf_tcb(progname, "root_tcb") ?*/
 // Untyped object large enough to create a new TCB object
-/*? RecordObject(seL4_UntypedObject, "tcb_untyped", cap_symbol="tcb_untyped", size_bits= 11)?*/
+/*- set _ = capdl_alloc_obj(seL4_UntypedObject, "tcb_untyped", size_bits=11) -*/
+/*? capdl_alloc_cap(seL4_UntypedObject, "tcb_untyped", "tcb_untyped") ?*/
+/*? capdl_declare_frame("buf2_frame_cap", "buf2_frame") ?*/
+
 // Empty slot for the new TCB object
 /*? capdl_empty_slot("tcb_cap_slot") ?*/
 // Symbol for the IPC buffer mapping in the VSpace, and capability to the mapping
@@ -548,28 +552,28 @@ int call_once(int arg) {
 /*-- filter File("CMakeLists.txt") -*/
 ImportCapDL()
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -u __vsyscall_ptr")
+
 /*? write_manifest(".manifest.obj") ?*/
-/*- for (elf, file) in state.stash.elfs.iteritems() --*/
-cdl_pp(${CMAKE_CURRENT_SOURCE_DIR}/.manifest.obj ${CMAKE_CURRENT_BINARY_DIR}/manifest_/*?elf?*/.p /*?elf?*/_pp
+cdl_pp(${CMAKE_CURRENT_SOURCE_DIR}/.manifest.obj cdl_pp_target
+    /*- for (elf, file) in state.stash.elfs.iteritems() -*/
     ELF "/*?elf?*/"
     CFILE "${CMAKE_CURRENT_BINARY_DIR}/cspace_/*?elf?*/.c"
+    /*- endfor -*/
 )
 
-add_executable(/*?elf?*/ EXCLUDE_FROM_ALL /*?file['filename']?*/ cspace_/*?elf?*/.c )
-add_dependencies(/*?elf?*/ /*?elf?*/_pp)
-target_link_libraries(/*?elf?*/ sel4
-    muslc utils sel4tutorials
-    sel4muslcsys sel4platsupport sel4utils sel4debug)
+/*- for (elf, file) in state.stash.elfs.iteritems() -*/
+add_executable(/*?elf?*/ EXCLUDE_FROM_ALL /*?file['filename']?*/ cspace_/*?elf?*/.c)
+add_dependencies(/*?elf?*/ cdl_pp_target)
+target_link_libraries(/*?elf?*/ sel4tutorials)
 
 list(APPEND elf_files "$<TARGET_FILE:/*?elf?*/>")
 list(APPEND elf_targets "/*?elf?*/")
-list(APPEND manifests ${CMAKE_CURRENT_BINARY_DIR}/manifest_/*?elf?*/.p)
 
-/*- endfor --*/
+/*- endfor -*/
 
 
 cdl_ld("${CMAKE_CURRENT_BINARY_DIR}/spec.cdl" capdl_spec
-    MANIFESTS ${manifests}
+    MANIFESTS ${CMAKE_CURRENT_SOURCE_DIR}/.manifest.obj
     ELF ${elf_files}
     DEPENDS ${elf_targets})
 
