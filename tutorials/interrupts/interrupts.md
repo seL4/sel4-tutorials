@@ -247,7 +247,8 @@ int main(int argc, char **argv) {
 // capability to a reply object
 /*? capdl_alloc_cap(seL4_NotificationObject, "ntfn", "ntfn", write=True, read=True, grant=True) ?*/
 // capability to the device untyped for the timer
-/*? capdl_alloc_cap(seL4_UntypedObject, "device_untyped", "device_untyped", write=True, read=True, paddr=4160753664) ?*/
+/*- set _ = capdl_alloc_obj(seL4_UntypedObject, "device_untyped", paddr=4160753664) -*/
+/*? capdl_alloc_cap(seL4_UntypedObject, "device_untyped", "device_untyped", write=True, read=True) ?*/
 // empty cslot for the frame
 /*? capdl_empty_slot("timer_frame") ?*/
 // cnode of this process
