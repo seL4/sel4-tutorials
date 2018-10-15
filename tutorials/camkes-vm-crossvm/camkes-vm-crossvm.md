@@ -1,3 +1,16 @@
+/*#
+#
+# Copyright 2017, Data61
+# Commonwealth Scientific and Industrial Research Organisation (CSIRO)
+# ABN 41 687 119 230.
+#
+# This software may be distributed and modified according to the terms of
+# the BSD 2-Clause license. Note that NO WARRANTY is provided.
+# See "LICENSE_BSD2.txt" for details.
+#
+# @TAG(DATA61_BSD)
+#
+-#*/
 /*? declare_task_ordering(['vm-cmake-start','vm-cmake-crossvm-overlay','vm-camkes-init0-start','vm-camkes-init0-end','vm-camkes-printserver','vm-camkes-composition-start','vm-camkes-composition-end','vm-camkes-configuration','vm-printserver','vm-crossvm-src','vm-cmake-init0','vm-cmake-init0-crossvm','vm-cmake-printserver','vm-init-crossvm','vm-pkg-print_client-src','vm-pkg-print_client-cmake','vm-cmake-printclient-proj','vm-cmake-camkes_init']) ?*/
 
 # CAmkES VM: Cross VM Connectors
