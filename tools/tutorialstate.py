@@ -13,6 +13,8 @@
 from enum import Enum
 import functools
 
+from capdl import ObjectAllocator, AddressSpaceAllocator, CSpaceAllocator, ObjectType, lookup_architecture
+
 class TaskContentType(Enum):
     '''
     Task content type enum for describing when task content should be shown.
@@ -95,12 +97,12 @@ class TuteState(object):
     instead of its starting state. Generally, the starting state of task 2 will be
     the same as the solution state of task 1, but this may not always be the case.
     '''
-    def __init__(self, current_task, solution_mode):
+    def __init__(self, current_task, solution_mode, arch, rt):
         self.tasks = {}
         self.additional_files = []
         self.current_task = current_task
         self.solution = solution_mode
-        self.stash = Stash()
+        self.stash = Stash(arch, rt)
 
     def declare_tasks(self, task_names):
         '''
@@ -188,12 +190,34 @@ class TuteState(object):
 
 
 class Stash(object):
-    def __init__(self):
+    def __init__(self, arch, rt):
+        self.rt = rt
+        self.objects = ObjectAllocator()
+        self.objects.spec.arch = arch
+        self.addr_spaces = {}
+        self.cspaces = {}
+        self.current_cspace = None
+        self.current_addr_space = None
+
+        # The following variables are for tracking symbols to render before compilation
         self.elfs = {}
-        self.objects = {}
-        self.special_pages = {}
-        self.caps = {}
-        self.unclaimed_caps = []
-        self.unclaimed_special_pages = []
+        self.current_cap_symbols = []
+        self.cap_symbols = {}
+        self.current_region_symbols = []
+        self.region_symbols = {}
 
+    def start_elf(self, name):
+        cnode = self.objects.alloc(ObjectType.seL4_CapTableObject, "cnode_%s" % name)
+        arch = self.objects.spec.arch.capdl_name()
+        pd = self.objects.alloc(lookup_architecture(arch).vspace().object, "vspace_%s" %name)
+        self.current_cspace = CSpaceAllocator(cnode)
+        self.current_addr_space = AddressSpaceAllocator(None, pd)
+        self.current_cap_symbols = []
+        self.current_region_symbols = []
 
+    def finish_elf(self, name, filename, passive):
+        self.addr_spaces[name] = self.current_addr_space
+        self.cspaces[name]  =self.current_cspace
+        self.elfs[name] = {"filename": filename, "passive" : passive}
+        self.cap_symbols[name] = self.current_cap_symbols
+        self.region_symbols[name] = self.current_region_symbols

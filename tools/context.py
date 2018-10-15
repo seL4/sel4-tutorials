@@ -20,7 +20,7 @@ from pickle import dumps
 from jinja2 import contextfilter, contextfunction
 
 import macros
-from capdl import ObjectType, ObjectRights
+from capdl import ObjectType, ObjectRights, Cap, lookup_architecture
 from tutorialstate import TaskContentType
 
 
@@ -96,12 +96,10 @@ class TutorialFilters:
         """
         Declares a ELF object containing content with name.
         """
-        print("here")
         state = context['state']
         args = context['args']
         stash = state.stash
 
-        print(content, name, context)
         if args.out_dir and not args.docsite:
             filename = os.path.join(args.out_dir, "%s.c" % name)
             if not os.path.exists(os.path.dirname(filename)):
@@ -111,15 +109,37 @@ class TutorialFilters:
             print(filename, file=args.output_files)
 
             elf_file.write(content)
-            # elf_file.write("#line 1 \"thing\"\n" + content)
 
-            stash.caps[name] = stash.unclaimed_caps
-            stash.unclaimed_caps = []
-            stash.elfs[name] = {"filename" :"%s.c" % name, "passive" : passive}
-            stash.special_pages[name] = [("stack", 16*0x1000, 0x1000, 'guarded'),
-            ("mainIpcBuffer", 0x1000, 0x1000, 'guarded'),
-            ] + stash.unclaimed_special_pages
-            stash.unclaimed_special_pages = []
+            # The following allocates objects for the main thread, its IPC buffer and stack.
+            stack_name = "stack"
+            ipc_name = "mainIpcBuffer"
+            number_stack_frames = 16
+            frames = [stash.objects.alloc(ObjectType.seL4_FrameObject, name='stack_%d_%s_obj' % (i, name), label=name, size=4096)
+                      for i in range(number_stack_frames)]
+
+            sizes = [4096] * (number_stack_frames)
+            caps = [Cap(frame, read=True, write=True, grant=False) for frame in frames]
+            stash.current_addr_space.add_symbol_with_caps(stack_name, sizes, caps)
+            stash.current_region_symbols.append((stack_name, sum(sizes), 'size_12bit'))
+
+            ipc_frame = stash.objects.alloc(ObjectType.seL4_FrameObject, name='ipc_%s_obj' % (name), label=name, size=4096)
+            caps = [Cap(ipc_frame, read=True, write=True, grant=False)]
+            sizes = [4096]
+            stash.current_addr_space.add_symbol_with_caps(ipc_name, sizes, caps)
+            stash.current_region_symbols.append((ipc_name, sum(sizes), 'size_12bit'))
+
+            tcb = stash.objects.alloc(ObjectType.seL4_TCBObject, name='tcb_%s' % ( name))
+            tcb['ipc_buffer_slot'] = Cap(ipc_frame, read=True, write=True, grant=False)
+            cap = Cap(stash.current_cspace.cnode)
+            tcb['cspace'] = cap
+            stash.current_cspace.cnode.update_guard_size_caps.append(cap)
+            tcb['vspace'] = Cap(stash.current_addr_space.vspace_root)
+            tcb.elf = name
+            if not passive and stash.rt:
+                sc = stash.objects.alloc(ObjectType.seL4_SchedContextObject, name='sc_%s_obj' % (name), label=name)
+                tcb['sc_slot'] = Cap(sc)
+
+            stash.finish_elf(name, "%s.c" % name, passive)
 
         print("end")
         return content
@@ -249,77 +269,90 @@ class TutorialFunctions:
 
     @staticmethod
     @contextfunction
-    def RecordObject(context, object, name, cap_symbol=None, **kwargs):
-        print("Cap registered")
+    def capdl_alloc_obj(context, obj_type, obj_name, **kwargs):
         state = context['state']
         stash = state.stash
-        write = []
-        if name in stash.objects:
-            assert stash.objects[name][0] is object
-            stash.objects[name][1].update(kwargs)
-        else:
-            if object is ObjectType.seL4_FrameObject:
-                stash.unclaimed_special_pages.append((kwargs['symbol'], kwargs['size'], kwargs['alignment'], kwargs['section']))
-                write.append("extern const char %s[%d];" % (kwargs['symbol'], kwargs['size']))
-            elif object is not None:
-                kwargs_new = {}
-                kwargs_new.update(kwargs)
-                stash.objects[name] = (object, kwargs_new)
-        kwargs_new = {}
-        kwargs_new.update(kwargs)
-        stash.unclaimed_caps.append((cap_symbol, name, kwargs_new))
-        if cap_symbol:
-            write.append("extern seL4_CPtr %s;" % cap_symbol)
-        return "\n".join(write)
+        obj = None
+        if obj_type and obj_name:
+            obj = stash.objects.alloc(obj_type, obj_name, **kwargs)
+        return obj
+
+
+    @staticmethod
+    @contextfunction
+    def capdl_alloc_cap(context, obj_type, obj_name, symbol, **kwargs):
+        """
+        Alloc a cap and emit a symbol for it.
+        """
+        state = context['state']
+        stash = state.stash
+        obj = TutorialFunctions.capdl_alloc_obj(context, obj_type, obj_name)
+        slot = stash.current_cspace.alloc(obj, **kwargs)
+        stash.current_cap_symbols.append((symbol, slot))
+        return "extern seL4_CPtr %s;" % symbol
+
 
     @staticmethod
     @contextfunction
     def capdl_elf_cspace(context, elf_name, cap_symbol):
-        return TutorialFunctions.RecordObject(context, None, "cnode_%s" % elf_name, cap_symbol=cap_symbol)
+        return TutorialFunctions.capdl_alloc_cap(context, ObjectType.seL4_CapTableObject, "cnode_%s" % elf_name, cap_symbol)
 
     @staticmethod
     @contextfunction
     def capdl_elf_vspace(context, elf_name, cap_symbol):
-        return TutorialFunctions.RecordObject(context, None, "vspace_%s" % elf_name, cap_symbol=cap_symbol)
+        pd_type = lookup_architecture("x86_64").vspace().object
+        return TutorialFunctions.capdl_alloc_cap(context, pd_type, "vspace_%s" % elf_name, cap_symbol)
 
     @staticmethod
     @contextfunction
     def capdl_elf_tcb(context, elf_name, cap_symbol):
-        return TutorialFunctions.RecordObject(context, None, "tcb_%s" % elf_name, cap_symbol=cap_symbol)
+        return TutorialFunctions.capdl_alloc_cap(context, ObjectType.seL4_TCBObject, "tcb_%s" % elf_name, cap_symbol)
 
     @staticmethod
     @contextfunction
     def capdl_elf_sc(context, elf_name, cap_symbol):
-        return TutorialFunctions.RecordObject(context, None, "sc_%s" % elf_name, cap_symbol=cap_symbol)
+        return TutorialFunctions.capdl_alloc_cap(context, ObjectType.seL4_SchedContextObject, "sc_%s" % elf_name, cap_symbol)
 
     @staticmethod
     @contextfunction
     def capdl_sched_control(context, cap_symbol):
-        return TutorialFunctions.RecordObject(context, ObjectType.seL4_SchedControl, "sched_control", cap_symbol=cap_symbol)
+        return TutorialFunctions.capdl_alloc_cap(context, ObjectType.seL4_SchedControl, "sched_control", cap_symbol)
 
     @staticmethod
     @contextfunction
     def capdl_irq_control(context, cap_symbol):
-        return TutorialFunctions.RecordObject(context, ObjectType.seL4_IRQControl, "irq_control", cap_symbol=cap_symbol)
+        return TutorialFunctions.capdl_alloc_cap(context, ObjectType.seL4_IRQControl, "irq_control", cap_symbol)
 
     @staticmethod
     @contextfunction
     def capdl_empty_slot(context, cap_symbol):
-        return TutorialFunctions.RecordObject(context, None, None, cap_symbol=cap_symbol)
+        return TutorialFunctions.capdl_alloc_cap(context, None, None, cap_symbol)
 
     @staticmethod
     @contextfunction
     def capdl_declare_stack(context, size_bytes, stack_base_sym, stack_top_sym=None):
-        declaration = TutorialFunctions.RecordObject(context, ObjectType.seL4_FrameObject, ObjectType.seL4_FrameObject,
-                       symbol=stack_base_sym, size=size_bytes, alignment=4096*2, section="guarded")
-        stack_top = "" if stack_top_sym is None else "static const uintptr_t %s = (const uintptr_t)&%s + sizeof(%s);" % (stack_top_sym, stack_base_sym, stack_base_sym)
-        return "\n".join([declaration.strip(), stack_top])
+        state = context['state']
+        stash = state.stash
+        stash.current_region_symbols.append((stack_base_sym, size_bytes, "size_12bit"))
+        return "\n".join([
+            "extern const char %s[%d];" % (stack_base_sym, size_bytes),
+            "" if stack_top_sym is None else "static const uintptr_t %s = (const uintptr_t)&%s + sizeof(%s);" % (stack_top_sym, stack_base_sym, stack_base_sym)
+        ])
 
     @staticmethod
     @contextfunction
     def capdl_declare_frame(context, cap_symbol, symbol, size=4096):
-        return TutorialFunctions.RecordObject(context, ObjectType.seL4_FrameObject, ObjectType.seL4_FrameObject, cap_symbol=cap_symbol,
-        symbol=symbol, size=size, alignment=size, section="guarded")
+        state = context['state']
+        stash = state.stash
+
+        obj = TutorialFunctions.capdl_alloc_obj(context, ObjectType.seL4_FrameObject, cap_symbol, size=size)
+        cap_symbol = TutorialFunctions.capdl_alloc_cap(context, ObjectType.seL4_FrameObject, cap_symbol, cap_symbol, read=True, write=True, grant=True)
+        stash.current_addr_space.add_symbol_with_caps(symbol, [size], [Cap(obj, read=True, write=True, grant=True)])
+        stash.current_region_symbols.append((symbol, size, "size_12bit"))
+        return "\n".join([
+            cap_symbol,
+             "extern const char %s[%d];" % (symbol, size),
+            ])
 
     @staticmethod
     @contextfunction
@@ -346,12 +379,12 @@ import pickle
 
 serialised = \"\"\"%s\"\"\"
 
-# (OBJECTS, CSPACE_LAYOUT, SPECIAL_PAGES) = pickle.loads(serialised)
-# print((OBJECTS, CSPACE_LAYOUT, SPECIAL_PAGES))
+# (objects, cspaces, addr_spaces, cap_symbols, region_symbols, elfs) = pickle.loads(serialised)
+# print((objects, cspaces, addr_spaces, cap_symbols, region_symbols, elfs))
 print(serialised)
 
         """
-            file.write(manifest % dumps((stash.objects, stash.caps, stash.special_pages, stash.elfs)))
+            file.write(manifest % dumps((stash.objects, stash.cspaces, stash.addr_spaces, stash.cap_symbols, stash.region_symbols, stash.elfs)))
         return ""
 
 

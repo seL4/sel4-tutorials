@@ -76,6 +76,10 @@ def _init_build_directory(config, initialised, directory, tute_directory, output
 
 
 def _init_tute_directory(config, tut, solution, task, directory, output=None):
+    if config == "pc99":
+        arch = "x86_64"
+    elif config == "zynq7000":
+        arch = "aarch32"
     with open(os.path.join(directory, ".tute_config"), 'w') as file:
         file.write("set(TUTE_COMMAND \"%s\")" %
             ';'.join(["PYTHONPATH=${PYTHON_CAPDL_PATH}"
@@ -84,6 +88,8 @@ def _init_tute_directory(config, tut, solution, task, directory, output=None):
         "--out-dir", "${output_dir}",
         "--input-files", "${input_files}",
         "--output-files", "${output_files}",
+        "--arch", arch,
+        "--rt" if tut == "mcs" else "",
         "--task;%s" % task if task else "",
         "--solution" if solution else ""]))
     return

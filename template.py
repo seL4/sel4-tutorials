@@ -108,6 +108,8 @@ def main():
     parser.add_argument('-s','--solution', action='store_true', default=False)
     parser.add_argument('--docsite', action='store_true')
     parser.add_argument('--tut-file')
+    parser.add_argument('--arch', default="x86_64")
+    parser.add_argument('--rt', action='store_true')
     parser.add_argument('--task')
     parser.add_argument('--out-dir')
     parser.add_argument('--input-files', type=argparse.FileType('w'))
@@ -131,7 +133,7 @@ def main():
     env.filters.update(context.get_filters())
 
     # Init our tutorial state.
-    state = tutorialstate.TuteState(args.task, args.solution)
+    state = tutorialstate.TuteState(args.task, args.solution, args.arch, args.rt)
 
     # Render all of the files.
     # We use a gross while True loop to allow state.additional_files to

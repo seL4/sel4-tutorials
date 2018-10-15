@@ -206,12 +206,13 @@ function(cdl_ld outfile output_target)
     endif()
 
     add_custom_command(OUTPUT "${outfile}"
-        COMMAND ${capdl_linker_tool}
+        COMMAND ${python_with_capdl} ${CDL_LD_MANIFESTS} |
+        ${capdl_linker_tool}
             --arch=${KernelSel4Arch}
             gen_cdl
-            --manifest-in ${CDL_LD_MANIFESTS}
-            --outfile ${outfile}
+            --manifest-in -
             --elffile ${CDL_LD_ELF}
+            --outfile ${outfile}
         DEPENDS ${CDL_LD_ELF} ${capdl_python} ${CDL_LD_MANIFESTS})
     add_custom_target(${output_target}
         DEPENDS "${outfile}")
@@ -220,21 +221,20 @@ function(cdl_ld outfile output_target)
 endfunction()
 
 
-function(cdl_pp manifest_in manifest_out target)
-    cmake_parse_arguments(PARSE_ARGV 3 CDL_PP "" "" "ELF;CFILE;DEPENDS")
+function(cdl_pp manifest_in target)
+    cmake_parse_arguments(PARSE_ARGV 2 CDL_PP "" "" "ELF;CFILE;DEPENDS")
     if (NOT "${CDL_PP_UNPARSED_ARGUMENTS}" STREQUAL "")
         message(FATAL_ERROR "Unknown arguments to cdl_pp")
     endif()
 
-    add_custom_command(OUTPUT ${CDL_PP_CFILE} ${manifest_out}
+    add_custom_command(OUTPUT ${CDL_PP_CFILE}
         COMMAND ${python_with_capdl} ${manifest_in} |
         ${capdl_linker_tool}
                 --arch=${KernelSel4Arch}
                 build_cnode
-                --manifest=-
-                --manifest-out=${manifest_out}
-                --ccspace ${CDL_PP_CFILE}
+                --manifest-in=-
                 --elffile ${CDL_PP_ELF}
+                --ccspace ${CDL_PP_CFILE}
         DEPENDS  ${capdl_python} ${manifest_in} )
-    add_custom_target(${target} DEPENDS ${CDL_PP_CFILE} ${manifest_out})
+    add_custom_target(${target} DEPENDS ${CDL_PP_CFILE})
 endfunction()
