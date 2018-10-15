@@ -25,12 +25,10 @@
 
 This tutorial runs on a different branch of the seL4 kernel. First, check out this branch:
 
-<!-- TODO update mcs version -->
-
 ```bash
 cd kernel
-git fetch seL4 9.0.0-mcs 
-git checkout 9.0.0-mcs
+git fetch seL4 10.0.0-mcs 
+git checkout 10.0.0-mcs
 ```
 
 Then initialise the tutorial:
