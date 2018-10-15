@@ -103,6 +103,9 @@ our constraints when mapping those Dataports.
 structure of ADL: it's key to understanding CAmkES. And well done on
 writing your first CAmkES application.
 
+
+/*? macros.help_block() ?*/
+
 ```c
 /*- filter File("components/Client/Client.camkes") --*/
 /* @TAG(DATA61_BSD) */

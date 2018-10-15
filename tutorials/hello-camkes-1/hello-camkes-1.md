@@ -262,6 +262,8 @@ Now build and run the project, if it compiles: Congratulations! Be sure to read 
 structure of ADL: it's key to understanding CAmkES. And well done on
 writing your first CAmkES application.
 
+/*? macros.help_block() ?*/
+
 ```
 /*- filter File("hello-1.camkes") --*/
 /* @TAG(DATA61_BSD) */
