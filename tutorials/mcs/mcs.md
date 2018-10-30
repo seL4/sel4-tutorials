@@ -33,7 +33,7 @@ git checkout mcs-tutorials
 
 Then initialise the tutorial:
 
-/*? macros.tutorial_init("ipc") ?*/
+/*? macros.tutorial_init("mcs") ?*/
 
 Note that the other tutorials will not build on this version of the kernel, make sure you 
  checkout `master` before completing other tutorials.
