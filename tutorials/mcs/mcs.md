@@ -402,7 +402,39 @@ The following code then converts the server to passive:
 From this point, the server runs on the `mcs` process's scheduling context.
 
 ### Timeout Faults
- 
+
+But before we discuss timeout faults, we must first discuss the differences
+between configuring a fault endpoint on the master vs the MCS kernel. There is a
+minor difference in the way that the kernel is informed of the cap to a fault
+endpoint, between the master and MCS kernels.
+
+Regardless though, on both versions of the kernel, to inform the kernel of the
+fault endpoint for a thread, call the usual `seL4_TCB_SetSpace()`.
+
+#### Configuring a fault endpoint on the MCS kernel:
+
+On the MCS kernel the cap given to the kernel must be a cap to an object in
+the CSpace of the thread which is *calling the syscall* (`seL4_TCB_Configure()`)
+to give the cap to the kernel.
+
+This calling thread may be the handler thread, or some other thread which
+manages both the handler thread and the faulting thread. Or in an oddly designed
+system, it might be the faulting thread itself if the faulting thread is allowed
+to configure its own fault endpoint.
+
+The reason for this difference is merely that it is faster to lookup the fault
+endpoint this way since it is looked up only once at the time it is configured.
+
+#### Configuring a fault endpoint on the Master kernel:
+
+On the Master kernel the cap given to the kernel must be a cap to an object in
+the CSpace of the *faulting thread*.
+
+On the Master kernel, the fault endpoint cap is looked up from within the CSpace
+of the faulting thread everytime a fault occurs.
+
+#### Exercise:
+
 **Exercise** Set the data field of `sched_context` using `seL4_SchedControl_Configure` and set a 10s period, 1ms 
 budget and 0 extra refills.
 
