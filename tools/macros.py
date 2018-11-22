@@ -62,6 +62,8 @@ configure_file(${CMAKE_SOURCE_DIR}/projects/sel4-tutorials/tools/expect.py ${CMA
 
 def tutorial_init(name):
     return '''```sh
+# For instructions about obtaining the tutorial sources see https://docs.sel4.systems/Tutorials/#get-the-code
+#
 # Follow these instructions to initialise the tutorial
 # initialising the build directory with a tutorial exercise
 ./init --tut %s
