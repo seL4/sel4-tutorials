@@ -49,6 +49,7 @@ TUTORIALS = {
     'notifications': ['pc99'],
     'mcs': ALL_CONFIGS,
     'interrupts': ['zynq7000'],
+    'fault-handlers': ALL_CONFIGS,
 }
 
 ALL_TUTORIALS = TUTORIALS.keys()
