@@ -18,7 +18,7 @@ for 2 seconds.
 
 ## Initialising
 
-/*? macros.tutorial_init("hello-camkes-2") ?*/
+/*? macros.tutorial_init("hello-camkes-timer") ?*/
 
 ## Prerequisites
 
