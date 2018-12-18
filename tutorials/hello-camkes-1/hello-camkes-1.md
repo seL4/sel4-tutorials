@@ -276,6 +276,7 @@ writing your first CAmkES application.
 
 /*? macros.help_block() ?*/
 
+/*-- filter ExcludeDocs() -*/
 ```
 /*- filter File("hello-1.camkes") --*/
 /* @TAG(DATA61_BSD) */
@@ -340,3 +341,4 @@ GenerateCAmkESRootserver()
 /*? macros.cmake_check_script(state) ?*/
 /*-- endfilter -*/
 ```
+/*-- endfilter -*/
