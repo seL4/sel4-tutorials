@@ -39,9 +39,7 @@ def simulate_with_checks(dir, completion_text, failure_list=FAILURE_TEXTS, logfi
 
         # result is the index in the completion text list corresponding to the
         # text that was produced
-        if result == 0:
-            continue
-        else:
+        if result != 0:
             return result
     return 0
 
