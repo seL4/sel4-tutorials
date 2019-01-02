@@ -66,7 +66,7 @@ def main():
     if result is 0:
         print("Success!")
     elif result <= len(FAILURE_TEXTS):
-        print("Failure! " + FAILURE_TEXTS[result - 1])
+        print("Failure! {0}".format(FAILURE_TEXTS[result - 1]))
     else:
         print("Unknown reason for failure")
 
