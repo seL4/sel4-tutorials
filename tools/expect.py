@@ -64,11 +64,15 @@ def main():
     else:
         completion_text = args.text
     build_dir = os.path.dirname(__file__)
-    if simulate_with_checks(build_dir, completion_text) is 0:
+    result = simulate_with_checks(build_dir, completion_text)
+    if result is 0:
         print("Success!")
         return 0
+    elif result <= len(failure_list):
+        print("Failure! " + failure_list.get(result - 1))
+        return 1
     else:
-        print("Failure!")
+        print("Unknown reason for failure")
         return 1
 
 if __name__ == '__main__':
