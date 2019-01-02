@@ -445,8 +445,8 @@ budget and 0 extra refills.
 /*-- filter ExcludeDocs() -*/
 /*-- filter TaskContent("mcs-badge", TaskContentType.COMPLETED, subtask='badge') -*/
 
-    // reconfigure sched_context with 1s period, 100ms budget, 0 extra refills and data of 5.
-    error = seL4_SchedControl_Configure(sched_control, sched_context, US_IN_MS, US_IN_S, 0, 5);
+    // reconfigure sched_context with 1s period, 500 microsecond budget, 0 extra refills and data of 5.
+    error = seL4_SchedControl_Configure(sched_control, sched_context, 500, US_IN_S, 0, 5);
     ZF_LOGF_IF(error != seL4_NoError, "Failed to configure sched_context");
 /*-- endfilter -*/
 /*-- filter TaskCompletion("mcs-badge", TaskContentType.COMPLETED) -*/
