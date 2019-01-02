@@ -65,13 +65,12 @@ def main():
     result = simulate_with_checks(build_dir, completion_text)
     if result is 0:
         print("Success!")
-        return 0
-    elif result <= len(failure_list):
-        print("Failure! " + failure_list.get(result - 1))
-        return 1
+    elif result <= len(FAILURE_TEXTS):
+        print("Failure! " + FAILURE_TEXTS[result - 1])
     else:
         print("Unknown reason for failure")
-        return 1
+
+    return result
 
 if __name__ == '__main__':
     sys.exit(main())
