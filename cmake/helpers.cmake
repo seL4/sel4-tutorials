@@ -26,7 +26,7 @@ macro(ImportCapDL)
     include(${CAPDL_TOOL_HELPERS})
     CapDLToolInstall(install_capdl_tool CAPDL_TOOL_BINARY)
     include("${CAPDL_LOADER_BUILD_HELPERS}")
-
+    ImportObjectSizesFromCamkes()
 endmacro()
 
 # Import camkes functions into caller scope
@@ -37,6 +37,11 @@ macro(ImportCamkes)
     include("${CMAKE_SOURCE_DIR}/tools/camkes/camkes.cmake")
     add_subdirectory("${CMAKE_SOURCE_DIR}/projects/camkes/capdl/capdl-loader-app" capdl-loader-app)
     add_subdirectory("${CMAKE_SOURCE_DIR}/tools/camkes/libsel4camkes" libsel4camkes)
+    ImportObjectSizesFromCamkes()
+endmacro()
+
+macro(ImportObjectSizesFromCamkes)
+    add_subdirectory("${CMAKE_SOURCE_DIR}/tools/camkes/object_sizes" object_sizes)
 endmacro()
 
 macro(ImportCamkesVM)
@@ -210,6 +215,7 @@ function(cdl_ld outfile output_target)
         COMMAND ${python_with_capdl} ${CDL_LD_MANIFESTS} |
         ${capdl_linker_tool}
             --arch=${KernelSel4Arch}
+            --object-sizes $<TARGET_PROPERTY:object_sizes,FILE_PATH>
             gen_cdl
             --manifest-in -
             --elffile ${CDL_LD_ELF}
@@ -217,7 +223,7 @@ function(cdl_ld outfile output_target)
         DEPENDS ${CDL_LD_ELF} ${capdl_python} ${CDL_LD_MANIFESTS})
     add_custom_target(${output_target}
         DEPENDS "${outfile}")
-    add_dependencies(${output_target} ${CDL_LD_DEPENDS})
+    add_dependencies(${output_target} ${CDL_LD_DEPENDS} object_sizes)
 
 endfunction()
 
@@ -232,10 +238,11 @@ function(cdl_pp manifest_in target)
         COMMAND ${python_with_capdl} ${manifest_in} |
         ${capdl_linker_tool}
                 --arch=${KernelSel4Arch}
+                --object-sizes $<TARGET_PROPERTY:object_sizes,FILE_PATH>
                 build_cnode
                 --manifest-in=-
                 --elffile ${CDL_PP_ELF}
                 --ccspace ${CDL_PP_CFILE}
-        DEPENDS  ${capdl_python} ${manifest_in} )
+        DEPENDS  ${capdl_python} ${manifest_in} object_sizes)
     add_custom_target(${target} DEPENDS ${CDL_PP_CFILE})
 endfunction()
