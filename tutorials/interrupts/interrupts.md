@@ -154,8 +154,6 @@ notification capability is set to sent a signal to.
 Now the output will be:
 
 ```
-<<seL4(CPU 0) [decodeInvocation/530 T0xe8265600 "tcb_timer" @84e4]: Attempted to invoke a null cap #9.>>
-main@timer.c:78 [Cond failed: error]
 /*-- filter TaskCompletion("timer-set", TaskContentType.COMPLETED) -*/
 Tick
 /*-- endfilter -*/
