@@ -37,6 +37,18 @@ elseif(${TUT_BOARD} STREQUAL "zynq7000")
     set(KernelArmSel4Arch "aarch32" CACHE STRING "" FORCE)
     set(KernelARMPlatform "zynq7000" CACHE STRING "" FORCE)
     ApplyData61ElfLoaderSettings(${KernelARMPlatform} ${KernelArmSel4Arch})
+elseif(${TUT_BOARD} STREQUAL "rpi3")
+    # Do a quick check and warn the user if they haven't set
+    # -DARM/-DAARCH32/-DAARCH64.
+    if ((NOT ARM) AND (NOT AARCH32)
+        AND ((NOT CROSS_COMPILER_PREFIX) OR ("${CROSS_COMPILER_PREFIX}" STREQUAL "")))
+        message(WARNING "The target machine is an ARM machine. Unless you've defined -DCROSS_COMPILER_PREFIX, you may need to set one of:\n\t-DARM/-DAARCH32/-DAARCH64")
+    endif()
+
+    set(KernelArch "arm" CACHE STRING "" FORCE)
+    set(KernelArmSel4Arch "aarch32" CACHE STRING "" FORCE)
+    set(KernelARMPlatform "rpi3" CACHE STRING "" FORCE)
+    ApplyData61ElfLoaderSettings(${KernelARMPlatform} ${KernelArmSel4Arch})
 else()
     message(FATAL_ERROR "Unsupported board ${TUT_BOARD}.")
 endif()

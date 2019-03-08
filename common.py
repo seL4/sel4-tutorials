@@ -20,6 +20,7 @@ import logging
 PLAT_CONFIG = {
     'pc99': ['-DTUT_BOARD=pc', '-DTUT_ARCH=x86_64'],
     'zynq7000': ['-DAARCH32=TRUE', '-DTUT_BOARD=zynq7000'],
+    'rpi3': ['-DAARCH32=TRUE', '-DTUT_BOARD=rpi3'],
 }
 
 CAMKES_VM_CONFIG = {
@@ -80,6 +81,8 @@ def _init_tute_directory(config, tut, solution, task, directory, output=None):
     if config == "pc99":
         arch = "x86_64"
     elif config == "zynq7000":
+        arch = "aarch32"
+    elif config == "rpi3":
         arch = "aarch32"
     with open(os.path.join(directory, ".tute_config"), 'w') as file:
         file.write("set(TUTE_COMMAND \"%s\")" %
