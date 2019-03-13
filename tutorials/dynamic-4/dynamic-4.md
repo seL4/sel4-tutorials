@@ -375,8 +375,6 @@ int main(void) {
     error = sel4utils_spawn_process_v(&new_process, &vka, &vspace, 0, NULL, 1);
     assert(error == 0);
 
-    error = sel4utils_bootstrap_vspace_with_bootinfo_leaky(&vspace,
-                                                           &data, simple_get_pd(&simple), &vka, info);
     /*? task_1_desc ?*/
     /*? include_task_type_append([("task-1")]) ?*/
     /*? task_2_desc ?*/
