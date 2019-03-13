@@ -29,7 +29,7 @@ MakeCPIO(archive.o "$<TARGET_FILE:client>")
 add_executable(dynamic-4 archive.o main.c)
 
 target_link_libraries(dynamic-4
-    sel4
+    sel4runtime sel4
     muslc utils sel4tutorials
     sel4muslcsys sel4platsupport sel4utils sel4debug sel4allocman)
 

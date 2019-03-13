@@ -768,6 +768,7 @@ That's it for this tutorial.
 #include <assert.h>
 
 #include <sel4/sel4.h>
+#include <sel4runtime.h>
 
 #include <simple/simple.h>
 #include <simple-default/simple-default.h>
@@ -814,6 +815,9 @@ UNUSED static char allocator_mem_pool[ALLOCATOR_STATIC_POOL_SIZE];
 /* stack for the new thread */
 #define THREAD_2_STACK_SIZE 512
 static uint64_t thread_2_stack[THREAD_2_STACK_SIZE];
+
+/* tls region for the new thread */
+static char tls_region[CONFIG_SEL4RUNTIME_STATIC_TLS] = {};
 
 /* convenience function */
 extern void name_thread(seL4_CPtr tcb, char *name);
@@ -920,10 +924,6 @@ int main(void) {
                       "\tRevisit the first seL4_ARCH_Page_Map call above and double-check your arguments.\n");
    }
 
-    /* set the IPC buffer's virtual address in a field of the IPC buffer */
-    seL4_IPCBuffer *ipcbuf = (seL4_IPCBuffer*)ipc_buffer_vaddr;
-    ipcbuf->userData = ipc_buffer_vaddr;
-
 /*? task_6_desc ?*/
 /*? include_task_type_append([("task-6")]) ?*/
    ZF_LOGF_IFERR(error, "Failed to allocate new endpoint object.\n");
@@ -966,15 +966,20 @@ int main(void) {
     /* set stack pointer for the new thread. remember the stack grows down */
     sel4utils_set_stack_pointer(&regs, thread_2_stack_top);
 
-#ifdef CONFIG_ARCH_IA32
-    /* set the fs register for IPC buffer */
-    regs.fs = IPCBUF_GDT_SELECTOR;
-#endif /* CONFIG_ARCH_IA32 */
-
     /* actually write the TCB registers. */
     error = seL4_TCB_WriteRegisters(tcb_object.cptr, 0, 0, regs_size, &regs);
     ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
                   "\tDid you write the correct number of registers? See arg4.\n");
+
+   /* create a thread local storage (TLS) region for the new thread to store the
+      ipc buffer pointer */
+    uintptr_t tls = sel4runtime_write_tls_image(tls_region);
+    seL4_IPCBuffer *ipcbuf = (seL4_IPCBuffer*)ipc_buffer_vaddr;
+    error = sel4runtime_set_tls_variable(tls, __sel4_ipc_buffer, ipcbuf);
+    ZF_LOGF_IF(error, "Failed to set ipc buffer in TLS of new thread");
+    /* set the TLS base of the new thread */
+    error = seL4_TCB_SetTLSBase(tcb_object.cptr, tls);
+    ZF_LOGF_IF(error, "Failed to set TLS base");
 
     /* start the new thread running */
     error = seL4_TCB_Resume(tcb_object.cptr);
