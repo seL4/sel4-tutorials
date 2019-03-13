@@ -593,7 +593,7 @@ void echo__init(void) {
 client: the next instruction will cause a vm fault due to permissions
 /*-- endfilter -*/
 /*- filter TaskCompletion("hello", TaskContentType.ALL) --*/
-FAULT HANDLER: data fault from client.control
+FAULT HANDLER: data fault from client.client_0_control
 /*-- endfilter -*/
 ```
 
