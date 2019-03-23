@@ -215,9 +215,9 @@ class Stash(object):
         self.current_cap_symbols = []
         self.current_region_symbols = []
 
-    def finish_elf(self, name, filename, passive):
+    def finish_elf(self, name, filename):
         self.addr_spaces[name] = self.current_addr_space
         self.cspaces[name]  =self.current_cspace
-        self.elfs[name] = {"filename": filename, "passive" : passive}
+        self.elfs[name] = {"filename": filename}
         self.cap_symbols[name] = self.current_cap_symbols
         self.region_symbols[name] = self.current_region_symbols

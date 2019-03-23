@@ -139,7 +139,7 @@ class TutorialFilters:
                 sc = stash.objects.alloc(ObjectType.seL4_SchedContextObject, name='sc_%s_obj' % (name), label=name)
                 tcb['sc_slot'] = Cap(sc)
 
-            stash.finish_elf(name, "%s.c" % name, passive)
+            stash.finish_elf(name, "%s.c" % name)
 
         print("end")
         return content
