@@ -206,7 +206,7 @@ endfunction()
 
 
 function(cdl_ld outfile output_target)
-    cmake_parse_arguments(PARSE_ARGV 2 CDL_LD "" "" "ELF;MANIFESTS;DEPENDS")
+    cmake_parse_arguments(PARSE_ARGV 2 CDL_LD "" "" "ELF;KEYS;MANIFESTS;DEPENDS")
     if (NOT "${CDL_LD_UNPARSED_ARGUMENTS}" STREQUAL "")
         message(FATAL_ERROR "Unknown arguments to cdl_ld")
     endif()
@@ -218,6 +218,7 @@ function(cdl_ld outfile output_target)
             gen_cdl
             --manifest-in ${CDL_LD_MANIFESTS}
             --elffile ${CDL_LD_ELF}
+            --keys ${CDL_LD_KEYS}
             --outfile ${outfile}
         DEPENDS ${CDL_LD_ELF} ${capdl_python} ${CDL_LD_MANIFESTS})
     add_custom_target(${output_target}

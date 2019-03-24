@@ -35,6 +35,7 @@ list(APPEND elf_targets "/*?elf?*/")
 cdl_ld("${CMAKE_CURRENT_BINARY_DIR}/spec.cdl" capdl_spec 
     MANIFESTS ${CMAKE_CURRENT_SOURCE_DIR}/.allocator.obj
     ELF ${elf_files}
+    KEYS ${elf_targets}
     DEPENDS ${elf_targets})
 
 DeclareCDLRootImage("${CMAKE_CURRENT_BINARY_DIR}/spec.cdl" capdl_spec ELF ${elf_files} ELF_DEPENDS ${elf_targets})
