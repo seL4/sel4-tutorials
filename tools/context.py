@@ -109,12 +109,12 @@ class TutorialFilters:
             print(filename, file=args.output_files)
 
             elf_file.write(content)
-
+            objects = stash.allocator_state.obj_space
             # The following allocates objects for the main thread, its IPC buffer and stack.
             stack_name = "stack"
             ipc_name = "mainIpcBuffer"
             number_stack_frames = 16
-            frames = [stash.objects.alloc(ObjectType.seL4_FrameObject, name='stack_%d_%s_obj' % (i, name), label=name, size=4096)
+            frames = [objects.alloc(ObjectType.seL4_FrameObject, name='stack_%d_%s_obj' % (i, name), label=name, size=4096)
                       for i in range(number_stack_frames)]
 
             sizes = [4096] * (number_stack_frames)
@@ -122,13 +122,13 @@ class TutorialFilters:
             stash.current_addr_space.add_symbol_with_caps(stack_name, sizes, caps)
             stash.current_region_symbols.append((stack_name, sum(sizes), 'size_12bit'))
 
-            ipc_frame = stash.objects.alloc(ObjectType.seL4_FrameObject, name='ipc_%s_obj' % (name), label=name, size=4096)
+            ipc_frame = objects.alloc(ObjectType.seL4_FrameObject, name='ipc_%s_obj' % (name), label=name, size=4096)
             caps = [Cap(ipc_frame, read=True, write=True, grant=False)]
             sizes = [4096]
             stash.current_addr_space.add_symbol_with_caps(ipc_name, sizes, caps)
             stash.current_region_symbols.append((ipc_name, sum(sizes), 'size_12bit'))
 
-            tcb = stash.objects.alloc(ObjectType.seL4_TCBObject, name='tcb_%s' % ( name))
+            tcb = objects.alloc(ObjectType.seL4_TCBObject, name='tcb_%s' % ( name))
             tcb['ipc_buffer_slot'] = Cap(ipc_frame, read=True, write=True, grant=False)
             cap = Cap(stash.current_cspace.cnode)
             tcb['cspace'] = cap
@@ -136,7 +136,7 @@ class TutorialFilters:
             tcb['vspace'] = Cap(stash.current_addr_space.vspace_root)
             tcb.elf = name
             if not passive and stash.rt:
-                sc = stash.objects.alloc(ObjectType.seL4_SchedContextObject, name='sc_%s_obj' % (name), label=name)
+                sc = objects.alloc(ObjectType.seL4_SchedContextObject, name='sc_%s_obj' % (name), label=name)
                 tcb['sc_slot'] = Cap(sc)
 
             stash.finish_elf(name, "%s.c" % name)
@@ -274,7 +274,7 @@ class TutorialFunctions:
         stash = state.stash
         obj = None
         if obj_type and obj_name:
-            obj = stash.objects.alloc(obj_type, obj_name, **kwargs)
+            obj = stash.allocator_state.obj_space.alloc(obj_type, obj_name, **kwargs)
         return obj
 
 
@@ -384,7 +384,7 @@ serialised = \"\"\"%s\"\"\"
 print(serialised)
 
         """
-            file.write(manifest % dumps((stash.objects, stash.cspaces, stash.addr_spaces, stash.cap_symbols, stash.region_symbols)))
+            file.write(manifest % dumps((stash.allocator_state.obj_space, stash.allocator_state.cspaces, stash.allocator_state.addr_spaces, stash.cap_symbols, stash.region_symbols)))
         return ""
 
 

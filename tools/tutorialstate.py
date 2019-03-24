@@ -13,7 +13,7 @@
 from enum import Enum
 import functools
 
-from capdl import ObjectAllocator, AddressSpaceAllocator, CSpaceAllocator, ObjectType, lookup_architecture
+from capdl import AllocatorState, ObjectAllocator, AddressSpaceAllocator, CSpaceAllocator, ObjectType, lookup_architecture
 
 class TaskContentType(Enum):
     '''
@@ -192,10 +192,9 @@ class TuteState(object):
 class Stash(object):
     def __init__(self, arch, rt):
         self.rt = rt
-        self.objects = ObjectAllocator()
-        self.objects.spec.arch = arch
-        self.addr_spaces = {}
-        self.cspaces = {}
+        objects = ObjectAllocator()
+        objects.spec.arch = arch
+        self.allocator_state = AllocatorState(objects)
         self.current_cspace = None
         self.current_addr_space = None
 
@@ -207,17 +206,18 @@ class Stash(object):
         self.region_symbols = {}
 
     def start_elf(self, name):
-        cnode = self.objects.alloc(ObjectType.seL4_CapTableObject, "cnode_%s" % name)
-        arch = self.objects.spec.arch.capdl_name()
-        pd = self.objects.alloc(lookup_architecture(arch).vspace().object, "vspace_%s" %name)
+        cnode = self.allocator_state.obj_space.alloc(ObjectType.seL4_CapTableObject, "cnode_%s" % name)
+        arch = self.allocator_state.obj_space.spec.arch.capdl_name()
+        pd = self.allocator_state.obj_space.alloc(lookup_architecture(arch).vspace().object, "vspace_%s" %name)
         self.current_cspace = CSpaceAllocator(cnode)
         self.current_addr_space = AddressSpaceAllocator(None, pd)
         self.current_cap_symbols = []
         self.current_region_symbols = []
 
     def finish_elf(self, name, filename):
-        self.addr_spaces[name] = self.current_addr_space
-        self.cspaces[name]  =self.current_cspace
+        self.allocator_state.addr_spaces[name] = self.current_addr_space
+        self.allocator_state.cspaces[name] = self.current_cspace
+        self.allocator_state.pds[name] = self.current_addr_space.vspace_root
         self.elfs[name] = {"filename": filename}
         self.cap_symbols[name] = self.current_cap_symbols
         self.region_symbols[name] = self.current_region_symbols
