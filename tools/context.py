@@ -134,11 +134,23 @@ class TutorialFilters:
             tcb['cspace'] = cap
             stash.current_cspace.cnode.update_guard_size_caps.append(cap)
             tcb['vspace'] = Cap(stash.current_addr_space.vspace_root)
-            tcb.elf = name
+            tcb.sp = "get_vaddr(\'%s\') + %d" % (stack_name, sum(sizes))
+            tcb.addr = "get_vaddr(\'%s\')" % (ipc_name)
+            tcb.ip = "get_vaddr(\'%s\')" % ("_start")
+            # This initialises the main thread's stack so that a normal _start routine provided by libmuslc can be used
+            # The capdl loader app takes the first 4 arguments of .init and sets registers to them,
+            # argc = 2,
+            # argv[0] = get_vaddr("progname") which is a string of the program name,
+            # argv[1] = 1 This could be changed to anything,
+            # 0, 0, null terminates the argument vector and null terminates the empty environment string vector
+            # 32, is an aux vector key of AT_SYSINFO
+            # get_vaddr(\"sel4_vsyscall\") is the address of the SYSINFO table
+            # 0, 0, null terminates the aux vectors.
+            tcb.init = "[0,0,0,0,2,get_vaddr(\"progname\"),1,0,0,32,get_vaddr(\"sel4_vsyscall\"),0,0]"
             if not passive and stash.rt:
                 sc = objects.alloc(ObjectType.seL4_SchedContextObject, name='sc_%s_obj' % (name), label=name)
                 tcb['sc_slot'] = Cap(sc)
-
+            stash.current_cspace.alloc(tcb)
             stash.finish_elf(name, "%s.c" % name)
 
         print("end")
