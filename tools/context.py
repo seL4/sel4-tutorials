@@ -379,12 +379,12 @@ import pickle
 
 serialised = \"\"\"%s\"\"\"
 
-# (objects, cspaces, addr_spaces, cap_symbols, region_symbols, elfs) = pickle.loads(serialised)
-# print((objects, cspaces, addr_spaces, cap_symbols, region_symbols, elfs))
+# (objects, cspaces, addr_spaces, cap_symbols, region_symbols) = pickle.loads(serialised)
+# print((objects, cspaces, addr_spaces, cap_symbols, region_symbols))
 print(serialised)
 
         """
-            file.write(manifest % dumps((stash.objects, stash.cspaces, stash.addr_spaces, stash.cap_symbols, stash.region_symbols, stash.elfs)))
+            file.write(manifest % dumps((stash.objects, stash.cspaces, stash.addr_spaces, stash.cap_symbols, stash.region_symbols)))
         return ""
 
 
