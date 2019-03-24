@@ -553,7 +553,7 @@ int call_once(int arg) {
 ImportCapDL()
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -u __vsyscall_ptr")
 
-/*? write_manifest(".manifest.obj") ?*/
+/*? write_manifest(manifest=".manifest.obj", allocator=".allocator.obj") ?*/
 cdl_pp(${CMAKE_CURRENT_SOURCE_DIR}/.manifest.obj cdl_pp_target
     /*- for (elf, file) in state.stash.elfs.iteritems() -*/
     ELF "/*?elf?*/"
@@ -573,7 +573,7 @@ list(APPEND elf_targets "/*?elf?*/")
 
 
 cdl_ld("${CMAKE_CURRENT_BINARY_DIR}/spec.cdl" capdl_spec
-    MANIFESTS ${CMAKE_CURRENT_SOURCE_DIR}/.manifest.obj
+    MANIFESTS ${CMAKE_CURRENT_SOURCE_DIR}/.allocator.obj
     ELF ${elf_files}
     DEPENDS ${elf_targets})
 

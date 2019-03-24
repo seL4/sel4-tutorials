@@ -16,7 +16,7 @@ import inspect
 import os
 import stat
 from pickle import dumps
-
+import pyaml
 from jinja2 import contextfilter, contextfunction
 
 import macros
@@ -361,30 +361,25 @@ class TutorialFunctions:
 
     @staticmethod
     @contextfunction
-    def write_manifest(context, file='manifest.py'):
+    def write_manifest(context, manifest='manifest.yaml', allocator="allocators.pickle"):
         state = context['state']
         args = context['args']
         stash = state.stash
         if args.out_dir and not args.docsite:
-            filename = os.path.join(args.out_dir, file)
-            if not os.path.exists(os.path.dirname(filename)):
-                os.makedirs(os.path.dirname(filename))
+            manifest = os.path.join(args.out_dir, manifest)
+            allocator = os.path.join(args.out_dir, allocator)
+            if not os.path.exists(os.path.dirname(manifest)):
+                os.makedirs(os.path.dirname(manifest))
 
-            file = open(filename, 'w')
-            print(filename, file=args.output_files)
+            manifest_file = open(manifest, 'w')
+            allocator_file = open(allocator, 'w')
+            print(manifest, file=args.output_files)
+            print(allocator, file=args.output_files)
 
+            data = {"cap_symbols": stash.cap_symbols, "region_symbols": stash.region_symbols}
 
-            manifest = """
-import pickle
-
-serialised = \"\"\"%s\"\"\"
-
-# (objects, cspaces, addr_spaces, cap_symbols, region_symbols) = pickle.loads(serialised)
-# print((objects, cspaces, addr_spaces, cap_symbols, region_symbols))
-print(serialised)
-
-        """
-            file.write(manifest % dumps((stash.allocator_state.obj_space, stash.allocator_state.cspaces, stash.allocator_state.addr_spaces, stash.cap_symbols, stash.region_symbols)))
+            manifest_file.write(pyaml.dump(data))
+            allocator_file.write(dumps(stash.allocator_state))
         return ""
 
 

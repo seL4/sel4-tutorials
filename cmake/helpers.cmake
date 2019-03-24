@@ -212,12 +212,11 @@ function(cdl_ld outfile output_target)
     endif()
 
     add_custom_command(OUTPUT "${outfile}"
-        COMMAND ${python_with_capdl} ${CDL_LD_MANIFESTS} |
-        ${capdl_linker_tool}
+        COMMAND ${capdl_linker_tool}
             --arch=${KernelSel4Arch}
             --object-sizes $<TARGET_PROPERTY:object_sizes,FILE_PATH>
             gen_cdl
-            --manifest-in -
+            --manifest-in ${CDL_LD_MANIFESTS}
             --elffile ${CDL_LD_ELF}
             --outfile ${outfile}
         DEPENDS ${CDL_LD_ELF} ${capdl_python} ${CDL_LD_MANIFESTS})
@@ -235,12 +234,11 @@ function(cdl_pp manifest_in target)
     endif()
 
     add_custom_command(OUTPUT ${CDL_PP_CFILE}
-        COMMAND ${python_with_capdl} ${manifest_in} |
-        ${capdl_linker_tool}
+        COMMAND ${capdl_linker_tool}
                 --arch=${KernelSel4Arch}
                 --object-sizes $<TARGET_PROPERTY:object_sizes,FILE_PATH>
                 build_cnode
-                --manifest-in=-
+                --manifest-in=${manifest_in}
                 --elffile ${CDL_PP_ELF}
                 --ccspace ${CDL_PP_CFILE}
         DEPENDS  ${capdl_python} ${manifest_in} object_sizes)
