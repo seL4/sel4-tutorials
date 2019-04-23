@@ -67,7 +67,6 @@ class TutorialFilters:
             task.set_completion(content_type, completion)
         return content
 
-
     @staticmethod
     @contextfilter
     def TaskCompletion(context, content, task_name, content_type):
@@ -122,13 +121,14 @@ class TutorialFilters:
             stash.current_addr_space.add_symbol_with_caps(stack_name, sizes, caps)
             stash.current_region_symbols.append((stack_name, sum(sizes), 'size_12bit'))
 
-            ipc_frame = objects.alloc(ObjectType.seL4_FrameObject, name='ipc_%s_obj' % (name), label=name, size=4096)
+            ipc_frame = objects.alloc(ObjectType.seL4_FrameObject,
+                                      name='ipc_%s_obj' % (name), label=name, size=4096)
             caps = [Cap(ipc_frame, read=True, write=True, grant=False)]
             sizes = [4096]
             stash.current_addr_space.add_symbol_with_caps(ipc_name, sizes, caps)
             stash.current_region_symbols.append((ipc_name, sum(sizes), 'size_12bit'))
 
-            tcb = objects.alloc(ObjectType.seL4_TCBObject, name='tcb_%s' % ( name))
+            tcb = objects.alloc(ObjectType.seL4_TCBObject, name='tcb_%s' % (name))
             tcb['ipc_buffer_slot'] = Cap(ipc_frame, read=True, write=True, grant=False)
             cap = Cap(stash.current_cspace.cnode)
             tcb['cspace'] = cap
@@ -148,13 +148,15 @@ class TutorialFilters:
             # 0, 0, null terminates the aux vectors.
             tcb.init = "[0,0,0,0,2,get_vaddr(\"progname\"),1,0,0,32,get_vaddr(\"sel4_vsyscall\"),0,0]"
             if not passive and stash.rt:
-                sc = objects.alloc(ObjectType.seL4_SchedContextObject, name='sc_%s_obj' % (name), label=name)
+                sc = objects.alloc(ObjectType.seL4_SchedContextObject,
+                                   name='sc_%s_obj' % (name), label=name)
                 tcb['sc_slot'] = Cap(sc)
             stash.current_cspace.alloc(tcb)
             stash.finish_elf(name, "%s.c" % name)
 
         print("end")
         return content
+
 
 class TutorialFunctions:
     """Class containing all tutorial functions. Add new static functions here to be included in the tutorial jinja2
@@ -191,7 +193,7 @@ class TutorialFunctions:
         """
         def normalise_task_name(task_name):
             subtask = None
-            if isinstance(task_name,tuple):
+            if isinstance(task_name, tuple):
                 # Subtask
                 subtask = task_name[1]
                 task_name = task_name[0]
@@ -211,7 +213,7 @@ class TutorialFunctions:
                 # Use previous task
                 (name, subtask) = normalise_task_name(task_names[i-1])
                 task = state.get_task(name)
-            elif task == state.get_current_task() or i is len(task_names) -1:
+            elif task == state.get_current_task() or i is len(task_names) - 1:
                 # Use task as it is either the current task or there aren't more tasks to check
                 pass
             else:
@@ -245,7 +247,7 @@ class TutorialFunctions:
         result = []
         for i in task_names:
             subtask = None
-            if isinstance(i,tuple):
+            if isinstance(i, tuple):
                 # Subclass
                 subtask = i[1]
                 i = i[0]
@@ -255,7 +257,8 @@ class TutorialFunctions:
                 content = state.print_task(task, subtask)
                 if not content:
                     if state.solution:
-                        raise Exception("No content found for {0} {1}".format(task, str(subtask or '')))
+                        raise Exception("No content found for {0} {1}".format(
+                            task, str(subtask or '')))
                 result.append(str(content or ''))
         return '\n'.join(result)
 
@@ -270,13 +273,13 @@ class TutorialFunctions:
         state.declare_tasks(task_names)
         args = context['args']
         if args.out_dir and not args.docsite:
-            filename = os.path.join(args.out_dir,".tasks")
+            filename = os.path.join(args.out_dir, ".tasks")
             print(filename, file=args.output_files)
             if not os.path.exists(os.path.dirname(filename)):
                 os.makedirs(os.path.dirname(filename))
             task_file = open(filename, 'w')
             for i in task_names:
-                print(i,file=task_file)
+                print(i, file=task_file)
         return ""
 
     @staticmethod
@@ -288,7 +291,6 @@ class TutorialFunctions:
         if obj_type and obj_name:
             obj = stash.allocator_state.obj_space.alloc(obj_type, obj_name, **kwargs)
         return obj
-
 
     @staticmethod
     @contextfunction
@@ -302,7 +304,6 @@ class TutorialFunctions:
         slot = stash.current_cspace.alloc(obj, **kwargs)
         stash.current_cap_symbols.append((symbol, slot))
         return "extern seL4_CPtr %s;" % symbol
-
 
     @staticmethod
     @contextfunction
@@ -348,7 +349,8 @@ class TutorialFunctions:
         stash.current_region_symbols.append((stack_base_sym, size_bytes, "size_12bit"))
         return "\n".join([
             "extern const char %s[%d];" % (stack_base_sym, size_bytes),
-            "" if stack_top_sym is None else "static const uintptr_t %s = (const uintptr_t)&%s + sizeof(%s);" % (stack_top_sym, stack_base_sym, stack_base_sym)
+            "" if stack_top_sym is None else "static const uintptr_t %s = (const uintptr_t)&%s + sizeof(%s);" % (
+                stack_top_sym, stack_base_sym, stack_base_sym)
         ])
 
     @staticmethod
@@ -357,14 +359,17 @@ class TutorialFunctions:
         state = context['state']
         stash = state.stash
 
-        obj = TutorialFunctions.capdl_alloc_obj(context, ObjectType.seL4_FrameObject, cap_symbol, size=size)
-        cap_symbol = TutorialFunctions.capdl_alloc_cap(context, ObjectType.seL4_FrameObject, cap_symbol, cap_symbol, read=True, write=True, grant=True)
-        stash.current_addr_space.add_symbol_with_caps(symbol, [size], [Cap(obj, read=True, write=True, grant=True)])
+        obj = TutorialFunctions.capdl_alloc_obj(
+            context, ObjectType.seL4_FrameObject, cap_symbol, size=size)
+        cap_symbol = TutorialFunctions.capdl_alloc_cap(
+            context, ObjectType.seL4_FrameObject, cap_symbol, cap_symbol, read=True, write=True, grant=True)
+        stash.current_addr_space.add_symbol_with_caps(
+            symbol, [size], [Cap(obj, read=True, write=True, grant=True)])
         stash.current_region_symbols.append((symbol, size, "size_12bit"))
         return "\n".join([
             cap_symbol,
-             "extern const char %s[%d];" % (symbol, size),
-            ])
+            "extern const char %s[%d];" % (symbol, size),
+        ])
 
     @staticmethod
     @contextfunction
@@ -393,7 +398,6 @@ class TutorialFunctions:
             manifest_file.write(pyaml.dump(data))
             allocator_file.write(dumps(stash.allocator_state))
         return ""
-
 
 
 '''
@@ -430,12 +434,12 @@ def hide_after_task(context, task_names):
 
 def get_context(args, state):
     context = {
-            "solution": args.solution,
-            "args": args,
-            "state": state,
-            "TaskContentType": TaskContentType,
-            "macros": macros,
-            'tab':"\t",
+        "solution": args.solution,
+        "args": args,
+        "state": state,
+        "TaskContentType": TaskContentType,
+        "macros": macros,
+        'tab': "\t",
     }
 
     # add all capDL object types

@@ -15,6 +15,7 @@ import functools
 
 from capdl import AllocatorState, ObjectAllocator, AddressSpaceAllocator, CSpaceAllocator, ObjectType, lookup_architecture
 
+
 class TaskContentType(Enum):
     '''
     Task content type enum for describing when task content should be shown.
@@ -27,6 +28,7 @@ class TaskContentType(Enum):
     COMPLETED = 2
     ALL = 3
 
+
 @functools.total_ordering
 class Task(object):
     '''
@@ -36,12 +38,14 @@ class Task(object):
     subtasks are for describing different spacial locations where a task should output content
     tasks that output data to the same location should have the same subtask referring to that data.
     '''
+
     def __init__(self, name, index):
         self.index = index
         self.name = name
         self.subtask_content = {}
         self.content = {}
         self.completion = {}
+
     def __lt__(self, other):
         return self.index < other.index
 
@@ -54,7 +58,7 @@ class Task(object):
         '''
         if subtask:
             if subtask not in self.subtask_content:
-                 self.subtask_content[subtask] = {}
+                self.subtask_content[subtask] = {}
             self.subtask_content[subtask][content_type] = content
         else:
             self.content[content_type] = content
@@ -97,6 +101,7 @@ class TuteState(object):
     instead of its starting state. Generally, the starting state of task 2 will be
     the same as the solution state of task 1, but this may not always be the case.
     '''
+
     def __init__(self, current_task, solution_mode, arch, rt):
         self.tasks = {}
         self.additional_files = []
@@ -115,7 +120,7 @@ class TuteState(object):
             self.current_task = self.tasks[self.current_task]
         except KeyError:
             if self.solution:
-                self.current_task = self.get_task_by_index(len(self.tasks) -1)
+                self.current_task = self.get_task_by_index(len(self.tasks) - 1)
             else:
                 self.current_task = self.get_task_by_index(0)
         return
@@ -132,7 +137,6 @@ class TuteState(object):
         '''
         return self.current_task
 
-
     def is_current_task(self, task):
         '''
         Is a task the current task of the tutorial
@@ -143,7 +147,7 @@ class TuteState(object):
         '''
         Get a task by its index in the tutorial
         '''
-        for (k,v) in self.tasks.iteritems():
+        for (k, v) in self.tasks.iteritems():
             if v.index == id:
                 return v
         return None
@@ -182,7 +186,8 @@ class TuteState(object):
         completion = task_get_completion(self.current_task, key)
         if not completion and key == TaskContentType.BEFORE:
             assert self.current_task.index > 0
-            completion = task_get_completion(self.get_task_by_index(self.current_task.index-1), TaskContentType.COMPLETED)
+            completion = task_get_completion(self.get_task_by_index(
+                self.current_task.index-1), TaskContentType.COMPLETED)
         # Reraise the error if we weren't requesting BEFORE. We require completion text defined for every stage
         if not completion:
             raise Exception("Failed to find completion for task {0}".format(self.current_task.name))
@@ -206,9 +211,11 @@ class Stash(object):
         self.region_symbols = {}
 
     def start_elf(self, name):
-        cnode = self.allocator_state.obj_space.alloc(ObjectType.seL4_CapTableObject, "cnode_%s" % name)
+        cnode = self.allocator_state.obj_space.alloc(
+            ObjectType.seL4_CapTableObject, "cnode_%s" % name)
         arch = self.allocator_state.obj_space.spec.arch.capdl_name()
-        pd = self.allocator_state.obj_space.alloc(lookup_architecture(arch).vspace().object, "vspace_%s" %name)
+        pd = self.allocator_state.obj_space.alloc(
+            lookup_architecture(arch).vspace().object, "vspace_%s" % name)
         self.current_cspace = CSpaceAllocator(cnode)
         self.current_addr_space = AddressSpaceAllocator(None, pd)
         self.current_cap_symbols = []
