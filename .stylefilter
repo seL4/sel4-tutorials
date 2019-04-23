@@ -1,0 +1,6 @@
+tutorials/fault-handlers/CMakeLists.txt
+tutorials/interrupts/CMakeLists.txt
+tutorials/ipc/CMakeLists.txt
+tutorials/mcs/CMakeLists.txt
+tutorials/notifications/CMakeLists.txt
+
