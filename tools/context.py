@@ -19,9 +19,9 @@ from pickle import dumps
 import pyaml
 from jinja2 import contextfilter, contextfunction
 
-import macros
+from . import macros
 from capdl import ObjectType, ObjectRights, Cap, lookup_architecture
-from tutorialstate import TaskContentType
+from .tutorialstate import TaskContentType
 
 
 class TutorialFilters:
