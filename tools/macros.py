@@ -10,7 +10,7 @@
 # @TAG(DATA61_BSD)
 #
 
-from tutorialstate import TaskContentType
+from .tutorialstate import TaskContentType
 
 
 def ninja_block():
