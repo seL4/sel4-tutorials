@@ -21,6 +21,8 @@ if (NOT ("${TUT_BOARD}" STREQUAL "zynq7000"))
     message(FATAL_ERROR "The hello-camkes-timer tutorial is only supported on the zynq7000 board.")
 endif()
 
+set(CAmkESDTS ON CACHE BOOL "" FORCE)
+
 DeclareCAmkESComponent(Client SOURCES components/Client/src/client.c)
 DeclareCAmkESComponent(Timer SOURCES components/Timer/src/timer.c)
 DeclareCAmkESComponent(EmptyComponent)
