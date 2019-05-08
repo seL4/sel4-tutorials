@@ -25,6 +25,7 @@ set(CAmkESDTS ON CACHE BOOL "" FORCE)
 
 DeclareCAmkESComponent(Client SOURCES components/Client/src/client.c)
 DeclareCAmkESComponent(Timer SOURCES components/Timer/src/timer.c)
+DeclareCAmkESComponent(TimerDTB SOURCES components/TimerDTB/src/timerdtb.c)
 DeclareCAmkESComponent(EmptyComponent)
 
 DeclareCAmkESRootserver(hello-camkes-timer.camkes)
