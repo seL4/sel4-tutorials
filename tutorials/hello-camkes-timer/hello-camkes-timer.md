@@ -151,6 +151,89 @@ Starting the client
 After the client: wakeup
 ```
 
+## Exercises - Part 2
+
+Now that you've learnt how to manually define the hardware details of a
+hardware component to initialise hardware resources, this part of the tutorial
+will teach you how to use the `seL4DTBHardware` connector to do that
+automatically.
+
+The connector requires a devicetree blob which describes an ARM platform.
+Additionally, the blob's interrupt fields also need to follow the same format
+of the ARM GIC v1 and v2. There are devicetree source files bundled with the
+kernel, look in the `tools/dts/` folder of the kernel sources. If a suitable
+devicetree blob is not available for your platform, then do not proceed with
+the tutorial.
+
+### TASK 1
+
+Navigate to the `hello-camkes-timer.camkes` file.
+
+Remove the `Timerbase` and `Timer` component instantiations and instantiate a
+`TimerDTB` component instead. Also change the `connection seL4RPCCall
+hello_timer(from client.hello, to timer.hello);` and `timer.sem_value = 0;`
+lines if necessary.
+
+### TASK 2
+
+Remove the `seL4HardwareMMIO` and `seL4HardwareInterrupt` connections. Connect
+the two interfaces inside the `TimerDTB` component with the `seL4DTBHardware`
+connector.
+
+### TASK 3
+
+Before opening `components/Timer/Timer.camkes`, remove the `Timerbase` settings
+inside the configurations block.
+
+Configure the `TimerDTB` component to pass in the correct DTB path to a timer
+to the connector and also initialise the interrupt resources for the timer.
+This will allow the connector to read a device node from the devicetree blob
+and grab the necessary data to initialise hardware resources. More
+specifically, it reads the registers field and optionally the interrupts field
+to allocate memory and interrupts.
+
+### TASK 4
+
+Move to `components/TimerDTB/src/timerdtb.c`.
+
+Similar to part one, we'll start with the `tmr_irq_handle` function. This
+function is called in response to a timer interrupt. The name of the function
+has a special meaning and the meaning is unique to the `seL4DTBHardware`
+connector.
+
+The IRQ handling functions of the connector follows the naming convention
+`<to_interface>_irq_handle`, where `<to_interface>` is the name of the
+interface of the 'to' end in an instance of a `seL4DTBHardware` connection.
+Also notice that it takes a `ps_irq_t *` type. This is because, for a given
+device, there may be multiple interrupts associated with the device. A
+`ps_irq_t` struct is given to the IRQ handling function and it contains
+information about the interrupt, allowing the handler to differentiate between
+the numerous interrupts of a device.
+
+Likewise with part one, the implementation of the timer driver also isn't
+inside this file and the task here is to call `timer_handle_irq`.
+
+### TASK 5
+
+The timer needs to be stopped, the task here is the same as part one's task 5.
+
+### TASK 6
+
+Again, the interrupt now has to be acknowledged.
+
+For the `seL4DTBHardware` connector, CAmkES also generates and provides a
+function to acknowledge interrupts. This function follows a similar naming
+convention to the IRQ handler above, `<to_interface>_irq_acknowledge` also
+takes in a `ps_irq_t *` argument. Similarly, the `ps_irq_t *` argument helps
+CAmkES to differentiate between the possibly many interrupts of a device that
+you wish to acknowledge.
+
+### TASK 7 - 10
+
+Task 7 to 10 are the exact same as the tasks in part one.
+
+You should also expect the same output as the first part.
+
 /*? macros.help_block() ?*/
 
 /*-- filter ExcludeDocs() -*/
