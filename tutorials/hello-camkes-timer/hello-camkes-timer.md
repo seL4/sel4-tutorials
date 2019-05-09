@@ -296,72 +296,93 @@ component Timer {
     provides timer_inf     hello;
     has semaphore           sem;
 }
+
+component TimerDTB {
+    emits Dummy dummy_source;
+    consumes Dummy tmr;
+
+    provides timer_inf hello;
+    has semaphore sem;
+
+/* This is intentionally empty. Setting configurations inside a component requires a composition
+ * block, just limitations of CAmkES. */
+    composition {
+    }
+
+    configuration {
+    /* Part 2, TASK 3: hardware resources */
+    /* TimerDTB:
+     * hint 1: look in the DTB/DTS for the path of a timer
+     * hint 2: set the 'dtb' setting for the tmr interface in the TimerDTB component,
+     *         e.g. foo.dtb = dtb({"path" : "/bar"});
+     * hint 3: set the 'generate_interrupts' setting to 1
+     */
+/*- if solution -*/
+//        tmr.dtb = dtb({"path" : "/amba/timer@f8001000"});   // path of the timer in the DTB
+//        tmr.generate_interrupts = 1;                        // tell seL4DTBHardware to init interrupts
+/*- endif -*/
+    }
+}
 /*-- endfilter -*/
+
 /*-- filter File("components/Timer/src/timer.c") --*/
 /* @TAG(DATA61_BSD) */
 #include <stdio.h>
 
+#include <platsupport/irq.h>
 #include <platsupport/plat/timer.h>
 #include <sel4utils/sel4_zf_logif.h>
 
 #include <camkes.h>
 
-#define NS_IN_SECOND 1000000000ULL
+#define NS_IN_SECOND 1000000000ull
 
 ttc_t timer_drv;
 
-/* this callback handler is meant to be invoked when the first interrupt
- * arrives on the interrupt event interface.
- * Note: the callback handler must be explicitly registered before the
- * callback will be invoked.
- * Also the registration is one-shot only, if it wants to be invoked
- * when a new interrupt arrives then it must re-register itself.  Or it can
- * also register a different handler.
- */
 void irq_handle(void) {
     int error;
 
-    /* TASK 4: call the platsupport library to handle the interrupt. */
+    /* Part 1, TASK 4: call the platsupport library to handle the interrupt. */
     /* hint: ttc_handle_irq
      */
 /*- if solution -*/
     ttc_handle_irq(&timer_drv);
 /*- endif -*/
 
-    /* TASK 5: Stop the timer. */
+    /* Part 1, TASK 5: stop the timer. */
     /* hint: ttc_stop
      */
 /*- if solution -*/
     ttc_stop(&timer_drv);
 /*- endif -*/
 
-    /* Signal the RPC interface. */
+    /* signal the rpc interface. */
     error = sem_post();
-    ZF_LOGF_IF(error != 0, "Failed to post to semaphore");
+    ZF_LOGF_IF(error != 0, "failed to post to semaphore");
 
-    /* TASK 6: acknowledge the interrupt */
-    /* hint 1: use the function <IRQ interface name>_acknowledge()
+    /* Part 1, TASK 6: acknowledge the interrupt */
+    /* hint 1: use the function <irq interface name>_acknowledge()
      */
 /*- if solution -*/
     error = irq_acknowledge();
-    ZF_LOGF_IF(error != 0, "Failed to acknowledge interrupt");
+    ZF_LOGF_IF(error != 0, "failed to acknowledge interrupt");
 /*- endif -*/
 }
 
 void hello__init() {
-    /* Structure of the timer configuration in platsupport library */
+    /* structure of the timer configuration in platsupport library */
     ttc_config_t config;
 
     /*
      * Provide hardware info to platsupport.
-     * Note, The following only works for zynq7000 platform. Other platforms may
-     * require other info. Check the definition of timer_config_t and manuals.
+     * Note, the following only works for zynq7000 platform. other platforms may
+     * require other info. check the definition of timer_config_t and manuals.
      */
     config.vaddr = (void*)reg;
     config.clk_src = 0;
     config.id = TMR_DEFAULT;
 
-    /* TASK 7: call platsupport library to get the timer handler */
+    /* Part 1, TASK 7: call platsupport library to get the timer handler */
     /* hint1: ttc_init
      */
 /*- if solution -*/
@@ -369,7 +390,7 @@ void hello__init() {
     assert(error == 0);
 /*- endif -*/
 
-    /* TASK 9: Start the timer
+    /* Part 1, TASK 8: start the timer
      * hint: ttc_start
      */
 /*- if solution -*/
@@ -379,18 +400,18 @@ void hello__init() {
 
 }
 
-/* TASK 7: implement the RPC function. */
+/* part 1, TASK 9: implement the rpc function. */
 /* hint 1: the name of the function to implement is a composition of an interface name and a function name:
  * i.e.: <interface>_<function>
- * hint 2: the interfaces available are defined by the component, e.g. in components/Timer/Timer.camkes
+ * hint 2: the interfaces available are defined by the component, e.g. in components/timer/timer.camkes
  * hint 3: the function name is defined by the interface definition, e.g. in interfaces/timer.camkes
  * hint 4: so the function would be: hello_sleep()
- * hint 5: the CAmkES 'int' type maps to 'int' in C
+ * hint 5: the camkes 'int' type maps to 'int' in c
  * hint 6: call platsupport library function to set up the timer
- * hint 7: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+ * hint 7: look at https://github.com/sel4/camkes-tool/blob/master/docs/index.md#creating-an-application
  */
 void hello_sleep(int sec) {
-    /* TASK 8: call platsupport library function to set up the timer */
+    /* Part 1, TASK 10: call platsupport library function to set up the timer */
     /* hint: ttc_set_timeout
      */
 /*- if solution -*/
@@ -398,7 +419,106 @@ void hello_sleep(int sec) {
 /*- endif -*/
 
     int error = sem_wait();
-    ZF_LOGF_IF(error != 0, "Failed to wait on semaphore");
+    ZF_LOGF_IF(error != 0, "failed to wait on semaphore");
+}
+/*-- endfilter -*/
+
+/*-- filter File("components/TimerDTB/src/timerdtb.c") --*/
+/* @tag(DATA61_BSD) */
+#include <stdio.h>
+
+#include <platsupport/irq.h>
+#include <platsupport/plat/timer.h>
+#include <sel4utils/sel4_zf_logif.h>
+
+#include <camkes.h>
+
+#define NS_IN_SECOND 1000000000ull
+
+ttc_t timer_drv;
+
+void tmr_irq_handle(ps_irq_t *irq) {
+    int error;
+
+    /* Part 2, TASK 4: call the platsupport library to handle the interrupt. */
+    /* hint: ttc_handle_irq
+     */
+/*- if solution -*/
+    ttc_handle_irq(&timer_drv);
+/*- endif -*/
+
+    /* Part 2, TASK 5: stop the timer. */
+    /* hint: ttc_stop
+     */
+/*- if solution -*/
+    ttc_stop(&timer_drv);
+/*- endif -*/
+
+    /* signal the rpc interface. */
+    error = sem_post();
+    ZF_LOGF_IF(error != 0, "failed to post to semaphore");
+
+    /* Part 2, TASK 6: acknowledge the interrupt */
+    /* hint 1: use the function <to_interface_name>_irq_acknowledge()
+     * hint 2: pass in the 'irq' variable to the function
+     */
+/*- if solution -*/
+    error = tmr_irq_acknowledge(irq);
+    ZF_LOGF_IF(error != 0, "failed to acknowledge interrupt");
+/*- endif -*/
+}
+
+void hello__init() {
+    /* structure of the timer configuration in platsupport library */
+    ttc_config_t config;
+
+    /*
+     * Provide hardware info to platsupport.
+     * Note, the following only works for zynq7000 platform. other platforms may
+     * require other info. check the definition of timer_config_t and manuals.
+     */
+    config.vaddr = tmr_0;
+    config.clk_src = 0;
+    config.id = TMR_DEFAULT;
+
+    /* Part 2, TASK 7: call platsupport library to get the timer handler */
+    /* hint1: ttc_init
+     */
+/*- if solution -*/
+    int error = ttc_init(&timer_drv, config);
+    assert(error == 0);
+/*- endif -*/
+
+    /* Part 2, TASK 8: start the timer
+     * hint: ttc_start
+     */
+/*- if solution -*/
+    ttc_start(&timer_drv);
+/*- endif -*/
+
+
+}
+
+/* Part 2, TASK 9: implement the rpc function. */
+/* hint 1: the name of the function to implement is a composition of an interface name and a function name:
+ * i.e.: <interface>_<function>
+ * hint 2: the interfaces available are defined by the component, e.g. in components/timer/timer.camkes
+ * hint 3: the function name is defined by the interface definition, e.g. in interfaces/timer.camkes
+ * hint 4: so the function would be: hello_sleep()
+ * hint 5: the camkes 'int' type maps to 'int' in c
+ * hint 6: call platsupport library function to set up the timer
+ * hint 7: look at https://github.com/sel4/camkes-tool/blob/master/docs/index.md#creating-an-application
+ */
+void hello_sleep(int sec) {
+    /* Part 2, TASK 10: call platsupport library function to set up the timer */
+    /* hint: ttc_set_timeout
+     */
+/*- if solution -*/
+    ttc_set_timeout(&timer_drv, sec * NS_IN_SECOND, false);
+/*- endif -*/
+
+    int error = sem_wait();
+    ZF_LOGF_IF(error != 0, "failed to wait on semaphore");
 }
 /*-- endfilter -*/
 /*-- filter File("interfaces/timer.camkes") --*/
@@ -433,14 +553,22 @@ assembly {
 /*- if not solution -*/
         component EmptyComponent empty;
 /*- endif -*/
-        /* TASK 1: component instances */
-        /* hint 1: one hardware component, one driver component
+        /* Part 1, TASK 1: component instances */
+        /* hint 1: one hardware component and one driver component
+         * hint 2: look at
+         * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+         */
+
+        /* Part 2, TASK 1: component instances */
+        /* hint 1: a single TimerDTB component
          * hint 2: look at
          * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
          */
 /*- if solution -*/
         component Timerbase timerbase;
         component Timer timer;
+
+//        component TimerDTB timer;
 /*- endif -*/
 
 /*- if solution -*/
@@ -452,30 +580,46 @@ assembly {
 //        component Client client;
 /*- endif -*/
 
-        /* TASK 2: connections */
+        /* Part 1, TASK 2: connections */
         /* hint 1: use seL4HardwareMMIO to connect device memory
          * hint 2: use seL4HardwareInterrupt to connect interrupt
+         * hint 3: look at
+         * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+         */
+
+        /* Part 2, TASK 2: connections */
+        /* hint 1: connect the dummy_source and timer interfaces
+         * hint 2: the dummy_source should be the 'from' end
          * hint 3: look at
          * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
          */
 /*- if solution -*/
         connection seL4HardwareMMIO timer_mem(from timer.reg, to timerbase.reg);
         connection seL4HardwareInterrupt timer_irq(from timerbase.irq, to timer.irq);
+
+//        connection seL4DTBHardware timer_dtb(from timer.dummy_source, to timer.tmr);
 /*- endif -*/
 
         /* timer interface connection */
 /*- if solution -*/
         connection seL4RPCCall hello_timer(from client.hello, to timer.hello);
 /*- else -*/
-        /* uncomment this (and the insantiation of 'client' above) once there is a timer component */
+        /* uncomment this (and the insantiation of 'client' above) once there is a timer component,
+         * note that you may need to rename timer in 'to timer.hello' to match the name of the timer
+         * component above
+         */
 //        connection seL4RPCCall hello_timer(from client.hello, to timer.hello);
 /*- endif -*/
     }
     configuration {
-        /* TASK 3: hardware resources */
-        /* hint 1: find out the device memory address and IRQ number from the hardware data sheet
+        /* Part 1, TASK 3: hardware resources */
+        /* Timer and Timerbase:
+         * hint 1: find out the device memory address and IRQ number from the hardware data sheet
          * hint 2: look at
          * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#hardware-components
+         *
+         * TimerDTB:
+         * check components/Timer/Timer.camkes
          */
 /*- if solution -*/
         timerbase.reg_paddr = 0xF8001000;   // paddr of mmio registers
