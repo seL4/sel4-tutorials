@@ -13,8 +13,20 @@
 -#*/
 # CAmkES Timer Tutorial
 
-This tutorial guides you through setting up a timer driver in CAmkES and using it to delay
-for 2 seconds.
+This tutorial guides you through setting up a timer driver in CAmkES and using
+it to delay for 2 seconds. For this tutorial, we will be using the ZYNQ7000
+ARM-based platform. Other ARM platforms that we support can be used, however,
+you will need to modify the build options manually or via `ccmake` and adapt
+parts of the tutorial with respect to the platform.
+
+The tutorial also has two parts to it. The first part will teach you how to
+manually define hardware details to configure the hardware component and
+initialise hardware resources.  The second part will teach you how to use a
+CAmkES connector to initialise hardware resources automatically for you.
+
+The solutions to this tutorial primarily uses the method of manually defining
+hardware details. The solutions to the second part are also included, albeit
+commented out.
 
 ## Initialising
 
