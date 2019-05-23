@@ -477,6 +477,7 @@ add the `ExternalProject` declaration to include the print application:
 # Get Custom toolchain for 32 bit Linux
 FindCustomPollyToolchain(LINUX_32BIT_TOOLCHAIN "linux-gcc-32bit-pic")
 # Declare our print server app external project
+include(ExternalProject)
 ExternalProject_Add(print_client-app
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/pkgs/print_client
     BINARY_DIR ${CMAKE_BINARY_DIR}/print_client-app

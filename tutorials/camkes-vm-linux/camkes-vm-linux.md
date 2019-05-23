@@ -427,6 +427,7 @@ ConfigureLinux(${vm_linux_extract_dir} ${linux_config} ${linux_symvers} configur
     DEPENDS download_vm_linux
 )
 # Add the external poke module project
+include(ExternalProject)
 ExternalProject_Add(poke-module
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/modules
     BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/poke-module
