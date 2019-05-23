@@ -769,6 +769,7 @@ That's it for this tutorial.
 
 #include <sel4/sel4.h>
 #include <sel4runtime.h>
+#include <sel4runtime/gen_config.h>
 
 #include <simple/simple.h>
 #include <simple-default/simple-default.h>
