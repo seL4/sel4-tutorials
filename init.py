@@ -21,11 +21,12 @@ import os
 import sh
 import tempfile
 
+
 def main():
     parser = argparse.ArgumentParser(
-                description="Initialize a build directory for completing a tutorial. Invoke from "
-                            "an empty sub directory, or the tutorials directory, in which case a "
-                            "new build directory will be created for you.")
+        description="Initialize a build directory for completing a tutorial. Invoke from "
+        "an empty sub directory, or the tutorials directory, in which case a "
+        "new build directory will be created for you.")
 
     parser.add_argument('--verbose', action='store_true',
                         help="Output everything including debug info", default=False)
@@ -33,7 +34,8 @@ def main():
                         help="Suppress output except for tutorial completion information", default=True)
     parser.add_argument('--plat', type=str, choices=common.ALL_CONFIGS)
     parser.add_argument('--tut', type=str, choices=common.ALL_TUTORIALS, required=True)
-    parser.add_argument('--solution', action='store_true', help="Generate pre-made solutions", default=False)
+    parser.add_argument('--solution', action='store_true',
+                        help="Generate pre-made solutions", default=False)
     parser.add_argument('--task', help="Generate pre-made solutions")
     parser.add_argument('tutedir', nargs='?', default=os.getcwd())
 
@@ -46,7 +48,8 @@ def main():
         args.plat = list(common.TUTORIALS[args.tut])[0]
 
     if args.plat not in common.TUTORIALS[args.tut]:
-        logging.error("Tutorial %s not supported by platform %s. Valid platforms are %s: ", args.tut, args.plat, common.TUTORIALS[args.tut])
+        logging.error("Tutorial %s not supported by platform %s. Valid platforms are %s: ",
+                      args.tut, args.plat, common.TUTORIALS[args.tut])
         return -1
     # Check that the current working directory is empty. If not create a suitably
     # named build directory and switch to it
@@ -78,7 +81,8 @@ def main():
     if not initialised:
         os.mkdir(build_dir)
 
-    result = common.init_directories(args.plat, args.tut, args.solution, args.task, initialised, tute_dir, build_dir, sys.stdout)
+    result = common.init_directories(args.plat, args.tut, args.solution,
+                                     args.task, initialised, tute_dir, build_dir, sys.stdout)
     if result.exit_code != 0:
         logging.error("Failed to initialize build directory.")
         return -1
@@ -86,6 +90,7 @@ def main():
     print("Tutorials created in subdirectory \"%s\"." % os.path.basename(tute_dir))
     print("Build directory initialised in \"%s\"." % os.path.basename(build_dir))
     return 0
+
 
 if __name__ == '__main__':
     sys.exit(main())

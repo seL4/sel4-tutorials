@@ -25,6 +25,7 @@ try:
 except ImportError:
     from yaml import Loader, Dumper
 
+
 def build_render_list(args):
     '''
     This function is pretty gross. It will likely be removed once the
@@ -55,12 +56,10 @@ def build_render_list(args):
             if args.input_files:
                 print(stream.name, file=args.input_files)
     elif os.path.isfile(md_file):
-        data['render'] = [leaf if leaf.endswith(".md") else "%s.md" % leaf ]
+        data['render'] = [leaf if leaf.endswith(".md") else "%s.md" % leaf]
     else:
         print("Could not find a file to process", file=sys.stderr)
     return data
-
-
 
 
 def render_file(args, env, state, file):
@@ -76,7 +75,7 @@ def render_file(args, env, state, file):
         os.makedirs(os.path.dirname(filename))
 
     with open(os.path.join(os.path.split(args.tut_file)[0], file), 'r') as in_stream, \
-      open(filename, 'w') as out_stream:
+            open(filename, 'w') as out_stream:
 
         # Save dependencies to deps files
         if args.input_files and args.output_files:
@@ -89,6 +88,7 @@ def render_file(args, env, state, file):
 
         out_stream.write(template.render(context.get_context(args, state)))
 
+
 def save_script_imports(args):
     '''
     We save this file and every .py file in ./tools/ to the input_files
@@ -99,13 +99,13 @@ def save_script_imports(args):
         tools_dir = os.path.join(os.path.dirname(__file__), "tools")
         for i in os.listdir(tools_dir):
             if i.endswith(".py"):
-              print(os.path.realpath(os.path.join(tools_dir,i)), file=args.input_files)
+                print(os.path.realpath(os.path.join(tools_dir, i)), file=args.input_files)
 
 
 def main():
     parser = argparse.ArgumentParser(description='Tutorial script template parser. Template is read from '
-        'stdin and outout is placed in stdout')
-    parser.add_argument('-s','--solution', action='store_true', default=False)
+                                     'stdin and outout is placed in stdout')
+    parser.add_argument('-s', '--solution', action='store_true', default=False)
     parser.add_argument('--docsite', action='store_true')
     parser.add_argument('--tut-file')
     parser.add_argument('--arch', default="x86_64")
@@ -124,12 +124,12 @@ def main():
 
     # Build our rendering environment.
     env = Environment(loader=FileSystemLoader(os.path.dirname(__file__)),
-                block_start_string='/*-',
-                block_end_string='-*/',
-                variable_start_string='/*?',
-                variable_end_string='?*/',
-                comment_start_string='/*#',
-                comment_end_string='#*/')
+                      block_start_string='/*-',
+                      block_end_string='-*/',
+                      variable_start_string='/*?',
+                      variable_end_string='?*/',
+                      comment_start_string='/*#',
+                      comment_end_string='#*/')
     env.filters.update(context.get_filters())
 
     # Init our tutorial state.
@@ -143,7 +143,7 @@ def main():
 
     while True:
         if not state.additional_files:
-            break;
+            break
         file = state.additional_files.pop(0)
         render_file(args, env, state, file)
 

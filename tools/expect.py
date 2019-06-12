@@ -48,9 +48,9 @@ def main():
     finish_completion_text = """@FINISH_COMPLETION_TEXT@"""
     start_completion_text = """@START_COMPLETION_TEXT@"""
     parser = argparse.ArgumentParser(
-                description="Initialize a build directory for completing a tutorial. Invoke from "
-                            "an empty sub directory, or the tutorials directory, in which case a "
-                            "new build directory will be created for you.")
+        description="Initialize a build directory for completing a tutorial. Invoke from "
+        "an empty sub directory, or the tutorials directory, in which case a "
+        "new build directory will be created for you.")
 
     parser.add_argument('--text', default=finish_completion_text,
                         help="Output everything including debug info")
@@ -71,6 +71,7 @@ def main():
         print("Unknown reason for failure")
 
     return result
+
 
 if __name__ == '__main__':
     sys.exit(main())

@@ -147,7 +147,7 @@ class TuteState(object):
         '''
         Get a task by its index in the tutorial
         '''
-        for (k,v) in self.tasks.items():
+        for (k, v) in self.tasks.items():
             if v.index == id:
                 return v
         return None

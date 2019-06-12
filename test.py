@@ -14,7 +14,14 @@
 # Builds and runs all tutorial solutions, comparing output with expected
 # completion text.
 
-import sys, os, argparse, re, pexpect, subprocess, tempfile, logging
+import sys
+import os
+import argparse
+import re
+import pexpect
+import subprocess
+import tempfile
+import logging
 import signal
 import psutil
 import shutil
@@ -35,6 +42,7 @@ def print_pexpect_failure(failure):
         print("EOF received before completion text")
     elif failure == pexpect.TIMEOUT:
         print("Test timed out")
+
 
 def run_single_test_iteration(build_dir, solution, logfile):
     # Build
@@ -66,18 +74,21 @@ def run_single_test(config, tutorial, temp_file):
     os.mkdir(build_dir)
 
     # Initialize directories
-    result = common.init_directories(config, tutorial, False, None, False, tute_dir, build_dir, temp_file)
+    result = common.init_directories(config, tutorial, False, None,
+                                     False, tute_dir, build_dir, temp_file)
     if result.exit_code != 0:
         logging.error("Failed to initialize tute directory. Not deleting tute directory %s" % build_dir)
         sys.exit(1)
 
-    tasks = open(os.path.join(tute_dir, ".tasks"),'r').read()
+    tasks = open(os.path.join(tute_dir, ".tasks"), 'r').read()
     for task in tasks.strip().split('\n'):
         for solution in [False, True]:
             print("Testing: task: %s solution: %s" % (task, "True" if solution else "False"))
-            result = common.init_directories(config, tutorial, solution, task, True, tute_dir, build_dir, temp_file)
+            result = common.init_directories(
+                config, tutorial, solution, task, True, tute_dir, build_dir, temp_file)
             if result.exit_code != 0:
-                logging.error("Failed to initialize tute directory. Not deleting tute directory %s" % build_dir)
+                logging.error(
+                    "Failed to initialize tute directory. Not deleting tute directory %s" % build_dir)
                 sys.exit(1)
             if run_single_test_iteration(build_dir, solution, temp_file):
                 print("<failure type='failure'>")
@@ -85,10 +96,9 @@ def run_single_test(config, tutorial, temp_file):
             else:
                 logging.info("Success!")
 
-
-
     shutil.rmtree(build_dir)
     shutil.rmtree(tute_dir)
+
 
 def run_tests(tests):
     """
@@ -97,7 +107,7 @@ def run_tests(tests):
 
     print('<testsuite>')
     for (config, app) in tests:
-        print("<testcase classname='sel4tutorials' name='%s_%s'>" % (config,app))
+        print("<testcase classname='sel4tutorials' name='%s_%s'>" % (config, app))
         temp_file = tempfile.NamedTemporaryFile(delete=True)
         try:
             run_single_test(config, app, temp_file)
@@ -107,9 +117,10 @@ def run_tests(tests):
             raise
     print('</testsuite>')
 
+
 def main():
     parser = argparse.ArgumentParser(
-                description="Runs all tests for the tutorials")
+        description="Runs all tests for the tutorials")
 
     parser.add_argument('--verbose', action='store_true',
                         help="Output everything including debug info")
@@ -124,7 +135,7 @@ def main():
     common.set_log_level(args.verbose, args.quiet)
 
     # Generate all the tests (restricted by app and config)
-    tests=[]
+    tests = []
     for tutorial in common.ALL_TUTORIALS:
         for config in common.TUTORIALS[tutorial]:
             if (args.app is None or args.app == tutorial) and \
@@ -133,6 +144,7 @@ def main():
 
     run_tests(tests)
     return 0
+
 
 if __name__ == '__main__':
     sys.exit(main())

@@ -54,26 +54,30 @@ TUTORIALS = {
 
 ALL_TUTORIALS = TUTORIALS.keys()
 
+
 def get_tutorial_dir():
     '''Return directory containing sel4 tutorials repo'''
     return os.path.dirname(os.path.realpath(__file__))
+
 
 def get_project_root():
     '''Returns the path to the root directory of this project'''
     # assume default location of this project in projects/sel4-tutorials
     return os.path.join(get_tutorial_dir(), '..', '..')
 
+
 def _init_build_directory(config, initialised, directory, tute_directory, output=None, config_dict=PLAT_CONFIG):
     if not initialised:
         tute_dir = "-DTUTORIAL_DIR=" + os.path.basename(tute_directory)
-        args = ['-DCMAKE_TOOLCHAIN_FILE=../kernel/gcc.cmake', '-G', 'Ninja'] + config_dict[config] + [tute_dir]
-        result = sh.cmake(args + ['..'], _cwd = directory, _out=output, _err=output)
+        args = ['-DCMAKE_TOOLCHAIN_FILE=../kernel/gcc.cmake',
+                '-G', 'Ninja'] + config_dict[config] + [tute_dir]
+        result = sh.cmake(args + ['..'], _cwd=directory, _out=output, _err=output)
         if result.exit_code != 0:
             return result
-        result = sh.cmake(['..'], _cwd = directory, _out=output, _err=output)
+        result = sh.cmake(['..'], _cwd=directory, _out=output, _err=output)
         if result.exit_code != 0:
             return result
-    return sh.cmake(['..'], _cwd = directory, _out=output, _err=output)
+    return sh.cmake(['..'], _cwd=directory, _out=output, _err=output)
 
 
 def _init_tute_directory(config, tut, solution, task, directory, output=None):
@@ -83,16 +87,16 @@ def _init_tute_directory(config, tut, solution, task, directory, output=None):
         arch = "aarch32"
     with open(os.path.join(directory, ".tute_config"), 'w') as file:
         file.write("set(TUTE_COMMAND \"%s\")" %
-            ';'.join(["PYTHONPATH=${PYTHON_CAPDL_PATH}"
-        ,"python", os.path.join(get_tutorial_dir(), "template.py"),
-        "--tut-file", os.path.join(get_tutorial_dir(), "tutorials/%s/%s" % (tut,tut)),
-        "--out-dir", "${output_dir}",
-        "--input-files", "${input_files}",
-        "--output-files", "${output_files}",
-        "--arch", arch,
-        "--rt" if tut == "mcs" else "",
-        "--task;%s" % task if task else "",
-        "--solution" if solution else ""]))
+                   ';'.join(["PYTHONPATH=${PYTHON_CAPDL_PATH}", "python", os.path.join(get_tutorial_dir(), "template.py"),
+                             "--tut-file", os.path.join(get_tutorial_dir(),
+                                                        "tutorials/%s/%s" % (tut, tut)),
+                             "--out-dir", "${output_dir}",
+                             "--input-files", "${input_files}",
+                             "--output-files", "${output_files}",
+                             "--arch", arch,
+                             "--rt" if tut == "mcs" else "",
+                             "--task;%s" % task if task else "",
+                             "--solution" if solution else ""]))
     return
 
 
@@ -107,6 +111,7 @@ def init_directories(config, tut, solution, task, initialised, tute_directory, b
         config_dict = PLAT_CONFIG
     return _init_build_directory(config, initialised, build_directory, tute_directory, output, config_dict=config_dict)
 
+
 def set_log_level(verbose, quiet):
     if verbose:
         logging.basicConfig(level=logging.DEBUG)
@@ -114,6 +119,7 @@ def set_log_level(verbose, quiet):
         logging.basicConfig(level=logging.ERROR)
     else:
         logging.basicConfig(level=logging.INFO)
+
 
 def setup_logger(name):
     logger = logging.getLogger(name)
