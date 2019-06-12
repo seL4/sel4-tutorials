@@ -43,7 +43,7 @@ def main():
     # Additional config/tutorial combination validation
     if not args.plat:
         # just pick the first platform that works for this tutorial
-        args.plat = common.TUTORIALS[args.tut][0]
+        args.plat = list(common.TUTORIALS[args.tut])[0]
 
     if args.plat not in common.TUTORIALS[args.tut]:
         logging.error("Tutorial %s not supported by platform %s. Valid platforms are %s: ", args.tut, args.plat, common.TUTORIALS[args.tut])
