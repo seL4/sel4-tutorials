@@ -419,7 +419,7 @@ int main(void) {
     }
 
     /* get the current time */
-    uint64_t time;
+    uint64_t time = 0;
     ltimer_get_time(&timer.ltimer, &time);
 
     /*? task_5_desc ?*/
