@@ -555,13 +555,13 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -u __vsyscall_ptr")
 
 /*? write_manifest(manifest=".manifest.obj", allocator=".allocator.obj") ?*/
 cdl_pp(${CMAKE_CURRENT_SOURCE_DIR}/.manifest.obj cdl_pp_target
-    /*- for (elf, file) in state.stash.elfs.iteritems() -*/
+    /*- for (elf, file) in state.stash.elfs.items() -*/
     ELF "/*?elf?*/"
     CFILE "${CMAKE_CURRENT_BINARY_DIR}/cspace_/*?elf?*/.c"
     /*- endfor -*/
 )
 
-/*- for (elf, file) in state.stash.elfs.iteritems() -*/
+/*- for (elf, file) in state.stash.elfs.items() -*/
 add_executable(/*?elf?*/ EXCLUDE_FROM_ALL /*?file['filename']?*/ cspace_/*?elf?*/.c)
 add_dependencies(/*?elf?*/ cdl_pp_target)
 target_link_libraries(/*?elf?*/ sel4tutorials)
