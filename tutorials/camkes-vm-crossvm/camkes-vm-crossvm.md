@@ -536,9 +536,13 @@ ImportCamkesVM()
 include("../projects/camkes/vm/camkes_vm_helpers.cmake")
 include("../projects/camkes/vm-linux/vm-linux-helpers.cmake")
 
-# Define kernel config options
-set(KernelX86Sel4Arch x86_64 CACHE STRING "" FORCE)
-set(KernelMaxNumNodes 1 CACHE STRING "" FORCE)
+# Check kernel config options
+if(NOT "${KernelX86Sel4Arch}" STREQUAL "x86_64")
+    message(FATAL_ERROR "This application is only supported on x86_64")
+endif()
+if(NOT "${KernelMaxNumNodes}" STREQUAL 1)
+    message(FATAL_ERROR "KernelMaxNumNodes must be set to 1 but are set to:${KernelMaxNumNodes}")
+endif()
 
 /*? include_task_type_replace(["vm-cmake-init0", "vm-cmake-init0-crossvm"]) ?*/
 /*? include_task_type_append(["vm-cmake-printserver"]) ?*/
