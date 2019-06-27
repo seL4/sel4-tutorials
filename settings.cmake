@@ -11,16 +11,19 @@
 #
 
 # Deal with the top level target-triplet variables.
-if (NOT TUT_BOARD)
-    message(FATAL_ERROR "Please select a board to compile for. Choose either pc or zynq7000\n\t`-DTUT_BOARD=<PREFERENCE>`")
+if(NOT TUT_BOARD)
+    message(
+        FATAL_ERROR
+            "Please select a board to compile for. Choose either pc or zynq7000\n\t`-DTUT_BOARD=<PREFERENCE>`"
+    )
 endif()
 
 # Set arch and board specific kernel parameters here.
-if (${TUT_BOARD} STREQUAL "pc")
+if(${TUT_BOARD} STREQUAL "pc")
     set(KernelArch "x86" CACHE STRING "" FORCE)
-    if (${TUT_ARCH} STREQUAL "ia32")
+    if(${TUT_ARCH} STREQUAL "ia32")
         set(KernelX86Sel4Arch "ia32" CACHE STRING "" FORCE)
-    elseif (${TUT_ARCH} STREQUAL "x86_64")
+    elseif(${TUT_ARCH} STREQUAL "x86_64")
         set(KernelX86Sel4Arch "x86_64" CACHE STRING "" FORCE)
     else()
         message(FATAL_ERROR "Unsupported PC architecture ${TUT_ARCH}")
@@ -28,9 +31,15 @@ if (${TUT_BOARD} STREQUAL "pc")
 elseif(${TUT_BOARD} STREQUAL "zynq7000")
     # Do a quick check and warn the user if they haven't set
     # -DARM/-DAARCH32/-DAARCH64.
-    if ((NOT ARM) AND (NOT AARCH32)
-        AND ((NOT CROSS_COMPILER_PREFIX) OR ("${CROSS_COMPILER_PREFIX}" STREQUAL "")))
-        message(WARNING "The target machine is an ARM machine. Unless you've defined -DCROSS_COMPILER_PREFIX, you may need to set one of:\n\t-DARM/-DAARCH32/-DAARCH64")
+    if(
+        (NOT ARM)
+        AND (NOT AARCH32)
+        AND ((NOT CROSS_COMPILER_PREFIX) OR ("${CROSS_COMPILER_PREFIX}" STREQUAL ""))
+    )
+        message(
+            WARNING
+                "The target machine is an ARM machine. Unless you've defined -DCROSS_COMPILER_PREFIX, you may need to set one of:\n\t-DARM/-DAARCH32/-DAARCH64"
+        )
     endif()
 
     set(KernelArch "arm" CACHE STRING "" FORCE)
@@ -59,6 +68,6 @@ ApplyCommonReleaseVerificationSettings(FALSE FALSE)
 # We will attempt to generate a simulation script, so try and generate a simulation
 # compatible configuration
 ApplyCommonSimulationSettings(${KernelArch})
-if (FORCE_IOMMU)
+if(FORCE_IOMMU)
     set(KernelIOMMU ON CACHE BOOL "" FORCE)
 endif()
