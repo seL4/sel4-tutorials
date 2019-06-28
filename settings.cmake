@@ -10,6 +10,15 @@
 # @TAG(DATA61_BSD)
 #
 
+set(project_dir "${CMAKE_CURRENT_LIST_DIR}")
+get_filename_component(resolved_path ${CMAKE_CURRENT_LIST_FILE} REALPATH)
+# repo_dir is distinct from project_dir as this file is symlinked.
+# project_dir corresponds to the top level project directory, and
+# repo_dir is the absolute path after following the symlink.
+get_filename_component(repo_dir ${resolved_path} DIRECTORY)
+
+include(${project_dir}/tools/seL4/cmake-tool/helpers/application_settings.cmake)
+
 # Deal with the top level target-triplet variables.
 if(NOT TUT_BOARD)
     message(
@@ -50,6 +59,8 @@ elseif(${TUT_BOARD} STREQUAL "zynq7000")
 else()
     message(FATAL_ERROR "Unsupported board ${TUT_BOARD}.")
 endif()
+
+include(${project_dir}/kernel/configs/seL4Config.cmake)
 
 # For the tutorials that do initialize the plat support serial printing they still
 # just want to use the kernel debug putchar if it exists
