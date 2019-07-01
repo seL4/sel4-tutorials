@@ -241,7 +241,7 @@ assembly {
 /*- endif -*/
 
         /* TASK 8: restrict access to dataports */
-        /* hint 1: use attributes <connection name>.to_access and <connection name>.from_access
+        /* hint 1: use attribute <component>.<interface_name>_access for each component and interface
          * hint 2: appropriate values for the to_access and from_access attributes are: "R" or "W"
          * hint 4: make the "Buf" dataport read only for the Echo component
          * hint 3: make the "str_buf_t" dataport read only for the Client component
