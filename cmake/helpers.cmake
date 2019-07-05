@@ -210,6 +210,8 @@ function(DeclareCDLRootImage cdl cdl_target)
     CapDLToolCFileGen(
         ${cdl_target}_cspec
         ${cdl_target}_cspec.c
+        FALSE
+        "$<TARGET_PROPERTY:object_sizes,FILE_PATH>"
         ${cdl}
         "${CAPDL_TOOL_BINARY}"
         MAX_IRQS
