@@ -625,5 +625,10 @@ assembly {
 /*? include_task_type_append(["vm-pkg-print_client-cmake"]) ?*/
 /*- endfilter -*/
 ```
+```cmake
+/*- filter File("settings.cmake") -*/
+include("${CMAKE_SOURCE_DIR}/projects/camkes/vm/camkes_vm_settings.cmake")
+/*- endfilter -*/
+```
 
 /*- endfilter -*/

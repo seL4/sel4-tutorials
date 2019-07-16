@@ -575,4 +575,9 @@ ImportCamkesVM()
 /*? include_task_type_append(["vm-init-poke"]) ?*/
 /*- endfilter -*/
 ```
+```cmake
+/*- filter File("settings.cmake") -*/
+include("${CMAKE_SOURCE_DIR}/projects/camkes/vm/camkes_vm_settings.cmake")
+/*- endfilter -*/
+```
 /*-- endfilter -*/

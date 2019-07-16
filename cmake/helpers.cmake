@@ -33,7 +33,6 @@ macro(ImportCamkes)
 endmacro()
 
 macro(ImportCamkesVM)
-    include("${CMAKE_SOURCE_DIR}/projects/camkes/vm/camkes_vm_settings.cmake")
     ImportCamkes()
     include("${CMAKE_SOURCE_DIR}/projects/camkes/global-components/global-components.cmake")
     add_subdirectory("${CMAKE_SOURCE_DIR}/projects/camkes/vm" vm)
