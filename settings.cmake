@@ -61,6 +61,8 @@ else()
 endif()
 
 include(${project_dir}/kernel/configs/seL4Config.cmake)
+set(CapDLLoaderMaxObjects 20000 CACHE STRING "" FORCE)
+set(KernelRootCNodeSizeBits 16 CACHE STRING "")
 
 # For the tutorials that do initialize the plat support serial printing they still
 # just want to use the kernel debug putchar if it exists

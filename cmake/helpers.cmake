@@ -19,8 +19,6 @@ set(CAPDL_TOOL_HELPERS "${CMAKE_SOURCE_DIR}/projects/camkes/capdl/capDL-tool/cap
 find_program(TPP_TOOL tpp PATHS "${CMAKE_SOURCE_DIR}/tools/camkes/tools")
 
 macro(ImportCapDL)
-    set(CapDLLoaderMaxObjects 20000 CACHE STRING "" FORCE)
-    set(KernelRootCNodeSizeBits 17 CACHE STRING "" FORCE)
     add_subdirectory("${CMAKE_SOURCE_DIR}/projects/camkes/capdl" capdl)
     include(${CAPDL_TOOL_HELPERS})
     CapDLToolInstall(install_capdl_tool CAPDL_TOOL_BINARY)
@@ -29,8 +27,6 @@ endmacro()
 
 # Import camkes functions into caller scope
 macro(ImportCamkes)
-    set(CapDLLoaderMaxObjects 20000 CACHE STRING "" FORCE)
-    set(KernelRootCNodeSizeBits 17 CACHE STRING "" FORCE)
     include("${CMAKE_SOURCE_DIR}/tools/camkes/camkes.cmake")
     add_subdirectory("${CMAKE_SOURCE_DIR}/projects/camkes/capdl" capdl)
     add_subdirectory("${CMAKE_SOURCE_DIR}/tools/camkes/libsel4camkes" libsel4camkes)
