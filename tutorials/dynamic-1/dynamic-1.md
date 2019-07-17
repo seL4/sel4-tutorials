@@ -743,4 +743,9 @@ int main(void) {
 }
 /*-- endfilter -*/
 ```
+/```cmake
+/*- filter File("settings.cmake") -*/
+    set(KernelRootCNodeSizeBits 12 CACHE STRING "" FORCE)
+/*- endfilter -*/
+```
 /*-- endfilter -*/

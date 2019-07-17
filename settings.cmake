@@ -86,6 +86,6 @@ if(FORCE_IOMMU)
     set(KernelIOMMU ON CACHE BOOL "" FORCE)
 endif()
 
-if (NOT "${TUTORIAL_DIR}" STREQUAL "")
+if(NOT "${TUTORIAL_DIR}" STREQUAL "")
     include("${TUTORIAL_DIR}/settings.cmake" OPTIONAL)
 endif()
