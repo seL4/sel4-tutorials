@@ -16,7 +16,7 @@ add_library(sel4tutorials STATIC EXCLUDE_FROM_ALL src/constructors.c src/alloc.c
 
 target_link_libraries(
     sel4tutorials
-    kernel_autoconf
+    sel4_autoconf
     sel4runtime
     muslc
     sel4
