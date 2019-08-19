@@ -31,8 +31,8 @@ page, if they were covered by a previous tutorial in the series.
 ## Learning outcomes
 
 - Allocate a notification object.
-- Set up a timer provided by seL4 libs.
-- Use `seL4_libs` functions to manipulate timer and
+- Set up a timer provided by `util_libs`.
+- Use `seL4_libs` and `util_libs` functions to manipulate timer and
       handle interrupts.
 
 ## Initialising
@@ -100,24 +100,32 @@ The output will not change as a result of completing this task.
 
 ### Initialise the timer
 
-Use our library function `sel4platsupport_get_default_timer` to
+Use our library function `ltimer_default_init` to
 initialise a timer driver. Assign it to the `timer` global variable.
 ```c
 /*-- set task_2_desc -*/
-    /* TASK 2: call sel4platsupport library to get the default timer */
-    /* hint: sel4platsupport_init_default_timer
+    /* TASK 2: call ltimer library to get the default timer */
+    /* hint: ltimer_default_init, you can set NULL for the callback and token
      */
     ps_io_ops_t ops = {{0}};
-    error = sel4platsupport_new_io_ops(vspace, vka, &ops);
+    error = sel4platsupport_new_malloc_ops(&ops.malloc_ops);
     assert(error == 0);
+    error = sel4platsupport_new_io_mapper(&vspace, &vka, &ops.io_mapper);
+    assert(error == 0);
+    error = sel4platsupport_new_fdt_ops(&ops.io_fdt, &simple, &ops.malloc_ops);
+    assert(error == 0);
+    if (ntfn_object.cptr != seL4_CapNull) {
+        error = sel4platsupport_new_mini_irq_ops(&ops.irq_ops, &vka, &simple, &ops.malloc_ops,
+                                                 ntfn_object.cptr, MASK(seL4_BadgeBits));
+        assert(error == 0);
+    }
     error = sel4platsupport_new_arch_ops(&ops, &simple, &vka);
     assert(error == 0);
 /*-- endset -*/
 /*? task_2_desc ?*/
 /*-- filter ExcludeDocs() -*/
 /*-- filter TaskContent("task-2", TaskContentType.COMPLETED) -*/
-    error = sel4platsupport_init_default_timer_ops(&vka, &vspace, &simple, ops,
-                                                   ntfn_object.cptr, &timer);
+    error = ltimer_default_init(&timer, ops, NULL, NULL); 
     assert(error == 0);
 /*-- endfilter -*/
 /*-- endfilter -*/
@@ -151,7 +159,7 @@ it.
 /*? task_3_desc ?*/
 /*-- filter ExcludeDocs() -*/
 /*-- filter TaskContent("task-3", TaskContentType.COMPLETED) -*/
-    error = ltimer_set_timeout(&timer.ltimer, NS_IN_MS, TIMEOUT_PERIODIC);
+    error = ltimer_set_timeout(&timer, NS_IN_MS, TIMEOUT_PERIODIC);
     assert(error == 0);
 /*-- endfilter -*/
 /*-- endfilter -*/
@@ -166,7 +174,7 @@ main: got a message from 0x61 to sleep 2 seconds
 ### Handle the interrupt
 
 In order to receive more interrupts, you need to handle the interrupt in the driver
-and acknowledge the irq.
+and acknowledge the irq. 
 
 ```c
 /*-- set task_4_desc -*/
@@ -176,7 +184,8 @@ and acknowledge the irq.
          * The loop runs for (1000 * msg) times, which is basically 1 second * msg.
          *
          * hint2: seL4_Wait
-         * hint3: sel4platsupport_handle_timer_irq
+         * hint3: sel4platsupport_irq_handle
+         * hint4: 'ntfn_id' should be MINI_IRQ_INTERFACE_NTFN_ID and handle_mask' should be the badge
          *
          */
 /*-- endset -*/
@@ -188,10 +197,13 @@ main: got a message from 0x61 to sleep 2 seconds
 /*-- filter TaskContent("task-4", TaskContentType.COMPLETED) -*/
         seL4_Word badge;
         seL4_Wait(ntfn_object.cptr, &badge);
-        sel4platsupport_handle_timer_irq(&timer, badge);
+        sel4platsupport_irq_handle(&ops.irq_ops, MINI_IRQ_INTERFACE_NTFN_ID, badge);
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+The timer interrupts are bound to the IRQ interface initialised in Task 2,
+hence when we receive an interrupt, we forward it to the interface and let it notify the timer driver.
+
 After this task is completed you should see a 2 second wait, then output from the
  client as follows:
 ```
@@ -208,7 +220,7 @@ timer client wakes up:
 /*-- set task_5_desc -*/
     /*
      * TASK 5: Stop the timer
-     * hint: sel4platsupport_destroy_timer
+     * hint: ltimer_destroy 
      */
 /*-- endset -*/
 /*? task_5_desc ?*/
@@ -218,7 +230,7 @@ timer client wakes up:
  got the current timer tick:
 /*-- endfilter -*/
 /*-- filter TaskContent("task-5", TaskContentType.COMPLETED) -*/
-    sel4platsupport_destroy_timer(&timer, &vka);
+    ltimer_destroy(&timer);
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
@@ -266,10 +278,11 @@ That's it for this tutorial.
 #include <sel4utils/process.h>
 
 #include <sel4platsupport/io.h>
+#include <sel4platsupport/irq.h>
 #include <sel4platsupport/arch/io.h>
-#include <sel4platsupport/timer.h>
 #include <sel4platsupport/bootinfo.h>
 #include <platsupport/plat/timer.h>
+#include <platsupport/ltimer.h>
 
 /* constants */
 #define EP_BADGE 0x61 // arbitrary (but unique) number for a badge
@@ -284,7 +297,7 @@ simple_t simple;
 vka_t vka;
 allocman_t *allocman;
 vspace_t vspace;
-seL4_timer_t timer;
+ltimer_t timer;
 
 /* static memory for the allocator to bootstrap with */
 #define ALLOCATOR_STATIC_POOL_SIZE (BIT(seL4_PageBits) * 10)
@@ -418,7 +431,7 @@ int main(void) {
 
     /* get the current time */
     uint64_t time = 0;
-    ltimer_get_time(&timer.ltimer, &time);
+    ltimer_get_time(&timer, &time);
 
     /*? task_5_desc ?*/
     /*? include_task_type_append([("task-5")]) ?*/
