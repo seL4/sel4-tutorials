@@ -48,10 +48,9 @@ over communication channels. This tutorial will lead you through the
 construction of a CAmkES application with two components: an Echo
 server, and its Client that makes calls to it. These components are
 defined when you initialise your build repository, found in
-the following sub-directories:
+the following camkes file:
 
-- `hello-camkes-1/components/Client/Client.camkes`
-- `hello-camkes-1/components/Echo/Echo.camkes`
+- `hello-camkes-1/hello-1.camkes`
 
 Find the Component manual section here:
 <https://github.com/seL4/camkes-tool/blob/master/docs/index.md#component>
