@@ -108,7 +108,7 @@ def run_tests(tests):
     print('<testsuite>')
     for (config, app) in tests:
         print("<testcase classname='sel4tutorials' name='%s_%s'>" % (config, app))
-        temp_file = tempfile.NamedTemporaryFile(delete=True)
+        temp_file = tempfile.NamedTemporaryFile(delete=True, mode='w+', encoding='utf-8')
         try:
             run_single_test(config, app, temp_file)
         except:
