@@ -70,9 +70,8 @@ def _init_build_directory(config, initialised, directory, tute_directory, output
     args = []
     if not initialised:
         tute_dir = "-DTUTORIAL_DIR=" + os.path.basename(tute_directory)
-        args = ['-DCMAKE_TOOLCHAIN_FILE=../kernel/gcc.cmake',
-                '-G', 'Ninja'] + config_dict[config] + [tute_dir] + ["-C", "../settings.cmake"]
-    return sh.cmake(args + ['..'], _cwd=directory, _out=output, _err=output)
+        args = ['-G', 'Ninja'] + config_dict[config] + [tute_dir] + ["-C", "../projects/sel4-tutorials/settings.cmake"]
+    return sh.cmake(args + [tute_directory], _cwd=directory, _out=output, _err=output)
 
 
 def _init_tute_directory(config, tut, solution, task, directory, output=None):

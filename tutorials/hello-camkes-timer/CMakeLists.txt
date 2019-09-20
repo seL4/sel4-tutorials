@@ -10,11 +10,15 @@
 # @TAG(DATA61_BSD)
 #
 
+include(${SEL4_TUTORIALS_DIR}/settings.cmake)
+sel4_tutorials_regenerate_tutorial(${CMAKE_CURRENT_SOURCE_DIR})
+
 cmake_minimum_required(VERSION 3.7.2)
 
-project(hello-camkes-timer C)
+project(hello-camkes-timer C ASM)
 
-ImportCamkes()
+find_package(camkes-tool REQUIRED)
+camkes_tool_setup_camkes_build_environment()
 
 # This tutorial is hard coded for the zynq, make sure that was what was selected
 if (NOT ("${TUT_BOARD}" STREQUAL "zynq7000"))

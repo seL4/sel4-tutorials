@@ -322,11 +322,15 @@ Component echo saying: hello world
 ```cmake
 /*- filter File("CMakeLists.txt") --*/
 # @TAG(DATA61_BSD)
+include(${SEL4_TUTORIALS_DIR}/settings.cmake)
+sel4_tutorials_regenerate_tutorial(${CMAKE_CURRENT_SOURCE_DIR})
+
 cmake_minimum_required(VERSION 3.7.2)
 
-project(hello-camkes-0 C)
+project(hello-camkes-1 C ASM)
 
-ImportCamkes()
+find_package(camkes-tool REQUIRED)
+camkes_tool_setup_camkes_build_environment()
 
 DeclareCAmkESComponent(Client SOURCES components/Client/src/client.c)
 DeclareCAmkESComponent(Echo SOURCES components/Echo/src/echo.c)

@@ -10,35 +10,6 @@
 # @TAG(DATA61_BSD)
 #
 
-# We are including camkes from a non standard location and need to give some paths
-# This is a very non standard way of using CAmkES as normally you would use the
-# default top level CMakeLists.txt from CAmkES, but as we wish to switch CAmkES on and
-# off this is not possible, hence we have to do this mangling here ourselves.
-set(PYTHON_CAPDL_PATH "${CMAKE_SOURCE_DIR}/projects/camkes/capdl/python-capdl-tool")
-set(CAPDL_TOOL_HELPERS "${CMAKE_SOURCE_DIR}/projects/camkes/capdl/capDL-tool/capDL-tool.cmake")
-find_program(TPP_TOOL tpp PATHS "${CMAKE_SOURCE_DIR}/tools/camkes/tools")
-
-macro(ImportCapDL)
-    add_subdirectory("${CMAKE_SOURCE_DIR}/projects/camkes/capdl" capdl)
-    include(${CAPDL_TOOL_HELPERS})
-    CapDLToolInstall(install_capdl_tool CAPDL_TOOL_BINARY)
-    include("${CAPDL_LOADER_BUILD_HELPERS}")
-endmacro()
-
-# Import camkes functions into caller scope
-macro(ImportCamkes)
-    include("${CMAKE_SOURCE_DIR}/tools/camkes/camkes.cmake")
-    add_subdirectory("${CMAKE_SOURCE_DIR}/projects/camkes/capdl" capdl)
-    add_subdirectory("${CMAKE_SOURCE_DIR}/tools/camkes/libsel4camkes" libsel4camkes)
-endmacro()
-
-macro(ImportCamkesVM)
-    ImportCamkes()
-    include("${CMAKE_SOURCE_DIR}/projects/camkes/global-components/global-components.cmake")
-    add_subdirectory("${CMAKE_SOURCE_DIR}/projects/camkes/vm" vm)
-    add_subdirectory("${CMAKE_SOURCE_DIR}/projects/camkes/vm-linux" vm-linux)
-endmacro()
-
 # Helper that takes a filename and makes the directory where that file would go if
 function(EnsureDir filename)
     get_filename_component(dir "${filename}" DIRECTORY)
@@ -138,7 +109,7 @@ function(ExecuteGenerationProcess input_dir output_dir generated_files)
     set(input_files ${CMAKE_CURRENT_BINARY_DIR}/input_files)
     set(output_files ${CMAKE_CURRENT_BINARY_DIR}/output_files)
 
-    include(${CMAKE_SOURCE_DIR}/${input_dir}/.tute_config)
+    include(${input_dir}/.tute_config)
 
     execute_process(
         COMMAND
@@ -153,11 +124,13 @@ function(ExecuteGenerationProcess input_dir output_dir generated_files)
     # Set cmake to regenerate if any of the input files to the TUTE_COMMAND are updated
     file(READ "${input_files}" files)
     separate_arguments(file_list NATIVE_COMMAND ${files})
-    set_property(
-        DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-        APPEND
-        PROPERTY CMAKE_CONFIGURE_DEPENDS "${file_list}"
-    )
+    if(NOT ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+        set_property(
+            DIRECTORY "${CMAKE_SOURCE_DIR}"
+            APPEND
+            PROPERTY CMAKE_CONFIGURE_DEPENDS "${file_list}"
+        )
+    endif()
     file(READ "${output_files}" files)
     set(${generated_files} ${files} PARENT_SCOPE)
 endfunction()
@@ -168,33 +141,33 @@ endfunction()
 # If GenerateTutorial is rerun, any generated files that change
 # will be updated in dir, unless there is a conflict.  A conflict
 # is when the file in dir has been modified since the last generation.
-function(GenerateTutorial dir)
+function(GenerateTutorial full_path)
+    get_filename_component(dir ${full_path} NAME)
+    get_filename_component(base_dir ${full_path} DIRECTORY)
+    include_guard(GLOBAL)
+    if(EXISTS ${base_dir}/${dir}/.tute_config)
+        set(output_dir ${CMAKE_CURRENT_BINARY_DIR}/.tutegen/${dir}/gen)
+        set(old_output_dir ${CMAKE_CURRENT_BINARY_DIR}/.tutegen/${dir}/old)
+        set(target_dir ${base_dir}/${dir})
 
-    if(EXISTS ${CMAKE_SOURCE_DIR}/${dir}/.tute_config)
-        set(output_dir ${CMAKE_CURRENT_BINARY_DIR}/${dir}/gen)
-        set(old_output_dir ${CMAKE_CURRENT_BINARY_DIR}/${dir}/old)
-        set(target_dir ${CMAKE_SOURCE_DIR}/${dir})
-
-        ExecuteGenerationProcess(${dir} ${output_dir} generated_files)
+        ExecuteGenerationProcess(${base_dir}/${dir} ${output_dir} generated_files)
         UpdateGeneratedFiles(${output_dir} ${target_dir} ${old_output_dir} ${generated_files})
     endif()
-    if(NOT EXISTS ${CMAKE_SOURCE_DIR}/${dir}/CMakeLists.txt)
+    if(NOT EXISTS ${base_dir}/${dir}/CMakeLists.txt)
         message(
             FATAL_ERROR
-                "Could not find: ${CMAKE_SOURCE_DIR}/${dir}/CMakeLists.txt"
-                "It is required that ${CMAKE_SOURCE_DIR}/${dir} contains a CMakeLists.txt"
+                "Could not find: ${base_dir}/${dir}/CMakeLists.txt"
+                "It is required that ${base_dir}/${dir} contains a CMakeLists.txt"
         )
     endif()
 
 endfunction()
 
+find_package(capdl REQUIRED)
 file(GLOB_RECURSE capdl_python ${PYTHON_CAPDL_PATH}/*.py)
 
 set(python_with_capdl ${CMAKE_COMMAND} -E env PYTHONPATH=${PYTHON_CAPDL_PATH} python)
-set(
-    capdl_linker_tool ${python_with_capdl}
-    ${CMAKE_SOURCE_DIR}/projects/camkes/capdl/cdl_utils/capdl_linker.py
-)
+set(capdl_linker_tool ${python_with_capdl} ${CAPDL_LINKER_TOOL})
 
 function(DeclareCDLRootImage cdl cdl_target)
     cmake_parse_arguments(PARSE_ARGV 2 CDLROOTTASK "" "" "ELF;ELF_DEPENDS")
@@ -229,6 +202,7 @@ function(DeclareCDLRootImage cdl cdl_target)
         OUTPUT
         "capdl-loader"
     )
+    include(rootserver)
     DeclareRootserver("capdl-loader")
 endfunction()
 

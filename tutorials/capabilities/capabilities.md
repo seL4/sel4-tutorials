@@ -363,8 +363,14 @@ to become more familiar with cspaces.
 ```cmake
 /*-- filter File("CMakeLists.txt") -*/
 # @TAG(DATA61_BSD)
+include(${SEL4_TUTORIALS_DIR}/settings.cmake)
+sel4_tutorials_regenerate_tutorial(${CMAKE_CURRENT_SOURCE_DIR})
+
 cmake_minimum_required(VERSION 3.7.2)
-project(capabilities C)
+# declare the capabilities CMake project and the languages it is written in
+project(capabilities C ASM)
+
+sel4_tutorials_setup_roottask_tutorial_environment()
 
 # Name the executable and list source files required to build it
 add_executable(capabilities src/main.c)
@@ -376,6 +382,7 @@ target_link_libraries(capabilities
     sel4muslcsys sel4platsupport sel4utils sel4debug)
 
 # Tell the build system that this application is the root task. 
+include(rootserver)
 DeclareRootserver(capabilities)
 
 # utility CMake functions for the tutorials (not required in normal, non-tutorial applications) 

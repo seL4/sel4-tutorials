@@ -367,8 +367,13 @@ int main(int argc, char *argv[]) {
 ```cmake
 /*- filter File("CMakeLists.txt") -*/
 # @TAG(DATA61_BSD)
+include(${SEL4_TUTORIALS_DIR}/settings.cmake)
+sel4_tutorials_regenerate_tutorial(${CMAKE_CURRENT_SOURCE_DIR})
+
 cmake_minimum_required(VERSION 3.7.2)
-project(untyped C)
+project(untyped C ASM)
+
+sel4_tutorials_setup_roottask_tutorial_environment()
 
 # Name the executable and list source files required to build it
 add_executable(untyped src/main.c)
@@ -380,6 +385,7 @@ target_link_libraries(untyped
     sel4muslcsys sel4platsupport sel4utils sel4debug)
 
 # Tell the build system that this application is the root task.
+include(rootserver)
 DeclareRootserver(untyped)
 
 # utility CMake functions for the tutorials (not required in normal, non-tutorial applications)

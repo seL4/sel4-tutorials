@@ -56,7 +56,9 @@ Stuck? See the resources below.
 def cmake_check_script(state):
     return '''set(FINISH_COMPLETION_TEXT "%s")
 set(START_COMPLETION_TEXT "%s")
-configure_file(${CMAKE_SOURCE_DIR}/projects/sel4-tutorials/tools/expect.py ${CMAKE_BINARY_DIR}/check @ONLY)
+configure_file(${SEL4_TUTORIALS_DIR}/tools/expect.py ${CMAKE_BINARY_DIR}/check @ONLY)
+include(simulation)
+GenerateSimulateScript()
 ''' % (state.print_completion(TaskContentType.COMPLETED), state.print_completion(TaskContentType.BEFORE))
 
 

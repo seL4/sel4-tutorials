@@ -10,14 +10,22 @@
 # @TAG(DATA61_BSD)
 #
 
-set(project_dir "${CMAKE_CURRENT_LIST_DIR}")
-get_filename_component(resolved_path ${CMAKE_CURRENT_LIST_FILE} REALPATH)
-# repo_dir is distinct from project_dir as this file is symlinked.
-# project_dir corresponds to the top level project directory, and
-# repo_dir is the absolute path after following the symlink.
-get_filename_component(repo_dir ${resolved_path} DIRECTORY)
+if(NOT ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+    include_guard(GLOBAL)
+endif()
+set(project_dir "${CMAKE_CURRENT_LIST_DIR}/../../")
+file(GLOB project_modules ${project_dir}/projects/*)
+list(
+    APPEND
+        CMAKE_MODULE_PATH
+        ${project_dir}/kernel
+        ${project_dir}/tools/seL4/cmake-tool/helpers/
+        ${project_dir}/tools/seL4/elfloader-tool/
+        ${project_modules}
+)
+set(POLLY_DIR ${project_dir}/tools/polly CACHE INTERNAL "")
 
-include(${project_dir}/tools/seL4/cmake-tool/helpers/application_settings.cmake)
+include(application_settings)
 
 # Deal with the top level target-triplet variables.
 if(NOT TUT_BOARD)
@@ -86,6 +94,5 @@ if(FORCE_IOMMU)
     set(KernelIOMMU ON CACHE BOOL "" FORCE)
 endif()
 
-if(NOT "${TUTORIAL_DIR}" STREQUAL "")
-    include("${TUTORIAL_DIR}/settings.cmake" OPTIONAL)
-endif()
+find_package(sel4-tutorials REQUIRED)
+sel4_tutorials_regenerate_tutorial(${project_dir}/${TUTORIAL_DIR})
