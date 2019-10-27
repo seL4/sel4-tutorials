@@ -438,7 +438,7 @@ of the faulting thread everytime a fault occurs.
 **Exercise** Set the data field of `sched_context` using `seL4_SchedControl_Configure` and set a 10s period, 1ms 
 budget and 0 extra refills.
 
- ```c
+```c
 /*-- filter TaskContent("mcs-start", TaskContentType.ALL, subtask='badge') -*/
     //TODO reconfigure sched_context with 10s period, 1ms budget, 0 extra refills and data of 5.
 /*-- endfilter -*/
@@ -465,7 +465,7 @@ The code then binds the scheduling context back to `spinner_tcb`, which starts y
 **Exercise** set the timeout fault endpoint for `spinner_tcb`. 
 
 
- ```c
+```c
 /*-- filter TaskContent("mcs-start", TaskContentType.ALL, subtask='fault') -*/
     //TODO set endpoint as the timeout fault handler for spinner_tcb
 /*-- endfilter -*/
@@ -564,6 +564,9 @@ int main(int c, char *argv[]) {
 // CSlots pre-initialised in this CSpace
 // capability to a scheduling context
 /*? capdl_alloc_cap(seL4_SchedContextObject, "sched_context", "sched_context") ?*/
+/*# Small hack to set the size of the sc object #*/
+/*- set sc = capdl_alloc_obj(seL4_SchedContextObject, "sched_context") -*/
+/*- set _ = sc.__setattr__("size_bits", 8) -*/
 // the seL4_SchedControl capabilty for the current core
 /*? capdl_sched_control("sched_control") ?*/
 // capability to the tcb of the server process
@@ -635,11 +638,11 @@ int main(int c, char *argv[]) {
     }
 
     /*? include_task_type_replace([("mcs-start", 'badge'), ("mcs-badge", 'badge')]) ?*/
+    /*? include_task_type_replace([("mcs-start", 'fault'), ("mcs-fault", 'fault')]) ?*/
     
     error = seL4_SchedContext_Bind(sched_context, spinner_tcb);
     ZF_LOGF_IF(error, "Failed to bind sched_context to spinner_tcb");
 
-    /*? include_task_type_replace([("mcs-start", 'fault'), ("mcs-fault", 'fault')]) ?*/
     seL4_MessageInfo_t info = seL4_Recv(endpoint, NULL, reply);
     /* parse the fault info from the message */
     seL4_Fault_t fault = seL4_getArchFault(info);

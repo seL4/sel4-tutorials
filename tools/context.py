@@ -150,6 +150,7 @@ class TutorialFilters:
             if not passive and stash.rt:
                 sc = objects.alloc(ObjectType.seL4_SchedContextObject,
                                    name='sc_%s_obj' % (name), label=name)
+                sc.size_bits = 8
                 tcb['sc_slot'] = Cap(sc)
             stash.current_cspace.alloc(tcb)
             stash.finish_elf(name, "%s.c" % name)

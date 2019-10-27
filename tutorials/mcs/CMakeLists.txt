@@ -16,6 +16,7 @@ sel4_tutorials_regenerate_tutorial(${CMAKE_CURRENT_SOURCE_DIR})
 cmake_minimum_required(VERSION 3.7.2)
 project(mcs C ASM)
 
+set(KernelIsMCS ON CACHE STRING "" FORCE)
 sel4_tutorials_setup_capdl_tutorial_environment()
 
 /*? write_manifest(manifest=".manifest.obj", allocator=".allocator.obj") ?*/
