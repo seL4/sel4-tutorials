@@ -186,7 +186,7 @@ userImagePaging: [12 --> 15)
 untypeds:        [316 --> 406)
 /*-- filter TaskCompletion("task-3", TaskContentType.COMPLETED) -*/
 Initial thread domain: 0
-Initial thread cnode size: 12
+Initial thread cnode size:
 /*-- endfilter -*/
 dynamic-1: main@main.c:126 [Cond failed: allocman == NULL]
 ```
