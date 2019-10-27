@@ -457,7 +457,10 @@ cmake_minimum_required(VERSION 3.8.2)
 
 project(print_client C)
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../../projects/camkes/vm-linux/camkes-linux-artifacts/camkes-linux-apps/camkes-connector-apps/libs/camkes camkes)
+file(READ ${CMAKE_MODULE_PATH_FILE} module_path)
+list(APPEND CMAKE_MODULE_PATH ${module_path})
+find_package(camkes-vm-linux REQUIRED)
+add_subdirectory(${CAMKES_VM_LINUX_DIR}/camkes-linux-artifacts/camkes-linux-apps/camkes-connector-apps/libs/camkes camkes)
 
 add_executable(print_client print_client.c)
 target_link_libraries(print_client camkeslinux)
@@ -475,9 +478,11 @@ add the `ExternalProject` declaration to include the print application:
 ```cmake
 /*-- filter TaskContent("vm-cmake-printclient-proj", TaskContentType.COMPLETED, completion='buildroot login') -*/
 # Get Custom toolchain for 32 bit Linux
+include(cross_compiling)
 FindCustomPollyToolchain(LINUX_32BIT_TOOLCHAIN "linux-gcc-32bit-pic")
 # Declare our print server app external project
 include(ExternalProject)
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/module_path "${CMAKE_MODULE_PATH}")
 ExternalProject_Add(print_client-app
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/pkgs/print_client
     BINARY_DIR ${CMAKE_BINARY_DIR}/print_client-app
@@ -488,6 +493,7 @@ ExternalProject_Add(print_client-app
     CMAKE_ARGS
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_TOOLCHAIN_FILE=${LINUX_32BIT_TOOLCHAIN}
+        -DCMAKE_MODULE_PATH_FILE=${CMAKE_CURRENT_BINARY_DIR}/module_path
 )
 # Add the print client app to our overlay ('default_buildroot_overlay')
 AddExternalProjFilesToOverlay(print_client-app ${CMAKE_BINARY_DIR}/print_client-app default_buildroot_overlay "usr/sbin"
@@ -526,15 +532,19 @@ world
 
 ```cmake
 /*- filter File("CMakeLists.txt") -*/
+include(${SEL4_TUTORIALS_DIR}/settings.cmake)
+sel4_tutorials_regenerate_tutorial(${CMAKE_CURRENT_SOURCE_DIR})
+
 cmake_minimum_required(VERSION 3.8.2)
 
-project(vm-app)
+project(vm-app C ASM)
+find_package(camkes-vm REQUIRED)
+include(${CAMKES_VM_SETTINGS_PATH})
+camkes_x86_vm_setup_x86_vm_environment()
+include(${CAMKES_VM_HELPERS_PATH})
+find_package(camkes-vm-linux REQUIRED)
+include(${CAMKES_VM_LINUX_HELPERS_PATH})
 
-ImportCamkesVM()
-
-# Include CAmkES VM helper functions
-include("../projects/camkes/vm/camkes_vm_helpers.cmake")
-include("../projects/camkes/vm-linux/vm-linux-helpers.cmake")
 
 # Check kernel config options
 if(NOT "${KernelX86Sel4Arch}" STREQUAL "x86_64")
@@ -623,11 +633,6 @@ assembly {
 ```cmake
 /*- filter File("pkgs/print_client/CMakeLists.txt") --*/
 /*? include_task_type_append(["vm-pkg-print_client-cmake"]) ?*/
-/*- endfilter -*/
-```
-```cmake
-/*- filter File("settings.cmake") -*/
-include("${CMAKE_SOURCE_DIR}/projects/camkes/vm/camkes_vm_settings.cmake")
 /*- endfilter -*/
 ```
 

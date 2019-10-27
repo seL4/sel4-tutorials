@@ -140,16 +140,21 @@ To see how the `Init` component and CPIO archive are definied within the build s
 look at the app's `CMakeList.txt`:
 
 ```cmake
+include(${SEL4_TUTORIALS_DIR}/settings.cmake)
+sel4_tutorials_regenerate_tutorial(${CMAKE_CURRENT_SOURCE_DIR})
+
 cmake_minimum_required(VERSION 3.8.2)
 
-project(vm-app)
-
-ImportCamkesVM()
+project(vm-app C ASM)
+find_package(camkes-vm REQUIRED)
+include(${CAMKES_VM_SETTINGS_PATH})
+camkes_x86_vm_setup_x86_vm_environment()
+include(${CAMKES_VM_HELPERS_PATH})
+find_package(camkes-vm-linux REQUIRED)
+include(${CAMKES_VM_LINUX_HELPERS_PATH})
 
 /*- filter TaskContent("vm-cmake-start", TaskContentType.ALL, subtask='includes', completion='buildroot login') -*/
 # Include CAmkES VM helper functions
-include("../projects/camkes/vm/camkes_vm_helpers.cmake")
-include("../projects/camkes/vm-linux/vm-linux-helpers.cmake")
 /*- endfilter -*/
 
 /*- filter TaskContent("vm-cmake-start", TaskContentType.ALL, subtask='pre_rootfs', completion='buildroot login') -*/
@@ -287,6 +292,7 @@ external project and add it to our overlay.
 ```cmake
 /*-- filter TaskContent("vm-cmake-hello", TaskContentType.COMPLETED, subtask='toolchain', completion='buildroot login') -*/
 # Get Custom toolchain for 32 bit Linux
+include(cross_compiling)
 FindCustomPollyToolchain(LINUX_32BIT_TOOLCHAIN "linux-gcc-32bit-pic")
 /*-- endfilter -*/
 /*-- filter TaskContent("vm-cmake-hello", TaskContentType.COMPLETED, subtask='hello', completion='buildroot login') -*/
@@ -409,7 +415,7 @@ At the top of the file include our linux helpers, add the following:
 
 ```cmake
 /*-- filter TaskContent("vm-cmake-poke", TaskContentType.COMPLETED, subtask='includes', completion='buildroot login') -*/
-include("../projects/camkes/vm-linux/linux-source-helpers.cmake")
+include(${CAMKES_VM_LINUX_SOURCE_HELPERS_PATH})
 /*-- endfilter -*/
 ```
 Below the includes add:
@@ -421,8 +427,8 @@ GetDefaultLinuxMinor(linux_minor)
 GetDefaultLinuxMd5(linux_md5)
 # Download and Configure our Linux sources
 DownloadLinux(${linux_major} ${linux_minor} ${linux_md5} vm_linux_extract_dir download_vm_linux)
-set(linux_config "${CMAKE_CURRENT_SOURCE_DIR}/../projects/camkes/vm-linux/linux_configs/${linux_major}.${linux_minor}/config")
-set(linux_symvers "${CMAKE_CURRENT_SOURCE_DIR}/../projects/camkes/vm-linux/linux_configs/${linux_major}.${linux_minor}/Module.symvers")
+set(linux_config "${CAMKES_VM_LINUX_DIR}/linux_configs/${linux_major}.${linux_minor}/config")
+set(linux_symvers "${CAMKES_VM_LINUX_DIR}/linux_configs/${linux_major}.${linux_minor}/Module.symvers")
 ConfigureLinux(${vm_linux_extract_dir} ${linux_config} ${linux_symvers} configure_vm_linux
     DEPENDS download_vm_linux
 )
@@ -440,7 +446,7 @@ ExternalProject_Add(poke-module
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_TOOLCHAIN_FILE=${LINUX_32BIT_TOOLCHAIN}
         -DLINUX_KERNEL_DIR=${vm_linux_extract_dir}
-        -DMODULE_HELPERS_FILE=${CMAKE_CURRENT_SOURCE_DIR}/../projects/camkes/vm-linux/linux-module-helpers.cmake
+        -DMODULE_HELPERS_FILE=${CAMKES_VM_LINUX_DIR}/linux-module-helpers.cmake
 )
 # Add our module binary to the overlay
 AddExternalProjFilesToOverlay(poke-module ${CMAKE_CURRENT_BINARY_DIR}/poke-module vm-overlay "lib/modules/4.8.16/kernel/drivers/vmm"
@@ -529,11 +535,18 @@ POKE!!!
 /*-- filter ExcludeDocs() -*/
 ```cmake
 /*- filter File("CMakeLists.txt") -*/
+include(${SEL4_TUTORIALS_DIR}/settings.cmake)
+sel4_tutorials_regenerate_tutorial(${CMAKE_CURRENT_SOURCE_DIR})
+
 cmake_minimum_required(VERSION 3.8.2)
 
-project(vm-app)
-
-ImportCamkesVM()
+project(vm-app C ASM)
+find_package(camkes-vm REQUIRED)
+include(${CAMKES_VM_SETTINGS_PATH})
+camkes_x86_vm_setup_x86_vm_environment()
+include(${CAMKES_VM_HELPERS_PATH})
+find_package(camkes-vm-linux REQUIRED)
+include(${CAMKES_VM_LINUX_HELPERS_PATH})
 
 /*? include_task_type_append([("vm-cmake-start",'includes')]) ?*/
 /*? include_task_type_append([("vm-cmake-poke",'includes')]) ?*/
@@ -575,9 +588,5 @@ ImportCamkesVM()
 /*? include_task_type_append(["vm-init-poke"]) ?*/
 /*- endfilter -*/
 ```
-```cmake
-/*- filter File("settings.cmake") -*/
-include("${CMAKE_SOURCE_DIR}/projects/camkes/vm/camkes_vm_settings.cmake")
-/*- endfilter -*/
-```
+
 /*-- endfilter -*/
