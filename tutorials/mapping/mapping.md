@@ -210,7 +210,7 @@ that the fault occured on (address).
 ### Remap a page
 
 **Exercise** Fix the fault by remapping the page with `seL4_ReadWrite` permissions, using the
-[seL4_X86_Page_Remap](https://docs.sel4.systems/ApiDoc.html#remap) invocation.
+[seL4_X86_Page_Map](https://docs.sel4.systems/ApiDoc.html#map-4) invocation.
 ```c
 /*-- filter TaskContent("mapping-start", TaskContentType.ALL, subtask='remap') -*/
     // TODO remap the page
@@ -219,7 +219,7 @@ that the fault occured on (address).
 /*-- filter ExcludeDocs() -*/
 ```c
 /*-- filter TaskContent("mapping-remap", TaskContentType.COMPLETED, subtask='remap', completion='Success!') -*/
-    error = seL4_X86_Page_Remap(frame, seL4_CapInitThreadVSpace, seL4_ReadWrite, seL4_X86_Default_VMAttributes);
+    error = seL4_X86_Page_Map(frame, seL4_CapInitThreadVSpace, TEST_VADDR, seL4_ReadWrite, seL4_X86_Default_VMAttributes);
     assert(error == seL4_NoError);
 /*-- endfilter -*/
 ```
