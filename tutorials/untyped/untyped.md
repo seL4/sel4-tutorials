@@ -183,7 +183,7 @@ This error is because we are trying to create an untyped of size 0.
 
     // First, find an untyped big enough to fit all of our objects
     for (int i = 0; i < (info->untyped.end - info->untyped.start); i++) {
-        if (info->untypedList[i].sizeBits >= untyped_size_bits) {
+        if (info->untypedList[i].sizeBits >= untyped_size_bits && !info->untypedList[i].isDevice) {
             parent_untyped = info->untyped.start + i;
             break;
         }
@@ -202,7 +202,7 @@ This error is because we are trying to create an untyped of size 0.
 
     // First, find an untyped big enough to fit all of our objects
     for (int i = 0; i < (info->untyped.end - info->untyped.start); i++) {
-        if (info->untypedList[i].sizeBits >= untyped_size_bits) {
+        if (info->untypedList[i].sizeBits >= untyped_size_bits && !info->untypedList[i].isDevice) {
             parent_untyped = info->untyped.start + i;
             break;
         }
