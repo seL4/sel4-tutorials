@@ -452,7 +452,7 @@ int main(int argc, char *argv[]) {
 This program prints each of its arguments on a separate line, by sending
 each argument to the print server one at a time.
 
-**Exercise** create `pkgs/print_client/CMakeLists.txt` for our client program:
+**Exercise** Create `pkgs/print_client/CMakeLists.txt` for our client program:
 
 ```cmake
 /*-- filter TaskContent("crossvm", TaskContentType.COMPLETED, subtask="vm-pkg-print_client-cmake", completion='buildroot login') -*/
@@ -501,7 +501,7 @@ ExternalProject_Add(print_client-app
 # Add the print client app to our overlay ('default_buildroot_overlay')
 AddExternalProjFilesToOverlay(print_client-app ${CMAKE_BINARY_DIR}/print_client-app default_buildroot_overlay "usr/sbin"
     FILES print_client)
-/*-- endfilter --*/
+/*-- endfilter -*/
 ```
 
 Directly below this we also want to add our `camkes_init` script into the overlay. We place this into the VMs `init.d` directory so
