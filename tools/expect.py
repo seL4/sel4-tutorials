@@ -31,7 +31,7 @@ FAILURE_TEXTS = [
 
 def simulate_with_checks(dir, completion_text, failure_list=FAILURE_TEXTS, logfile=sys.stdout):
 
-    test = pexpect.spawnu("python", args=["simulate"], cwd=dir)
+    test = pexpect.spawnu("python3", args=["simulate"], cwd=dir)
     test.logfile = logfile
     for i in completion_text.split('\n') + ["\n"]:
         expect_strings = [i] + failure_list

@@ -390,7 +390,7 @@ class TutorialFunctions:
                 os.makedirs(os.path.dirname(manifest))
 
             manifest_file = open(manifest, 'w')
-            allocator_file = open(allocator, 'w')
+            allocator_file = open(allocator, 'wb')
             print(manifest, file=args.output_files)
             print(allocator, file=args.output_files)
 

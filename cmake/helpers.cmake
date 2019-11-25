@@ -166,7 +166,7 @@ endfunction()
 find_package(capdl REQUIRED)
 file(GLOB_RECURSE capdl_python ${PYTHON_CAPDL_PATH}/*.py)
 
-set(python_with_capdl ${CMAKE_COMMAND} -E env PYTHONPATH=${PYTHON_CAPDL_PATH} python)
+set(python_with_capdl ${CMAKE_COMMAND} -E env PYTHONPATH=${PYTHON_CAPDL_PATH} ${PYTHON3})
 set(capdl_linker_tool ${python_with_capdl} ${CAPDL_LINKER_TOOL})
 
 function(DeclareCDLRootImage cdl cdl_target)
