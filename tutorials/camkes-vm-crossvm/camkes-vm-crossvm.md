@@ -11,7 +11,10 @@
 # @TAG(DATA61_BSD)
 #
 -#*/
-/*? declare_task_ordering(['vm-cmake-start','vm-cmake-crossvm-overlay','vm-camkes-init0-start','vm-camkes-init0-end','vm-camkes-printserver','vm-camkes-composition-start','vm-camkes-composition-end','vm-camkes-configuration','vm-printserver','vm-crossvm-src','vm-cmake-init0','vm-cmake-init0-crossvm','vm-cmake-printserver','vm-init-crossvm','vm-pkg-print_client-src','vm-pkg-print_client-cmake','vm-cmake-printclient-proj','vm-cmake-camkes_init']) ?*/
+
+/*? declare_task_ordering([
+    'crossvm'
+]) ?*/
 
 # CAmkES VM: Cross VM Connectors
 
@@ -105,7 +108,7 @@ project provides an overlay target you can use.
 Start by replacing the line:
 
 ```cmake
-/*-- filter TaskContent("vm-cmake-start", TaskContentType.ALL, completion='buildroot login') -*/
+/*-- filter TaskContent("crossvm", TaskContentType.BEFORE, subtask="vm-cmake-start", completion='buildroot login') -*/
 AddToFileServer("rootfs.cpio" ${default_rootfs_file})
 /*-- endfilter -*/
 ```
@@ -113,7 +116,7 @@ AddToFileServer("rootfs.cpio" ${default_rootfs_file})
 in the target applications `CMakeLists.txt` file with the following:
 
 ```cmake
-/*-- filter TaskContent("vm-cmake-crossvm-overlay", TaskContentType.COMPLETED, completion='buildroot login') -*/
+/*-- filter TaskContent("crossvm", TaskContentType.COMPLETED, subtask="vm-cmake-start", completion='buildroot login') -*/
 set(CAmkESVMDefaultBuildrootOverlay ON CACHE BOOL "" FORCE)
 AddOverlayDirToRootfs(default_buildroot_overlay ${default_rootfs_file} "buildroot" "rootfs_install"
     rootfs_file rootfs_target)
@@ -126,7 +129,7 @@ AddToFileServer("rootfs.cpio" ${rootfs_file})
 **Exercise** Update the CAmkES file, `crossvm_tutorial.camkes` by replacing the Init0 component definition:
 
 ```c
-/*-- filter TaskContent("vm-camkes-init0-start", TaskContentType.ALL, completion='buildroot login') -*/
+/*-- filter TaskContent("crossvm", TaskContentType.BEFORE, subtask="vm-camkes-init0") -*/
 component Init0 {
     VM_INIT_DEF()
 }
@@ -136,7 +139,7 @@ component Init0 {
 with the following definition:
 
 ```c
-/*-- filter TaskContent("vm-camkes-init0-end", TaskContentType.COMPLETED, completion='buildroot login') -*/
+/*-- filter TaskContent("crossvm", TaskContentType.COMPLETED, subtask="vm-camkes-init0", completion='buildroot login') -*/
 component Init0 {
   VM_INIT_DEF()
 
@@ -161,7 +164,7 @@ between the VMM and guest.
 **Exercise** Define the print server component by adding the following to
 the `crossvm_tutorial.camkes` file, after the `Init0` definition:
 ```c
-/*-- filter TaskContent("vm-camkes-printserver", TaskContentType.COMPLETED, completion='buildroot login') -*/
+/*-- filter TaskContent("crossvm", TaskContentType.COMPLETED, subtask="vm-camkes-printserver", completion='buildroot login') -*/
 component PrintServer {
   control;
   dataport Buf(4096) data;
@@ -176,7 +179,7 @@ component PrintServer {
 **Exercise** Replace the `composition` definition:
 
 ```c
-/*-- filter TaskContent("vm-camkes-composition-start", TaskContentType.ALL, completion='buildroot login') -*/
+/*-- filter TaskContent("crossvm", TaskContentType.BEFORE, subtask="vm-camkes-composition", completion='buildroot login') -*/
     composition {
         VM_COMPOSITION_DEF()
         VM_PER_VM_COMP_DEF(0)
@@ -187,7 +190,7 @@ component PrintServer {
 with the following:
 
 ```c
-/*-- filter TaskContent("vm-camkes-composition-end", TaskContentType.COMPLETED, completion='buildroot login') -*/
+/*-- filter TaskContent("crossvm", TaskContentType.COMPLETED, subtask="vm-camkes-composition", completion='buildroot login') -*/
     composition {
         VM_COMPOSITION_DEF()
         VM_PER_VM_COMP_DEF(0)
@@ -218,7 +221,7 @@ two lines in the configuration section:
 ```c
     configuration {
     ...
-/*-- filter TaskContent("vm-camkes-configuration", TaskContentType.COMPLETED, completion='buildroot login') -*/
+/*-- filter TaskContent("crossvm", TaskContentType.COMPLETED, subtask="vm-camkes-configuration", completion='buildroot login') -*/
         // Add the following 2 lines:
         vm0.data_id = 1; // ids must be contiguous, starting from 1
         vm0.data_size = 4096;
@@ -230,7 +233,7 @@ two lines in the configuration section:
 
 **Exercise** Add the file `components/print_server.c` with the following contents:
 ```c
-/*-- filter TaskContent("vm-printserver", TaskContentType.COMPLETED, completion='buildroot login') -*/
+/*-- filter TaskContent("crossvm", TaskContentType.COMPLETED, subtask="vm-printserver", completion='buildroot login') -*/
 #include <camkes.h>
 #include <stdio.h>
 
@@ -267,7 +270,7 @@ Create another c file that tells the VMM about the cross VM connections.
 **Exercise** Add a file `src/cross_vm.c` with the following contents:
 
 ```c
-/*-- filter TaskContent("vm-crossvm-src", TaskContentType.COMPLETED, completion='buildroot login') -*/
+/*-- filter TaskContent("crossvm", TaskContentType.COMPLETED, subtask="vm-crossvm-src", completion='buildroot login') -*/
 #include <sel4/sel4.h>
 #include <camkes.h>
 #include <camkes_mutex.h>
@@ -327,7 +330,7 @@ int cross_vm_consumes_events_init(vmm_t *vmm, vspace_t *vspace, seL4_Word irq_ba
 **Exercise** Make the following changes in `CMakeLists.txt` by firstly replacing the declaration of Init0:
 
 ```cmake
-/*-- filter TaskContent("vm-cmake-init0", TaskContentType.ALL, completion='buildroot login') -*/
+/*-- filter TaskContent("crossvm", TaskContentType.BEFORE, subtask="vm-cmake-init0", completion='buildroot login') -*/
 DeclareCAmkESVM(Init0)
 /*-- endfilter -*/
 ```
@@ -335,7 +338,7 @@ DeclareCAmkESVM(Init0)
 with the following declaration:
 
 ```cmake
-/*-- filter TaskContent("vm-cmake-init0-crossvm", TaskContentType.COMPLETED, completion='buildroot login') -*/
+/*-- filter TaskContent("crossvm", TaskContentType.COMPLETED, subtask="vm-cmake-init0", completion='buildroot login') -*/
 # Retrieve Init0 cross vm src files
 file(GLOB init0_extra src/*.c)
 # Declare VM component: Init0
@@ -349,7 +352,7 @@ DeclareCAmkESVM(Init0
 Also add a declaration for a PrintServer component:
 
 ```cmake
-/*-- filter TaskContent("vm-cmake-printserver", TaskContentType.COMPLETED, completion='buildroot login') -*/
+/*-- filter TaskContent("crossvm", TaskContentType.COMPLETED, subtask="vm-cmake-printserver", completion='buildroot login') -*/
 # Declare the CAmkES PrintServer component
 DeclareCAmkESComponent(PrintServer SOURCES components/print_server.c)
 /*-- endfilter -*/
@@ -363,7 +366,7 @@ library, and defines the new CAmkES component `PrintServer`.
 **Exercise** Create the following `camkes_init` shell script that is executed as Linux is initialized:
 
 ```bash
-/*-- filter TaskContent("vm-init-crossvm", TaskContentType.COMPLETED, completion='buildroot login') -*/
+/*-- filter TaskContent("crossvm", TaskContentType.COMPLETED, subtask="vm-init-crossvm", completion='buildroot login') -*/
 #!/bin/sh
 # Initialises linux-side of cross vm connections.
 
@@ -401,7 +404,7 @@ mkdir -p pkgs/print_client
 with the following file `pkgs/print_client/print_client.c`:
 
 ```c
-/*-- filter TaskContent("vm-pkg-print_client-src", TaskContentType.COMPLETED, completion='buildroot login') -*/
+/*-- filter TaskContent("crossvm", TaskContentType.COMPLETED, subtask="vm-pkg-print_client-src", completion='buildroot login') -*/
 #include <string.h>
 #include <assert.h>
 
@@ -452,7 +455,7 @@ each argument to the print server one at a time.
 **Exercise** create `pkgs/print_client/CMakeLists.txt` for our client program:
 
 ```cmake
-/*-- filter TaskContent("vm-pkg-print_client-cmake", TaskContentType.COMPLETED, completion='buildroot login') -*/
+/*-- filter TaskContent("crossvm", TaskContentType.COMPLETED, subtask="vm-pkg-print_client-cmake", completion='buildroot login') -*/
 cmake_minimum_required(VERSION 3.8.2)
 
 project(print_client C)
@@ -476,7 +479,7 @@ AddToFileServer("bzimage" ${decompressed_kernel} DEPENDS extract_linux_kernel)
 add the `ExternalProject` declaration to include the print application:
 
 ```cmake
-/*-- filter TaskContent("vm-cmake-printclient-proj", TaskContentType.COMPLETED, completion='buildroot login') -*/
+/*-- filter TaskContent("crossvm", TaskContentType.COMPLETED, subtask="vm-cmake-printclient-proj", completion='buildroot login') -*/
 # Get Custom toolchain for 32 bit Linux
 include(cross_compiling)
 FindCustomPollyToolchain(LINUX_32BIT_TOOLCHAIN "linux-gcc-32bit-pic")
@@ -505,7 +508,7 @@ Directly below this we also want to add our `camkes_init` script into the overla
 the script is run on start up:
 
 ```cmake
-/*-- filter TaskContent("vm-cmake-camkes_init", TaskContentType.COMPLETED, completion='buildroot login') -*/
+/*-- filter TaskContent("crossvm", TaskContentType.COMPLETED, subtask="vm-cmake-camkes_init", completion='buildroot login') -*/
 AddFileToOverlayDir("S90camkes_init" ${CMAKE_CURRENT_LIST_DIR}/camkes_init "etc/init.d" default_buildroot_overlay)
 /*-- endfilter -*/
 ```
@@ -554,8 +557,8 @@ if(NOT "${KernelMaxNumNodes}" STREQUAL 1)
     message(FATAL_ERROR "KernelMaxNumNodes must be set to 1 but are set to:${KernelMaxNumNodes}")
 endif()
 
-/*? include_task_type_replace(["vm-cmake-init0", "vm-cmake-init0-crossvm"]) ?*/
-/*? include_task_type_append(["vm-cmake-printserver"]) ?*/
+/*? include_task_type_append([("crossvm", "vm-cmake-init0")]) ?*/
+/*? include_task_type_append([("crossvm", "vm-cmake-printserver")]) ?*/
 # Get Default Linux VM files
 GetDefaultLinuxKernelFile(default_kernel_file)
 GetDefaultLinuxRootfsFile(default_rootfs_file)
@@ -565,9 +568,9 @@ DecompressLinuxKernel(extract_linux_kernel decompressed_kernel ${default_kernel_
 
 AddToFileServer("bzimage" ${decompressed_kernel} DEPENDS extract_linux_kernel)
 
-/*? include_task_type_append(["vm-cmake-printclient-proj"]) ?*/
-/*? include_task_type_append(["vm-cmake-camkes_init"]) ?*/
-/*? include_task_type_replace(["vm-cmake-start", "vm-cmake-crossvm-overlay"]) ?*/
+/*? include_task_type_append([("crossvm", "vm-cmake-printclient-proj")]) ?*/
+/*? include_task_type_append([("crossvm", "vm-cmake-camkes_init")]) ?*/
+/*? include_task_type_append([("crossvm", "vm-cmake-start")]) ?*/
 # Initialise CAmkES Root Server with addition CPP includes
 DeclareCAmkESVMRootServer(crossvm_tutorial.camkes)
 GenerateCAmkESRootserver()
@@ -583,11 +586,11 @@ import <VM/vm.camkes>;
 #define VM_GUEST_CMDLINE "earlyprintk=ttyS0,115200 console=ttyS0,115200 i8042.nokbd=y i8042.nomux=y \
 i8042.noaux=y io_delay=udelay noisapnp pci=nomsi debug root=/dev/mem"
 
-/*? include_task_type_replace(["vm-camkes-init0-start", "vm-camkes-init0-end"]) ?*/
-/*? include_task_type_append(["vm-camkes-printserver"]) ?*/
+/*? include_task_type_append([("crossvm", "vm-camkes-init0")]) ?*/
+/*? include_task_type_append([("crossvm", "vm-camkes-printserver")]) ?*/
 assembly {
 
-    /*? include_task_type_replace(["vm-camkes-composition-start", "vm-camkes-composition-end"]) ?*/
+    /*? include_task_type_append([("crossvm", "vm-camkes-composition")]) ?*/
     configuration {
         VM_CONFIGURATION_DEF()
         VM_PER_VM_CONFIG_DEF(0)
@@ -600,7 +603,7 @@ assembly {
         vm0.kernel_relocs = "bzimage";
         vm0.initrd_image = "rootfs.cpio";
         vm0.iospace_domain = 0x0f;
-    /*? include_task_type_append(["vm-camkes-configuration"]) ?*/
+    /*? include_task_type_append([("crossvm", "vm-camkes-configuration")]) ?*/
     }
 }
 /*- endfilter -*/
@@ -608,31 +611,31 @@ assembly {
 
 ```c
 /*- filter File("components/print_server.c") --*/
-/*? include_task_type_append(["vm-printserver"]) ?*/
+/*? include_task_type_append([("crossvm", "vm-printserver")]) ?*/
 /*- endfilter -*/
 ```
 
 ```c
 /*- filter File("src/cross_vm.c") --*/
-/*? include_task_type_append(["vm-crossvm-src"]) ?*/
+/*? include_task_type_append([("crossvm", "vm-crossvm-src")]) ?*/
 /*- endfilter -*/
 ```
 
 ```bash
 /*- filter File("camkes_init", mode="executable") --*/
-/*? include_task_type_append(["vm-init-crossvm"]) ?*/
+/*? include_task_type_append([("crossvm", "vm-init-crossvm")]) ?*/
 /*- endfilter -*/
 ```
 
 ```c
 /*- filter File("pkgs/print_client/print_client.c") --*/
-/*? include_task_type_append(["vm-pkg-print_client-src"]) ?*/
+/*? include_task_type_append([("crossvm", "vm-pkg-print_client-src")]) ?*/
 /*- endfilter -*/
 ```
 
 ```cmake
 /*- filter File("pkgs/print_client/CMakeLists.txt") --*/
-/*? include_task_type_append(["vm-pkg-print_client-cmake"]) ?*/
+/*? include_task_type_append([("crossvm", "vm-pkg-print_client-cmake")]) ?*/
 /*- endfilter -*/
 ```
 
