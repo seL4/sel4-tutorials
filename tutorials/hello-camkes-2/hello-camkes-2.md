@@ -343,7 +343,7 @@ int run(void) {
 /*- endif -*/
 
     /* TASK 11: wait to get an event back signalling that the reply data is avaialble */
-    /* hint 1: use the function <interface_name>.wait
+    /* hint 1: use the function <interface_name>_wait
      * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
      */
 /*- if solution -*/
