@@ -174,7 +174,6 @@ assembly {
 **Exercise** Define the interface for hello in `interfaces/HelloSimple.idl4`. 
 
 ```c
-/*- filter File("interfaces/HelloSimple.idl4") --*/
 /* Simple RPC interface */
 procedure HelloSimple {
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="interface") -*/
@@ -183,11 +182,12 @@ procedure HelloSimple {
      * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
      */
 /*-- endfilter -*/
+/*-- filter ExcludeDocs() -*/
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="interface") -*/
     void say_hello(in string str);
 /*-- endfilter -*/
-};
 /*-- endfilter -*/
+};
 ```
 
 **Exercise** Implement the RPC hello function.
@@ -311,7 +311,17 @@ component Echo {
 }
 /*-- endfilter -*/
 ```
+```
+/*- filter File("interfaces/HelloSimple.idl4") --*/
+/* @TAG(DATA61_BSD) */
 
+/* Simple RPC interface */
+procedure HelloSimple {
+/*? include_task_type_append([("hello", 'interface')]) ?*/
+};
+
+/*-- endfilter -*/
+```
 ```
 /*- filter TaskCompletion("hello", TaskContentType.ALL) --*/
 Component echo saying: hello world
