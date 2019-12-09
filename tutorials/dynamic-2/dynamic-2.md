@@ -83,7 +83,7 @@ they were covered by a previous tutorial in the series.
 
 When you first run this tutorial, you will see a fault as follows:
 ```
-/*--filter TaskCompletion("task-1", TaskContentType.ALL)--*/
+/*-- filter TaskCompletion("task-1", TaskContentType.ALL) -*/
 Booting all finished, dropped to user space
 Caught cap fault in send phase at address (nil)
 while trying to handle:
@@ -110,8 +110,9 @@ not mapped into any virtual address space as yet. Standard restrictions
 of a MMU-utilizing kernel apply.
 
 - <https://github.com/seL4/seL4_libs/blob/master/libsel4vka/include/vka/object.h>
+
 ```
-/*-- set task_1_desc --*/
+/*-- set task_1_desc -*/
     /* TASK 1: get a frame cap for the ipc buffer */
     /* hint: vka_alloc_frame()
      * int vka_alloc_frame(vka_t *vka, uint32_t size_bits, vka_object_t *result)
@@ -121,7 +122,7 @@ of a MMU-utilizing kernel apply.
      * @return 0 on success
      */
     vka_object_t ipc_frame_object;
-/*-- endset --*/
+/*-- endset -*/
 /*? task_1_desc ?*/
 /*-- filter ExcludeDocs() -*/
 /*-- filter TaskContent("task-1", TaskContentType.COMPLETED) -*/
@@ -130,11 +131,12 @@ of a MMU-utilizing kernel apply.
                   "\tThe frame size is not the number of bytes, but an exponent.\n"
                   "\tNB: This frame is not an immediately usable, virtually mapped page.\n")
 /*-- endfilter -*/
-/*--filter TaskCompletion("task-1", TaskContentType.ALL)--*/
+/*--filter TaskCompletion("task-1", TaskContentType.ALL) -*/
 Booting all finished, dropped to user space
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
 On completion, the output will not change.
 
 ### Try to map a page
@@ -157,7 +159,7 @@ The tutorial deliberately walks you through both the mapping of a frame
 into a VSpace, and the mapping of a new page-table into a VSpace.
 
 ```
-/*-- set task_2_desc --*/
+/*-- set task_2_desc -*/
     /* TASK 2: try to map the frame the first time  */
     /* hint 1: seL4_ARCH_Page_Map()
      * The *ARCH* versions of seL4 sys calls are abstractions over the architecture provided by libsel4utils
@@ -181,7 +183,7 @@ into a VSpace, and the mapping of a new page-table into a VSpace.
      *    be led to allocate a new empty page table and map it into the VSpace,
      *    before trying again.
      */
-/*-- endset --*/
+/*-- endset -*/
 /*? task_2_desc ?*/
 /*-- filter ExcludeDocs() -*/
 /*-- filter TaskContent("task-2", TaskContentType.COMPLETED) -*/
@@ -196,7 +198,7 @@ into a VSpace, and the mapping of a new page-table into a VSpace.
 On completion, the output will be as follows:
 ```
 dynamic-2: main@main.c:260 [Err seL4_FailedLookup]:
-/*--filter TaskCompletion("task-2", TaskContentType.COMPLETED)--*/
+/*--filter TaskCompletion("task-2", TaskContentType.COMPLETED) -*/
 	Failed to allocate new page table.
 /*-- endfilter -*/
 ```
@@ -210,7 +212,7 @@ page-table object to use as a leaf page-table in your VSpace.
 - <https://github.com/seL4/seL4_libs/blob/master/libsel4vka/include/vka/object.h>
 
 ```
-/*-- set task_3_desc --*/
+/*-- set task_3_desc -*/
         /* TASK 3: create a page table */
         /* hint: vka_alloc_page_table()
          * int vka_alloc_page_table(vka_t *vka, vka_object_t *result)
@@ -225,7 +227,7 @@ page-table object to use as a leaf page-table in your VSpace.
         vka_object_t pt_object;
         error =  vka_alloc_page_table(&vka, &pt_object);
 /*-- endfilter -*/
-/*--filter TaskCompletion("task-3", TaskContentType.ALL)--*/
+/*--filter TaskCompletion("task-3", TaskContentType.ALL) -*/
 Booting all finished, dropped to user space
 /*-- endfilter -*/
 /*-- endfilter -*/
@@ -281,7 +283,7 @@ Use `seL4_ARCH_Page_Map` to map the frame in.
 If everything was done correctly, there is no reason why this step
 should fail. Complete it and proceed.
 ```
-/*-- set task_5_desc --*/
+/*-- set task_5_desc -*/
         /* TASK 5: then map the frame in */
         /* hint 1: use seL4_ARCH_Page_Map() as above
          * hint 2: for the rights, use seL4_AllRights
@@ -298,7 +300,7 @@ should fail. Complete it and proceed.
 ```
 On completion, you will see the following:
 ```
-/*--filter TaskCompletion("task-5", TaskContentType.COMPLETED)--*/
+/*--filter TaskCompletion("task-5", TaskContentType.COMPLETED) -*/
 main: hello world
 /*-- endfilter -*/
 dynamic-2: main@main.c:464 [Cond failed: seL4_MessageInfo_get_length(tag) != 1]
@@ -459,10 +461,11 @@ transmitted in the message.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
 On completion, the output should change as follows:
 ```
 dynamic-2: main@main.c:472 [Cond failed: msg != ~MSG_DATA]
-/*--filter TaskCompletion("task-8", TaskContentType.COMPLETED)--*/
+/*-- filter TaskCompletion("task-8", TaskContentType.COMPLETED) -*/
 	Response data from thread_2's content was not what was expected.
 /*-- endfilter -*/
 ```
@@ -524,9 +527,10 @@ response message, if the sender doesn't want it to.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
 On completion, you should see thread_2 fault as follows:
 ```
-/*--filter TaskCompletion("task-9", TaskContentType.COMPLETED)--*/
+/*--filter TaskCompletion("task-9", TaskContentType.COMPLETED) -*/
 thread_2: hallo wereld
 thread_2: got a message 0 from 0
 /*-- endfilter -*/
@@ -602,7 +606,7 @@ explicitly interested in distinguishing the sender.
 ```
 On completion, the output should change slightly:
 ```
-/*--filter TaskCompletion("task-11", TaskContentType.COMPLETED)--*/
+/*-- filter TaskCompletion("task-11", TaskContentType.COMPLETED) -*/
 thread_2: got a message 0 from 0x61
 /*-- endfilter -*/
 ```
@@ -663,7 +667,7 @@ Again, just reading the data from the Message Registers.
 ```
 On completion, the output should change slightly:
 ```
-/*--filter TaskCompletion("task-13", TaskContentType.COMPLETED)--*/
+/*--filter TaskCompletion("task-13", TaskContentType.COMPLETED) -*/
 thread_2: got a message 0x6161 from 0x61
 /*-- endfilter -*/
 ```
@@ -733,7 +737,7 @@ Complete the step and pat yourself on the back.
 ```
 On completion, the output should change, with the fault message replaced with the following:
 ```
-/*--filter TaskCompletion("task-15", TaskContentType.COMPLETED)--*/
+/*--filter TaskCompletion("task-15", TaskContentType.COMPLETED) -*/
 main: got a reply: [0xffff9e9e|0xffffffffffff9e9e]
 /*-- endfilter -*/
 ```
