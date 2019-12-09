@@ -158,6 +158,9 @@ since you'd need a new page table to contain the new page-table-entry.
 The tutorial deliberately walks you through both the mapping of a frame
 into a VSpace, and the mapping of a new page-table into a VSpace.
 
+- <https://github.com/seL4/seL4_libs/blob/master/libsel4vspace/arch_include/x86/vspace/arch/page.h>
+- <https://github.com/seL4/seL4/blob/master/libsel4/arch_include/x86/interfaces/sel4arch.xml>
+
 ```
 /*-- set task_2_desc -*/
     /* TASK 2: try to map the frame the first time  */
@@ -192,8 +195,6 @@ into a VSpace, and the mapping of a new page-table into a VSpace.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
-- <https://github.com/seL4/seL4_libs/blob/master/libsel4vspace/arch_include/x86/vspace/arch/page.h>
-- <https://github.com/seL4/seL4/blob/master/libsel4/arch_include/x86/interfaces/sel4arch.xml>
 
 On completion, the output will be as follows:
 ```
@@ -428,6 +429,7 @@ transmitted in the message.
 
 - <https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/shared_types_32.bf>
 - <https://github.com/seL4/seL4/blob/master/libsel4/arch_include/x86/sel4/arch/functions.h>
+
 ```
 /*-- set task_8_desc -*/
     /* TASK 8: set the data to send. We send it in the first message register */
@@ -505,6 +507,7 @@ response message, if the sender doesn't want it to.
 
 - <https://github.com/seL4/seL4/blob/master/libsel4/sel4_arch_include/ia32/sel4/sel4_arch/syscalls.h>
 - <https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/shared_types_32.bf>
+
 ```
 /*-- set task_9_desc -*/
     /* TASK 9: send and wait for a reply. */
@@ -552,6 +555,7 @@ reading the reply from the receiver. As mentioned before, the
 designated, single IPC buffer.
 
 - <https://github.com/seL4/seL4/blob/master/libsel4/arch_include/x86/sel4/arch/functions.h>
+
 ```
 /*-- set task_10_desc -*/
     /* TASK 10: get the reply message */
@@ -583,6 +587,7 @@ explicitly interested in distinguishing the sender.
 
 - <https://github.com/seL4/seL4/blob/master/libsel4/sel4_arch_include/aarch32/sel4/sel4_arch/syscalls.h>
 - <https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/shared_types_32.bf>
+
 ```
 /*-- set task_11_desc -*/
     /* TASK 11: wait for a message to come in over the endpoint */
@@ -616,7 +621,9 @@ thread_2: got a message 0 from 0x61
 These two calls here are just verification of the fidelity of the
 transmitted message. It's very unlikely you'll encounter an error here.
 Complete them and proceed to the next step.
+
 - <https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/shared_types_32.bf>
+
 ```
 /*-- set task_12_desc -*/
     /* TASK 12: make sure it is what we expected */
@@ -648,7 +655,9 @@ On completion, the output should not change.
 ### Read the message registers
 
 Again, just reading the data from the Message Registers.
+
 - <https://github.com/seL4/seL4/blob/master/libsel4/arch_include/x86/sel4/arch/functions.h>
+
 ```
 /*-- set task_13_desc -*/
     /* TASK 13: get the message stored in the first message register */
@@ -675,7 +684,9 @@ thread_2: got a message 0x6161 from 0x61
 ### Write the message registers
 
 And writing Message Registers again.
+
 - <https://github.com/seL4/seL4/blob/master/libsel4/arch_include/x86/sel4/arch/functions.h>
+
 ```
 /*-- set task_14_desc -*/
     /* TASK 14: copy the modified message back into the message register */
@@ -710,8 +721,10 @@ target the ability to send to it repeatedly, but would like to allow the
 receiver to respond to a specific message once, it can use `seL4_Call()`,
 and the seL4 kernel will facilitate this one-time permissive response.
 Complete the step and pat yourself on the back.
- - <https://github.com/seL4/seL4/blob/master/libsel4/sel4_arch_include/ia32/sel4/sel4_arch/syscalls.h>
- - <https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/shared_types_32.bf>
+
+- <https://github.com/seL4/seL4/blob/master/libsel4/sel4_arch_include/ia32/sel4/sel4_arch/syscalls.h>
+- <https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/shared_types_32.bf>
+
 ```
 /*-- set task_15_desc -*/
     /* TASK 15: send the message back */
