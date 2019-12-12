@@ -23,20 +23,9 @@
 
 ## Initialising
 
-This tutorial runs on a different branch of the seL4 kernel. First, check out this branch:
-
-```bash
-cd kernel
-git fetch seL4 mcs-tutorials 
-git checkout mcs-tutorials
-```
-
 Then initialise the tutorial:
 
 /*? macros.tutorial_init("mcs") ?*/
-
-Note that the other tutorials will not build on this version of the kernel, make sure you 
- checkout `master` before completing other tutorials.
 
 ## Outcomes
 
