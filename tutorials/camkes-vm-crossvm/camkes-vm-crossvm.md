@@ -548,6 +548,8 @@ include(${CAMKES_VM_HELPERS_PATH})
 find_package(camkes-vm-linux REQUIRED)
 include(${CAMKES_VM_LINUX_HELPERS_PATH})
 
+include(simulation)
+GenerateSimulateScript()
 
 # Check kernel config options
 if(NOT "${KernelX86Sel4Arch}" STREQUAL "x86_64")

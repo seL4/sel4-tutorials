@@ -548,6 +548,9 @@ include(${CAMKES_VM_HELPERS_PATH})
 find_package(camkes-vm-linux REQUIRED)
 include(${CAMKES_VM_LINUX_HELPERS_PATH})
 
+include(simulation)
+GenerateSimulateScript()
+
 /*? include_task_type_append([("vm-cmake-start",'includes')]) ?*/
 /*? include_task_type_append([("vm-cmake-poke",'includes')]) ?*/
 /*? include_task_type_append([("vm-cmake-start", 'pre_rootfs')]) ?*/
