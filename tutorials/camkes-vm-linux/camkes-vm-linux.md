@@ -146,6 +146,7 @@ sel4_tutorials_regenerate_tutorial(${CMAKE_CURRENT_SOURCE_DIR})
 cmake_minimum_required(VERSION 3.8.2)
 
 project(vm-app C ASM)
+include(ExternalProject)
 find_package(camkes-vm REQUIRED)
 include(${CAMKES_VM_SETTINGS_PATH})
 camkes_x86_vm_setup_x86_vm_environment()
@@ -433,7 +434,6 @@ ConfigureLinux(${vm_linux_extract_dir} ${linux_config} ${linux_symvers} configur
     DEPENDS download_vm_linux
 )
 # Add the external poke module project
-include(ExternalProject)
 ExternalProject_Add(poke-module
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/modules
     BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/poke-module
@@ -541,6 +541,7 @@ sel4_tutorials_regenerate_tutorial(${CMAKE_CURRENT_SOURCE_DIR})
 cmake_minimum_required(VERSION 3.8.2)
 
 project(vm-app C ASM)
+include(ExternalProject)
 find_package(camkes-vm REQUIRED)
 include(${CAMKES_VM_SETTINGS_PATH})
 camkes_x86_vm_setup_x86_vm_environment()
