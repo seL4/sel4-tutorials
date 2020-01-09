@@ -20,7 +20,7 @@ macro(sel4_tutorials_regenerate_tutorial tutorial_dir)
     # generate tutorial sources into directory
 
     GenerateTutorial(${tutorial_dir})
-    if(${CMAKE_CURRENT_LIST_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
+    if("${CMAKE_CURRENT_LIST_FILE}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt")
         get_property(tute_hack GLOBAL PROPERTY DONE_TUTE_HACK)
         if(NOT tute_hack)
             set_property(GLOBAL PROPERTY DONE_TUTE_HACK TRUE)

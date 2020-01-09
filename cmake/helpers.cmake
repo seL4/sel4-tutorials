@@ -124,7 +124,7 @@ function(ExecuteGenerationProcess input_dir output_dir generated_files)
     # Set cmake to regenerate if any of the input files to the TUTE_COMMAND are updated
     file(READ "${input_files}" files)
     separate_arguments(file_list NATIVE_COMMAND ${files})
-    if(NOT ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+    if("${CMAKE_CURRENT_LIST_FILE}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt")
         set_property(
             DIRECTORY "${CMAKE_SOURCE_DIR}"
             APPEND
