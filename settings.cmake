@@ -10,9 +10,8 @@
 # @TAG(DATA61_BSD)
 #
 
-if(NOT ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
-    include_guard(GLOBAL)
-endif()
+include_guard(GLOBAL)
+
 set(project_dir "${CMAKE_CURRENT_LIST_DIR}/../../")
 file(GLOB project_modules ${project_dir}/projects/*)
 list(
