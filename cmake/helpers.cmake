@@ -144,7 +144,19 @@ endfunction()
 function(GenerateTutorial full_path)
     get_filename_component(dir ${full_path} NAME)
     get_filename_component(base_dir ${full_path} DIRECTORY)
-    include_guard(GLOBAL)
+
+    # Implement include_guard() functionality within a function that
+    # can only be called once. Using include_guard() is considered dangerous
+    # within functions as it will be affected by other include_guard() calls
+    # within functions within the same file.
+    get_property(gen_tutorial GLOBAL PROPERTY GenerateTutorialONCE)
+    if(NOT gen_tutorial)
+        set_property(GLOBAL PROPERTY GenerateTutorialONCE TRUE)
+    else()
+        # If already generated the tutorial in this run we don't need to do so again.
+        return()
+    endif()
+
     if(EXISTS ${base_dir}/${dir}/.tute_config)
         set(output_dir ${CMAKE_CURRENT_BINARY_DIR}/.tutegen/${dir}/gen)
         set(old_output_dir ${CMAKE_CURRENT_BINARY_DIR}/.tutegen/${dir}/old)
