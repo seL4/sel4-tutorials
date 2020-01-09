@@ -20,16 +20,12 @@ macro(sel4_tutorials_regenerate_tutorial tutorial_dir)
     # generate tutorial sources into directory
 
     GenerateTutorial(${tutorial_dir})
-    # Add the tutorial directory the same as any other project
-    # add_subdirectory(${CMAKE_SOURCE_DIR}/${TUTORIAL_DIR} ${CMAKE_BINARY_DIR}/${TUTORIAL_DIR})
-    # message("${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_SOURCE_DIR}")
     if(${CMAKE_CURRENT_LIST_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
         get_property(tute_hack GLOBAL PROPERTY DONE_TUTE_HACK)
         if(NOT tute_hack)
             set_property(GLOBAL PROPERTY DONE_TUTE_HACK TRUE)
             # We are in the main project phase and regenerating the tutorial
             # may have updated the file calling us.  So we do some magic...
-            # message("err ${CMAKE_CURRENT_SOURCE_DIR}")
             include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
             return()
         endif()
