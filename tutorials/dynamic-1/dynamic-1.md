@@ -134,7 +134,7 @@ You need to initialize it with some default state before using it.
 - <https://github.com/seL4/seL4_libs/blob/master/libsel4simple-default/include/simple-default/simple-default.h>
 ```c
 /*-- set task_2_desc -*/
-/* TASK 2:  */
+   /* TASK 2: initialise simple object */
    /* hint: simple_default_init_bootinfo()
     * void simple_default_init_bootinfo(simple_t *simple, seL4_BootInfo *bi);
     * @param simple Structure for the simple interface object. This gets initialised.
@@ -149,11 +149,11 @@ You need to initialize it with some default state before using it.
 /*-- endfilter -*/
 ```
 
-On successful completion this task, the output should not change.
+On successful completion of this task, the output should not change.
 
 ### Use simple to print BootInfo
 
-Use a `simple` function to print-out the contents of seL4_BootInfo function.
+Use a `simple` function to print out the contents of the `seL4_BootInfo` function.
 
 ```c
 /*-- set task_3_desc -*/
@@ -194,7 +194,7 @@ dynamic-1: main@main.c:126 [Cond failed: allocman == NULL]
 ### Initialise an allocator
 
 In seL4, memory management is delegated in large part to userspace, and
-each process manages its own page faults with a custom pager. Without
+each thread manages its own page faults with a custom pager. Without
 the use of the `allocman` library and the `VKA` library, you would have to
 manually allocate a frame, then map the frame into a page-table, before
 you could use new memory in your address space. In this tutorial you
@@ -547,7 +547,7 @@ policy.
 - <https://github.com/seL4/seL4/blob/master/libsel4/include/interfaces/sel4.xml>
 
 On successful completion this task, the output should not change.
-### TASK 15
+### Print something
 ```c
 /*--set task_15_desc -*/
     /* TASK 15: print something */
