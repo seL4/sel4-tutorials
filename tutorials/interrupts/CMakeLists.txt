@@ -26,7 +26,12 @@ cdl_pp(${CMAKE_CURRENT_SOURCE_DIR}/.manifest.obj cdl_pp_target
 )
 
 /*- for (elf, file) in state.stash.elfs.items() -*/
+/*- if file['filename'] == "timer.c" -*/
+add_executable(/*?elf?*/ EXCLUDE_FROM_ALL /*?file['filename']?*/ cspace_/*?elf?*/.c ${SEL4_TUTORIALS_DIR}/zynq_timer_driver/src/driver.c)
+target_include_directories(/*?elf?*/ PUBLIC ${SEL4_TUTORIALS_DIR}/zynq_timer_driver/include)
+/*- else -*/
 add_executable(/*?elf?*/ EXCLUDE_FROM_ALL /*?file['filename']?*/ cspace_/*?elf?*/.c)
+/*- endif -*/
 add_dependencies(/*?elf?*/ cdl_pp_target)
 target_link_libraries(/*?elf?*/ sel4tutorials)
 

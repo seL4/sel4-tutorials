@@ -16,7 +16,7 @@
 
 ## Prerequisites
 
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies). 
+1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
 2. [Notification tutorial](https://docs.sel4.systems/Tutorials/notifications)
 
 # Initialising
@@ -35,13 +35,13 @@
 
 The root task is given a single capability from which capabilities to all irq numbers
 in the system can be derived, `seL4_CapIRQControl`. This capability can be moved between CSpaces
-and CSlots but cannot be duplicated. Revoking this capability results in all access to all 
-irq capabilities being removed. 
+and CSlots but cannot be duplicated. Revoking this capability results in all access to all
+irq capabilities being removed.
 
 ### IRQHandlers
 
 IRQHandler capabilities give access to a single irq and are standard seL4 capabilities: they
-*can* be moved and duplicated according to system policy. IRQHandlers are obtained by 
+*can* be moved and duplicated according to system policy. IRQHandlers are obtained by
 invoking the IRQControl capability, with architecture specific parameters. Below is an
 example of obtaining an IRQHandler.
 
@@ -66,16 +66,16 @@ seL4_IRQHandler_setNotification(irq_handler, notification);
 ```
 On success, this call will result in signals being delivered to the notification object when
 an interrupt occurs. To handle multiple interrupts on the same notification object, you
-can set different badges on the notification capabilities bound to each IRQHandler.  
+can set different badges on the notification capabilities bound to each IRQHandler.
  When an interrupt arrives,
 the badge of the notification object bound to that IRQHandler is bitwise orred with the data
 word in the notification object.
-Recall the badging technique for differentiating signals from the 
+Recall the badging technique for differentiating signals from the
  [notification tutorial](https://docs.sel4.systems/Tutorials/notifications).
- 
-Interrupts can be polled for using `seL4_Poll` or waited for using `seL4_Wait`. Either system 
+
+Interrupts can be polled for using `seL4_Poll` or waited for using `seL4_Wait`. Either system
 call results in the data word of the notification object being delivered as the badge of the
-message, and the data word cleared. 
+message, and the data word cleared.
 
 [`seL4_IRQHandler_Clear`](https://docs.sel4.systems/ApiDoc.html#clear) can be used to unbind
 the notification from an IRQHandler.
@@ -84,14 +84,18 @@ the notification from an IRQHandler.
 
 Once an interrupt is received and processed by the software, you can unmask the interrupt
 using [`seL4_IRQHandler_Ack`](https://docs.sel4.systems/ApiDoc.html#ack) on the IRQHandler.
-seL4 will not deliver any further interrupts after an IRQ is raised until that IRQHandler 
+seL4 will not deliver any further interrupts after an IRQ is raised until that IRQHandler
 has been acked.
 
 ## Exercises
 
-In this tutorial you will set up interrupt handling for a provided timer driver on the zynq7000
-ARM platform. The tutorial has been set up with two processes: `timer.c`, the timer driver 
-and RPC server, and `client.c`, which makes a single request.
+In this tutorial you will set up interrupt handling for a provided timer driver
+on the zynq7000 ARM platform. This timer driver can be located inside the
+`projects/sel4-tutorials/zynq_timer_driver` folder from the root of the
+projects directory, i.e. where the `.repo` folder can be found and where the
+initial `repo init` command was executed. The tutorial has been set up with two
+processes: `timer.c`, the timer driver and RPC server, and `client.c`, which
+makes a single request.
 
 On successful initialisation of the tutorial, you will see the following:
 
@@ -105,26 +109,26 @@ main@timer.c:78 [Cond failed: error]
 /*-- endfilter -*/
 ```
 
-The timer driver we are using emits an interrupt in the `TTC0_TIMER_IRQ` number.
+The timer driver we are using emits an interrupt in the `TTC0_TIMER1_IRQ` number.
 
 **Exercise** Invoke `irq_control`, which contains the `seL4_IRQControl` capability,
-the place the `IRQHandler` capability for `TTC0_TIMER_IRQ` into the `irq_handler` CSlot.
+the place the `IRQHandler` capability for `TTC0_TIMER1_IRQ` into the `irq_handler` CSlot.
 
 ```
-/*-- filter TaskContent("timer-start", TaskContentType.ALL, subtask='get') -*/ 
-    /* TODO invoke irq_control to put the interrupt for TTC0_TIMER1_IRQ in 
+/*-- filter TaskContent("timer-start", TaskContentType.ALL, subtask='get') -*/
+    /* TODO invoke irq_control to put the interrupt for TTC0_TIMER1_IRQ in
        cslot irq_handler (depth is seL4_WordBits) */
 /*-- endfilter -*/
 /*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("timer-get", TaskContentType.COMPLETED, subtask='get') -*/ 
+/*-- filter TaskContent("timer-get", TaskContentType.COMPLETED, subtask='get') -*/
     /* put the interrupt handle for TTC0_TIMER1_IRQ in the irq_handler cslot */
     error = seL4_IRQControl_Get(irq_control, TTC0_TIMER1_IRQ, cnode, irq_handler, seL4_WordBits);
     ZF_LOGF_IF(error, "Failed to get irq capability");
 /*-- endfilter -*/
 /*-- endfilter -*/
-``` 
+```
 
-On success, you should see the following output, without the error message that occurred earlier, 
+On success, you should see the following output, without the error message that occurred earlier,
 as the irq_handle capability is now valid:
 
 ```
@@ -133,22 +137,22 @@ Undelivered IRQ: 42
 /*-- endfilter -*/
 ```
 
-This is a warning message from the kernel that an IRQ was recieved for irq number 42, but no 
+This is a warning message from the kernel that an IRQ was recieved for irq number 42, but no
 notification capability is set to sent a signal to.
 
 **Exercise** Now set the notification capability (`ntfn`) by invoking the irq handler.
 
-``` 
-/*-- filter TaskContent("timer-start", TaskContentType.ALL, subtask='set') -*/ 
-     /* TODO set ntfn as the notification for irq_handler */ 
+```
+/*-- filter TaskContent("timer-start", TaskContentType.ALL, subtask='set') -*/
+     /* TODO set ntfn as the notification for irq_handler */
 /*-- endfilter -*/
 /*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("timer-set", TaskContentType.COMPLETED, subtask='set') -*/ 
-    /* set ntfn as the notification for irq_handler */ 
+/*-- filter TaskContent("timer-set", TaskContentType.COMPLETED, subtask='set') -*/
+    /* set ntfn as the notification for irq_handler */
     error =  seL4_IRQHandler_SetNotification(irq_handler, ntfn);
     ZF_LOGF_IF(error, "Failed to set notification");
 /*-- endfilter -*/
-/*-- endfilter -*/   
+/*-- endfilter -*/
 ```
 
 Now the output will be:
@@ -160,22 +164,22 @@ Tick
 ```
 
 Only one interrupt is delivered, as the interrupt has not been acknowledged. The timer driver is
-programmed to emit an interrupt every millisecond, so we need to count 2000 interrupts 
+programmed to emit an interrupt every millisecond, so we need to count 2000 interrupts
 before replying to the client.
 
 **Exercise** Acknowledge the interrupt after handling it in the timer driver.
 
-``` 
-/*-- filter TaskContent("timer-start", TaskContentType.ALL, subtask='ack') -*/ 
-        /* TODO ack the interrupt */ 
+```
+/*-- filter TaskContent("timer-start", TaskContentType.ALL, subtask='ack') -*/
+        /* TODO ack the interrupt */
 /*-- endfilter -*/
 /*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("timer-ack", TaskContentType.COMPLETED, subtask='ack') -*/ 
-        /* ack the interrupt */ 
+/*-- filter TaskContent("timer-ack", TaskContentType.COMPLETED, subtask='ack') -*/
+        /* ack the interrupt */
         error = seL4_IRQHandler_Ack(irq_handler);
         ZF_LOGF_IF(error, "Failed to ack irq");
 /*-- endfilter -*/
-/*-- endfilter -*/   
+/*-- endfilter -*/
 ```
 
 Now the timer interrupts continue to come in, and the reply is delivered to the client.
@@ -183,13 +187,11 @@ Now the timer interrupts continue to come in, and the reply is delivered to the 
 ```
 /*-- filter TaskCompletion("timer-ack", TaskContentType.COMPLETED) -*/
 timer client wakes up
-got the current time:
 /*-- endfilter -*/
-516119
 ```
 
 That's it for this tutorial.
- 
+
 /*? macros.help_block() ?*/
 
 /*-- filter ExcludeDocs() -*/
@@ -227,8 +229,9 @@ int main(int argc, char **argv) {
     /* check that we got the expected repy */
     assert(seL4_MessageInfo_get_length(tag) == 1);
     msg = seL4_GetMR(0);
+    assert(msg == 0);
 
-    printf("timer client wakes up\ngot the current time:\n %zu\n", msg);
+    printf("timer client wakes up\n");
 
     return 0;
 }
@@ -238,7 +241,7 @@ int main(int argc, char **argv) {
 #include <stdio.h>
 #include <assert.h>
 #include <sel4/sel4.h>
-#include <platsupport/plat/timer.h>
+#include <timer_driver/driver.h>
 
 // CSlots pre-initialised in this CSpace
 /*? capdl_alloc_cap(seL4_EndpointObject, "endpoint", "endpoint", write=True, read=True, grant=True) ?*/
@@ -257,12 +260,15 @@ int main(int argc, char **argv) {
 /*? capdl_declare_frame("frame", "timer_vaddr") ?*/
 // irq control capability
 /*? capdl_irq_control("irq_control") ?*/
-// empty slot for the irq 
+// empty slot for the irq
 /*? capdl_empty_slot("irq_handler") ?*/
 
 /* constants */
 #define EP_BADGE 61 // arbitrary (but unique) number for a badge
 #define MSG_DATA 0x6161 // arbitrary data to send
+
+#define DEFAULT_TIMER_ID 0
+#define TTC0_TIMER1_IRQ 42
 
 int main(void) {
     /* wait for a message */
@@ -288,36 +294,33 @@ int main(void) {
 
     /* map the device frame into the address space */
     error = seL4_ARM_Page_Map(timer_frame, vspace, (seL4_Word) timer_vaddr, seL4_AllRights, 0);
-    ZF_LOGF_IF(error, "Failed to map device frame");    
-    ttc_t ttc;
-    ttc_config_t ttc_config = {
-        .vaddr =  (void *) timer_vaddr,
-        .id = TTC0_TIMER1
-    }; 
+    ZF_LOGF_IF(error, "Failed to map device frame");
+
+    timer_drv_t timer_drv = {0};
 
     /*? include_task_type_replace([("timer-start", 'get'), ("timer-get", 'get')]) ?*/
     /*? include_task_type_replace([("timer-start", 'set'), ("timer-set", 'set')]) ?*/
-    
+
     /* set up the timer driver */
-    int timer_err = ttc_init(&ttc, ttc_config);
+    int timer_err = timer_init(&timer_drv, DEFAULT_TIMER_ID, (void *) timer_vaddr);
     ZF_LOGF_IF(timer_err, "Failed to init timer");
 
-    timer_err = ttc_start(&ttc);
+    timer_err = timer_start(&timer_drv);
     ZF_LOGF_IF(timer_err, "Failed to start timer");
-   
+
     /* ack the irq in case of any pending interrupts int the driver */
     error = seL4_IRQHandler_Ack(irq_handler);
     ZF_LOGF_IF(error, "Failed to ack irq");
-    
-    timer_err = ttc_set_timeout(&ttc, NS_IN_MS, true);
+
+    timer_err = timer_set_timeout(&timer_drv, NS_IN_MS, true);
     ZF_LOGF_IF(timer_err, "Failed to set timeout");
-    
+
     int count = 0;
     while (1) {
         /* Handle the timer interrupt */
         seL4_Word badge;
         seL4_Wait(ntfn, &badge);
-        ttc_handle_irq(&ttc);
+        timer_handle_irq(&timer_drv);
         if (count == 0) {
             printf("Tick\n");
         }
@@ -329,15 +332,11 @@ int main(void) {
         }
     }
 
-    /* get the current time */
-    uint64_t time = ttc_get_time(&ttc);
-
     // stop the timer
-    ttc_stop(&ttc);
+    timer_stop(&timer_drv);
 
    /* modify the message */
-    msg = (uint32_t) time;
-    seL4_SetMR(0, msg);
+    seL4_SetMR(0, 0);
 
     /* send the modified message back */
     seL4_ReplyRecv(endpoint, tag, &sender_badge);

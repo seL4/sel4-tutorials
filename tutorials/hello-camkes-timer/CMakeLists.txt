@@ -21,15 +21,29 @@ find_package(camkes-tool REQUIRED)
 camkes_tool_setup_camkes_build_environment()
 
 # This tutorial is hard coded for the zynq, make sure that was what was selected
-if (NOT ("${TUT_BOARD}" STREQUAL "zynq7000"))
+if(NOT ("${TUT_BOARD}" STREQUAL "zynq7000"))
     message(FATAL_ERROR "The hello-camkes-timer tutorial is only supported on the zynq7000 board.")
 endif()
 
 set(CAmkESDTS ON CACHE BOOL "" FORCE)
 
 DeclareCAmkESComponent(Client SOURCES components/Client/src/client.c)
-DeclareCAmkESComponent(Timer SOURCES components/Timer/src/timer.c)
-DeclareCAmkESComponent(TimerDTB SOURCES components/TimerDTB/src/timerdtb.c)
+DeclareCAmkESComponent(
+    Timer
+    SOURCES
+    components/Timer/src/timer.c
+    ${SEL4_TUTORIALS_DIR}/zynq_timer_driver/src/driver.c
+    INCLUDES
+    ${SEL4_TUTORIALS_DIR}/zynq_timer_driver/include
+)
+DeclareCAmkESComponent(
+    TimerDTB
+    SOURCES
+    components/TimerDTB/src/timerdtb.c
+    ${SEL4_TUTORIALS_DIR}/zynq_timer_driver/src/driver.c
+    INCLUDES
+    ${SEL4_TUTORIALS_DIR}/zynq_timer_driver/include
+)
 DeclareCAmkESComponent(EmptyComponent)
 
 DeclareCAmkESRootserver(hello-camkes-timer.camkes)
