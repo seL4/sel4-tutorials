@@ -76,7 +76,7 @@ The IPC buffer contains a bounded area of message registers (MR) used to transmi
 register is the machine word size, and the maximum message size is available in the
 `seL4_MsgMaxLength` constant provided by `libsel4`.
 
-Messages can be loaded into the IPC buffer using `seL4_GetMR` and extracted using `seL4_SetMR`.
+Messages can be loaded into the IPC buffer using `seL4_SetMR` and extracted using `seL4_GetMR`.
 Small messages are sent in registers and do not require a copy operation. The amount of words
 that fit in registers is available in the `seL4_FastMessageRegisters` constant.
 
