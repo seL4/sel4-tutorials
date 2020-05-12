@@ -40,7 +40,7 @@ resources, users use the kernel API, available in `libsel4` to request an operat
  
 For example, the root task is provided with a capability to its own thread control block (TCB),
  `seL4_CapInitThreadTCB`, a constant defined by `libsel4`. To change the properties of the initial TCB,
- one can use any of the [TCB API methods](https://docs.sel4.systems/ApiDoc.html#sel4_tcb) on this capability.
+ one can use any of the [TCB API methods](https://docs.sel4.systems/projects/sel4/api-doc.html#sel4_tcb) on this capability.
 Below is an example which changes the stack pointer of the root task's TCB, a common operation in the 
 root task if a larger stack is needed:
 
@@ -56,12 +56,12 @@ root task if a larger stack is needed:
     registers.sp = new_sp; // the new stack pointer, derived by prior code.
     
     /* Write new values */
-    error = seL4_TCB_WriteRegisters(seL4_CapInitThreadTCB, 0, 0, num_registers, registers);
+    error = seL4_TCB_WriteRegisters(seL4_CapInitThreadTCB, 0, 0, num_registers, &registers);
     assert(error == seL4_NoError);
 ```
 
-Further documentation is available on [TCB_ReadRegisters](https://docs.sel4.systems/ApiDoc.html#read-registers) and
-[TCB_WriteRegisters](https://docs.sel4.systems/ApiDoc.html#write-registers).
+Further documentation is available on [TCB_ReadRegisters](https://docs.sel4.systems/projects/sel4/api-doc.html#read-registers) and
+[TCB_WriteRegisters](https://docs.sel4.systems/projects/sel4/api-doc.html#write-registers).
 
 ### CNodes
 
@@ -99,7 +99,7 @@ An *invocation* is when a CSlot is addressed by implicitly invoking a thread's i
 In the code example above, we use an invocation on the `seL4_CapInitThreadTCB` CSlot to read and write
 to the registers of the TCB represented by the capability in that specific CSlot.
 ```c
-seL4_TCB_WriteRegisters(seL4_CapInitThreadTCB, 0, 0, num_registers, registers);
+seL4_TCB_WriteRegisters(seL4_CapInitThreadTCB, 0, 0, num_registers, &registers);
 ```
 This implicity looks up the `seL4_CapInitThreadTCB` CSlot in the cspace root of the calling thread, which in this case 
 is the root task.
@@ -119,7 +119,7 @@ For the initial, single-level CSpace, the *depth* value is always `seL4_WordBits
 More on CSpace depth will be discussed in future tutorials.
 
 In the example below, we directly address the root task's TCB to make a copy of it in the 0th slot in the cspace root. 
-[CNode copy](https://docs.sel4.systems/ApiDoc.html#copy) requires two CSlots to be directly addressed: the destination
+[CNode copy](https://docs.sel4.systems/projects/sel4/api-doc.html#copy) requires two CSlots to be directly addressed: the destination
  CSlot, and the source CSlot. Because we are copying in the same CNode, the root used in both addresses is the same: 
  `seL4_CapInitThreadCNode`, which is the slot where seL4 places a capability to the root task's CSpace root.
 ```c
@@ -129,7 +129,7 @@ In the example below, we directly address the root task's TCB to make a copy of 
     assert(error == seL4_NoError);
 ```
 
-All [CNode invocations](https://docs.sel4.systems/ApiDoc.html#sel4_cnode), require direct CSpace addressing.
+All [CNode invocations](https://docs.sel4.systems/projects/sel4/api-doc.html#sel4_cnode), require direct CSpace addressing.
 
 ### Initial CSpace
 
@@ -331,7 +331,7 @@ to become more familiar with cspaces.
 
 * Use a data structure to track which CSlots in a CSpace are free.
 * Make copies of the entire cspace described by `seL4_BootInfo`
-* Experiment with other [CNode invocations](https://docs.sel4.systems/ApiDoc.html#sel4_cnode).
+* Experiment with other [CNode invocations](https://docs.sel4.systems/projects/sel4/api-doc.html#sel4_cnode).
 
 /*? macros.help_block() ?*/
 /*-- filter ExcludeDocs() -*/
