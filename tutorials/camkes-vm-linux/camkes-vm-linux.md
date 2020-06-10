@@ -406,7 +406,7 @@ endif()
 
 include("${MODULE_HELPERS_FILE}")
 
-DefineLinuxModule(poke)
+DefineLinuxModule(${CMAKE_CURRENT_LIST_DIR}/poke poke-module poke-target KERNEL_DIR ${LINUX_KERNEL_DIR})
 /*-- endfilter -*/
 ```
 Update the vm `CMakeLists.txt` file to declare the new poke module as an
