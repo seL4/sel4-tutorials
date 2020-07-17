@@ -116,6 +116,7 @@ However, we do not map the second buffer in, so producer 2 crashes immediately.
 /*-- filter TaskContent("ntfn-start", TaskContentType.ALL, subtask="shmem2", completion="Caught cap fault in send phase") -*/
     // TODO share buf2_frame_cap with producer_2
 /*-- endfilter -*/
+/*-- filter ExcludeDocs() -*/
 /*-- filter TaskContent("ntfn-shmem", TaskContentType.COMPLETED, subtask="shmem2", completion="Waiting for producer") -*/
     /* set up shared memory for producer 2 */
     error = seL4_CNode_Copy(cnode, mapping_2, seL4_WordBits, 
@@ -125,6 +126,7 @@ However, we do not map the second buffer in, so producer 2 crashes immediately.
     error = seL4_ARCH_Page_Map(mapping_2, producer_2_vspace, BUF_VADDR,
                                seL4_AllRights, seL4_ARCH_Default_VMAttributes);
     ZF_LOGF_IFERR(error, "Failed to map frame");
+/*-- endfilter -*/
 /*-- endfilter -*/
 ```
 
@@ -141,9 +143,11 @@ to be written to.
 /*-- filter TaskContent("ntfn-start", TaskContentType.ALL, subtask="signal", completion="Waiting for producer") -*/
     // TODO signal both producers
 /*-- endfilter -*/
+/*-- filter ExcludeDocs() -*/
 /*-- filter TaskContent("ntfn-signal", TaskContentType.COMPLETED, subtask="signal", completion="Got badge") -*/
     seL4_Signal(buf1_empty);
     seL4_Signal(buf2_empty);
+/*-- endfilter -*/
 /*-- endfilter -*/
 ```
 
@@ -173,6 +177,7 @@ which of the producers (it may be both) has produced data.
     // TODO, use the badge to check which producer has signalled you, and signal it back. Note that you 
     // may recieve more than 1 signal at a time.
 /*-- endfilter -*/
+/*-- filter ExcludeDocs() -*/
 /*-- filter TaskContent("ntfn-badge", TaskContentType.COMPLETED, subtask="badge", completion="Success") -*/
         if (badge & 0b01) {
             assert(*buf1 == 1);
@@ -184,6 +189,7 @@ which of the producers (it may be both) has produced data.
             *buf2 = 0;
             seL4_Signal(buf2_empty);
         }
+/*-- endfilter -*/
 /*-- endfilter -*/
 ```
 
