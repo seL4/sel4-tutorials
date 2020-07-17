@@ -128,7 +128,7 @@ However, we do not map the second buffer in, so producer 2 crashes immediately.
 /*-- endfilter -*/
 ```
 
-On success, the fault output should no longer occur.
+Whether this is successful will be visible after the next exercise when the consumers access their buffers. If the shared page setup for producer 2 is not correct, it will fail with a vm fault.
 
 ### Signal the producers to go
 
