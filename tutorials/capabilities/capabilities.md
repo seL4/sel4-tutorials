@@ -160,7 +160,7 @@ int main(int argc, char *argv[]) {
     seL4_BootInfo *info = platsupport_get_bootinfo();
 
     size_t initial_cnode_object_size = BIT(info->initThreadCNodeSizeBits);
-    printf("Initial CNode is %zu bytes in size\n", initial_cnode_object_size);
+    printf("Initial CNode is %zu slots in size\n", initial_cnode_object_size);
 /*-- endfilter -*/
 ```
 When you run the tutorial without changes, you will see something like the following output:
