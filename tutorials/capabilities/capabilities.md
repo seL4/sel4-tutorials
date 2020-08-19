@@ -150,7 +150,7 @@ resources manages by seL4. We have already seen several capabilities in the root
 ## Exercises 
 
 The initial state of this tutorial provides you with the BootInfo structure,
-and calculates the size (in bytes) of the initial CNode object.
+and calculates the size (in slots) of the initial CNode object.
 ```c
 /*-- filter TaskContent("cnode-start", TaskContentType.ALL, subtask='init') -*/
 int main(int argc, char *argv[]) {
@@ -166,7 +166,7 @@ int main(int argc, char *argv[]) {
 When you run the tutorial without changes, you will see something like the following output:
 ```
 Booting all finished, dropped to user space
-Initial CNode is 4096 bytes in size
+Initial CNode is 4096 slots in size
 The CSpace has 0 CSlots
 <<seL4(CPU 0) [decodeInvocation/530 T0xffffff801ffb5400 "rootserver" @401397]: Attempted to invoke a null cap #4095.>>
 main@main.c:33 [Cond failed: error]
