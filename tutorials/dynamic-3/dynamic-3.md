@@ -244,7 +244,7 @@ free slot that the VKA library found for us.
 /*-- set task_4_desc -*/
     /* TASK 4: copy the endpont cap and add a badge to the new cap */
     /* hint 1: sel4utils_mint_cap_to_process()
-     * seL4_CPtr sel4utils_mint_cap_to_process(sel4utils_process_t *process, cspacepath_t src, seL4_CapRights rights, seL4_CapData_t data)
+     * seL4_CPtr sel4utils_mint_cap_to_process(sel4utils_process_t *process, cspacepath_t src, seL4_CapRights rights, seL4_Word data)
      * @param process Process to copy the cap to
      * @param src Path in the current cspace to copy the cap from
      * @param rights The rights of the new cap
@@ -252,14 +252,7 @@ free slot that the VKA library found for us.
      * @return 0 on failure, otherwise the slot in the processes cspace.
      *
      * hint 2: for the rights, use seL4_AllRights
-     * hint 3: for the badge use seL4_CapData_Badge_new()
-     * seL4_CapData_t CONST seL4_CapData_Badge_new(seL4_Uint32 Badge)
-     * @param[in] Badge The badge number to use
-     * @return A CapData structure containing the desired badge info
-     *
-     * seL4_CapData_t is generated during build.
-     *
-     * hint 4: for the badge value use EP_BADGE
+     * hint 3: for the badge value use EP_BADGE
      */
 /*-- endset -*/
 /*? task_4_desc ?*/

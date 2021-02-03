@@ -375,7 +375,7 @@ data, and know which sender you are. Complete the step and proceed.
     /* TASK 7: make a badged copy of it in our cspace. This copy will be used to send
      * an IPC message to the original cap */
     /* hint 1: vka_mint_object()
-     * int vka_mint_object(vka_t *vka, vka_object_t *object, cspacepath_t *result, seL4_CapRights rights, seL4_CapData_t badge)
+     * int vka_mint_object(vka_t *vka, vka_object_t *object, cspacepath_t *result, seL4_CapRights rights, seL4_Word badge)
      * @param[in] vka The allocator for the cspace.
      * @param[in] object Target object for cap minting.
      * @param[out] result Allocated cspacepath.
@@ -384,17 +384,7 @@ data, and know which sender you are. Complete the step and proceed.
      * @return 0 on success
      *
      * hint 2: for the rights, use seL4_AllRights
-     * hint 3: for the badge use seL4_CapData_Badge_new()
-     * seL4_CapData_t CONST seL4_CapData_Badge_new(seL4_Uint32 Badge)
-     * @param[in] Badge The badge number to use
-     * @return A CapData structure containing the desired badge info
-     *
-     * seL4_CapData_t is generated during build.
-     * The type definition and generated field access functions are defined in a generated file:
-     * build/x86/pc99/libsel4/include/sel4/types_gen.h
-     * It is generated from the following definition:
-     *
-     * hint 4: for the badge use EP_BADGE
+     * hint 3: for the badge use EP_BADGE
      */
 /*-- endset -*/
 /*? task_7_desc ?*/
