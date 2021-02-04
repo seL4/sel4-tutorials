@@ -88,7 +88,7 @@ ApplyCommonReleaseVerificationSettings(FALSE FALSE)
 
 # We will attempt to generate a simulation script, so try and generate a simulation
 # compatible configuration
-ApplyCommonSimulationSettings(${KernelArch})
+ApplyCommonSimulationSettings(${KernelSel4Arch})
 if(FORCE_IOMMU)
     set(KernelIOMMU ON CACHE BOOL "" FORCE)
 endif()
