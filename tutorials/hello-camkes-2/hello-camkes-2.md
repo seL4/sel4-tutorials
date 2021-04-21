@@ -1,16 +1,9 @@
-/*#
-#
-# Copyright 2017, Data61
-# Commonwealth Scientific and Industrial Research Organisation (CSIRO)
-# ABN 41 687 119 230.
-#
-# This software may be distributed and modified according to the terms of
-# the BSD 2-Clause license. Note that NO WARRANTY is provided.
-# See "LICENSE_BSD2.txt" for details.
-#
-# @TAG(DATA61_BSD)
-#
--#*/
+<!--
+  Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
+
+  SPDX-License-Identifier: BSD-2-Clause
+-->
+
 /*? declare_task_ordering(['hello']) ?*/
 
 # CAmkES Tutorial 2
@@ -122,7 +115,6 @@ writing your first CAmkES application.
 /*-- filter ExcludeDocs() -*/
 ```c
 /*- filter File("components/Client/Client.camkes") --*/
-/* @TAG(DATA61_BSD) */
 
 component Client {
     /* include definitions of typedefs for the dataports */
@@ -158,7 +150,6 @@ component Client {
 ```
 ```c
 /*- filter File("components/Echo/Echo.camkes") --*/
-/* @TAG(DATA61_BSD) */
 
 component Echo {
     /* include definitions of typedefs for the dataports */
@@ -190,8 +181,6 @@ component Echo {
 ```
 ```c
 /*- filter File("hello-2.camkes") --*/
-/* @TAG(DATA61_BSD) */
-
 /*
  * CAmkES tutorial part 2: events and dataports
  */
@@ -261,8 +250,6 @@ assembly {
 
 ```c
 /*- filter File("include/str_buf.h") --*/
-/* @TAG(DATA61_BSD) */
-
 /*
  * CAmkES tutorial part 2: events and dataports
  */
@@ -295,8 +282,6 @@ typedef struct {
 ```
 ```c
 /*- filter File("components/Client/src/client.c") --*/
-/* @TAG(DATA61_BSD) */
-
 /*
  * CAmkES tutorial part 2: events and dataports
  */
@@ -419,8 +404,6 @@ int run(void) {
 
 ```c
 /*- filter File("components/Echo/src/echo.c") --*/
-/* @TAG(DATA61_BSD) */
-
 /*
  * CAmkES tutorial part 2: events and dataports
  */
@@ -600,7 +583,6 @@ FAULT HANDLER: data fault from client.client_0_control
 
 ```cmake
 /*- filter File("CMakeLists.txt") --*/
-# @TAG(DATA61_BSD)
 include(${SEL4_TUTORIALS_DIR}/settings.cmake)
 sel4_tutorials_regenerate_tutorial(${CMAKE_CURRENT_SOURCE_DIR})
 

@@ -1,16 +1,9 @@
-/*#
-#
-# Copyright 2019, Data61
-# Commonwealth Scientific and Industrial Research Organisation (CSIRO)
-# ABN 41 687 119 230.
-#
-# This software may be distributed and modified according to the terms of
-# the BSD 2-Clause license. Note that NO WARRANTY is provided.
-# See "LICENSE_BSD2.txt" for details.
-#
-# @TAG(DATA61_BSD)
-#
--#*/
+<!--
+  Copyright 2019, Data61, CSIRO (ABN 41 687 119 230)
+
+  SPDX-License-Identifier: BSD-2-Clause
+-->
+
 # CAmkES Timer Tutorial
 
 This tutorial guides you through setting up a sample timer driver component in
@@ -239,7 +232,6 @@ You should also expect the same output as the first part.
 /*-- filter ExcludeDocs() -*/
 ```c
 /*-- filter File("components/Client/Client.camkes") --*/
-/* @TAG(DATA61_BSD) */
 /*
  * CAmkES tutorial part 1: components with RPC. Client part.
  */
@@ -252,7 +244,6 @@ component Client {
 }
 /*--endfilter -*/
 /*-- filter File("components/Client/src/client.c") --*/
-/* @TAG(DATA61_BSD) */
 /*
  * CAmkES tutorial part 1: components with RPC. Client part.
  */
@@ -277,7 +268,6 @@ int run(void) {
 }
 /*-- endfilter -*/
 /*-- filter File("components/Timer/Timer.camkes") --*/
-/* @TAG(DATA61_BSD) */
 /*
  * Advanced CAmkES tutorial: device driver.
  */
@@ -329,7 +319,6 @@ component TimerDTB {
 /* ExternalFile("timer_driver/include/timer_driver/driver.h") */
 
 /*-- filter File("components/Timer/src/timer.c") --*/
-/* @TAG(DATA61_BSD) */
 #include <stdio.h>
 
 #include <timer_driver/driver.h>
@@ -419,7 +408,6 @@ void hello_sleep(int sec) {
 /*-- endfilter -*/
 
 /*-- filter File("components/TimerDTB/src/timerdtb.c") --*/
-/* @tag(DATA61_BSD) */
 #include <stdio.h>
 
 #include <timer_driver/driver.h>
@@ -512,13 +500,11 @@ void hello_sleep(int sec) {
 }
 /*-- endfilter -*/
 /*-- filter File("interfaces/timer.camkes") --*/
-/* @TAG(DATA61_BSD) */
 procedure timer_inf {
     void sleep(in int sec);
 };
 /*-- endfilter -*/
 /*-- filter File("hello-camkes-timer.camkes") --*/
-/* @TAG(DATA61_BSD) */
 /*
  * CAmkES device driver tutorial.
  */
