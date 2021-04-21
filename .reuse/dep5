@@ -1,0 +1,8 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: sel4-tutorials
+Upstream-Contact: seL4 team <sel4@sel4.systems>
+Source: https://github.com/seL4/sel4-tutorials
+
+Files: docs/*.pdf docs/seL4RTTutorial_Guide.txt
+Copyright: 2018, Data61, CSIRO (ABN 41 687 119 230)
+License: CC-BY-SA-4.0
