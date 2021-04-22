@@ -12,9 +12,10 @@
 #include <utils/attribute.h>
 
 /* allow printf to use kernel debug printing */
-size_t kernel_putchar_write(void *data, size_t count) {
+size_t kernel_putchar_write(void *data, size_t count)
+{
 #ifdef CONFIG_DEBUG_BUILD
-    char *cdata = (char*)data;
+    char *cdata = (char *)data;
     for (size_t i = 0; i < count; i++) {
         seL4_DebugPutChar(cdata[i]);
     }
@@ -22,12 +23,14 @@ size_t kernel_putchar_write(void *data, size_t count) {
     return count;
 }
 
-void CONSTRUCTOR(200) register_debug_putchar(void) {
+void CONSTRUCTOR(200) register_debug_putchar(void)
+{
     sel4muslcsys_register_stdio_write_fn(kernel_putchar_write);
 }
 
 /* set a thread's name for debugging purposes */
-void name_thread(seL4_CPtr tcb, char *name) {
+void name_thread(seL4_CPtr tcb, char *name)
+{
 #ifdef SEL4_DEBUG_KERNEL
     seL4_DebugNameThread(tcb, name);
 #endif
