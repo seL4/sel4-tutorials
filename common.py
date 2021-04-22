@@ -64,7 +64,8 @@ def _init_build_directory(config, initialised, directory, tute_directory, output
     args = []
     if not initialised:
         tute_dir = "-DTUTORIAL_DIR=" + os.path.basename(tute_directory)
-        args = ['-G', 'Ninja'] + config_dict[config] + [tute_dir] + ["-C", "../projects/sel4-tutorials/settings.cmake"]
+        args = ['-G', 'Ninja'] + config_dict[config] + [tute_dir] + \
+            ["-C", "../projects/sel4-tutorials/settings.cmake"]
     return sh.cmake(args + [tute_directory], _cwd=directory, _out=output, _err=output)
 
 
