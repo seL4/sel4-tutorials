@@ -3,4 +3,4 @@
 
 docs
 *.pyc
-.stylefilter
+.reuse/dep5
