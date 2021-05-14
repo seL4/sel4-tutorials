@@ -1,14 +1,8 @@
 #!/usr/bin/env python3
 #
-# Copyright 2018, Data61
-# Commonwealth Scientific and Industrial Research Organisation (CSIRO)
-# ABN 41 687 119 230.
+# Copyright 2018, Data61, CSIRO (ABN 41 687 119 230)
 #
-# This software may be distributed and modified according to the terms of
-# the BSD 2-Clause license. Note that NO WARRANTY is provided.
-# See "LICENSE_BSD2.txt" for details.
-#
-# @TAG(DATA61_BSD)
+# SPDX-License-Identifier: BSD-2-Clause
 #
 
 import os
@@ -70,7 +64,8 @@ def _init_build_directory(config, initialised, directory, tute_directory, output
     args = []
     if not initialised:
         tute_dir = "-DTUTORIAL_DIR=" + os.path.basename(tute_directory)
-        args = ['-G', 'Ninja'] + config_dict[config] + [tute_dir] + ["-C", "../projects/sel4-tutorials/settings.cmake"]
+        args = ['-G', 'Ninja'] + config_dict[config] + [tute_dir] + \
+            ["-C", "../projects/sel4-tutorials/settings.cmake"]
     return sh.cmake(args + [tute_directory], _cwd=directory, _out=output, _err=output)
 
 

@@ -1,3 +1,9 @@
+<!--
+     Copyright 2020, Data61, CSIRO (ABN 41 687 119 230).
+
+     SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
 # seL4-tutorials Design
 
 The seL4-tutorials project is a set tutorials for learning how to use seL4 as

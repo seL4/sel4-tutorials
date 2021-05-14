@@ -1,16 +1,9 @@
-/*#
-#
-# Copyright 2017, Data61
-# Commonwealth Scientific and Industrial Research Organisation (CSIRO)
-# ABN 41 687 119 230.
-#
-# This software may be distributed and modified according to the terms of
-# the BSD 2-Clause license. Note that NO WARRANTY is provided.
-# See "LICENSE_BSD2.txt" for details.
-#
-# @TAG(DATA61_BSD)
-#
--#*/
+<!--
+  Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
+
+  SPDX-License-Identifier: BSD-2-Clause
+-->
+
 /*? declare_task_ordering(['hello']) ?*/
 
 # CAmkES Tutorial: Introduction
@@ -99,7 +92,6 @@ a typical C file `client.c`:
 
 ```c
 /*- filter File("client.c") --*/
-/* @TAG(DATA61_BSD) */
 /*
  * CAmkES tutorial part 0: just a component.
  */
@@ -129,8 +121,6 @@ section, we define the following:
 
 ```c
 /*- filter File("hello.camkes") --*/
-/* @TAG(DATA61_BSD) */
-
 /*
  * CAmkES tutorial part 0: just a component.
  */
@@ -158,7 +148,6 @@ directory should contain the following `CMakeLists.txt` file:
 
 ```cmake
 /*- set build_file --*/
-# @TAG(DATA61_BSD)
 include(${SEL4_TUTORIALS_DIR}/settings.cmake)
 sel4_tutorials_regenerate_tutorial(${CMAKE_CURRENT_SOURCE_DIR})
 

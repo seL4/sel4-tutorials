@@ -1,16 +1,8 @@
-/*#
-#
-# Copyright 2017, Data61
-# Commonwealth Scientific and Industrial Research Organisation (CSIRO)
-# ABN 41 687 119 230.
-#
-# This software may be distributed and modified according to the terms of
-# the BSD 2-Clause license. Note that NO WARRANTY is provided.
-# See "LICENSE_BSD2.txt" for details.
-#
-# @TAG(DATA61_BSD)
-#
--#*/
+<!--
+  Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
+
+  SPDX-License-Identifier: BSD-2-Clause
+-->
 
 /*? declare_task_ordering(
 ['task-1',
@@ -74,6 +66,7 @@ for your benefit so you can grasp some of the basic data structures.
 ## Exercises
 
 When you first run the tutorial, you should see the following output:
+
 ```
 Booting all finished, dropped to user space
 main@main.c:89 [Cond failed: info == NULL]
@@ -577,8 +570,7 @@ On success, you should see output from your new thread.
 - `allocman_t`:
       <https://github.com/seL4/seL4_libs/blob/master/libsel4allocman/include/allocman/allocman.h>
 - `name_thread()`:
-      <https://github.com/SEL4PROJ/sel4-tutorials/blob/master/exercises/dynamic-1/src/util.c>
-
+      <https://github.com/seL4/sel4-tutorials/blob/master/libsel4tutorials/src/constructors.c>
 
 That's it for this tutorial.
 
@@ -589,15 +581,9 @@ That's it for this tutorial.
 ```
 /*-- filter File("main.c") -*/
 /*
- * Copyright 2018, Data61
- * Commonwealth Scientific and Industrial Research Organisation (CSIRO)
- * ABN 41 687 119 230.
+ * Copyright 2018, Data61, CSIRO (ABN 41 687 119 230).
  *
- * This software may be distributed and modified according to the terms of
- * the BSD 2-Clause license. Note that NO WARRANTY is provided.
- * See "LICENSE_BSD2.txt" for details.
- *
- * @TAG(DATA61_BSD)
+ * SPDX-License-Identifier: BSD-2-Clause
  */
 
 /*

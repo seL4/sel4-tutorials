@@ -1,16 +1,9 @@
-/*#
-#
-# Copyright 2017, Data61
-# Commonwealth Scientific and Industrial Research Organisation (CSIRO)
-# ABN 41 687 119 230.
-#
-# This software may be distributed and modified according to the terms of
-# the BSD 2-Clause license. Note that NO WARRANTY is provided.
-# See "LICENSE_BSD2.txt" for details.
-#
-# @TAG(DATA61_BSD)
-#
--#*/
+<!--
+  Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
+
+  SPDX-License-Identifier: BSD-2-Clause
+-->
+
 # CAmkES Tutorial 1
 /*? declare_task_ordering(['hello']) ?*/
 
@@ -194,7 +187,6 @@ procedure HelloSimple {
 
 ```c
 /*- filter File("components/Echo/src/echo.c") --*/
-/* @TAG(DATA61_BSD) */
 /*
  * CAmkES tutorial part 1: components with RPC. Server part.
  */
@@ -226,7 +218,6 @@ void hello_say_hello(const char *str) {
 **Exercise** Invoke the RPC function in `components/Client/src/client.c`.
 ```c
 /*- filter File("components/Client/src/client.c") --*/
-/* @TAG(DATA61_BSD) */
 /*
  * CAmkES tutorial part 1: components with RPC. Client part.
  */
@@ -278,8 +269,6 @@ writing your first CAmkES application.
 /*-- filter ExcludeDocs() -*/
 ```
 /*- filter File("hello-1.camkes") --*/
-/* @TAG(DATA61_BSD) */
-
 /*
  * CAmkES tutorial part 1: components with RPC.
  */
@@ -313,8 +302,6 @@ component Echo {
 ```
 ```
 /*- filter File("interfaces/HelloSimple.idl4") --*/
-/* @TAG(DATA61_BSD) */
-
 /* Simple RPC interface */
 procedure HelloSimple {
 /*? include_task_type_append([("hello", 'interface')]) ?*/
@@ -330,7 +317,6 @@ Component echo saying: hello world
 
 ```cmake
 /*- filter File("CMakeLists.txt") --*/
-# @TAG(DATA61_BSD)
 include(${SEL4_TUTORIALS_DIR}/settings.cmake)
 sel4_tutorials_regenerate_tutorial(${CMAKE_CURRENT_SOURCE_DIR})
 
