@@ -4,7 +4,8 @@
      SPDX-License-Identifier: CC-BY-SA-4.0
 -->
 
-# sel4-tutorials
+# seL4 Tutorials
+
 Various tutorials for using seL4, its libraries, and CAmkES.
 
 ## Prerequisites
@@ -35,16 +36,18 @@ in Qemu by using the provided simulation script through `./simulate`
 The `-h` switch to the `init` script provides a list of different tutorials and targets that
 can be provided to `--plat` and `--tut` respectively.
 
-Most tutorials support any target platform, with the eception of hello-camkes-timer, which only
+Most tutorials support any target platform, with the exception of hello-camkes-timer, which only
 supports the zynq7000 platform.
 
 ### Virtual Machine Image
+
 You can also download a [VirtualBox virtual machine appliance](http://ts.data61.csiro.au/Downloads/sel4_tut_v3_lubuntu_16_041-v2.ova)([md5](http://ts.data61.csiro.au/Downloads/sel4_tut_v3_lubuntu_16_041-v2.md5)) (3GB, based on Lubuntu 16.04.1 with all the seL4 tutorial prerequisites installed).
 
 This appliance is based on [VirtualBox 5.1.2](https://www.virtualbox.org/wiki/Downloads).
-You may also need to install the appropriate [VirtualBox extensions](http://download.virtualbox.org/virtualbox/5.1.2/Oracle_VM_VirtualBox_Extension_Pack-5.1.2-108956.vbox-extpack).
+You may also need to install the appropriate VirtualBox extensions available from the same page.
 
 ## Solutions
+
 To view the solutions for a tutorial instead of performing the tutorial pass the `--solution` flag
 to the `init` script
 
@@ -60,10 +63,12 @@ After which it will tell you where the solution files are that you can look at. 
 do `ninja && ./simulate` to build and run the solution.
 
 ### Reporting issues or bugs in the tutorials:
+
 Please report any issues you find in the tutorials (bugs, outdated API calls, etc) by filing an issue on the public github repository:
-https://github.com/SEL4PROJ/sel4-tutorials/issues
+<https://github.com/seL4/sel4-tutorials/issues/>
 
 ### Build system tutorial
+
 Due to custom written additions to the build system specifically for the tutorials they are
 not appropriate for learning how to create and structure new applications/systems. Future
 tutorials for this will be forthcoming. For now it is suggested to look at other existing
@@ -72,12 +77,15 @@ applications for ideas.
 # Documentation
 
 ## Developer wiki
+
 A walkthrough of each tutorial is available on the [`docs site`](https://docs.sel4.systems/Tutorials)
 
 ## Tutorial Slides
+
 The slides used for the tutorial are available in [`docs`](docs).
 
 ## seL4 Manual
+
 The seL4 manual lives in the kernel source in the [`manual`](https://github.com/seL4/seL4/tree/master/manual) directory.
 To generate a PDF go into that directory and type `make`.
 You will need to have LaTeX installed to build it.
@@ -85,4 +93,5 @@ You will need to have LaTeX installed to build it.
 A pre-generated PDF version can be found [`here`](http://sel4.systems/Info/Docs/seL4-manual-latest.pdf).
 
 ## CAmkES Documentation
+
 CAmkES documentation lives in the camkes-tool repository in [docs/index.md](https://github.com/seL4/camkes-tool/blob/master/docs/index.md).

@@ -95,6 +95,7 @@ does, see:
 which is eventually called on by
 `sel4utils_bootstrap_vspace_with_bootinfo_leaky()`. So while this
 function may seem tedious, it's doing some important things.
+
 - <https://github.com/seL4/seL4_libs/blob/master/libsel4utils/include/sel4utils/vspace.h>
 - <https://github.com/seL4/seL4_libs/blob/master/libsel4utils/include/sel4utils/vspace.h>
 
@@ -121,7 +122,9 @@ function may seem tedious, it's doing some important things.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
 On success, you should see a different error:
+
 ```
 <<seL4(CPU 0) [handleUnknownSyscall/106 T0xffffff801ffb5400 "dynamic-3" @40139e]: SysDebugNameThread: cap is not a TCB, halting>>
 /*-- filter TaskCompletion("task-1", TaskContentType.COMPLETED) -*/
@@ -138,6 +141,7 @@ notice how it spawns the new thread with its own CSpace by
 automatically. This will have an effect on our tutorial! It means that
 the new thread we're creating will not share a CSpace with our main
 thread.
+
 - <https://github.com/seL4/seL4_libs/blob/master/libsel4utils/include/sel4utils/process.h>
 
 ```c
@@ -163,8 +167,10 @@ thread.
     error = sel4utils_configure_process_custom(&new_process, &vka, &vspace, config);
 /*-- endfilter -*/
 /*-- endfilter -*/
- ```
+```
+
 On success, you should see a different error:
+
 ```
  dynamic-3: main@main.c:196 [Cond failed: new_ep_cap == 0]
 /*-- filter TaskCompletion("task-2", TaskContentType.COMPLETED) -*/
@@ -201,7 +207,9 @@ capability to the endpoint we are listening on, so as so allow it to
 send to us immediately. We could have filled the slot with an unbadged
 capability, but then if we were listening for multiple senders, we
 wouldn't know who was whom.
+
 - <https://github.com/seL4/seL4_libs/blob/master/libsel4vka/include/vka/vka.h>
+
 ```c
 /*-- set task_3_desc -*/
     /* TASK 3: make a cspacepath for the new endpoint cap */
@@ -230,8 +238,9 @@ On success, the output should not change.
 As discussed above, we now just mint a badged copy of a capability to
 the endpoint we're listening on, into the new thread's CSpace, in the
 free slot that the VKA library found for us.
+
 - <https://github.com/seL4/seL4_libs/blob/master/libsel4utils/include/sel4utils/process.h>
-- <https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/types_32.bf>
+- <https://github.com/seL4/seL4/blob/master/libsel4/mode_include/32/sel4/shared_types.bf>
 
 ```c
 /*-- set task_4_desc -*/
@@ -263,7 +272,9 @@ free slot that the VKA library found for us.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
 On success, the output should look something like:
+
 ```
 NEW CAP SLOT: 6ac.
 main: hello world
@@ -277,6 +288,7 @@ dynamic-3: main@main.c:247 [Cond failed: sender_badge != EP_BADGE]
 
 So now that we've given the new thread everything it needs to
 communicate with us, we can let it run. Complete this step and proceed.
+
 - <https://github.com/seL4/seL4_libs/blob/master/libsel4utils/include/sel4utils/process.h>
 
 ```c
@@ -307,8 +319,10 @@ communicate with us, we can let it run. Complete this step and proceed.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
 On success, you should be able to see the second process running. The output should
 be as follows:
+
 ```
 NEW CAP SLOT: 6ac.
 process_2: hey hey hey
@@ -325,8 +339,9 @@ dynamic-3: main@main.c:255 [Cond failed: sender_badge != EP_BADGE]
 
 We now wait for the new thread to send us data using `seL4_Recv()`...
 Then we verify the fidelity of the data that was transmitted.
+
 - <https://github.com/seL4/seL4/blob/master/libsel4/sel4_arch_include/ia32/sel4/sel4_arch/syscalls.h>
-- <https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/shared_types_32.bf>
+- <https://github.com/seL4/seL4/blob/master/libsel4/mode_include/32/sel4/shared_types.bf>
 
 ```c
 /*-- set task_6_desc -*/
@@ -351,14 +366,16 @@ Then we verify the fidelity of the data that was transmitted.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
 On success, the badge error should no longer be visible.
 
 ### Send a reply
 
 Another demonstration of the `sel4_Reply()` facility: we reply to the
 message sent by the new thread.
-- <https://github.com/seL4/seL4/blob/master/libsel4/sel4_arch_include/ia32/sel4/sel4_arch/syscalls.h#L359>
-- <https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/shared_types_32.bf#L15>
+
+- <https://github.com/seL4/seL4/blob/master/libsel4/sel4_arch_include/ia32/sel4/sel4_arch/syscalls.h#L621>
+- <https://github.com/seL4/seL4/blob/master/libsel4/mode_include/32/sel4/shared_types.bf#L11>
 
 ```c
 /*-- set task_7_desc -*/
@@ -384,6 +401,7 @@ message sent by the new thread.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
 On success, the output should not change.
 
 ### Client Call
@@ -418,7 +436,9 @@ that was sent, and that's the end.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
 On success, you should see the following:
+
 ```
 /*-- filter TaskCompletion("task-8", TaskContentType.COMPLETED) -*/
 process_2: hey hey hey
@@ -426,6 +446,7 @@ main: got a message 0x6161 from 0x61
 /*-- endfilter -*/
 process_2: got a reply: 0xffffffffffff9e9e
 ```
+
 That's it for this tutorial.
 
 /*? macros.help_block() ?*/

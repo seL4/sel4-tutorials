@@ -199,13 +199,16 @@ with the following:
 /*-- endfilter -*/
 ```
 
-The [seL4SharedDataWithCaps](/seL4SharedDataWithCaps) connector is a dataport connector much like `seL4SharedData`.
- However, the `to` side of the connection also receives access to
+The [seL4SharedDataWithCaps][]
+connector is a dataport connector much like `seL4SharedData`.
+However, the `to` side of the connection also receives access to
 the capabilities to the frames backing the dataport, which is required
 for cross VM dataports, as the VMM must be able to establish shared memory
 at runtime by inserting new mappings into the guest's address space.
 
-**Exercise** Interfaces connected with [seL4SharedDataWithCaps](/seL4SharedDataWithCaps) must be
+[seL4SharedDataWithCaps]: https://docs.sel4.systems/projects/camkes/seL4SharedDataWithCaps.html
+
+**Exercise** Interfaces connected with [seL4SharedDataWithCaps][] must be
 configured with an integer specifying the ID and size of the dataport.
  Do this now by modifying `crossvm_tutorial.camkes` with the following
 two lines in the configuration section:
