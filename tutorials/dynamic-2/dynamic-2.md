@@ -361,7 +361,7 @@ send data to your new thread, it will receive the badge value with the
 data, and know which sender you are. Complete the step and proceed.
 
 - <https://github.com/seL4/seL4_libs/blob/master/libsel4vka/include/vka/object_capops.h>
-- <https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/types_32.bf>
+- <https://github.com/seL4/seL4/blob/master/libsel4/mode_include/32/sel4/shared_types.bf>
 
 ```
 /*-- set task_7_desc -*/
@@ -420,8 +420,8 @@ specifies, among other things, the number of Message Registers that hold
 meaningful data, and the number of capabilities that are going to be
 transmitted in the message.
 
-- <https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/shared_types_32.bf>
-- <https://github.com/seL4/seL4/blob/master/libsel4/arch_include/x86/sel4/arch/functions.h>
+- <https://github.com/seL4/seL4/blob/master/libsel4/mode_include/32/sel4/shared_types.bf>
+- <https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/functions.h>
 
 ```
 /*-- set task_8_desc -*/
@@ -499,7 +499,7 @@ It's entirely possible that the receiver may not be able to send a
 response message, if the sender doesn't want it to.
 
 - <https://github.com/seL4/seL4/blob/master/libsel4/sel4_arch_include/ia32/sel4/sel4_arch/syscalls.h>
-- <https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/shared_types_32.bf>
+- <https://github.com/seL4/seL4/blob/master/libsel4/mode_include/32/sel4/shared_types.bf>
 
 ```
 /*-- set task_9_desc -*/
@@ -547,7 +547,7 @@ reading the reply from the receiver. As mentioned before, the
 `seL4_GetMR()` calls are simply reading from the calling thread's
 designated, single IPC buffer.
 
-- <https://github.com/seL4/seL4/blob/master/libsel4/arch_include/x86/sel4/arch/functions.h>
+- <https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/functions.h>
 
 ```
 /*-- set task_10_desc -*/
@@ -579,7 +579,7 @@ reading the badge value on the incoming message? The receiver is
 explicitly interested in distinguishing the sender.
 
 - <https://github.com/seL4/seL4/blob/master/libsel4/sel4_arch_include/aarch32/sel4/sel4_arch/syscalls.h>
-- <https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/shared_types_32.bf>
+- <https://github.com/seL4/seL4/blob/master/libsel4/mode_include/32/sel4/shared_types.bf>
 
 ```
 /*-- set task_11_desc -*/
@@ -615,7 +615,7 @@ These two calls here are just verification of the fidelity of the
 transmitted message. It's very unlikely you'll encounter an error here.
 Complete them and proceed to the next step.
 
-- <https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/shared_types_32.bf>
+- <https://github.com/seL4/seL4/blob/master/libsel4/mode_include/32/sel4/shared_types.bf>
 
 ```
 /*-- set task_12_desc -*/
@@ -649,7 +649,7 @@ On completion, the output should not change.
 
 Again, just reading the data from the Message Registers.
 
-- <https://github.com/seL4/seL4/blob/master/libsel4/arch_include/x86/sel4/arch/functions.h>
+- <https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/functions.h>
 
 ```
 /*-- set task_13_desc -*/
@@ -678,7 +678,7 @@ thread_2: got a message 0x6161 from 0x61
 
 And writing Message Registers again.
 
-- <https://github.com/seL4/seL4/blob/master/libsel4/arch_include/x86/sel4/arch/functions.h>
+- <https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/functions.h>
 
 ```
 /*-- set task_14_desc -*/
@@ -716,7 +716,7 @@ and the seL4 kernel will facilitate this one-time permissive response.
 Complete the step and pat yourself on the back.
 
 - <https://github.com/seL4/seL4/blob/master/libsel4/sel4_arch_include/ia32/sel4/sel4_arch/syscalls.h>
-- <https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/shared_types_32.bf>
+- <https://github.com/seL4/seL4/blob/master/libsel4/mode_include/32/sel4/shared_types.bf>
 
 ```
 /*-- set task_15_desc -*/

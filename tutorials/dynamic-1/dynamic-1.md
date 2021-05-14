@@ -66,6 +66,7 @@ for your benefit so you can grasp some of the basic data structures.
 ## Exercises
 
 When you first run the tutorial, you should see the following output:
+
 ```
 Booting all finished, dropped to user space
 main@main.c:89 [Cond failed: info == NULL]
@@ -569,8 +570,7 @@ On success, you should see output from your new thread.
 - `allocman_t`:
       <https://github.com/seL4/seL4_libs/blob/master/libsel4allocman/include/allocman/allocman.h>
 - `name_thread()`:
-      <https://github.com/SEL4PROJ/sel4-tutorials/blob/master/exercises/dynamic-1/src/util.c>
-
+      <https://github.com/seL4/sel4-tutorials/blob/master/libsel4tutorials/src/constructors.c>
 
 That's it for this tutorial.
 
