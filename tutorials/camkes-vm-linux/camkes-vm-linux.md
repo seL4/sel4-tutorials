@@ -157,8 +157,8 @@ include(${CAMKES_VM_LINUX_HELPERS_PATH})
 DeclareCAmkESVM(Init0)
 
 # Get Default Linux VM files
-GetDefaultLinuxKernelFile(default_kernel_file)
-GetDefaultLinuxRootfsFile(default_rootfs_file)
+GetArchDefaultLinuxKernelFile("32" default_kernel_file)
+GetArchDefaultLinuxRootfsFile("32" default_rootfs_file)
 
 # Decompress Linux Kernel image and add to file server
 DecompressLinuxKernel(extract_linux_kernel decompressed_kernel ${default_kernel_file})
@@ -182,8 +182,8 @@ The file `projects/camkes/vm/camkes_vm_helpers.cmake` provides helper functions 
 including  `DeclareCAmkESVM(Init0)`, which is used to define the `Init0` VM component.
 Each Init component requires a corresponding `DeclareCAmkESVM` function.
 
-`GetDefaultLinuxKernelFile` (defined in `projects/camkes/vm-linux/vm-linux-helpers.cmake`) 
-is a helper function that retrieves the location of the vm images provided
+`GetArchDefaultLinuxKernelFile` (defined in `projects/camkes/vm-linux/vm-linux-helpers.cmake`) 
+is a helper function that retrieves the location of an architectural specific vm image provided
 in the `projects/vm-linux` folder, which contains some tools for building new linux kernel
 and root filesystem images, as well as the images that these tools
 produce. A fresh checkout of this project will contain some pre-built

@@ -557,8 +557,8 @@ endif()
 /*? include_task_type_append([("crossvm", "vm-cmake-init0")]) ?*/
 /*? include_task_type_append([("crossvm", "vm-cmake-printserver")]) ?*/
 # Get Default Linux VM files
-GetDefaultLinuxKernelFile(default_kernel_file)
-GetDefaultLinuxRootfsFile(default_rootfs_file)
+GetArchDefaultLinuxKernelFile("32" default_kernel_file)
+GetArchDefaultLinuxRootfsFile("32" default_rootfs_file)
 
 # Decompress Linux Kernel image and add to file server
 DecompressLinuxKernel(extract_linux_kernel decompressed_kernel ${default_kernel_file})
