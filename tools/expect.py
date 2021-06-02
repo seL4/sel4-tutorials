@@ -57,7 +57,7 @@ def main():
         completion_text = args.text
     build_dir = os.path.dirname(__file__)
     result = simulate_with_checks(build_dir, completion_text)
-    if result is 0:
+    if result == 0:
         print("Success!")
     elif result <= len(FAILURE_TEXTS):
         print("Failure! {0}".format(FAILURE_TEXTS[result - 1]))
