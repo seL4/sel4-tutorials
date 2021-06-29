@@ -14,9 +14,15 @@ Follow the instructions for setting up your host environment on the [seL4 docsit
 
 ## Starting a tutorial
 
-A tutorial is started through the use of the `init` script that is provided in the root
-directory. Using this script you can specify a tutorial and target machine and it will
-create a copy of the tutorial for you to work on.
+This tutorial repository is part of a larger collection of repositories, which
+are required to run the tutorial and are coordinated in a manifest file. See
+[this guide](https://docs.sel4.systems/Tutorials/#the-tutorials) on how to check
+out a consistent set.
+
+Once you have that, a tutorial is started through the use of the `init` script
+that is provided in the root directory. Using this script you can specify a
+tutorial and target machine and it will create a copy of the tutorial for you to
+work on.
 
 Example:
 
