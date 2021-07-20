@@ -1,0 +1,47 @@
+# Copyright 2021, Proofcraft Pty Ltd
+#
+# SPDX-License-Identifier: BSD-2-Clause
+
+name: Test
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - 'LICENSES/**'
+      - '.*'
+
+jobs:
+  test:
+    name: Tutorial Solution
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app:
+        - capabilities
+        - dynamic-1
+        - dynamic-2
+        - dynamic-3
+        - dynamic-4
+        - hello-camkes-0
+        - hello-camkes-1
+        - hello-camkes-2
+        - hello-camkes-timer
+        - hello-world
+        - interrupts
+        - ipc
+        - mapping
+        - notifications
+        - untyped
+        - threads
+        - fault-handlers
+        - mcs
+    steps:
+    - uses: seL4/ci-actions/tutorials@master
+      with:
+        app: ${{ matrix.app }}
