@@ -1,3 +1,8 @@
+<!--
+  Copyright 2021 Michael Neises
+
+  SPDX-License-Identifier: BSD-2-Clause
+-->
 # Cross-Compiling Kernel Modules for use with seL4's Linux VM using qemu-arm-virt
 
 See [the code](https://github.com/NeisesResearch/kernel_module_workstation) for the automation of this procedure. Running the setup script there should give you a camkes application, ready to build and simulate, which demonstrates the cross-compilation of a trivial kernel module for use in the linux kernel virtualized in the camkes-arm-vm. The procedure here outlines the specific steps necessary for module cross-compilation.
