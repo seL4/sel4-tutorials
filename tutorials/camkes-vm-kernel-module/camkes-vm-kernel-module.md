@@ -5,7 +5,11 @@
 -->
 # Cross-Compiling Kernel Modules for use with seL4's Linux VM using qemu-arm-virt
 
-See [the code](https://github.com/NeisesResearch/kernel_module_workstation) for the automation of this procedure. Running the setup script there should give you a camkes application, ready to build and simulate, which demonstrates the cross-compilation of a trivial kernel module for use in the linux kernel virtualized in the camkes-arm-vm. The procedure here outlines the specific steps necessary for module cross-compilation.
+This is a procedure to prepare a camkes app for cross-compiling linux kernel modules for use in virtualization.
+
+See [the camkes app](https://github.com/seL4/sel4-tutorials/tree/master/tutorials/camkes-vm-kernel-module/module_minimal) for a ready-to-build project.
+
+See [an automation](https://github.com/NeisesResearch/kernel_module_workstation) of this procedure. Cloning that repo and running the setup script there should give you a camkes application, ready to build and simulate, which demonstrates the cross-compilation of a trivial kernel module.
 
 1. download linux kernel repo
 ```
@@ -113,4 +117,5 @@ clean:
 	make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- -C $(KHEAD) M=$(PWD) clean
 
 ```
-10. Build your [project](https://github.com/NeisesResearch/kernel_module_workstation/tree/main/module_minimal) like normal.
+
+10. Build your [project](https://github.com/seL4/sel4-tutorials/tree/master/tutorials/camkes-vm-kernel-module/module_minimal) like normal.
