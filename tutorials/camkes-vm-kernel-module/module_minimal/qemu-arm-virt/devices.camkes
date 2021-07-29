@@ -1,0 +1,45 @@
+/*
+ *  Copyright 2021 Michael Neises
+ *
+ *  SPDX-License-Identifier: BSD-2-Clause
+ */
+
+#include <configurations/vm.h>
+
+#define VM_INITRD_MAX_SIZE 0x1900000 //25 MB
+#define VM_RAM_BASE 0x40000000
+#define VM_RAM_SIZE 0x20000000
+#define VM_RAM_OFFSET 0x00000000
+#define VM_DTB_ADDR 0x4F000000
+#define VM_INITRD_ADDR 0x4D700000
+
+assembly {
+	composition {}
+	configuration {
+
+        vm0.linux_address_config = {
+            "linux_ram_base" : VAR_STRINGIZE(VM_RAM_BASE),
+            "linux_ram_paddr_base" : VAR_STRINGIZE(VM_RAM_BASE),
+            "linux_ram_size" : VAR_STRINGIZE(VM_RAM_SIZE),
+            "linux_ram_offset" : VAR_STRINGIZE(VM_RAM_OFFSET),
+            "dtb_addr" : VAR_STRINGIZE(VM_DTB_ADDR),
+            "initrd_max_size" : VAR_STRINGIZE(VM_INITRD_MAX_SIZE),
+            "initrd_addr" : VAR_STRINGIZE(VM_INITRD_ADDR)
+        };
+
+        vm0.linux_image_config = {
+            "linux_bootcmdline" : "",
+            "linux_stdout" : "/pl011@9000000",
+        };
+        vm0.num_vcpus = 2;
+
+        vm0.dtb = dtb([
+                        {"path": "/pl011@9000000"},
+                    ]);
+
+        vm0.untyped_mmios = [
+                    "0x8040000:12", // Interrupt Controller Virtual CPU interface (Virtual Machine view)
+                    "0x40000000:29", // Linux kernel memory regions
+                    ];
+	}
+}
