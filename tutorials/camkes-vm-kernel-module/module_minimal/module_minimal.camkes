@@ -1,0 +1,30 @@
+/*
+ *  Copyright 2021 Michael Neises
+ *
+ *  SPDX-License-Identifier: BSD-2-Clause
+ */
+
+#include <configurations/vm.h>
+
+import <std_connector.camkes>;
+import <global-connectors.camkes>;
+import <vm-connectors.camkes>;
+import <VM_Arm/VM.camkes>;
+import <devices.camkes>;
+
+assembly {
+    composition {
+        VM_GENERAL_COMPOSITION_DEF()
+        VM_COMPOSITION_DEF(0)
+        connection seL4VMDTBPassthrough vm_dtb(from vm0.dtb_self, to vm0.dtb);
+    }
+    configuration {
+        VM_GENERAL_CONFIGURATION_DEF()
+        VM_CONFIGURATION_DEF(0)
+
+        vm0.num_extra_frame_caps = 0;
+        vm0.extra_frame_map_address = 0;
+        vm0.cnode_size_bits = 23;
+        vm0.simple_untyped24_pool = 12;
+    }
+}
