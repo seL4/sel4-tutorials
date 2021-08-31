@@ -47,7 +47,7 @@ supports the zynq7000 platform.
 
 ### Virtual Machine Image
 
-You can also download a [VirtualBox virtual machine appliance](http://ts.data61.csiro.au/Downloads/sel4_tut_v3_lubuntu_16_041-v2.ova)([md5](http://ts.data61.csiro.au/Downloads/sel4_tut_v3_lubuntu_16_041-v2.md5)) (3GB, based on Lubuntu 16.04.1 with all the seL4 tutorial prerequisites installed).
+You can also download a [VirtualBox virtual machine appliance](https://trustworthy.systems/Downloads/sel4_tut_v3_lubuntu_16_041-v2.ova)([md5](https://trustworthy.systems/Downloads/sel4_tut_v3_lubuntu_16_041-v2.md5)) (3GB, based on Lubuntu 16.04.1 with all the seL4 tutorial prerequisites installed).
 
 This appliance is based on [VirtualBox 5.1.2](https://www.virtualbox.org/wiki/Downloads).
 You may also need to install the appropriate VirtualBox extensions available from the same page.
