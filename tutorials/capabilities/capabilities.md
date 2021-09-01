@@ -34,27 +34,27 @@ By the end of this tutorial, you should be familiar with:
 
 A *capability* is a unique, unforgeable token that gives the possessor
 permission to access an entity or object in system. In seL4, capabilities to all resources
-controlled by seL4 are given to the root task on initialisation. To change the state of any 
+controlled by seL4 are given to the root task on initialisation. To change the state of any
 resources, users use the kernel API, available in `libsel4` to request an operation on a specific
- capability. 
- 
+ capability.
+
 For example, the root task is provided with a capability to its own thread control block (TCB),
  `seL4_CapInitThreadTCB`, a constant defined by `libsel4`. To change the properties of the initial TCB,
  one can use any of the [TCB API methods](https://docs.sel4.systems/projects/sel4/api-doc.html#sel4_tcb) on this capability.
-Below is an example which changes the stack pointer of the root task's TCB, a common operation in the 
+Below is an example which changes the stack pointer of the root task's TCB, a common operation in the
 root task if a larger stack is needed:
 
 ```c
     seL4_UserContext registers;
     seL4_Word num_registers = sizeof(seL4_UserContext)/sizeof(seL4_Word);
-    
+
     /* Read the registers of the TCB that the capability in seL4_CapInitThreadTCB grants access to. */
     seL4_Error error = seL4_TCB_ReadRegisters(seL4_CapInitThreadTCB, 0, 0, num_registers, &registers);
     assert(error == seL4_NoError);
-    
+
     /* set new register values */
     registers.sp = new_sp; // the new stack pointer, derived by prior code.
-    
+
     /* Write new values */
     error = seL4_TCB_WriteRegisters(seL4_CapInitThreadTCB, 0, 0, num_registers, &registers);
     assert(error == seL4_NoError);
@@ -70,61 +70,61 @@ We refer to slots as *CSlots* (capability-slots). In the example above, `seL4_Ca
 task's CNode that contains the capability to the root task's TCB.
 Each CSlot in a CNode can be in the following state:
 
-* empty: the CNode slot contains a null capability, 
+* empty: the CNode slot contains a null capability,
 * full: the slot contains a capability to a kernel resource.
 
 By convention the 0th CSlot is kept empty, for the same reasons as keeping NULL unmapped in
  process virtual address spaces: to avoid errors when uninitialised slots are used unintentionally.
 
  CSlots are `1u << seL4_SlotBits` in size, and as a result the number of slots in a CNode can be calculated
- by `CNodeSize / (1u << seL4_SlotBits)`. 
+ by `CNodeSize / (1u << seL4_SlotBits)`.
 
 ### CSpaces
 
-A *CSpace* (capability-space) is the full range of capabilities accessible to a thread, which may be 
-formed of one or more CNodes. In this tutorial, we focus on the CSpace constructed for the root task 
+A *CSpace* (capability-space) is the full range of capabilities accessible to a thread, which may be
+formed of one or more CNodes. In this tutorial, we focus on the CSpace constructed for the root task
 by seL4's initialisation protocol, which consists of one CNode.
 
 ### CSpace addressing
 
 In order to refer to a capability, to perform operations on it, you must address the capability.
-There are two ways to address capabilities in the seL4 API. First is by invocation, the second 
+There are two ways to address capabilities in the seL4 API. First is by invocation, the second
 is by direct addressing. Invocation is what we used to manipulate the registers of the root task's TCB, which
 we now explain in further detail.
 
 #### Invocation
 
-On boot, the root task has a CNode capability installed as its *CSpace root*. 
-An *invocation* is when a CSlot is addressed by implicitly invoking a thread's installed CSpace root. 
+On boot, the root task has a CNode capability installed as its *CSpace root*.
+An *invocation* is when a CSlot is addressed by implicitly invoking a thread's installed CSpace root.
 In the code example above, we use an invocation on the `seL4_CapInitThreadTCB` CSlot to read and write
 to the registers of the TCB represented by the capability in that specific CSlot.
 ```c
 seL4_TCB_WriteRegisters(seL4_CapInitThreadTCB, 0, 0, num_registers, &registers);
 ```
-This implicity looks up the `seL4_CapInitThreadTCB` CSlot in the CSpace root of the calling thread, which in this case 
+This implicity looks up the `seL4_CapInitThreadTCB` CSlot in the CSpace root of the calling thread, which in this case
 is the root task.
 
 #### Direct CSpace addressing
- 
-Direct addressing allows you to specify the CNode to address, rather than implicitly using the CSpace root, and is 
-used to construct and manipulate the shape of CSpaces. Note that direct addressing requires invocation: the operation 
+
+Direct addressing allows you to specify the CNode to address, rather than implicitly using the CSpace root, and is
+used to construct and manipulate the shape of CSpaces. Note that direct addressing requires invocation: the operation
 occurs by invoking a CNode capability, which itself is indexed from the CSpace root.
 
  The following fields are used when directly addressing CSlots:
 * *_service/root* A capability to the CNode to operate on.
 * *index* The index of the CSlot in the CNode to address.
-* *depth* How far to traverse the CNode before resolving the CSlot. 
+* *depth* How far to traverse the CNode before resolving the CSlot.
 For the initial, single-level CSpace, the *depth* value is always `seL4_WordBits`. For invocations, the depth is always
  implicitly `seL4_WordBits`.
 More on CSpace depth will be discussed in future tutorials.
 
-In the example below, we directly address the root task's TCB to make a copy of it in the 0th slot in the CSpace root. 
+In the example below, we directly address the root task's TCB to make a copy of it in the 0th slot in the CSpace root.
 [CNode copy](https://docs.sel4.systems/projects/sel4/api-doc.html#copy) requires two CSlots to be directly addressed: the destination
- CSlot, and the source CSlot. Because we are copying in the same CNode, the root used in both addresses is the same: 
+ CSlot, and the source CSlot. Because we are copying in the same CNode, the root used in both addresses is the same:
  `seL4_CapInitThreadCNode`, which is the slot where seL4 places a capability to the root task's CSpace root.
 ```c
     seL4_Error error = seL4_CNode_Copy(seL4_CapInitThreadCNode, 0, seL4_WordBits,
-                                       seL4_CapInitThreadCNode, seL4_CapInitThreadTCB, seL4_WordBits, 
+                                       seL4_CapInitThreadCNode, seL4_CapInitThreadTCB, seL4_WordBits,
                                        seL4_AllRights);
     assert(error == seL4_NoError);
 ```
@@ -133,14 +133,14 @@ All [CNode invocations](https://docs.sel4.systems/projects/sel4/api-doc.html#sel
 
 ### Initial CSpace
 
-The root task has a CSpace, set up by seL4 during boot, which contains capabilities to all 
-resources manages by seL4. We have already seen several capabilities in the root CSpace: `seL4_CapInitThreadTCB`, 
- and `seL4_CapInitThreadCNode`. Both of these are specified by constants in `libsel4`, however not all initial 
- capabilities are statically specified. Other capabilities are described by the `seL4_BootInfo` data structure, 
+The root task has a CSpace, set up by seL4 during boot, which contains capabilities to all
+resources manages by seL4. We have already seen several capabilities in the root CSpace: `seL4_CapInitThreadTCB`,
+ and `seL4_CapInitThreadCNode`. Both of these are specified by constants in `libsel4`, however not all initial
+ capabilities are statically specified. Other capabilities are described by the `seL4_BootInfo` data structure,
  described in `libsel4` and initialised by seL4. `seL4_BootInfo` describes ranges of initial capabilities,
  including free slots available in the initial CSpace.
- 
-## Exercises 
+
+## Exercises
 
 The initial state of this tutorial provides you with the BootInfo structure,
 and calculates the size (in bytes) of the initial CNode object.
@@ -171,7 +171,7 @@ The third line stating the number of slots in the CSpace, is incorrect, and your
 
 ### How big is your CSpace?
 
-**Exercise:** refer to the background above, and calculate the number of slots in the initial thread's CSpace. 
+**Exercise:** refer to the background above, and calculate the number of slots in the initial thread's CSpace.
 ```c
 /*-- filter TaskContent("cnode-start", TaskContentType.ALL, subtask='size') -*/
     size_t num_initial_cnode_slots = 0; // TODO calculate this.
@@ -195,8 +195,8 @@ After the output showing the number of CSlots in the CSpace, you will see an err
 main@main.c:33 [Cond failed: error]
 	Failed to set priority
 ```
-The error occurs as the existing code tries to set the priority of the initial thread's TCB by 
- invoking the last CSlot in the CSpace, which is currently empty. seL4 then returns an error code, 
+The error occurs as the existing code tries to set the priority of the initial thread's TCB by
+ invoking the last CSlot in the CSpace, which is currently empty. seL4 then returns an error code,
  and our check that the operation succeeded fails.
 
 **Exercise:** fix this problem by making another copy of the TCB capability into the last slot in the CNode.
@@ -224,12 +224,12 @@ The error occurs as the existing code tries to set the priority of the initial t
                                        seL4_AllRights);
     ZF_LOGF_IF(error, "Failed to copy cap!");
     seL4_CPtr last_slot = info->empty.end - 1;
-    
+
     /* use seL4_CNode_Copy to make another copy of the initial TCB capability to the last slot in the CSpace */
     error = seL4_CNode_Copy(seL4_CapInitThreadCNode, last_slot, seL4_WordBits,
                       seL4_CapInitThreadCNode, first_free_slot, seL4_WordBits, seL4_AllRights);
     ZF_LOGF_IF(error, "Failed to copy cap!");
-    
+
     /* set the priority of the root task */
     error = seL4_TCB_SetPriority(last_slot, last_slot, 10);
     ZF_LOGF_IF(error, "Failed to set priority");
@@ -255,7 +255,7 @@ by a neat hack: by attempting to move the CSlots onto themselves. This should fa
   * You can either use `seL4_CNode_Delete` on the copies, or
   * `seL4_CNode_Revoke` on the original capability to achieve this.
 
- 
+
  ```c
 /*-- filter TaskContent("cnode-start", TaskContentType.ALL, subtask='delete') -*/
     // TODO delete the created TCB capabilities
@@ -264,8 +264,8 @@ by a neat hack: by attempting to move the CSlots onto themselves. This should fa
     error = seL4_CNode_Move(seL4_CapInitThreadCNode, first_free_slot, seL4_WordBits,
                             seL4_CapInitThreadCNode, first_free_slot, seL4_WordBits);
     ZF_LOGF_IF(error != seL4_FailedLookup, "first_free_slot is not empty");
-   
-    // check last_slot is empty 
+
+    // check last_slot is empty
     error = seL4_CNode_Move(seL4_CapInitThreadCNode, last_slot, seL4_WordBits,
                             seL4_CapInitThreadCNode, last_slot, seL4_WordBits);
     ZF_LOGF_IF(error != seL4_FailedLookup, "last_slot is not empty");
@@ -281,8 +281,8 @@ by a neat hack: by attempting to move the CSlots onto themselves. This should fa
     error = seL4_CNode_Move(seL4_CapInitThreadCNode, first_free_slot, seL4_WordBits,
                             seL4_CapInitThreadCNode, first_free_slot, seL4_WordBits);
     ZF_LOGF_IF(error != seL4_FailedLookup, "first_free_slot is not empty");
-    
-    // check last_slot is empty 
+
+    // check last_slot is empty
     error = seL4_CNode_Move(seL4_CapInitThreadCNode, last_slot, seL4_WordBits,
                             seL4_CapInitThreadCNode, last_slot, seL4_WordBits);
     ZF_LOGF_IF(error != seL4_FailedLookup, "last_slot is not empty");
@@ -299,7 +299,7 @@ main@main.c:56 Failed to suspend current thread
 
 #### Invoking capabilities
 
-**Exercise** Use `seL4_TCB_Suspend` to try and suspend the current thread. 
+**Exercise** Use `seL4_TCB_Suspend` to try and suspend the current thread.
 ```c
 /*-- filter TaskContent("cnode-start", TaskContentType.ALL, subtask='invoke') -*/
     printf("Suspending current thread\n");
@@ -326,7 +326,7 @@ Suspending current thread
 
 ### Further exercises
 
-That's all for the detailed content of this tutorial. Below we list other ideas for exercises you can try, 
+That's all for the detailed content of this tutorial. Below we list other ideas for exercises you can try,
 to become more familiar with CSpaces.
 
 * Use a data structure to track which CSlots in a CSpace are free.
@@ -373,11 +373,11 @@ target_link_libraries(capabilities
     muslc utils sel4tutorials
     sel4muslcsys sel4platsupport sel4utils sel4debug)
 
-# Tell the build system that this application is the root task. 
+# Tell the build system that this application is the root task.
 include(rootserver)
 DeclareRootserver(capabilities)
 
-# utility CMake functions for the tutorials (not required in normal, non-tutorial applications) 
+# utility CMake functions for the tutorials (not required in normal, non-tutorial applications)
 /*? macros.cmake_check_script(state) ?*/
 /*-- endfilter -*/
 ```
