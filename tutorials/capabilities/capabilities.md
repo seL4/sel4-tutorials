@@ -101,7 +101,7 @@ to the registers of the TCB represented by the capability in that specific CSlot
 ```c
 seL4_TCB_WriteRegisters(seL4_CapInitThreadTCB, 0, 0, num_registers, &registers);
 ```
-This implicity looks up the `seL4_CapInitThreadTCB` CSlot in the cspace root of the calling thread, which in this case 
+This implicity looks up the `seL4_CapInitThreadTCB` CSlot in the CSpace root of the calling thread, which in this case 
 is the root task.
 
 #### Direct CSpace addressing
@@ -118,7 +118,7 @@ For the initial, single-level CSpace, the *depth* value is always `seL4_WordBits
  implicitly `seL4_WordBits`.
 More on CSpace depth will be discussed in future tutorials.
 
-In the example below, we directly address the root task's TCB to make a copy of it in the 0th slot in the cspace root. 
+In the example below, we directly address the root task's TCB to make a copy of it in the 0th slot in the CSpace root. 
 [CNode copy](https://docs.sel4.systems/projects/sel4/api-doc.html#copy) requires two CSlots to be directly addressed: the destination
  CSlot, and the source CSlot. Because we are copying in the same CNode, the root used in both addresses is the same: 
  `seL4_CapInitThreadCNode`, which is the slot where seL4 places a capability to the root task's CSpace root.
@@ -134,7 +134,7 @@ All [CNode invocations](https://docs.sel4.systems/projects/sel4/api-doc.html#sel
 ### Initial CSpace
 
 The root task has a CSpace, set up by seL4 during boot, which contains capabilities to all 
-resources manages by seL4. We have already seen several capabilities in the root cspace: `seL4_CapInitThreadTCB`, 
+resources manages by seL4. We have already seen several capabilities in the root CSpace: `seL4_CapInitThreadTCB`, 
  and `seL4_CapInitThreadCNode`. Both of these are specified by constants in `libsel4`, however not all initial 
  capabilities are statically specified. Other capabilities are described by the `seL4_BootInfo` data structure, 
  described in `libsel4` and initialised by seL4. `seL4_BootInfo` describes ranges of initial capabilities,
@@ -327,10 +327,10 @@ Suspending current thread
 ### Further exercises
 
 That's all for the detailed content of this tutorial. Below we list other ideas for exercises you can try, 
-to become more familiar with cspaces.
+to become more familiar with CSpaces.
 
 * Use a data structure to track which CSlots in a CSpace are free.
-* Make copies of the entire cspace described by `seL4_BootInfo`
+* Make copies of the entire CSpace described by `seL4_BootInfo`
 * Experiment with other [CNode invocations](https://docs.sel4.systems/projects/sel4/api-doc.html#sel4_cnode).
 
 /*? macros.help_block() ?*/
