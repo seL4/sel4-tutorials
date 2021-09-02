@@ -160,7 +160,7 @@ main@main.c:49 [Cond failed: error != seL4_NoError]
 This error is because we are trying to create an untyped of size 0.
 
 **Exercise** Calculate the size of the child untyped required, such that the child untyped can be used
- to create all of the objects lists in the `objects` array.
+ to create all of the objects listed in the `objects` array.
 ```c
 /*-- filter TaskContent("untyped-start", TaskContentType.ALL, subtask='setup', completion='Failed to retype') -*/
     // list of general seL4 objects
