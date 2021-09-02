@@ -59,10 +59,10 @@ shows how to print out the initial untyped capabilities provided from `seL4_Boot
 ### Retyping
 
 Untyped capabilities have a single invocation: [seL4_Untyped_Retype](https://docs.sel4.systems/ApiDoc.html#retype)
-which is used to create a new capability from an untyped. Specifically, the new capability created by
-a retype invocation provides access to the a subset of the memory range granted by the original untyped,
- with a specific type. New capabilities created by retyping an untyped object are referred to as *children* of
- that untyped object.
+which is used to create a new capability to a new object. The new object is a subset of the memory range granted
+by the original untyped and has a specific type. The new capability allows access to this object and is stored
+in an empty slot in an existing CNode. New capabilities created by retyping an untyped object are referred to as
+*children* of that untyped object.
 
 Untyped objects are retyped incrementally in a greedy fashion from the invoked untyped, which is important
 to understand in order to gain efficient memory utilisation in seL4 systems. Each untyped object maintains
@@ -132,7 +132,7 @@ The node_offset is the CSlot to start creating new capabilities at, in the CNode
 
 #### Num_caps
 
-The retype invocation can be used to create more than 1 capability at a time -- the amount of capabilities is specified
+The retype invocation can be used to create more than one object at a time -- the amount of objects is specified
 using this argument. Note that there are two constraints on this value:
 1. The untyped must be big enough to fit all of the memory being retyped (`num_caps * (1u << size_bits)`).
 2. The CNode must have enough consecutive free CSlots to fit all of the new capabilities.
@@ -209,7 +209,7 @@ On success, the tutorial will progress further, printing "Failed to set priority
 
 The priority check is failing as `child_tcb` is an empty CSlot.
 
-**Exercise** fix this by creating a TCB object from `child_untyped` placed in `child_tcb` CSlot.
+**Exercise** fix this by creating a TCB object from `child_untyped` and place its capability in the `child_tcb` CSlot.
 
 ```c
 /*-- filter TaskContent("untyped-start", TaskContentType.ALL, subtask='tcb') -*/
@@ -239,7 +239,7 @@ On success, the tutorial will progress further, printing "Endpoint cap is null c
 
 The error you see now is caused be an invalid endpoint capability.
 
-**Exercise** Create an endpoint object from `child_untyped` and place it in the `child_ep` CSlot.
+**Exercise** Create an endpoint object from `child_untyped` and place its capability in the `child_ep` CSlot.
 ```c
 /*-- filter TaskContent("untyped-start", TaskContentType.ALL, subtask='ep') -*/
     seL4_CPtr child_ep = child_tcb + 1;
@@ -264,7 +264,7 @@ On success, 'Failed to bind notification' should be output.
 ### Create a notification object
 The next part of the tutorial attempts to use a notification object that does not yet exist.
 
-**Exercise** create a notification object from `child_untyped` and place it in the `child_ntfn` CSlot.
+**Exercise** create a notification object from `child_untyped` and place its capability in the `child_ntfn` CSlot.
 ```c
 /*-- filter TaskContent("untyped-start", TaskContentType.ALL, subtask='ntfn') -*/
     seL4_CPtr child_ntfn = child_ep + 1;
