@@ -55,7 +55,7 @@ dependent, including:
 Interrupts are received by registering a capability to a notification object
 with the IRQHandler capability for that irq, as follows:
 ```bash
-seL4_IRQHandler_setNotification(irq_handler, notification);
+seL4_IRQHandler_SetNotification(irq_handler, notification);
 ```
 On success, this call will result in signals being delivered to the notification object when
 an interrupt occurs. To handle multiple interrupts on the same notification object, you
