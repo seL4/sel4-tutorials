@@ -9,8 +9,6 @@ This is a procedure to prepare a camkes app for cross-compiling linux kernel mod
 
 See [the camkes app](https://github.com/seL4/sel4-tutorials/tree/master/tutorials/camkes-vm-kernel-module/module_minimal) for a ready-to-build project.
 
-See [an automation](https://github.com/NeisesResearch/kernel_module_workstation) of this procedure. Cloning that repo and running the setup script there should give you a camkes application, ready to build and simulate, which demonstrates the cross-compilation of a trivial kernel module.
-
 1. download linux kernel repo
 ```
 git clone git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
