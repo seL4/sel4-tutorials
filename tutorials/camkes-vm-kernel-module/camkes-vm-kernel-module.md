@@ -7,7 +7,7 @@
 
 This is a procedure to prepare a camkes app for cross-compiling linux kernel modules for use in virtualization.
 
-See [the camkes app](https://github.com/seL4/sel4-tutorials/tree/master/tutorials/camkes-vm-kernel-module/module_minimal) for a ready-to-build project.
+See the "module_minimal" app for a ready-to-build camkes application.
 
 1. download linux kernel repo
 ```
@@ -116,4 +116,4 @@ clean:
 
 ```
 
-10. Build your [project](https://github.com/seL4/sel4-tutorials/tree/master/tutorials/camkes-vm-kernel-module/module_minimal) like normal.
+10. Build your project like normal.
