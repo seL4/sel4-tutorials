@@ -311,9 +311,9 @@ AddOverlayDirToRootfs(vm-overlay ${default_rootfs_file} "buildroot" "rootfs_inst
 AddToFileServer("rootfs.cpio" ${rootfs_file} DEPENDS rootfs_target)
 /*-- endfilter -*/
 ```
-If you are running on a 64 bit system, you may need to install the `gcc-multilib` library so that you can compile 32 bit programs.  You can install the `gcc-multilib` library by running the following command (Ubuntu/Debian).
+If you are running on a 64 bit system, you may need to install the `gcc-multilib` library so that you can compile 32 bit programs.  Since we will be using it later in the tutorial, you will likely want to install the `g++-multilib` library as well.  You can install both libraries by running the following command (Ubuntu/Debian).
 ```
-sudo apt install gcc-multilib
+sudo apt install gcc-multilib g++-multilib
 ```
 Now rebuild the project...
 /*? macros.ninja_block() ?*/
