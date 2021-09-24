@@ -103,7 +103,7 @@ Most of the work here is done by five C preprocessor macros:
 `VM_INIT_DEF`, `VM_COMPOSITION_DEF`, `VM_PER_VM_COMP_DEF`,
 `VM_CONFIGURATION_DEF`, `VM_PER_VM_CONFIG_DEF`.
 
-These are all defined in `projects/camkes/vm/components/VM/configurations/vm.h`,
+These are all defined in `projects/camkes-vm/components/VM/configurations/vm.h`,
 and are concerned with specifying and configuring components that all
 VM(M)s need.
 
@@ -113,7 +113,7 @@ component named `InitI`. `InitI` components will be instantiated in the
 composition section by the `VM_PER_VM_COMP_DEF` macro with instance
 names `vmI`. The `vm0` component instance being configured above is an
 instance of `Init0`. The C source code for`InitI` components is in
-`projects/camkes/vm/components/Init/src`. This source will be used for components
+`projects/camkes-vm/components/Init/src`. This source will be used for components
 named `InitI` for *I* in `0..VM_NUM_VM - 1`.
 
 The values of `vm0.kernel_cmdline`, `vm0.kernel_image` and `vm0.initrd_image` are all
@@ -178,13 +178,13 @@ GenerateCAmkESRootserver()
 /*- endfilter -*/
 ```
 
-The file `projects/camkes/vm/camkes_vm_helpers.cmake` provides helper functions for the VM projects, 
+The file `projects/camkes-vm/camkes_vm_helpers.cmake` provides helper functions for the VM projects, 
 including  `DeclareCAmkESVM(Init0)`, which is used to define the `Init0` VM component.
 Each Init component requires a corresponding `DeclareCAmkESVM` function.
 
-`GetArchDefaultLinuxKernelFile` (defined in `projects/camkes/vm-linux/vm-linux-helpers.cmake`)
+`GetArchDefaultLinuxKernelFile` (defined in `projects/camkes-vm-linux/vm-linux-helpers.cmake`)
 is a helper function that retrieves the location of an architectural specific vm image provided
-in the `projects/vm-linux` folder, which contains some tools for building new linux kernel
+in the `projects/camkes-vm-linux` folder, which contains some tools for building new linux kernel
 and root filesystem images, as well as the images that these tools
 produce. A fresh checkout of this project will contain some pre-built
 images (`bzimage` and `rootfs.cpio`), to speed up build times.
@@ -204,7 +204,7 @@ In this tutorial you will  install new programs into the guest VM.
 
 ### vm-linux-helpers.cmake
 
-The `projects/camkes/vm-linux` directory contains CMake helpers to
+The `projects/camkes-vm-linux` directory contains CMake helpers to
 overlay rootfs.cpio archives with a desired set of programs, modules
 and scripts. 
 
@@ -310,6 +310,10 @@ AddOverlayDirToRootfs(vm-overlay ${default_rootfs_file} "buildroot" "rootfs_inst
     rootfs_file rootfs_target)
 AddToFileServer("rootfs.cpio" ${rootfs_file} DEPENDS rootfs_target)
 /*-- endfilter -*/
+```
+If you are running on a 64 bit system, you may need to install the `gcc-multilib` library so that you can compile 32 bit programs.  You can install the `gcc-multilib` library by running the following command (Ubuntu/Debian).
+```
+sudo apt install gcc-multilib
 ```
 Now rebuild the project...
 /*? macros.ninja_block() ?*/
@@ -496,7 +500,7 @@ Password:
 In `modules/poke/poke.c`, replace `printk("hi\n");` with `kvm_hypercall1(4, 0);`.
 The choice of 4 is because 0..3 are already used by existing hypercalls.
 
-Then register a handler for this hypercall in `projects/camkes/vm/components/Init/src/main.c`:.
+Then register a handler for this hypercall in `projects/camkes-vm/components/Init/src/main.c`:.
 Add a new function at the top of the file:
 
 ```c
