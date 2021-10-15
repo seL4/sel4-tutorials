@@ -297,7 +297,7 @@ entire untyped object. However, this fails, because the untyped is already compl
     // TODO revoke the child untyped
 
     // allocate the whole child_untyped as endpoints
-    seL4_Word num_eps = BIT(untyped_size_bits - seL4_EndpointBits);
+    seL4_Word num_eps = BIT(untyped_size_bits / seL4_EndpointBits);
     error = seL4_Untyped_Retype(child_untyped, seL4_EndpointObject, 0, seL4_CapInitThreadCNode, 0, 0, child_tcb, num_eps);
     ZF_LOGF_IF(error != seL4_NoError, "Failed to create endpoints.");
 
@@ -309,7 +309,7 @@ entire untyped object. However, this fails, because the untyped is already compl
     assert(error == seL4_NoError);
 
      // allocate the whole child_untyped as endpoints
-    seL4_Word num_eps = BIT(untyped_size_bits - seL4_EndpointBits);
+    seL4_Word num_eps = BIT(untyped_size_bits / seL4_EndpointBits);
     error = seL4_Untyped_Retype(child_untyped, seL4_EndpointObject, 0, seL4_CapInitThreadCNode, 0, 0, child_tcb, num_eps);
     ZF_LOGF_IF(error != seL4_NoError, "Failed to create endpoints.");
 
