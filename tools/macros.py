@@ -38,12 +38,13 @@ def help_block():
     return '''
 ---
 ## Getting help
-Stuck? See the resources below. 
+Stuck? See the resources below.
 * [FAQ](https://docs.sel4.systems/FrequentlyAskedQuestions)
 * [seL4 Manual](http://sel4.systems/Info/Docs/seL4-manual-latest.pdf)
 * [Debugging guide](https://docs.sel4.systems/DebuggingGuide.html)
-* [IRC Channel](https://docs.sel4.systems/IRCChannel)
-* [Developer's mailing list](https://sel4.systems/lists/listinfo/devel)
+* [seL4 Discourse forum](https://sel4.discourse.group)
+* [Developer's mailing list](https://lists.sel4.systems/postorius/lists/devel.sel4.systems/)
+* [Mattermost Channel](https://mattermost.trustworthy.systems/sel4-external/)
 '''
 
 
