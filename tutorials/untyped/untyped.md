@@ -178,15 +178,18 @@ specified using this argument. Note that there are two constraints on this value
 
 When you first run this tutorial, you will see something like the following output, which lists all of the
 untyped capabilities provided to the root task on boot:
+
 ```
 Booting all finished, dropped to user space
-    CSlot   	Paddr           	Size	Type
-   0x12d	        0x100000	2^20	device untyped
-   0x12e	        0x200000	2^21	device untyped
-   0x12f	        0x400000	2^22	device untyped
-   0x130	        0xb2e000	2^13	device untyped
+    CSlot   Paddr       Size    Type
+   0x12d    0x100000    2^20    device untyped
+   0x12e    0x200000    2^21    device untyped
+   0x12f    0x400000    2^22    device untyped
+   0x130    0xb2e000    2^13    device untyped
 ```
+
 At the end of the output, there is an error:
+
 ```
 <<seL4(CPU 0) [decodeUntypedInvocation/105 T0xffffff801ffb5400 "rootserver" @4012e1]: Untyped Retype: Requested UntypedItem size too small.>>
 main@main.c:49 [Cond failed: error != seL4_NoError]
@@ -243,6 +246,7 @@ This error happens because we are trying to create an untyped of size 0.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
 On success, the tutorial will progress further, printing "Failed to set priority"
 
 ### Create a TCB Object
@@ -276,9 +280,11 @@ The priority check is failing as `child_tcb` is an empty CSlot.
     ZF_LOGF_IF(error != seL4_NoError, "Failed to set priority");
 /*-- endfilter -*/
 ```
+
 /*-- endfilter -*/
 
 On success, the tutorial will progress further, printing "Endpoint cap is null cap".
+
 ### Create an endpoint object
 
 The error you see now is caused be an invalid endpoint capability.
@@ -307,8 +313,11 @@ The error you see now is caused be an invalid endpoint capability.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
 On success, 'Failed to bind notification' should be output.
+
 ### Create a notification object
+
 The next part of the tutorial attempts to use a notification object that does not yet exist.
 
 **Exercise** create a notification object from `child_untyped` and place its cap into the `child_ntfn` CSlot.
@@ -324,7 +333,9 @@ The next part of the tutorial attempts to use a notification object that does no
     ZF_LOGF_IF(error != seL4_NoError, "Failed to bind notification.");
 /*-- endfilter -*/
 ```
+
 /*-- filter ExcludeDocs() -*/
+
 ```c
 /*-- filter TaskContent("untyped-ntfn", TaskContentType.COMPLETED, subtask='ntfn', completion='Failed to create endpoints..') -*/
     // use the slot after child_ep for the new notification cap:
@@ -373,6 +384,7 @@ entire untyped object. However, this fails, because the untyped is already compl
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
 Once the tutorial is completed successfully, you should see the message "Success".
 
 ### Further exercises
@@ -386,6 +398,7 @@ to become more familiar with untyped objects and memory allocation in seL4.
 /*? macros.help_block() ?*/
 
 /*-- filter ExcludeDocs() -*/
+
 ```c
 /*- filter File("src/main.c") -*/
 #include <stdio.h>
@@ -413,6 +426,7 @@ int main(int argc, char *argv[]) {
 }
 /*- endfilter -*/
 ```
+
 ```cmake
 /*- filter File("CMakeLists.txt") -*/
 include(${SEL4_TUTORIALS_DIR}/settings.cmake)
@@ -440,4 +454,5 @@ DeclareRootserver(untyped)
 /*? macros.cmake_check_script(state) ?*/
 /*- endfilter -*/
 ```
+
 /*-- endfilter -*/
