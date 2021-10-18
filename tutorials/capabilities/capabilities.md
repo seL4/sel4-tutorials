@@ -33,16 +33,30 @@ By the end of this tutorial, you should be familiar with:
 ### What is a capability?
 
 A *capability* is a unique, unforgeable token that gives the possessor
-permission to access an entity or object in system. In seL4, capabilities to all resources
-controlled by seL4 are given to the root task on initialisation. To change the state of any
-resources, users use the kernel API, available in `libsel4` to request an operation on a specific
- capability.
+permission to access an entity or object in system. One way to think of a
+capability is as a pointer with access rights. There are three kinds of
+capabilities in seL4:
 
-For example, the root task is provided with a capability to its own thread control block (TCB),
- `seL4_CapInitThreadTCB`, a constant defined by `libsel4`. To change the properties of the initial TCB,
- one can use any of the [TCB API methods](https://docs.sel4.systems/projects/sel4/api-doc.html#sel4_tcb) on this capability.
-Below is an example which changes the stack pointer of the root task's TCB, a common operation in the
-root task if a larger stack is needed:
+* capabilities that control access to kernel objects such as thread control blocks,
+* capabilities that control access to abstract resources such as `IRQControl`, and
+* untyped capabilities, that are responsible for memory ranges and allocation
+  from those (see also the [Untyped] tutorial).
+
+[untyped]: https://docs.sel4.systems/Tutorials/untyped.html
+
+In seL4, capabilities to all resources controlled by the kernel are given to the root
+task on initialisation. To change the state of any resource, user code can use
+the kernel API, available in `libsel4` to request an operation on the resource
+a specific capability points to.
+
+For example, the root task is provided with a capability to its own thread
+control block (TCB), `seL4_CapInitThreadTCB`, a constant defined by `libsel4`.
+To change the properties of the initial TCB, one can use any of the [TCB API
+methods](https://docs.sel4.systems/projects/sel4/api-doc.html#sel4_tcb) on this
+capability.
+
+Below is an example which changes the stack pointer of the root task's TCB, a
+common operation in the root task if a larger stack is needed:
 
 ```c
     seL4_UserContext registers;
@@ -60,10 +74,15 @@ root task if a larger stack is needed:
     assert(error == seL4_NoError);
 ```
 
-Further documentation is available on [TCB_ReadRegisters](https://docs.sel4.systems/projects/sel4/api-doc.html#read-registers) and
+The first argument of `seL4_TCB_ReadRegisters` and `seL4_TCB_WriteRegisters`
+addresses the capability in slot `seL4_CapInitThreadTCB`. We will explain
+addressing and slots below. The rest of the arguments are specific to the
+invocations. Further documentation is available on
+[TCB_ReadRegisters](https://docs.sel4.systems/projects/sel4/api-doc.html#read-registers)
+and
 [TCB_WriteRegisters](https://docs.sel4.systems/projects/sel4/api-doc.html#write-registers).
 
-### CNodes
+### CNodes and CSlots
 
 A *CNode* (capability-node) is an object full of capabilities: you can think of a CNode as an array of capabilities.
 We refer to slots as *CSlots* (capability-slots). In the example above, `seL4_CapInitThreadTCB` is the slot in the root
@@ -87,49 +106,79 @@ by seL4's initialisation protocol, which consists of one CNode.
 
 ### CSpace addressing
 
-In order to refer to a capability, to perform operations on it, you must address the capability.
-There are two ways to address capabilities in the seL4 API. First is by invocation, the second
-is by direct addressing. Invocation is what we used to manipulate the registers of the root task's TCB, which
-we now explain in further detail.
+To refer to a capability and perform operations on it, you must *address* the
+capability. There are two ways to address capabilities in the seL4 API. First is
+by invocation, the second is by direct addressing. Invocation is a shorthand and
+it is what we used to manipulate the registers of the root task's TCB, which we
+now explain in further detail.
 
 #### Invocation
 
-On boot, the root task has a CNode capability installed as its *CSpace root*.
-An *invocation* is when a CSlot is addressed by implicitly invoking a thread's installed CSpace root.
-In the code example above, we use an invocation on the `seL4_CapInitThreadTCB` CSlot to read and write
-to the registers of the TCB represented by the capability in that specific CSlot.
+Each thread has a special CNode capability installed in its TCB as its *CSpace
+root*. This root can be empty (a null cap), for instance when the thread is not
+authorised to invoke any capabilities at all, or it can be a capability to a
+CNode. The root task always has a CSpace root capability that points to a CNode.
+
+In an *invocation*, a CSlot is addressed by implicitly invoking the CSpace root
+of the thread that is performing the invocation. In the code example above, we
+use an invocation on the `seL4_CapInitThreadTCB` CSlot to read from and write to
+the registers of the TCB represented by the capability in that specific CSlot.
+
 ```c
 seL4_TCB_WriteRegisters(seL4_CapInitThreadTCB, 0, 0, num_registers, &registers);
 ```
-This implicity looks up the `seL4_CapInitThreadTCB` CSlot in the CSpace root of the calling thread, which in this case
-is the root task.
+
+This implicitly looks up the `seL4_CapInitThreadTCB` CSlot in the CNode pointed to
+by the CSpace root capability of the calling thread, which here is the root task.
+
+When it is clear by context and not otherwise relevant, we sometimes identify
+the capability with the object it points to. So, instead of saying "the CNode
+pointed to by the CSpace root capability", we sometimes say "the CSpace root".
+If not sure, it is better to be precise. Like structs and pointers in C, objects
+and capabilities are not actually interchangeable: one object can be pointed to
+by multiple capabilities, and each of these capabilities could have a different
+level of permissions to that object.
+
 
 #### Direct CSpace addressing
 
-Direct addressing allows you to specify the CNode to address, rather than implicitly using the CSpace root, and is
-used to construct and manipulate the shape of CSpaces. Note that direct addressing requires invocation: the operation
-occurs by invoking a CNode capability, which itself is indexed from the CSpace root.
+In contrast to invocation addressing, *direct addressing* allows you to specify
+the CNode to look up in, rather than implicitly using the CSpace root. This form
+of addressing is primarily used to construct and manipulate the shape of CSpaces
+-- potentially the CSpace of another thread. Note that direct addressing also
+requires invocation: the operation occurs by invoking a CNode capability, which
+itself is indexed from the CSpace root.
 
- The following fields are used when directly addressing CSlots:
+The following fields are used when directly addressing CSlots:
+
 * *_service/root* A capability to the CNode to operate on.
 * *index* The index of the CSlot in the CNode to address.
 * *depth* How far to traverse the CNode before resolving the CSlot.
+
 For the initial, single-level CSpace, the *depth* value is always `seL4_WordBits`. For invocations, the depth is always
  implicitly `seL4_WordBits`.
 More on CSpace depth will be discussed in future tutorials.
 
-In the example below, we directly address the root task's TCB to make a copy of it in the 0th slot in the CSpace root.
-[CNode copy](https://docs.sel4.systems/projects/sel4/api-doc.html#copy) requires two CSlots to be directly addressed: the destination
- CSlot, and the source CSlot. Because we are copying in the same CNode, the root used in both addresses is the same:
- `seL4_CapInitThreadCNode`, which is the slot where seL4 places a capability to the root task's CSpace root.
+In the example below, we directly address the root task's TCB to make a copy of
+it in the 0th slot in the CSpace root. [CNode
+copy](https://docs.sel4.systems/projects/sel4/api-doc.html#copy) requires two
+CSlots to be directly addressed: the destination CSlot, and the source CSlot.
+`seL4_CapInitThreadCNode` is used in three different roles here: as source root,
+as destination root, and as source slot. It is used as source and destination
+root, because we are copying within the same CNode -- the CNode of the initial
+thread. It is used as source slot, because within the CNode of the initial
+thread, `seL4_CapInitThreadCNode` is the slot of the capability we want to copy
+(and the slot `0` is the destination).
+
 ```c
-    seL4_Error error = seL4_CNode_Copy(seL4_CapInitThreadCNode, 0, seL4_WordBits,
-                                       seL4_CapInitThreadCNode, seL4_CapInitThreadTCB, seL4_WordBits,
-                                       seL4_AllRights);
+    seL4_Error error = seL4_CNode_Copy(
+        seL4_CapInitThreadCNode, 0, seL4_WordBits, // destination root, slot, and depth
+        seL4_CapInitThreadCNode, seL4_CapInitThreadTCB, seL4_WordBits, // source root, slot, and depth
+        seL4_AllRights);
     assert(error == seL4_NoError);
 ```
 
-All [CNode invocations](https://docs.sel4.systems/projects/sel4/api-doc.html#sel4_cnode), require direct CSpace addressing.
+All [CNode invocations](https://docs.sel4.systems/projects/sel4/api-doc.html#sel4_cnode) require direct CSpace addressing.
 
 ### Initial CSpace
 
