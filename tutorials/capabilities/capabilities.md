@@ -95,8 +95,10 @@ Each CSlot in a CNode can be in the following state:
 By convention the 0th CSlot is kept empty, for the same reasons as keeping NULL unmapped in
  process virtual address spaces: to avoid errors when uninitialised slots are used unintentionally.
 
- CSlots are `1u << seL4_SlotBits` in size, and as a result the number of slots in a CNode can be calculated
- by `CNodeSize / (1u << seL4_SlotBits)`.
+The field `info->CNodeSizeBits` gives a measure of the size of the initial
+CNode: it will have `1 << CNodeSizeBits` CSlots. A CSlot has
+`1 << seL4_SlotBits` bytes, so the size of a CNode in bytes is
+`1 << (CNodeSizeBits + seL4_SlotBits`.
 
 ### CSpaces
 
@@ -192,7 +194,7 @@ resources manages by seL4. We have already seen several capabilities in the root
 ## Exercises
 
 The initial state of this tutorial provides you with the BootInfo structure,
-and calculates the size (in bytes) of the initial CNode object.
+and calculates the size (in slots) of the initial CNode object.
 
 ```c
 /*-- filter TaskContent("cnode-start", TaskContentType.ALL, subtask='init') -*/
@@ -211,8 +213,8 @@ When you run the tutorial without changes, you will see something like the follo
 
 ```
 Booting all finished, dropped to user space
-Initial CNode is 4096 bytes in size
-The CSpace has 0 CSlots
+Initial CNode is 65536 slots in size
+The CNode is 0 bytes in size
 <<seL4(CPU 0) [decodeInvocation/530 T0xffffff801ffb5400 "rootserver" @401397]: Attempted to invoke a null cap #4095.>>
 main@main.c:33 [Cond failed: error]
     Failed to set priority
@@ -224,21 +226,21 @@ The third line stating the number of slots in the CSpace, is incorrect, and your
 
 ### How big is your CSpace?
 
-**Exercise:** refer to the background above, and calculate the number of slots in the initial thread's CSpace.
+**Exercise:** refer to the background above, and calculate the number of bytes occupied by the initial thread's CSpace.
 
 ```c
 /*-- filter TaskContent("cnode-start", TaskContentType.ALL, subtask='size') -*/
-    size_t num_initial_cnode_slots = 0; // TODO calculate this.
-    printf("The CSpace has %zu CSlots\n", num_initial_cnode_slots);
+    size_t initial_cnode_object_size_bytes = 0; // TODO calculate this.
+    printf("The CNode is %zu bytes in size\n", initial_cnode_object_size_bytes);
 /*-- endfilter -*/
 ```
 
 /*-- filter ExcludeDocs() -*/
 
 ```c
-/*-- filter TaskContent("cnode-size", TaskContentType.COMPLETED, subtask='size', completion='The CSpace has [0-9]+ CSlots') -*/
-    size_t num_initial_cnode_slots = initial_cnode_object_size / (1u << seL4_SlotBits);
-    printf("The CSpace has %zu CSlots\n", num_initial_cnode_slots);
+/*-- filter TaskContent("cnode-size", TaskContentType.COMPLETED, subtask='size', completion='The CNode is [0-9]+ bytes in size') -*/
+    size_t initial_cnode_object_size_bytes = initial_cnode_object_size * (1u << seL4_SlotBits);
+    printf("The CNode is %zu bytes in size\n", initial_cnode_object_size_bytes);
 /*-- endfilter -*/
 ```
 
@@ -246,7 +248,7 @@ The third line stating the number of slots in the CSpace, is incorrect, and your
 
 ### Copy a capability between CSlots
 
-After the output showing the number of CSlots in the CSpace, you will see an error:
+After the output showing the number of bytes in the CSpace, you will see an error:
 
 ```
 <<seL4(CPU 0) [decodeInvocation/530 T0xffffff801ffb5400 "rootserver" @401397]: Attempted to invoke a null cap #4095.>>
