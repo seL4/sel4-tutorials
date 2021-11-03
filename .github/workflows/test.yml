@@ -15,9 +15,29 @@ on:
       - 'LICENSES/**'
       - '.*'
 
+  # allow manual trigger
+  workflow_dispatch:
+
+  # allow explicit trigger from other repos when dependencies have changed
+  repository_dispatch:
+    types: [deps-update]
+
 jobs:
+  code:
+    name: Freeze Code
+    runs-on: ubuntu-latest
+    outputs:
+      xml: ${{ steps.repo.outputs.xml }}
+    steps:
+    - id: repo
+      uses: seL4/ci-actions/repo-checkout@master
+      with:
+        manifest_repo: sel4-tutorials-manifest
+        manifest: master.xml
+
   test:
     name: Tutorial Solution
+    needs: code
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -45,3 +65,18 @@ jobs:
     - uses: seL4/ci-actions/tutorials@master
       with:
         app: ${{ matrix.app }}
+        xml: ${{ needs.code.outputs.xml }}
+
+  deploy:
+    name: Deploy manifest
+    if: ${{ github.repository_owner == 'seL4' && github.event_name != 'pull_request' }}
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+    - name: Deploy
+      uses: seL4/ci-actions/manifest-deploy@master
+      with:
+        xml: ${{ needs.code.outputs.xml }}
+        manifest_repo: sel4-tutorials-manifest
+      env:
+        GH_SSH: ${{ secrets.CI_SSH }}
