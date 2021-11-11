@@ -183,7 +183,7 @@ including  `DeclareCAmkESVM(Init0)`, which is used to define the `Init0` VM comp
 Each Init component requires a corresponding `DeclareCAmkESVM` function.
 
 `GetArchDefaultLinuxKernelFile` (defined in `projects/camkes/vm-linux/vm-linux-helpers.cmake`)
-is a helper function that retrieves the location of an architectural specific vm image provided
+is a helper function that retrieves the location of an architectural specific VM image provided
 in the `projects/vm-linux` folder, which contains some tools for building new linux kernel
 and root filesystem images, as well as the images that these tools
 produce. A fresh checkout of this project will contain some pre-built
@@ -279,7 +279,7 @@ target_link_libraries(hello -static)
 /*-- endfilter -*/
 ```
 Now integrate the new program with the build system. 
-Update the vm apps `CMakeLists.txt` to declare the hello application as an
+Update the VM apps `CMakeLists.txt` to declare the hello application as an
 external project and add it to our overlay.
  Do this by replacing the line `AddToFileServer("rootfs.cpio" ${default_rootfs_file})` with the following:
 
@@ -402,7 +402,7 @@ include("${MODULE_HELPERS_FILE}")
 DefineLinuxModule(${CMAKE_CURRENT_LIST_DIR}/poke poke-module poke-target KERNEL_DIR ${LINUX_KERNEL_DIR})
 /*-- endfilter -*/
 ```
-Update the vm `CMakeLists.txt` file to declare the new poke module as an
+Update the VM `CMakeLists.txt` file to declare the new poke module as an
 external project and add it to the overlay. 
 
 At the top of the file include our linux helpers, add the following:
@@ -412,7 +412,7 @@ At the top of the file include our linux helpers, add the following:
 include(${CAMKES_VM_LINUX_SOURCE_HELPERS_PATH})
 /*-- endfilter -*/
 ```
-Below the includes add:
+Below the includes (before `AddOverlayDirToRootfs` that was added the first exercise **Adding a program**) add:
 ```cmake
 /*-- filter TaskContent("vm-cmake-poke", TaskContentType.COMPLETED, subtask='module', completion='buildroot login') -*/
 # Setup Linux Sources
@@ -464,7 +464,7 @@ exec /sbin/init $*
 /*-- endfilter -*/
 ```
 Now update our the VM apps `CMakeLists.txt` file to add the new init script to the
-overlay. After our call to `AddExternalProjFilesToOverlay` for the poke module add the following:
+overlay. After our call to `AddExternalProjFilesToOverlay` and before `AddOverlayDirToRootfs` for the poke module add the following:
 
 ```cmake
 /*-- filter TaskContent("vm-cmake-poke", TaskContentType.COMPLETED, subtask='init_overlay', completion='buildroot login') -*/
@@ -484,8 +484,8 @@ Welcome to Buildroot
 buildroot login: root
 Password:
 # grep poke /proc/devices        # figure out the major number of our driver
-244 poke
-# mknod /dev/poke c 244 0        # create the special file
+246 poke
+# mknod /dev/poke c 246 0        # create the special file
 # echo > /dev/poke               # write to the file
 [ 57.389643] hi
 -sh: write error: Bad address    # the shell complains, but our module is being invoked!
@@ -501,7 +501,7 @@ Add a new function at the top of the file:
 
 ```c
 static int poke_handler(vmm_vcpu_t *vmm_vcpu) {
-    printf("POKE!!!n");
+    printf("POKE!!!\n");
     return 0;
 }
 ```
@@ -509,10 +509,10 @@ static int poke_handler(vmm_vcpu_t *vmm_vcpu) {
 In the function `main_continued` register \`poke_handler\`:
 
 ```c
-reg_new_handler(&vmm, poke_handler, 4); // <--- added
+vm_reg_new_vmcall_handler(&vm, poke_handler, 4); // <--- added
 
 /* Now go run the event loop */
-vmm_run(&vmm);
+vmm_run(&vm);
 ```
 
 Rebuild the project and try out the hypercall + module:
@@ -521,7 +521,7 @@ Rebuild the project and try out the hypercall + module:
 Welcome to Buildroot
 buildroot login: root
 Password:
-# mknod /dev/poke c 244 0
+# mknod /dev/poke c 246 0
 # echo > /dev/poke
 POKE!!!
 ```
