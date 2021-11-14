@@ -412,7 +412,7 @@ At the top of the file include our linux helpers, add the following:
 include(${CAMKES_VM_LINUX_SOURCE_HELPERS_PATH})
 /*-- endfilter -*/
 ```
-Below the includes (before `AddOverlayDirToRootfs` that was added the first exercise **Adding a program**) add:
+Below the includes (before `AddOverlayDirToRootfs` that was added in the first exercise **Adding a program**) add:
 ```cmake
 /*-- filter TaskContent("vm-cmake-poke", TaskContentType.COMPLETED, subtask='module', completion='buildroot login') -*/
 # Setup Linux Sources
