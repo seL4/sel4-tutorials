@@ -512,7 +512,7 @@ In the function `main_continued` register \`poke_handler\`:
 vm_reg_new_vmcall_handler(&vm, poke_handler, 4); // <--- added
 
 /* Now go run the event loop */
-vmm_run(&vm);
+vm_run(&vm);
 ```
 
 Rebuild the project and try out the hypercall + module:
