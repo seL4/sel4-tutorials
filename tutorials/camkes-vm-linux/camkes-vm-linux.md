@@ -421,7 +421,7 @@ GetDefaultLinuxMinor(linux_minor)
 GetDefaultLinuxMd5(linux_md5)
 # Download and Configure our Linux sources
 DownloadLinux(${linux_major} ${linux_minor} ${linux_md5} vm_linux_extract_dir download_vm_linux)
-set(linux_config "${CAMKES_VM_LINUX_DIR}/linux_configs/${linux_major}.${linux_minor}/32/config")
+set(linux_config "${CAMKES_VM_LINUX_DIR}/linux_configs/${linux_major}.${linux_minor}/32/config.backup-singlecore")
 set(linux_symvers "${CAMKES_VM_LINUX_DIR}/linux_configs/${linux_major}.${linux_minor}/32/Module.symvers")
 ConfigureLinux(${vm_linux_extract_dir} ${linux_config} ${linux_symvers} configure_vm_linux
     DEPENDS download_vm_linux
