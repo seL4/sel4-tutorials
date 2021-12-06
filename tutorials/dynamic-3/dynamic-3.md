@@ -297,6 +297,18 @@ communicate with us, we can let it run. Complete this step and proceed.
      * @param resume 1 to start the process, 0 to leave suspended.
      * @return 0 on success, -1 on error.
      */
+    /* hint 2: sel4utils_create_word_args()
+     * void sel4utils_create_word_args(char strings[][WORD_STRING_SIZE], char *argv[], int argc, ...)
+     * Create c-formatted argument list to pass to a process from arbitrarily long amount of words.
+     *
+     * @param strings empty 2d array of chars to populate with word strings.
+     * @param argv empty 1d array of char pointers which will be set up with pointers to
+     *             strings in strings.
+     * @param argc number of words
+     * @param ... list of words to create arguments from.
+     *
+     */
+
 /*-- endset -*/
 /*? task_5_desc ?*/
 /*-- filter ExcludeDocs() -*/
