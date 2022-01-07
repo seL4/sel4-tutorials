@@ -57,6 +57,11 @@ Hello, World!
 /*- endfilter --*/
 ```
 
+After that output, there should be a capability violation and a stack dump,
+because the program hasn't properly cleaned up after itself yet. (This will come in later examples)
+
+`Ctrl-A, X` will terminate QEMU.
+
 ## Looking at the sources
 
 In your tutorial directory, you will find the following files:
@@ -178,8 +183,3 @@ Second hello
 /*- endfilter -*/
 ```
 /*- endfilter -*/
-
-After that output, there should be a capability violation and a stack dump,
-because the program hasn't properly cleaned up after itself yet. (This will come in later examples)
-
-`Ctrl-A, X` will terminate QEMU.
