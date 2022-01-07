@@ -288,7 +288,7 @@ communicate with us, we can let it run. Complete this step and proceed.
 /*-- set task_5_desc -*/
     /* TASK 5: spawn the process */
     /* hint 1: sel4utils_spawn_process_v()
-     * int sel4utils_spawn_process(sel4utils_process_t *process, vka_t *vka, vspace_t *vspace, int argc, char *argv[], int resume)
+     * int sel4utils_spawn_process_v(sel4utils_process_t *process, vka_t *vka, vspace_t *vspace, int argc, char *argv[], int resume)
      * @param process Initialised sel4utils process struct.
      * @param vka Vka interface to use for allocation of frames.
      * @param vspace The current vspace.
