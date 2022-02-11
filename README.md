@@ -27,9 +27,9 @@ work on.
 Example:
 
 ```sh
-mkdir build_hello_1
-cd build_hello_1
-../init --plat pc99 --tut hello-1
+mkdir build_hello_world
+cd build_hello_world
+../init --plat pc99 --tut hello-world
 ```
 
 The `init` script will initialize a build directory in the current directory and at the end
@@ -60,9 +60,9 @@ to the `init` script
 Example:
 
 ```sh
-mkdir build_hello_1_sol
-cd build_hello_1_sol
-../init --plat pc99 --tut hello-1 --solution
+mkdir build_hello_world
+cd build_hello_world
+../init --plat pc99 --tut hello-world --solution
 ```
 
 After which it will tell you where the solution files are that you can look at. You can then
