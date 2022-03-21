@@ -58,4 +58,4 @@ macro(sel4_tutorials_setup_capdl_tutorial_environment)
 endmacro()
 
 include(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(camkes-tool DEFAULT_MSG SEL4_TUTORIALS_DIR)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(sel4-tutorials DEFAULT_MSG SEL4_TUTORIALS_DIR)
