@@ -20,21 +20,17 @@ set(POLLY_DIR ${project_dir}/tools/polly CACHE INTERNAL "")
 
 include(application_settings)
 
-# Deal with the top level target-triplet variables.
-if(NOT TUT_BOARD)
-    message(
-        FATAL_ERROR
-            "Please select a board to compile for. Choose either pc or zynq7000\n\t`-DTUT_BOARD=<PREFERENCE>`"
-    )
-endif()
+set(TUT_BOARD "pc" CACHE STRING "Target machine to build the project for")
+
 
 # Set arch and board specific kernel parameters here.
 if(${TUT_BOARD} STREQUAL "pc")
     set(KernelArch "x86" CACHE STRING "" FORCE)
     set(KernelPlatform "pc99" CACHE STRING "" FORCE)
-    if(${TUT_ARCH} STREQUAL "ia32")
+    set(TUT_ARCH "x86_64" CACHE STRING "")
+    if("${TUT_ARCH}" STREQUAL "ia32")
         set(KernelSel4Arch "ia32" CACHE STRING "" FORCE)
-    elseif(${TUT_ARCH} STREQUAL "x86_64")
+    elseif("${TUT_ARCH}" STREQUAL "x86_64")
         set(KernelSel4Arch "x86_64" CACHE STRING "" FORCE)
     else()
         message(FATAL_ERROR "Unsupported PC architecture ${TUT_ARCH}")
@@ -58,7 +54,7 @@ elseif(${TUT_BOARD} STREQUAL "zynq7000")
     set(KernelPlatform "zynq7000" CACHE STRING "" FORCE)
     ApplyData61ElfLoaderSettings(${KernelPlatform} ${KernelSel4Arch})
 else()
-    message(FATAL_ERROR "Unsupported board ${TUT_BOARD}.")
+    message(FATAL_ERROR "Unsupported board ${TUT_BOARD}. Choose either pc or zynq7000 with -DTUT_BOARD=<PREFERENCE> or in CMakeCache.txt.`")
 endif()
 
 include(${project_dir}/kernel/configs/seL4Config.cmake)
