@@ -20,8 +20,11 @@ set(POLLY_DIR ${project_dir}/tools/polly CACHE INTERNAL "")
 
 include(application_settings)
 
-set(TUT_BOARD "pc" CACHE STRING "Target machine to build the project for")
-
+set(TUT_BOARD "" CACHE STRING "Target machine to build the project for")
+if(TUT_BOARD STREQUAL "")
+    message("No board selected (-DTUT_BOARD=[pc|zynq7000]), defaulting to 'pc'")
+    set(TUT_BOARD "pc")
+endif()
 
 # Set arch and board specific kernel parameters here.
 if(${TUT_BOARD} STREQUAL "pc")
