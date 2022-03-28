@@ -11,7 +11,7 @@ import os
 import stat
 from pickle import dumps
 import pyaml
-from jinja2 import contextfilter, contextfunction
+from jinja2 import pass_context
 
 from . import macros
 from capdl import ObjectType, ObjectRights, Cap, lookup_architecture
@@ -24,7 +24,7 @@ class TutorialFilters:
     """
 
     @staticmethod
-    @contextfilter
+    @pass_context
     def File(context, content, filename, **kwargs):
         """
         Declare content to be written directly to a file
@@ -46,7 +46,7 @@ class TutorialFilters:
         return content
 
     @staticmethod
-    @contextfilter
+    @pass_context
     def TaskContent(context, content, task_name, content_type, subtask=None, completion=None):
         """
         Declare task content for a task. Optionally takes content type argument
@@ -62,7 +62,7 @@ class TutorialFilters:
         return content
 
     @staticmethod
-    @contextfilter
+    @pass_context
     def TaskCompletion(context, content, task_name, content_type):
         """
         Declare completion text for a particular content_type
@@ -75,7 +75,7 @@ class TutorialFilters:
         return content
 
     @staticmethod
-    @contextfilter
+    @pass_context
     def ExcludeDocs(context, content):
         """
         Hides the contents from the documentation. Side effects from other functions
@@ -84,7 +84,7 @@ class TutorialFilters:
         return ""
 
     @staticmethod
-    @contextfilter
+    @pass_context
     def ELF(context, content, name, passive=False):
         """
         Declares a ELF object containing content with name.
@@ -158,7 +158,7 @@ class TutorialFunctions:
     context """
 
     @staticmethod
-    @contextfunction
+    @pass_context
     def ExternalFile(context, filename):
         """
         Declare an additional file to be processed by the template renderer.
@@ -168,7 +168,7 @@ class TutorialFunctions:
         return
 
     @staticmethod
-    @contextfunction
+    @pass_context
     def include_task(context, task_name, subtask=None):
         """
         Prints a task out
@@ -180,7 +180,7 @@ class TutorialFunctions:
             raise Exception("No content found for {0} {1}".format(task_name, str(subtask or '')))
 
     @staticmethod
-    @contextfunction
+    @pass_context
     def include_task_type_replace(context, task_names):
         """
         Takes a list of task names and displays only the one that is
@@ -228,7 +228,7 @@ class TutorialFunctions:
         raise Exception("Could not find thing")
 
     @staticmethod
-    @contextfunction
+    @pass_context
     def include_task_type_append(context, task_names):
         """
         Takes a list of task_names and appends the task content based on the position in
@@ -258,7 +258,7 @@ class TutorialFunctions:
         return '\n'.join(result)
 
     @staticmethod
-    @contextfunction
+    @pass_context
     def declare_task_ordering(context, task_names):
         """
         Declare the list of tasks that the tutorial contains.
@@ -278,7 +278,7 @@ class TutorialFunctions:
         return ""
 
     @staticmethod
-    @contextfunction
+    @pass_context
     def capdl_alloc_obj(context, obj_type, obj_name, **kwargs):
         state = context['state']
         stash = state.stash
@@ -288,7 +288,7 @@ class TutorialFunctions:
         return obj
 
     @staticmethod
-    @contextfunction
+    @pass_context
     def capdl_alloc_cap(context, obj_type, obj_name, symbol, **kwargs):
         """
         Alloc a cap and emit a symbol for it.
@@ -301,43 +301,43 @@ class TutorialFunctions:
         return "extern seL4_CPtr %s;" % symbol
 
     @staticmethod
-    @contextfunction
+    @pass_context
     def capdl_elf_cspace(context, elf_name, cap_symbol):
         return TutorialFunctions.capdl_alloc_cap(context, ObjectType.seL4_CapTableObject, "cnode_%s" % elf_name, cap_symbol)
 
     @staticmethod
-    @contextfunction
+    @pass_context
     def capdl_elf_vspace(context, elf_name, cap_symbol):
         pd_type = lookup_architecture("x86_64").vspace().object
         return TutorialFunctions.capdl_alloc_cap(context, pd_type, "vspace_%s" % elf_name, cap_symbol)
 
     @staticmethod
-    @contextfunction
+    @pass_context
     def capdl_elf_tcb(context, elf_name, cap_symbol):
         return TutorialFunctions.capdl_alloc_cap(context, ObjectType.seL4_TCBObject, "tcb_%s" % elf_name, cap_symbol)
 
     @staticmethod
-    @contextfunction
+    @pass_context
     def capdl_elf_sc(context, elf_name, cap_symbol):
         return TutorialFunctions.capdl_alloc_cap(context, ObjectType.seL4_SchedContextObject, "sc_%s" % elf_name, cap_symbol)
 
     @staticmethod
-    @contextfunction
+    @pass_context
     def capdl_sched_control(context, cap_symbol):
         return TutorialFunctions.capdl_alloc_cap(context, ObjectType.seL4_SchedControl, "sched_control", cap_symbol)
 
     @staticmethod
-    @contextfunction
+    @pass_context
     def capdl_irq_control(context, cap_symbol):
         return TutorialFunctions.capdl_alloc_cap(context, ObjectType.seL4_IRQControl, "irq_control", cap_symbol)
 
     @staticmethod
-    @contextfunction
+    @pass_context
     def capdl_empty_slot(context, cap_symbol):
         return TutorialFunctions.capdl_alloc_cap(context, None, None, cap_symbol)
 
     @staticmethod
-    @contextfunction
+    @pass_context
     def capdl_declare_stack(context, size_bytes, stack_base_sym, stack_top_sym=None):
         state = context['state']
         stash = state.stash
@@ -349,7 +349,7 @@ class TutorialFunctions:
         ])
 
     @staticmethod
-    @contextfunction
+    @pass_context
     def capdl_declare_frame(context, cap_symbol, symbol, size=4096):
         state = context['state']
         stash = state.stash
@@ -367,12 +367,12 @@ class TutorialFunctions:
         ])
 
     @staticmethod
-    @contextfunction
+    @pass_context
     def capdl_declare_ipc_buffer(context, cap_symbol, symbol):
         return TutorialFunctions.capdl_declare_frame(context, cap_symbol, symbol)
 
     @staticmethod
-    @contextfunction
+    @pass_context
     def write_manifest(context, manifest='manifest.yaml', allocator="allocators.pickle"):
         state = context['state']
         args = context['args']
@@ -398,29 +398,29 @@ class TutorialFunctions:
 '''
 These are for potential extra template functions, that haven't been required
 by templating requirements yet.
-@contextfunction
+@pass_context
 def show_if_task(context, task_names):
     pass
 
-@contextfunction
+@pass_context
 def show_before_task(context, task_names):
     pass
 
 
-@contextfunction
+@pass_context
 def show_after_task(context, task_names):
     pass
 
-@contextfunction
+@pass_context
 def hide_if_task(context, task_names):
     pass
 
-@contextfunction
+@pass_context
 def hide_before_task(context, task_names):
     pass
 
 
-@contextfunction
+@pass_context
 def hide_after_task(context, task_names):
     pass
 
