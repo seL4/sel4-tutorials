@@ -202,7 +202,7 @@ class TutorialFunctions:
             (name, subtask) = normalise_task_name(name)
             task = state.get_task(name)
             if task > state.get_current_task():
-                if i is 0:
+                if i == 0:
                     # If we aren't up to any of the tasks yet we return nothing
                     return ""
                 # Use previous task
