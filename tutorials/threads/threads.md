@@ -57,18 +57,18 @@ The scheduler picks the highest-priority, runnable thread. seL4 provides a prior
 TCBs also have a *maximum control priority* (MCP), which acts as an informal capability over priorities.
 When setting the priority of a TCB, an explicit TCB capability must be provided to derive the
 authority from to set the priority. The priority being set is checked against the authority TCB's
-MCP and the targer priority is greater, the operation fails. The root task starts with both priority and
+MCP and the target priority is greater, the operation fails. The root task starts with both priority and
 MCP set to `seL4_MaxPrio`.
 
 #### Round robin
 
-When multiple TCBs are runnable and have the same priority, the are scheduled in a
- first-in first-out round-robin fashion. In more detail, kernel time
- is accounted for in fixed-time quanta referred to as ticks, and each TCB has
+When multiple TCBs are runnable and have the same priority, they are scheduled in a
+first-in, first-out round-robin fashion. In more detail, kernel time
+is accounted for in fixed-time quanta referred to as ticks, and each TCB has
 a timeslice field which represents the number of ticks that TCB is eligible to execute
 until preempted. The kernel timer driver is configured to fire a periodic interrupt which
 marks each tick, and when the timeslice is exhausted round robin scheduling is applied.
-Threads can surrender their current tick using the `seL4_Yield` system call.
+Threads can surrender their current timeslice using the `seL4_Yield` system call.
 
 #### Domain scheduling
 

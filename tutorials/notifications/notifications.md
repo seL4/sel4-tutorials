@@ -29,10 +29,10 @@ and to synchronise access to shared data buffers.
 
 Signals are sent and received with invocations on capabilities to notification objects.
 A notification object consists of a data word, which acts as an array of binary semaphores, and a queue of
-TCBs waiting to for notifications.
+TCBs waiting for notifications.
 
 Notification objects can be in three states:
-* Waiting - there are TCBs queued on this notification waiting for to be signalled.
+* Waiting - there are TCBs queued on this notification waiting for it to be signalled.
 * Active - TCBs have signalled data on this notification,
 * Idle - no TCBs are queued and no TCBs have signalled this object since it was last set to idle.
 
