@@ -96,9 +96,9 @@ By convention the 0th CSlot is kept empty, for the same reasons as keeping NULL 
  process virtual address spaces: to avoid errors when uninitialised slots are used unintentionally.
 
 The field `info->CNodeSizeBits` gives a measure of the size of the initial
-CNode: it will have `1 << CNodeSizeBits` CSlots. A CSlot has
+CNode: it will have `1 << CNodeSizeBits` CSlots where the `<<` symbol represents the left bit shift operator. A CSlot has
 `1 << seL4_SlotBits` bytes, so the size of a CNode in bytes is
-`1 << (CNodeSizeBits + seL4_SlotBits`.
+`1 << (CNodeSizeBits + seL4_SlotBits)`.
 
 ### CSpaces
 
