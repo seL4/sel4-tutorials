@@ -32,15 +32,15 @@ By the end of this tutorial, you should be familiar with:
 
 ### What is a capability?
 
-A *capability* is a unique, unforgeable token that gives the possessor
-permission to access an entity or object in system. One way to think of a
+A *capability* is a unique, unforgeable token that gives the possess
+permission to access an entity or object in the system. One way to think of a
 capability is as a pointer with access rights. There are three kinds of
 capabilities in seL4:
 
 * capabilities that control access to kernel objects such as thread control blocks,
 * capabilities that control access to abstract resources such as `IRQControl`, and
-* untyped capabilities, that are responsible for memory ranges and allocation
-  from those (see also the [Untyped] tutorial).
+* untyped capabilities that are responsible for memory usage, mapping, and allocation
+(see also the [Untyped] tutorial).
 
 [untyped]: https://docs.sel4.systems/Tutorials/untyped.html
 
@@ -92,13 +92,17 @@ Each CSlot in a CNode can be in the following state:
 * empty: the CNode slot contains a null capability,
 * full: the slot contains a capability to a kernel resource.
 
-By convention the 0th CSlot is kept empty, for the same reasons as keeping NULL unmapped in
+By convention the 0<sup>th</sup> CSlot is kept empty, for the same reasons as keeping NULL unmapped in
  process virtual address spaces: to avoid errors when uninitialised slots are used unintentionally.
 
-The field `info->CNodeSizeBits` gives a measure of the size of the initial
-CNode: it will have `1 << CNodeSizeBits` CSlots. A CSlot has
-`1 << seL4_SlotBits` bytes, so the size of a CNode in bytes is
-`1 << (CNodeSizeBits + seL4_SlotBits`.
+In `src/main.c`, we define a variable called `info` which is of type `seL4_BootInfo`. This data structure
+is defined in a file called `bootinfo_types.h` and provides us with usefull information about our 
+running process.  The field `info->initThreadCNodeSizeBits` tells us the the number of CSlots in
+the initial CNode.  Notice that the variable name ends in `SizeBits`.  This suffix generally tells us 
+that the number given is not the actual size, but the number of bits required to represent the actual
+size.  Written mathematically, our CNode has 2<sup>initThreadCNodeSizeBits</sup> CSlots. The constant `seL4_SlotBits` which is defined in a file called `constants.h` tells us that a single CSlot occupies 
+2<sup>seL4_SlotBits</sup> bytes. So, the total size of our CNode is
+2<sup>(initThreadCNodeSizeBits + seL4_SlotBits)</sup> bytes.
 
 ### CSpaces
 
