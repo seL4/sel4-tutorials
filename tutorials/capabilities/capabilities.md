@@ -98,7 +98,7 @@ By convention the 0th CSlot is kept empty, for the same reasons as keeping NULL 
 The field `info->CNodeSizeBits` gives a measure of the size of the initial
 CNode: it will have `1 << CNodeSizeBits` CSlots. A CSlot has
 `1 << seL4_SlotBits` bytes, so the size of a CNode in bytes is
-`1 << (CNodeSizeBits + seL4_SlotBits`.
+`1 << (CNodeSizeBits + seL4_SlotBits)`.
 
 ### CSpaces
 
@@ -185,7 +185,7 @@ All [CNode invocations](https://docs.sel4.systems/projects/sel4/api-doc.html#sel
 ### Initial CSpace
 
 The root task has a CSpace, set up by seL4 during boot, which contains capabilities to all
-resources manages by seL4. We have already seen several capabilities in the root CSpace: `seL4_CapInitThreadTCB`,
+resources managed by seL4. We have already seen several capabilities in the root CSpace: `seL4_CapInitThreadTCB`,
  and `seL4_CapInitThreadCNode`. Both of these are specified by constants in `libsel4`, however not all initial
  capabilities are statically specified. Other capabilities are described by the `seL4_BootInfo` data structure,
  described in `libsel4` and initialised by seL4. `seL4_BootInfo` describes ranges of initial capabilities,
