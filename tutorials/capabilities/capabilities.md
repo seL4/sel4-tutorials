@@ -9,24 +9,27 @@
 
 # Capabilities
 
-This tutorial provides a basic introduction to seL4 capabilities.
+You will learn:
+1. The jargon CNode, CSpace, CSlot.
+2. Know how to invoke a capability.
+3. Know how to delete and copy CSlots.
 
-## Prerequisites
-
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-2. [Hello world](https://docs.sel4.systems/Tutorials/hello-world)
 
 ## Initialising
 
 /*? macros.tutorial_init("capabilities") ?*/
 
-## Outcomes
+<details markdown='1'>
+<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<br>
+All tutorials come with complete solutions. To get solutions run:
 
-By the end of this tutorial, you should be familiar with:
+```
+./init --solution --tut capabilities
+```
 
-1. The jargon CNode, CSpace, CSlot.
-2. Know how to invoke a capability.
-3. Know how to delete and copy CSlots.
+Answers are also available in drop down menus under each section.
+</details>
 
 ## Background
 
@@ -246,6 +249,14 @@ The third line stating the number of slots in the CSpace, is incorrect, and your
 
 /*-- endfilter -*/
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    size_t initial_cnode_object_size_bytes = initial_cnode_object_size * (1u << seL4_SlotBits);
+```
+</details>
+
 ### Copy a capability between CSlots
 
 After the output showing the number of bytes in the CSpace, you will see an error:
@@ -278,6 +289,18 @@ The error occurs as the existing code tries to set the priority of the initial t
 /*-- endfilter -*/
 ```
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    /* use seL4_CNode_Copy to make another copy of the initial TCB capability to the last slot in the CSpace */
+    error = seL4_CNode_Copy(seL4_CapInitThreadCNode, last_slot, seL4_WordBits,
+                      seL4_CapInitThreadCNode, first_free_slot, seL4_WordBits, seL4_AllRights);
+    ZF_LOGF_IF(error, "Failed to copy cap!");
+```
+
+</details>
+
 /*-- filter ExcludeDocs() -*/
 
 ```c
@@ -299,6 +322,18 @@ The error occurs as the existing code tries to set the priority of the initial t
     ZF_LOGF_IF(error, "Failed to set priority");
 /*-- endfilter -*/
 ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    /* use seL4_CNode_Copy to make another copy of the initial TCB capability to the last slot in the CSpace */
+    error = seL4_CNode_Copy(seL4_CapInitThreadCNode, last_slot, seL4_WordBits,
+                      seL4_CapInitThreadCNode, first_free_slot, seL4_WordBits, seL4_AllRights);
+    ZF_LOGF_IF(error, "Failed to copy cap!");
+```
+
+</details>
 
 /*-- endfilter -*/
 On success, you will now see the output:
@@ -339,6 +374,15 @@ by a neat hack: by attempting to move the CSlots onto themselves. This should fa
     ZF_LOGF_IF(error != seL4_FailedLookup, "last_slot is not empty");
 /*-- endfilter -*/
 ```
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    // delete the created TCB capabilities
+    seL4_CNode_Revoke(seL4_CapInitThreadCNode, seL4_CapInitThreadTCB, seL4_WordBits);
+```
+</details>
+
 
 /*-- filter ExcludeDocs() -*/
 
@@ -381,6 +425,15 @@ main@main.c:56 Failed to suspend current thread
     ZF_LOGF("Failed to suspend current thread\n");
 /*-- endfilter -*/
 ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    // suspend the current thread
+    seL4_TCB_Suspend(seL4_CapInitThreadTCB);
+```
+</details>
 
 /*-- filter ExcludeDocs() -*/
 

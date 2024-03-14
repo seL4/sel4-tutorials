@@ -7,7 +7,7 @@
 /*? declare_task_ordering(['hello-world', 'hello-world-mod']) ?*/
 # Hello, World!
 
-In this tutorial you will
+In this tutorial you will:
 - Run Hello, World! to ensure your setup is working correctly
 - Become familiar with the jargon *root task*
 - Build and simulate a seL4 project
@@ -30,9 +30,11 @@ all you need to do is build and run the tutorial.
 <summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
 <br>
 All tutorials come with complete solutions. To get solutions run:
+
 ```
 ./init --solution --tut hello-world
 ```
+
 This will generate another `hello-world` directory and `hello-world_build` directory, with unique names, e.g. `hello-world44h1po5q` and `hello-world44h1po5q_build`.
 </details>
 
