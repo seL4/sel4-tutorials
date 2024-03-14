@@ -1,7 +1,7 @@
 <!--
-  Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
+  2024 seL4 Project a Series of LF Projects, LLC.
 
-  SPDX-License-Identifier: BSD-2-Clause
+  SPDX-License-Identifier: CC-BY-SA-4.0
 -->
 
 /*? declare_task_ordering(['hello']) ?*/
@@ -27,6 +27,8 @@ All tutorials come with complete solutions. To get solutions run:
 ./init --solution --tut hello-camkes-2
 ```
 </details>
+
+
 
 ### TASK 1
  Here you're declaring the events that will be bounced

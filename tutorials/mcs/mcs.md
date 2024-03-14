@@ -1,11 +1,11 @@
 <!--
-  Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
+  2024 seL4 Project a Series of LF Projects, LLC.
 
-  SPDX-License-Identifier: BSD-2-Clause
+  SPDX-License-Identifier: CC-BY-SA-4.0
 -->
 
 # MCS Extensions
-/*? declare_task_ordering(['mcs-start','mcs-periodic', 'mcs-unbind', 'mcs-bind', 'mcs-sporadic', 
+/*? declare_task_ordering(['mcs-start','mcs-periodic', 'mcs-unbind', 'mcs-bind', 'mcs-sporadic',
 'mcs-server','mcs-badge','mcs-fault']) ?*/
 
 ## Prerequisites
@@ -23,7 +23,7 @@ Then initialise the tutorial:
 ## Outcomes
 
 This tutorial presents the features in the upcoming MCS extensions for seL4, which are currently undergoing
-verification. For further context on the new features, please see the 
+verification. For further context on the new features, please see the
 [paper](https://trustworthy.systems/publications/csiro_full_text/Lyons_MAH_18.pdf) or [phd](https://github.com/pingerino/phd/blob/master/phd.pdf)
  which provides a comprehensive background on the changes.
 
@@ -35,28 +35,28 @@ verification. For further context on the new features, please see the
 ## Background
 
 The MCS extensions provide capability-based access to CPU time, and provide mechanisms to limit the upper
-bound of execution of a thread. 
+bound of execution of a thread.
 
 ### Scheduling Contexts
 
-Scheduling contexts are a new object type in the kernel, which contain scheduling parameters amoung other 
-accounting details. Most importantly, scheduling contexts contain a *budget* and a *period*, which 
+Scheduling contexts are a new object type in the kernel, which contain scheduling parameters amoung other
+accounting details. Most importantly, scheduling contexts contain a *budget* and a *period*, which
 represent an upper bound on execution time allocated: the kernel will enforce that threads cannot execute
-for more than *budget* microseconds out of *period* microseconds. 
+for more than *budget* microseconds out of *period* microseconds.
 
 ### SchedControl
 
-Parameters for scheduling contexts are configured by invoking `seL4_SchedControl` capabilities, one of 
-which is provided per CPU. The invoked `seL4_SchedControl` determines which processing core that specific 
+Parameters for scheduling contexts are configured by invoking `seL4_SchedControl` capabilities, one of
+which is provided per CPU. The invoked `seL4_SchedControl` determines which processing core that specific
 scheduling context provides access to.
 
-Scheduling contexts can be configured as *full* or *partial*. Full scheduling contexts have `budget == 
+Scheduling contexts can be configured as *full* or *partial*. Full scheduling contexts have `budget ==
 period` and grant access to 100% of CPU time. Partial scheduling contexts grant access to an upper bound of
  `budget/period` CPU time.
 
-The code example below configures a 
-scheduling context with a budget and period both equal to 1000us. Because the budget and period are equal, 
-the scheduling context is treated as round-robin 
+The code example below configures a
+scheduling context with a budget and period both equal to 1000us. Because the budget and period are equal,
+the scheduling context is treated as round-robin
 
 ```c
 /*-- filter TaskContent("mcs-start", TaskContentType.ALL, subtask='configure') -*/
@@ -68,7 +68,7 @@ the scheduling context is treated as round-robin
 ### SchedContext Binding
 
 Thread control blocks (TCBs) must have a scheduling context configured with non-zero budget and period
- in order to be picked by the scheduler. This 
+ in order to be picked by the scheduler. This
 can by invoking the scheduling context capability with the `seL4_SchedContext_Bind` invocation, or by
 using `seL4_TCB_SetSchedParams`, which takes a scheduling context capability. Below is example code for
 binding a TCB and a scheduling context.
@@ -81,35 +81,35 @@ binding a TCB and a scheduling context.
 ```
 
 TCB's can only be bound to one scheduling context at a time, and vice versa. If a scheduling context has not
-been configured with any time, then although the TCB has a scheduling context it will remain ineligible 
-for scheduling. 
+been configured with any time, then although the TCB has a scheduling context it will remain ineligible
+for scheduling.
 
 ### Bounding execution
 
 For partial scheduling contexts, an upper bound on execution is enforced by seL4 using the *sporadic server*
 algorithm, which work by guaranteeing the *sliding window* constrain, meaning that during any period, the
-budget cannot be exceeded. This is achieved by tracking the eligible budget in chunks called 
-*replenishments* (abbreviated to `refills` in the API for brevity). A replenishment is simply an amount 
+budget cannot be exceeded. This is achieved by tracking the eligible budget in chunks called
+*replenishments* (abbreviated to `refills` in the API for brevity). A replenishment is simply an amount
  of time, and a timestamp from which that time can be consumed. We explain this now through an example:
 
-Consider a scheduling context with period *T* and budget *C*. Initially, the scheduling context has 
-a single replenishment of size *C* which is eligible to be used from time *t*. 
+Consider a scheduling context with period *T* and budget *C*. Initially, the scheduling context has
+a single replenishment of size *C* which is eligible to be used from time *t*.
 
 The scheduling context is scheduled at time *t* and blocks at time *t + n*. A new replenishment is then scheduled
 for time *t+T* for *n*. The existing replenishment is updated to *C - n*, subtracting the amount consumed.
-For further details on the sporadic server algorithm, see the 
+For further details on the sporadic server algorithm, see the
 [original paper](https://dl.acm.org/citation.cfm?id=917665).
 
 If the replenishment data structure is full, replenishments are merged and the upper bound on execution is
 reduced. For this reason, the bound on execution is configurable with the `extra_refills` parameter
-on scheduling contexts. By default, scheduling contexts contain only two parameters, meaning if a 
-scheduling context is blocked, switched or preempted more than twice, the rest of the budget is forfeit until 
-the next period. `extra_refills` provides more replenishment data structures in a scheduling context. Note 
+on scheduling contexts. By default, scheduling contexts contain only two parameters, meaning if a
+scheduling context is blocked, switched or preempted more than twice, the rest of the budget is forfeit until
+the next period. `extra_refills` provides more replenishment data structures in a scheduling context. Note
 that the higher the number of replenishments the more fragmentation of budget can occur, which will increase
 scheduling overhead.
 
-`extra_refills` itself is bounded by the size of a scheduling context, which is itself configurable. 
-On scheduling context creation a size can be specified, and must be `> seL4_MinSchedContextBits`. The 
+`extra_refills` itself is bounded by the size of a scheduling context, which is itself configurable.
+On scheduling context creation a size can be specified, and must be `> seL4_MinSchedContextBits`. The
 maximum number of extra refills that can fit into a specific scheduling context size can be calculated
 with the function `seL4_MaxExtraRefills()` provided in `libsel4`.
 
@@ -123,11 +123,11 @@ The seL4 scheduler is largely unchanged: the highest priority, non-blocked threa
 
 ### Passive servers
 
-The MCS extensions allow for RPC style servers to run on client TCBs' scheduling contexts. This is achived by 
-unbinding the scheduling context once a server is blocked on an endpoint, rendering the server *passive*. 
+The MCS extensions allow for RPC style servers to run on client TCBs' scheduling contexts. This is achived by
+unbinding the scheduling context once a server is blocked on an endpoint, rendering the server *passive*.
 Caller scheduling contexts are donated to the server on `seL4_Call` and returned on `seL4_ReplyRecv`.
 
-Passive servers can also receive scheduling contexts from their bound notification object, which is 
+Passive servers can also receive scheduling contexts from their bound notification object, which is
 achieved by binding a notification object using `seL4_SchedContext_Bind`.
 
 ### Timeout faults
@@ -136,34 +136,34 @@ Threads can register a timeout fault handler using `seL4_TCB_SetTimeoutEndpoint`
 handlers are optional and are raised when a thread's replenishment expires *and* they have a valid handler
 registered. The timeout fault message from the kernel contains the data word which can be used to identify the
 scheduling context that the thread was using when the timeout fault occurred, and the amount of time
-consumed by the thread since the last fault or `seL4_SchedContext_Consumed`. 
+consumed by the thread since the last fault or `seL4_SchedContext_Consumed`.
 
 ### New invocations
 
 * `seL4_SchedContext_Bind` - bind a TCB or Notification capability to the invoked scheduling context.
 * `seL4_SchedContext_Unbind` - unbind any objects from the invoked scheduling context.
 * `seL4_SchedContext_UnbindObject`- unbind a specific object from the invoked scheduling context.
-* `seL4_SchedContext_YieldTo` - if the thread running on the invoked scheduling context is 
-schedulable, place it at the head of the scheduling queue for its priority. For same priority threads, this 
-will result in the target thread being scheduled. Return the amount of time consumed by this scheduling 
+* `seL4_SchedContext_YieldTo` - if the thread running on the invoked scheduling context is
+schedulable, place it at the head of the scheduling queue for its priority. For same priority threads, this
+will result in the target thread being scheduled. Return the amount of time consumed by this scheduling
 context since the last timeout fault, `YieldTo` or `Consumed` invocation.
-* `seL4_SchedContext_Consumed` - Return the amount of time consumed by this scheduling 
+* `seL4_SchedContext_Consumed` - Return the amount of time consumed by this scheduling
 context since the last timeout fault, `YieldTo` or `Consumed` invocation.
 * `seL4_TCB_SetTimeoutEndpoint` - Set the timeout fault endpoint for a TCB.
 
 ### Reply objects
 
-The MCS API also makes the reply channel explicit: reply capabilities are now fully fledged objects 
+The MCS API also makes the reply channel explicit: reply capabilities are now fully fledged objects
 which must be provided by a thread on `seL4_Recv` operations. They are used to track the scheduling
 context donation chain and return donated scheduling contexts to callers.
 
-Please see the [release notes](https://docs.sel4.systems/sel4_release/seL4_9.0.0-mcs) and 
+Please see the [release notes](https://docs.sel4.systems/sel4_release/seL4_9.0.0-mcs) and
 [manual](https://docs.sel4.systems/sel4_release/seL4_9.0.0-mcs.html) for further details
- on the API changes. 
- 
+ on the API changes.
+
 ## Exercises
 
-In the initial state of the tutorial, the main function in `mcs.c` is running in one process, and the 
+In the initial state of the tutorial, the main function in `mcs.c` is running in one process, and the
 following loop from `spinner.c` is running in another process:
 
 
@@ -209,7 +209,7 @@ Yield
 
 By completing this task successfully, the output will not change, but the rate that the output is
 printed will slow: each subsequent line should be output once the period has elapsed. You should now
-be able to see the loop where the `mcs.c` process and `spinner.c` process alternate, until the `mcs.c` 
+be able to see the loop where the `mcs.c` process and `spinner.c` process alternate, until the `mcs.c`
 process blocks, at which point `"Yield"` is emitted by `spinner.c` every second, as shown below:
 
 ```
@@ -237,12 +237,12 @@ Yield
 Yield
 /*-- endfilter -*/
 ```
-Before you completed this task, the scheduling context was round-robin, and so was 
-schedulable immediately after the call to `seL4_Yield`. 
+Before you completed this task, the scheduling context was round-robin, and so was
+schedulable immediately after the call to `seL4_Yield`.
 By changing
-the scheduling parameters of `sched_context` to periodic parameters (budget < period), each time 
-`seL4_Yield()` is called the available budget in the scheduling context is abandoned, causing the 
-thread to sleep until the next replenishment, determined by the period.  
+the scheduling parameters of `sched_context` to periodic parameters (budget < period), each time
+`seL4_Yield()` is called the available budget in the scheduling context is abandoned, causing the
+thread to sleep until the next replenishment, determined by the period.
 
 ### Unbinding scheduling contexts
 
@@ -255,7 +255,7 @@ from the scheduler queues.
 **Exercise** Unbind `sched_context` to stop the spinner process from running.
 ```c
 /*-- filter TaskContent("mcs-start", TaskContentType.ALL, subtask='unbind') -*/
-    //TODO unbind sched_context to stop yielding thread 
+    //TODO unbind sched_context to stop yielding thread
 /*- endfilter --*/
 /*-- filter ExcludeDocs() --*/
 /*-- filter TaskContent("mcs-unbind", TaskContentType.COMPLETED, subtask='unbind') -*/
@@ -278,7 +278,7 @@ On success, you should see the output from the yielding thread stop.
 
 ### Sporadic threads
 
-Your next task is to use a different process, `sender` to experiment with sporadic tasks. The 
+Your next task is to use a different process, `sender` to experiment with sporadic tasks. The
 `sender` process is ready to run, and just needs a scheduling context in order to do so.
 
 **Exercise** First, bind `sched_context` to `sender_tcb`.
@@ -307,12 +307,12 @@ Tock 6
 /*-- endfilter -*/
 ```
 
-Note the rate of the output: currently, you should see 2 lines come out at a time, with roughly  
+Note the rate of the output: currently, you should see 2 lines come out at a time, with roughly
 a second break between (the period of the scheduling context you set earlier). This is because
-scheduling context only has the minimum sporadic refills (see background), and each time a context switch 
-occurs a refill is used up to schedule another. 
+scheduling context only has the minimum sporadic refills (see background), and each time a context switch
+occurs a refill is used up to schedule another.
 
-**Exercise** Reconfigure the `sched_context` to an extra 6 refills, such that all of the `Tock` output 
+**Exercise** Reconfigure the `sched_context` to an extra 6 refills, such that all of the `Tock` output
 occurs in one go.
 
  ```c
@@ -336,10 +336,10 @@ Tock 7
 
 ### Passive servers
 
-Now look to the third process, `server.c`, which is a very basic echo server. It currently does 
+Now look to the third process, `server.c`, which is a very basic echo server. It currently does
 not have a scheduling context, and needs one to initialise.
 
-**Exercise** Bind `sched_context` to `server_tcb`. 
+**Exercise** Bind `sched_context` to `server_tcb`.
 
  ```c
 /*-- filter TaskContent("mcs-start", TaskContentType.ALL, subtask='server') -*/
@@ -355,7 +355,7 @@ not have a scheduling context, and needs one to initialise.
 ```
 
 Now you should see the server initialise and echo the messages sent. Note the initialisation protocol:
-first, you bound `sched_context` to the server. At this point, in `server.c`, the server calls 
+first, you bound `sched_context` to the server. At this point, in `server.c`, the server calls
 `seL4_NBSendRecv` which sends an IPC message on `endpoint`, indicating that the server is now initialised.
 The output should be as follows
 
@@ -374,7 +374,7 @@ Yield
 
 The following code then converts the server to passive:
 
-```c 
+```c
 /*-- filter TaskContent("mcs-start", TaskContentType.ALL, subtask='passive') -*/
     // convert to passive
     error = seL4_SchedContext_Unbind(sched_context);
@@ -417,7 +417,7 @@ of the faulting thread everytime a fault occurs.
 
 #### Exercise:
 
-**Exercise** Set the data field of `sched_context` using `seL4_SchedControl_Configure` and set a 10s period, 1ms 
+**Exercise** Set the data field of `sched_context` using `seL4_SchedControl_Configure` and set a 10s period, 1ms
 budget and 0 extra refills.
 
 ```c
@@ -444,7 +444,7 @@ echo server
 ```
 The code then binds the scheduling context back to `spinner_tcb`, which starts yielding again.
 
-**Exercise** set the timeout fault endpoint for `spinner_tcb`. 
+**Exercise** set the timeout fault endpoint for `spinner_tcb`.
 
 
 ```c
@@ -475,7 +475,7 @@ That's all for the detailed content of this tutorial. Below we list other ideas 
 to become more familiar with the MCS extensions.
 
 * Set up a passive server with a timeout fault handlers, with policies for clients that exhaust their budget.
-* Experiment with notification binding on a passive server, by binding both a notification object to the 
+* Experiment with notification binding on a passive server, by binding both a notification object to the
 server TCB and an SC to the notification object.
 
 /*? macros.help_block() ?*/
@@ -557,7 +557,7 @@ int main(int c, char *argv[]) {
 /*? capdl_elf_tcb("spinner", "spinner_tcb") ?*/
 // capability to the tcb of the sender process
 /*? capdl_elf_tcb("sender", "sender_tcb") ?*/
-// capability to an endpoint, shared with 'sender' and 'server' 
+// capability to an endpoint, shared with 'sender' and 'server'
 /*? capdl_alloc_cap(seL4_EndpointObject, "endpoint", "endpoint", write=True, read=True, grant=True) ?*/
 // capability to a reply object
 /*? capdl_alloc_cap(seL4_RTReplyObject, "reply2", "reply", write=True, read=True, grant=True) ?*/
@@ -570,7 +570,7 @@ int main(int c, char *argv[]) {
     // bind it to `spinner_tcb`
     /*? include_task_type_append([("mcs-start", 'bind_yield')]) ?*/
 
-    int i = 0; 
+    int i = 0;
     for (; i < 9; i++) {
         seL4_Yield();
         printf("Tick %d\n", i);
@@ -584,11 +584,11 @@ int main(int c, char *argv[]) {
         seL4_Wait(endpoint, NULL);
         printf("Tock %d\n", (int) seL4_GetMR(0));
     }
- 
-    
+
+
     error = seL4_SchedContext_UnbindObject(sched_context, sender_tcb);
     ZF_LOGF_IF(error, "Failed to unbind sched_context from sender_tcb");
-    
+
     /* suspend the sender to get them off endpoint */
     error = seL4_TCB_Suspend(sender_tcb);
     ZF_LOGF_IF(error, "Failed to suspend sender_tcb");
@@ -598,19 +598,19 @@ int main(int c, char *argv[]) {
     printf("Starting server\n");
     /*? include_task_type_replace([("mcs-start", 'server'), ("mcs-server", 'server')]) ?*/
     // wait for it to initialise
-    printf("Wait for server\n"); 
+    printf("Wait for server\n");
     seL4_Wait(endpoint, NULL);
-   
+
     /*? include_task_type_append([("mcs-start", 'passive')]) ?*/
     ZF_LOGF_IF(error != seL4_NoError, "Failed to unbind sched context");
 
     const char *messages[] = {
-        "running", 
+        "running",
         "passive",
         "echo server",
         NULL,
     };
- 
+
     for (int i = 0; messages[i] != NULL; i++) {
         int m = 0;
         for (; m < strlen(messages[i]) && m < seL4_MsgMaxLength; m++) {
@@ -621,7 +621,7 @@ int main(int c, char *argv[]) {
 
     /*? include_task_type_replace([("mcs-start", 'badge'), ("mcs-badge", 'badge')]) ?*/
     /*? include_task_type_replace([("mcs-start", 'fault'), ("mcs-fault", 'fault')]) ?*/
-    
+
     error = seL4_SchedContext_Bind(sched_context, spinner_tcb);
     ZF_LOGF_IF(error, "Failed to bind sched_context to spinner_tcb");
 
@@ -631,7 +631,7 @@ int main(int c, char *argv[]) {
     ZF_LOGF_IF(seL4_Fault_get_seL4_FaultType(fault) != seL4_Fault_Timeout, "Not a timeout fault");
     printf("Received timeout fault\n");
     ZF_LOGF_IF(seL4_Fault_Timeout_get_data(fault) != 5, "Incorrect data");
-    
+
     printf("Success!\n");
 
     return 0;

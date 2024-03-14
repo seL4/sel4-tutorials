@@ -1,7 +1,7 @@
 <!--
   Copyright 2021 Michael Neises
 
-  SPDX-License-Identifier: BSD-2-Clause
+  SPDX-License-Identifier: CC-BY-SA-4.0
 -->
 # Cross-Compiling Kernel Modules for use with seL4's Linux VM using qemu-arm-virt
 

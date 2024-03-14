@@ -1,7 +1,7 @@
 <!--
-  Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
+  2024 seL4 Project a Series of LF Projects, LLC.
 
-  SPDX-License-Identifier: BSD-2-Clause
+  SPDX-License-Identifier: CC-BY-SA-4.0
 -->
 
 # CAmkES Tutorial 1
@@ -73,10 +73,10 @@ a communication channel then, also are well defined, and logically
 grouped so as to provide clear directional understanding of all
 transmissions over a connection. Components are connected together in
 CAmkES, yes -- but the interfaces that are exposed over each connection
-for calling by other components, are also described. 
+for calling by other components, are also described.
 
 There are different
-kinds of interfaces: 
+kinds of interfaces:
 -Dataports,
 -Procedural interfaces,
 -and Notifications.
@@ -91,7 +91,7 @@ Procedure interface may be found here:
 Find the "Procedure" keyword definition here:
 <https://github.com/seL4/camkes-tool/blob/master/docs/index.md#procedure>
 
-### Component source 
+### Component source
 
  Based on the ADL, CAmkES generates boilerplate which
 conforms to your system's architecture, and enables you to fill in the
@@ -134,7 +134,7 @@ the second one was named `a2`? Then in order to call on that second
 ## Exercises
 
 
-**Exercise** First modify `hello-1.camkes`. Define instances of `Echo` and `Client` in the 
+**Exercise** First modify `hello-1.camkes`. Define instances of `Echo` and `Client` in the
 `composition` section of the ADL.
 
 ```
@@ -192,6 +192,7 @@ assembly {
 ### Define an interface
 
 **Exercise** Define the interface for hello in `interfaces/HelloSimple.idl4`. 
+
 
 ```c
 /* Simple RPC interface */

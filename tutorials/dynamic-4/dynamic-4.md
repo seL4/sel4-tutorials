@@ -1,7 +1,7 @@
 <!--
-  Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
+  2024 seL4 Project a Series of LF Projects, LLC.
 
-  SPDX-License-Identifier: BSD-2-Clause
+  SPDX-License-Identifier: CC-BY-SA-4.0
 -->
 
 /*? declare_task_ordering(
@@ -134,7 +134,7 @@ initialise a timer driver. Assign it to the `timer` global variable.
 /*? task_2_desc ?*/
 /*-- filter ExcludeDocs() -*/
 /*-- filter TaskContent("task-2", TaskContentType.COMPLETED) -*/
-    error = ltimer_default_init(&timer, ops, NULL, NULL); 
+    error = ltimer_default_init(&timer, ops, NULL, NULL);
     assert(error == 0);
 /*-- endfilter -*/
 /*-- endfilter -*/
@@ -203,7 +203,7 @@ main: got a message from 0x61 to sleep 2 seconds
 ### Handle the interrupt
 
 In order to receive more interrupts, you need to handle the interrupt in the driver
-and acknowledge the irq. 
+and acknowledge the irq.
 
 ```c
 /*-- set task_4_desc -*/
@@ -263,7 +263,7 @@ timer client wakes up:
 /*-- set task_5_desc -*/
     /*
      * TASK 5: Stop the timer
-     * hint: ltimer_destroy 
+     * hint: ltimer_destroy
      */
 /*-- endset -*/
 /*? task_5_desc ?*/
@@ -299,7 +299,7 @@ That's it for this tutorial.
 /*
  * Copyright 2018, Data61, CSIRO (ABN 41 687 119 230).
  *
- * SPDX-License-Identifier: BSD-2-Clause
+ * SPDX-License-Identifier: CC-BY-SA-4.0
  */
 /* Include Kconfig variables. */
 #include <autoconf.h>
@@ -495,9 +495,9 @@ int main(void) {
 /*-- endfilter -*/
 /*-- filter File("client.c") -*/
 /*
- * Copyright 2017, Data61, CSIRO (ABN 41 687 119 230).
+ * 2024 seL4 Project a Series of LF Projects, LLC..
  *
- * SPDX-License-Identifier: BSD-2-Clause
+ * SPDX-License-Identifier: CC-BY-SA-4.0
  */
 #include <stdio.h>
 #include <assert.h>

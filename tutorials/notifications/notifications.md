@@ -1,7 +1,7 @@
 <!--
-  Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
+  2024 seL4 Project a Series of LF Projects, LLC.
 
-  SPDX-License-Identifier: BSD-2-Clause
+  SPDX-License-Identifier: CC-BY-SA-4.0
 -->
 
 /*? declare_task_ordering(['ntfn-start', 'ntfn-shmem', 'ntfn-signal', 'ntfn-badge']) ?*/
@@ -69,10 +69,10 @@ timer tutorial. <!--TODO link to timer tutorial -->
 
 ## Exercises
 
-These exercises guide you through a basic producer consumer set up using notifications and shared memory. The 
+These exercises guide you through a basic producer consumer set up using notifications and shared memory. The
 tutorial uses the capDL loader, and already has 2 producer processes (`producer_1.c` and `producer_2`) and 1 consumer
- process running (`consumer.c`). Each has access to a number of capabilities. 
- 
+ process running (`consumer.c`). Each has access to a number of capabilities.
+
 Each producer shares a buffer with the consumer, and the consumer processes data from both producers when it is
 available.
 
@@ -83,18 +83,18 @@ Waiting for producer
 ```
 ### Set up shared memory
 
-Both producers start and block immediately, waiting for the consumer to send an IPC with the address of the shared 
+Both producers start and block immediately, waiting for the consumer to send an IPC with the address of the shared
 mapping. We provide code below that sets up the shared page between producer 1 and the consumer:
 
-```c 
+```c
 /*-- filter TaskContent("ntfn-start", TaskContentType.ALL, subtask="shmem1", completion="Caught cap fault in send phase") -*/
     /* set up shared memory for consumer 1 */
     /* first duplicate the cap */
-    error = seL4_CNode_Copy(cnode, mapping_1, seL4_WordBits, 
+    error = seL4_CNode_Copy(cnode, mapping_1, seL4_WordBits,
                           cnode, buf1_frame_cap, seL4_WordBits, seL4_AllRights);
     ZF_LOGF_IFERR(error, "Failed to copy cap");
     /* now do the mapping */
-    error = seL4_ARCH_Page_Map(mapping_1, producer_1_vspace, BUF_VADDR, 
+    error = seL4_ARCH_Page_Map(mapping_1, producer_1_vspace, BUF_VADDR,
                                seL4_AllRights, seL4_ARCH_Default_VMAttributes);
     ZF_LOGF_IFERR(error, "Failed to map frame");
 
@@ -103,16 +103,16 @@ mapping. We provide code below that sets up the shared page between producer 1 a
 
 However, we do not map the second buffer in, so producer 2 crashes immediately.
 
-**Exercise** Understand the above code, and create a second shared page between `producer_2` and `consumer`. 
+**Exercise** Understand the above code, and create a second shared page between `producer_2` and `consumer`.
 
-```c 
+```c
 /*-- filter TaskContent("ntfn-start", TaskContentType.ALL, subtask="shmem2", completion="Caught cap fault in send phase") -*/
     // TODO share buf2_frame_cap with producer_2
 /*-- endfilter -*/
 /*-- filter ExcludeDocs() -*/
 /*-- filter TaskContent("ntfn-shmem", TaskContentType.COMPLETED, subtask="shmem2", completion="Waiting for producer") -*/
     /* set up shared memory for producer 2 */
-    error = seL4_CNode_Copy(cnode, mapping_2, seL4_WordBits, 
+    error = seL4_CNode_Copy(cnode, mapping_2, seL4_WordBits,
                             cnode, buf2_frame_cap, seL4_WordBits, seL4_AllRights);
     ZF_LOGF_IFERR(error, "Failed to copy cap");
    /* now do the mapping */
@@ -127,7 +127,7 @@ Whether this is successful will be visible after the next exercise when the cons
 
 ### Signal the producers to go
 
-At this point, both producers are waiting on the `empty` notification for a signal that the buffer is ready 
+At this point, both producers are waiting on the `empty` notification for a signal that the buffer is ready
 to be written to.
 
 **Exercise** signal both producers via the `buf1_empty` and `buf2_empty` notification objects.
@@ -164,10 +164,10 @@ which of the producers (it may be both) has produced data.
 
 **Exercise** Check the badge and signal the empty notification for the producers according to the bits set in the badge
  value.
- 
+
 ```c
 /*-- filter TaskContent("ntfn-start", TaskContentType.ALL, subtask="badge", completion="Got badge") -*/
-    // TODO, use the badge to check which producer has signalled you, and signal it back. Note that you 
+    // TODO, use the badge to check which producer has signalled you, and signal it back. Note that you
     // may recieve more than 1 signal at a time.
 /*-- endfilter -*/
 /*-- filter ExcludeDocs() -*/
@@ -187,14 +187,14 @@ which of the producers (it may be both) has produced data.
 ```
 
 At this point, you should see signals from both producers being processed, and the final `Success!` message printed.
- 
+
 ### Further exercises
 
 That's all for the detailed content of this tutorial. Below we list other ideas for exercises you can try,
 to become more familiar with IPC.
 
 * Create a counting semaphore implementation using notification objects.
-* Create a bounded-buffer producer consumer with a buffer size greater than 1. 
+* Create a bounded-buffer producer consumer with a buffer size greater than 1.
 
 /*? macros.help_block() ?*/
 
@@ -204,7 +204,7 @@ to become more familiar with IPC.
 /*-- filter TaskContent("ntfn-start", TaskContentType.ALL, subtask="producer", completion="Waiting for producer") -*/
     seL4_Recv(endpoint, NULL);
     volatile long *buf = (volatile long *) seL4_GetMR(0);
-    
+
     for (int i = 0; i < 100; i++) {
         seL4_Wait(empty, NULL);
         printf("%d: produce\n", id);
@@ -291,7 +291,7 @@ int main(int c, char *argv[]) {
     seL4_Send(endpoint, seL4_MessageInfo_new(0, 0, 0, 1));
     seL4_SetMR(0, BUF_VADDR);
     seL4_Send(endpoint, seL4_MessageInfo_new(0, 0, 0, 1));
-    
+
     /* start single buffer producer consumer */
     volatile long *buf1 = (long *) buf1_frame;
     volatile long *buf2 = (long *) buf2_frame;
