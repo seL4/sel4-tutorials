@@ -13,6 +13,14 @@ In this tutorial you will
 - Build and simulate a seL4 project
 - Have a basic understanding of the role of the `CMakeLists.txt` file in applications
 
+## Building your first program
+seL4 is a microkernel, not an operating system, and as a result only provides very minimal services.
+After the kernel boots, an initial thread called the *root task* is started, which is then responsible for
+ setting up the user-level system.
+When the root task starts there are no available drivers, however a minimal C library is provided.
+
+The tutorial is already set up to print "Hello, world!", so at this point
+all you need to do is build and run the tutorial.
 
 ## Initialising
 
@@ -47,13 +55,6 @@ container
 ## Build the program
 
 
-seL4 is a microkernel, not an operating system, and as a result only provides very minimal services.
-After the kernel boots, an initial thread called the *root task* is started, which is then responsible for
- setting up the user-level system.
-When the root task starts there are no available drivers, however a minimal C library is provided.
-
-The tutorial is already set up to print "Hello, world!", so at this point
-all you need to do is build and run the tutorial:
 
 ```
 cd sel4-tutorials-manifest/hello-world_build
