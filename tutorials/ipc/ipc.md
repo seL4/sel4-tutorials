@@ -7,21 +7,48 @@
 # IPC
 /*? declare_task_ordering(['ipc-start', 'ipc-badge', 'ipc-echo', 'ipc-reply', 'ipc-order']) ?*/
 
-## Prerequisites
+This tutorial is about interprocess communication (IPC), the microkernel mechanism for synchronous transmission of small amounts of data.
 
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-2. [Capabilities tutorial](https://docs.sel4.systems/Tutorials/capabilities)
+You will learn
+1. How to use IPC to send data and capabilities between processes.
+2. The jargon *cap transfer*.
+3. How to to differentiate requests via badged capabilities.
+4. Design protocols that use the IPC fastpath.
 
 ## Initialising
 
 /*? macros.tutorial_init("ipc") ?*/
 
-## Outcomes
+<details markdown='1'>
+<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<br>
+All tutorials come with complete solutions. To get solutions run:
 
-1. Be able to use IPC to send data and capabilities between processes.
-2. Learn the jargon *cap transfer*.
-3. Be able to differentiate requests via badged capabilities.
-4. Know how to design protocols that use the IPC fastpath.
+```
+./init --solution --tut ipc
+```
+Answers are also available in drop down menus under each section.
+</details>
+
+## CapDL Loader
+
+This tutorial uses a the *capDL loader*, a root task which allocates statically
+ configured objects and capabilities.
+
+<details markdown='1'>
+<summary style="display:list-item">Get CapDL</summary>
+The capDL loader parses
+a static description of the system and the relevant ELF binaries.
+It is primarily used in [CAmkES](https://docs.sel4.systems/CAmkES/) projects
+but we also use it in the tutorials to reduce redundant code.
+The program that you construct will end up with its own CSpace and VSpace, which are separate
+from the root task, meaning CSlots like `seL4_CapInitThreadVSpace` have no meaning
+in applications loaded by the capDL loader.
+
+More information about CapDL projects can be found [here](https://docs.sel4.systems/CapDL.html).
+
+For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This can be added in a directory that is adjacent to the tutorials-manifest directory.
+</details>
 
 ## Background
 
@@ -224,6 +251,17 @@ receives the badged endpoint.
 /*-- endfilter -*/
 ```
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    // use cap transfer to send the badged cap in the reply
+    seL4_SetCap(0, free_slot);
+    info = seL4_MessageInfo_new(0, 0, 1, 0);
+```
+</details>
+
+
 Now the output should look something like:
 ```bash
 Booting all finished, dropped to user space
@@ -238,6 +276,8 @@ Client 1: received badged endpoint
 Depending on timing, the messages may be different, the result is the same: the system hangs.
 This is because one of the clients has hit the else case, where the badge is set, and the server
 does not respond, or wait for new messages from this point.
+
+### Getting a message
 
 **Exercise** Your next task is to implement the echo part of the server.
 
@@ -256,6 +296,17 @@ does not respond, or wait for new messages from this point.
 /*-- endfilter -*/
 ```
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    for (int i = 0; i < seL4_MessageInfo_get_length(info); i++) {
+        printf("%c", (char) seL4_GetMR(i));
+    }
+    printf("\n");
+```
+</details>
+
 At this point, you should see a single word output to the console in a loop.
 ```
 /*-- filter TaskCompletion("ipc-echo", TaskContentType.COMPLETED) -*/
@@ -267,6 +318,9 @@ the
 
 This is because the server does not reply to the client, and continues to spin in a loop
  repeating the last message.
+
+ ### Using reply and wait
+
 **Exercise**  Update the code to reply to the clients after printing the message.
 
 ```c
@@ -279,6 +333,17 @@ This is because the server does not reply to the client, and continues to spin i
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    info = seL4_ReplyRecv(endpoint, info, &sender);
+    for (int i = 0; i < seL4_MessageInfo_get_length(info); i++) {
+        printf("%c", (char) seL4_GetMR(i));
+    }
+    printf("\n");
+```
+</details>
 
 Now the output should be something like this:
 
@@ -295,6 +360,7 @@ fox
 over
 lazy
 ```
+### Saving a reply and storing reply capabilities
 
 **Exercise** Currently each client is scheduled for its full timeslice until it is preempted. Alter
 your server to only print one message from each client, alternating. You will need to use
@@ -314,6 +380,27 @@ capability for each sender. You can use `free_slot` to store the reply capabilit
 /*-- endfilter -*/
 ```
 /*-- endfilter -*/
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    error = seL4_CNode_SaveCaller(cnode, free_slot, seL4_WordBits);
+    assert(error == 0);
+    info = seL4_Recv(endpoint, &sender);
+    for (int i = 0; i < seL4_MessageInfo_get_length(info); i++) {
+        printf("%c", (char) seL4_GetMR(i));
+    }
+    printf("\n");
+
+    seL4_Send(free_slot, seL4_MessageInfo_new(0, 0, 0, 0));
+
+    info = seL4_ReplyRecv(endpoint, info, &sender);
+
+
+```
+</details>
+
 
 Depending on your approach, successful output should look something like this:
 ```
