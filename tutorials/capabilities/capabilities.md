@@ -11,8 +11,8 @@
 
 You will learn:
 1. The jargon CNode, CSpace, CSlot.
-2. Know how to invoke a capability.
-3. Know how to delete and copy CSlots.
+2. How to invoke a capability.
+3. How to delete and copy CSlots.
 
 
 ## Initialising
@@ -322,18 +322,6 @@ The error occurs as the existing code tries to set the priority of the initial t
     ZF_LOGF_IF(error, "Failed to set priority");
 /*-- endfilter -*/
 ```
-
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-    /* use seL4_CNode_Copy to make another copy of the initial TCB capability to the last slot in the CSpace */
-    error = seL4_CNode_Copy(seL4_CapInitThreadCNode, last_slot, seL4_WordBits,
-                      seL4_CapInitThreadCNode, first_free_slot, seL4_WordBits, seL4_AllRights);
-    ZF_LOGF_IF(error, "Failed to copy cap!");
-```
-
-</details>
 
 /*-- endfilter -*/
 On success, you will now see the output:
