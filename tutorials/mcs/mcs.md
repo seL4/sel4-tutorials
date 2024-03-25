@@ -8,10 +8,17 @@
 /*? declare_task_ordering(['mcs-start','mcs-periodic', 'mcs-unbind', 'mcs-bind', 'mcs-sporadic',
 'mcs-server','mcs-badge','mcs-fault']) ?*/
 
-## Prerequisites
+This tutorial presents the features in the upcoming MCS extensions for seL4, which are currently undergoing
+verification. For further context on the new features, please see the
+[paper](https://trustworthy.systems/publications/csiro_full_text/Lyons_MAH_18.pdf) or [phd](https://github.com/pingerino/phd/blob/master/phd.pdf)
+ which provides a comprehensive background on the changes.
 
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-2. You should be familiar with the seL4 Api. Otherwise do the [Mechanisms tutorials](https://docs.sel4.systems/Tutorials)
+Learn:
+1. About the MCS new kernel API.
+1. How to create and configure scheduling contexts.
+2. The jargon *passive server*.
+3. How to spawn round-robin and periodic threads.
+
 
 
 ## Initialising
@@ -20,17 +27,15 @@ Then initialise the tutorial:
 
 /*? macros.tutorial_init("mcs") ?*/
 
-## Outcomes
+<details markdown='1'>
+<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<br>
+All tutorials come with complete solutions. To get solutions run:
 
-This tutorial presents the features in the upcoming MCS extensions for seL4, which are currently undergoing
-verification. For further context on the new features, please see the
-[paper](https://trustworthy.systems/publications/csiro_full_text/Lyons_MAH_18.pdf) or [phd](https://github.com/pingerino/phd/blob/master/phd.pdf)
- which provides a comprehensive background on the changes.
-
-1. Learn about the MCS new kernel API.
-1. Be able to create and configure scheduling contexts.
-2. Learn the jargon *passive server*.
-3. Spawn round-robin and periodic threads.
+```
+./init --solution --tut mcs
+```
+</details>
 
 ## Background
 
@@ -206,6 +211,15 @@ Yield
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    error = seL4_SchedControl_Configure(sched_control, sched_context, 0.9 * US_IN_S, 1 * US_IN_S, 0, 0);
+    ZF_LOGF_IF(error != seL4_NoError, "Failed to configure schedcontext");
+```
+</details>
+
 
 By completing this task successfully, the output will not change, but the rate that the output is
 printed will slow: each subsequent line should be output once the period has elapsed. You should now
@@ -274,6 +288,16 @@ Tick 8
 /*-- endfilter --*/
 ```
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    error = seL4_SchedContext_Unbind(sched_context);
+    ZF_LOGF_IF(error, "Failed to unbind sched_context");
+```
+</details>
+
+
 On success, you should see the output from the yielding thread stop.
 
 ### Sporadic threads
@@ -295,6 +319,14 @@ Your next task is to use a different process, `sender` to experiment with sporad
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    error = seL4_SchedContext_Bind(sched_context, sender_tcb);
+    ZF_LOGF_IF(error != seL4_NoError, "Failed to bind schedcontext");
+```
+</details>
 
 The output should look like the following:
 ```
@@ -333,6 +365,15 @@ Tock 7
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    error = seL4_SchedControl_Configure(sched_control, sched_context, 0.9 * US_IN_S, 1 * US_IN_S, 6, 0);
+    ZF_LOGF_IF(error != seL4_NoError, "Failed to configure schedcontext");
+```
+</details>
+
 
 ### Passive servers
 
@@ -353,6 +394,14 @@ not have a scheduling context, and needs one to initialise.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    error = seL4_SchedContext_Bind(sched_context, server_tcb);
+    ZF_LOGF_IF(error != seL4_NoError, "Failed to bind sched_context to server_tcb");
+```
+</details>
 
 Now you should see the server initialise and echo the messages sent. Note the initialisation protocol:
 first, you bound `sched_context` to the server. At this point, in `server.c`, the server calls
@@ -407,7 +456,7 @@ to configure its own fault endpoint.
 The reason for this difference is merely that it is faster to lookup the fault
 endpoint this way since it is looked up only once at the time it is configured.
 
-#### Configuring a fault endpoint on the Master kernel:
+#### Configuring a fault endpoint on the Master kernel
 
 On the Master kernel the cap given to the kernel must be a cap to an object in
 the CSpace of the *faulting thread*.
@@ -415,7 +464,7 @@ the CSpace of the *faulting thread*.
 On the Master kernel, the fault endpoint cap is looked up from within the CSpace
 of the faulting thread everytime a fault occurs.
 
-#### Exercise:
+#### Exercise
 
 **Exercise** Set the data field of `sched_context` using `seL4_SchedControl_Configure` and set a 10s period, 1ms
 budget and 0 extra refills.
@@ -442,6 +491,15 @@ echo server
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    error = seL4_SchedControl_Configure(sched_control, sched_context, 500, US_IN_S, 0, 5);
+    ZF_LOGF_IF(error != seL4_NoError, "Failed to configure sched_context");
+```
+</details>
+
 The code then binds the scheduling context back to `spinner_tcb`, which starts yielding again.
 
 **Exercise** set the timeout fault endpoint for `spinner_tcb`.
@@ -459,6 +517,14 @@ The code then binds the scheduling context back to `spinner_tcb`, which starts y
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    error = seL4_TCB_SetTimeoutEndpoint(spinner_tcb, endpoint);
+    ZF_LOGF_IF(error, "Failed to bind sched_context to spinner_tcb");
+```
+</details>
 
 When the `spinner` faults, you should see the following output:
 
