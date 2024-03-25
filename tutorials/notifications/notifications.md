@@ -7,18 +7,55 @@
 /*? declare_task_ordering(['ntfn-start', 'ntfn-shmem', 'ntfn-signal', 'ntfn-badge']) ?*/
 # Notifications and shared memory
 
-## Prerequisites
+This tutorial covers notification objects.
 
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-1. [Capabilities tutorial](https://docs.sel4.systems/Tutorials/capabilities)
-1. [Mapping tutorial](https://docs.sel4.systems/Tutorials/mapping)
-1. [Threads tutorial](https://docs.sel4.systems/Tutorials/threads)
+You will learn how to:
+1. Set up shared memory between tasks.
+2. Use notification objects for synchronisation between tasks.
+3. Use badges to differentiate notifications.
 
-## Outcomes
+## Initialising
 
-1. Understand how to set up shared memory between tasks.
-2. Be able to use notification objects for synchronisation between tasks.
-4. Know how to use badges to differentiate notifications.
+```sh
+# For instructions about obtaining the tutorial sources see https://docs.sel4.systems/Tutorials/#get-the-code
+#
+# Follow these instructions to initialise the tutorial
+# initialising the build directory with a tutorial exercise
+./init --tut notifications
+# building the tutorial exercise
+cd notifications_build
+ninja
+```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<br>
+All tutorials come with complete solutions. To get solutions run:
+```
+./init --solution --tut notifications
+```
+Answers are also available in drop down menus under each section.
+</details>
+
+## CapDL Loader
+
+This tutorial uses a the *capDL loader*, a root task which allocates statically
+ configured objects and capabilities.
+
+<details markdown='1'>
+<summary style="display:list-item">Get CapDL</summary>
+The capDL loader parses
+a static description of the system and the relevant ELF binaries.
+It is primarily used in [Camkes](https://docs.sel4.systems/CAmkES/) projects
+but we also use it in the tutorials to reduce redundant code.
+The program that you construct will end up with its own CSpace and VSpace, which are separate
+from the root task, meaning CSlots like `seL4_CapInitThreadVSpace` have no meaning
+in applications loaded by the capDL loader.
+
+More information about CapDL projects can be found [here](https://docs.sel4.systems/CapDL.html).
+
+For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This can be added in a directory that is adjacent to the tutorials-manifest directory.
+</details>
 
 ## Background
 
@@ -122,6 +159,15 @@ However, we do not map the second buffer in, so producer 2 crashes immediately.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    error = seL4_CNode_Copy(cnode, mapping_2, seL4_WordBits,
+                        cnode, buf2_frame_cap, seL4_WordBits, seL4_AllRights);
+    ZF_LOGF_IFERR(error, "Failed to copy cap");
+```
+</details>
 
 Whether this is successful will be visible after the next exercise when the consumers access their buffers. If the shared page setup for producer 2 is not correct, it will fail with a vm fault.
 
@@ -143,6 +189,15 @@ to be written to.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    seL4_Signal(buf1_empty);
+    seL4_Signal(buf2_empty);
+```
+</details>
+
 
 ### Differentiate signals
 
@@ -185,6 +240,22 @@ which of the producers (it may be both) has produced data.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    if (badge & 0b01) {
+        assert(*buf1 == 1);
+        *buf1 = 0;
+        seL4_Signal(buf1_empty);
+    }
+    if (badge & 0b10) {
+        assert(*buf2 == 2);
+        *buf2 = 0;
+        seL4_Signal(buf2_empty);
+    }
+```
+</details>
 
 At this point, you should see signals from both producers being processed, and the final `Success!` message printed.
 
