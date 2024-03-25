@@ -10,16 +10,33 @@
 
 This tutorial provides an introduction to virtual memory management on seL4.
 
-## Prerequisites
+In this tutorial, you will learn how to map and unmap virtual memory pages in seL4.
 
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-2. [Capabilities tutorial](https://docs.sel4.systems/Tutorials/capabilities)
+## Initialising
 
-## Outcomes
+```sh
+# For instructions about obtaining the tutorial sources see https://docs.sel4.systems/Tutorials/seL4Kernel/setting-ip#get-the-code
+#
+# Follow these instructions to initialise the tutorial
+# initialising the build directory with a tutorial exercise
+./init --tut mapping
+# building the tutorial exercise
+cd mapping_build
+ninja
+```
 
-By the end of this tutorial, you should be familiar with:
+<details markdown='1'>
+<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<br>
+All tutorials come with complete solutions. To get solutions run:
 
-1. How to map and unmap virtual memory pages in seL4.
+```
+./init --solution --tut mapping
+```
+Answers are also available in drop down menus under each section.
+</details>
+
+
 
 ## Background
 
@@ -148,6 +165,16 @@ the number of bits in the virtual address that could not be resolved due to miss
 ```
 /*-- endfilter -*/
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    // TODO map a page directory object
+    error = seL4_X86_PageDirectory_Map(pd,seL4_CapInitThreadVSpace, TEST_VADDR, seL4_X86_Default_VMAttributes);
+    assert(error == seL4_NoError);
+```
+</details>
+
 On success, you should see the following:
 ```
 Missing intermediate paging structure at level 21
@@ -175,6 +202,16 @@ Note that in the above output, the number of failed bits has changed from `30` t
 /*-- endfilter -*/
 ```
 /*-- endfilter -*/
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    // map a page table object
+    error = seL4_X86_PageTable_Map(pt, seL4_CapInitThreadVSpace, TEST_VADDR, seL4_X86_Default_VMAttributes);
+    assert(error == seL4_NoError);
+```
+</details>
 
 On success, you should see the following:
 ```
@@ -217,6 +254,16 @@ that the fault occured on (address).
 /*-- endfilter -*/
 ```
 /*-- endfilter -*/
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    // remap the page
+    error = seL4_X86_Page_Map(frame, seL4_CapInitThreadVSpace, TEST_VADDR, seL4_ReadWrite, seL4_X86_Default_VMAttributes);
+    assert(error == seL4_NoError);
+```
+</details>
 
 ### Unmapping pages
 
