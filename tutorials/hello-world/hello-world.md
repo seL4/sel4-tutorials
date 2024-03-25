@@ -38,7 +38,7 @@ All tutorials come with complete solutions. To get solutions run:
 This will generate another `hello-world` directory and `hello-world_build` directory, with unique names, e.g. `hello-world44h1po5q` and `hello-world44h1po5q_build`.
 </details>
 
-We will now use two terminals, as described in [Setting up your machine](https://docs.sel4.systems/Tutorials/seL4Kernel/setting-up#mapping-a-container).
+We will now use two terminals, as described in [Setting up your machine](https://docs.sel4.systems/Tutorials/seL4Kernel/setting-up).
 
  - Terminal A is just a normal terminal, and is used for git operations, editing (e.g., vim, emacs), and other normal operations.
  - Terminal B is running in a container, and is only used for compilation.
