@@ -11,22 +11,25 @@ This tutorial is an introduction to
 CAmkES: bootstrapping a basic static CAmkES application, describing its
 components, and linking them together.
 
-## Prerequisites
-
-
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies#camkes-build-dependencies).
-2. [Camkes hello world](https://docs.sel4.systems/Tutorials/hello-camkes-0)
+Outcomes:
+1. Understand the structure of a CAmkES application, as a described,
+well-defined, static system.
+2. Understand the file-layout of a CAmkES ADL project.
+3. Become acquainted with the basics of creating a practical CAmkES application.
 
 ## Initialising
 
 /*? macros.tutorial_init("hello-camkes-1") ?*/
 
-## Outcomes
+<details markdown='1'>
+<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<br>
+All tutorials come with complete solutions. To get solutions run:
 
-1. Understand the structure of a CAmkES application, as a described,
-well-defined, static system.
-1. Understand the file-layout of a CAmkES ADL project.
-1. Become acquainted with the basics of creating a practical CAmkES application.
+```
+./init --solution --tut hello-camkes-1
+```
+</details>
 
 ## Background
 
@@ -150,6 +153,20 @@ assembly {
 /*-- endfilter -*/
 ```
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```
+    assembly {
+    composition {
+         component EmptyComponent empty;
+         component Client client;
+         component Echo echo;
+```
+</details>
+
+### Add a connection
+
 **Exercise** Now add a connection from `client.hello` to `echo.hello`.
 
 ```
@@ -163,6 +180,16 @@ assembly {
         connection seL4RPCCall hello_con(from client.hello, to echo.hello);
 /*-- endfilter -*/
 ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```
+    connection seL4RPCCall hello_con(from client.hello, to echo.hello);
+```
+</details>
+
+### Define an interface
 
 **Exercise** Define the interface for hello in `interfaces/HelloSimple.idl4`. 
 
@@ -183,6 +210,15 @@ procedure HelloSimple {
 };
 ```
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```
+    void say_hello(in string str);
+```
+</details>
+
+### Implement a RPC function
 **Exercise** Implement the RPC hello function.
 
 ```c
@@ -214,6 +250,18 @@ void hello_say_hello(const char *str) {
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```
+void hello_say_hello(const char *str) {
+    printf("Component %s saying: %s\n", get_instance_name(), str);
+}
+```
+</details>
+
+### Invoke a RPC function
 
 **Exercise** Invoke the RPC function in `components/Client/src/client.c`.
 ```c
@@ -254,9 +302,20 @@ int run(void) {
 /*-- endfilter -*/
 ```
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```
+    char *shello = "hello world";
+    hello_say_hello(shello);
+```
+</details>
+
 ### TASK 5
  Here you define the callee-side invocation functions for
 the Hello interface exposed by Echo.
+
+**Can't find a solution---------------------------------------------------------**
 
 ## Done
 
