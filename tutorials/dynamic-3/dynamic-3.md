@@ -31,7 +31,7 @@ tutorial are filled out and you don't have to repeat them: in much the
 same way, we won't be repeating conceptual explanations on this page, if
 they were covered by a previous tutorial in the series.
 
-## Learning outcomes
+Learning outcomes:
 
 - Once again, repeat the spawning of a thread: however, this time
         the two threads will only share the same vspace, but have
@@ -50,10 +50,17 @@ they were covered by a previous tutorial in the series.
 
 /*? macros.tutorial_init("dynamic-3") ?*/
 
-## Prerequisites
+<details markdown='1'>
+<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<br>
+All tutorials come with complete solutions. To get solutions run:
 
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-1. [dynamic-2](https://docs.sel4.systems/Tutorials/dynamic-2)
+```
+./init --solution --tut dynamic-3
+```
+Answers are also available in drop down menus under each section.
+</details>
+
 
 ## Exercises
 
@@ -123,6 +130,18 @@ function may seem tedious, it's doing some important things.
 /*-- endfilter -*/
 ```
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    error = sel4utils_bootstrap_vspace_with_bootinfo_leaky(&vspace,
+                                                           &data, simple_get_pd(&simple), &vka, info);
+    ZF_LOGF_IFERR(error, "Failed to prepare root thread's VSpace for use.\n"
+                  "\tsel4utils_bootstrap_vspace_with_bootinfo reserves important vaddresses.\n"
+                  "\tIts failure means we can't safely use our vaddrspace.\n");
+```
+</details>
+
 On success, you should see a different error:
 
 ```
@@ -169,6 +188,19 @@ thread.
 /*-- endfilter -*/
 ```
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    sel4utils_process_t new_process;
+    sel4utils_process_config_t config = process_config_default_simple(&simple, APP_IMAGE_NAME, APP_PRIORITY);
+    error = sel4utils_configure_process_custom(&new_process, &vka, &vspace, config);
+    ZF_LOGF_IFERR(error, "Failed to spawn a new thread.\n" "\tsel4utils_configure_process expands an ELF file into our VSpace.\n"
+                  "\tBe sure you've properly configured a VSpace manager using sel4utils_bootstrap_vspace_with_bootinfo.\n"
+                  "\tBe sure you've passed the correct component name for the new thread!\n");
+```
+</details>
+
 On success, you should see a different error:
 
 ```
@@ -178,6 +210,16 @@ On success, you should see a different error:
 	sel4utils_mint_cap_to_process takes a cspacepath_t: double check what you passed.
 /*-- endfilter -*/
 ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    cspacepath_t ep_cap_path;
+    seL4_CPtr new_ep_cap = 0;
+    vka_cspace_make_path(&vka, ep_object.cptr, &ep_cap_path);
+```
+</details>
 
 ### Get a `cspacepath`
 
@@ -231,6 +273,17 @@ wouldn't know who was whom.
 /*-- endfilter -*/
 /*-- endfilter -*/
  ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    cspacepath_t ep_cap_path;
+    seL4_CPtr new_ep_cap = 0;
+    vka_cspace_make_path(&vka, ep_object.cptr, &ep_cap_path);
+```
+</details>
+
 On success, the output should not change.
 
 ### Badge a capability
@@ -265,6 +318,17 @@ free slot that the VKA library found for us.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    new_ep_cap = sel4utils_mint_cap_to_process(&new_process, ep_cap_path,
+                                               seL4_AllRights, EP_BADGE);
+    ZF_LOGF_IF(new_ep_cap == 0, "Failed to mint a badged copy of the IPC endpoint into the new thread's CSpace.\n"
+               "\tsel4utils_mint_cap_to_process takes a cspacepath_t: double check what you passed.\n");
+```
+</details>
 
 On success, the output should look something like:
 
@@ -325,6 +389,25 @@ communicate with us, we can let it run. Complete this step and proceed.
 /*-- endfilter -*/
 ```
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    new_ep_cap = sel4utils_mint_cap_to_process(&new_process, ep_cap_path,
+                                               seL4_AllRights, EP_BADGE);
+    seL4_Word argc = 1;
+    char string_args[argc][WORD_STRING_SIZE];
+    char* argv[argc];
+    sel4utils_create_word_args(string_args, argv, argc, new_ep_cap);
+    error = sel4utils_spawn_process_v(&new_process, &vka, &vspace, argc, (char**) &argv, 1);
+    ZF_LOGF_IFERR(error, "Failed to spawn and start the new thread.\n"
+                  "\tVerify: the new thread is being executed in the root thread's VSpace.\n"
+                  "\tIn this case, the CSpaces are different, but the VSpaces are the same.\n"
+                  "\tDouble check your vspace_t argument.\n");
+```
+</details>
+
+
 On success, you should be able to see the second process running. The output should
 be as follows:
 
@@ -372,6 +455,21 @@ Then we verify the fidelity of the data that was transmitted.
 /*-- endfilter -*/
 ```
 
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    tag = seL4_Recv(ep_cap_path.capPtr, &sender_badge);
+   /* make sure it is what we expected */
+    ZF_LOGF_IF(sender_badge != EP_BADGE,
+               "The badge we received from the new thread didn't match our expectation.\n");
+    ZF_LOGF_IF(seL4_MessageInfo_get_length(tag) != 1,
+               "Response data from the new process was not the length expected.\n"
+               "\tHow many registers did you set with seL4_SetMR within the new process?\n");
+```
+</details>
+
 On success, the badge error should no longer be visible.
 
 ### Send a reply
@@ -406,6 +504,14 @@ message sent by the new thread.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    seL4_ReplyRecv(ep_cap_path.capPtr, tag, &sender_badge);
+```
+</details>
 
 On success, the output should not change.
 
@@ -442,6 +548,14 @@ that was sent, and that's the end.
 /*-- endfilter -*/
 ```
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    seL4_CPtr ep = (seL4_CPtr) atol(argv[0]);
+    tag = seL4_Call(ep, tag);
+```
+</details>
 On success, you should see the following:
 
 ```
