@@ -10,17 +10,24 @@
 
 This tutorial provides an introduction to creating VM guests and applications on seL4 using CAmkES.
 
-## Prerequisites
-
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies#camkes-build-dependencies).
-1. [Camkes VM](https://docs.sel4.systems/Tutorials/camkes-vm-linux)
-
-## Outcomes
-
-By the end of this tutorial, you should be familiar with:
+You will become familiar with:
 
 * Creating, configuring and building guest Linux VM components in CAmkES.
 * Building and installing your own Linux VM user-level programs and kernel modules.
+
+## Initialising
+
+```sh
+# For instructions about obtaining the tutorial sources see https://docs.sel4.systems/Tutorials/#get-the-code
+#
+# Follow these instructions to initialise the tutorial
+# initialising the build directory with a tutorial exercise
+./init --tut camkes-vm-linux
+# building the tutorial exercise
+cd camkes-vm-linux
+ninja
+
+```
 
 ## Background
 
