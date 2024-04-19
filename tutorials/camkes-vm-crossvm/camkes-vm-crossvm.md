@@ -13,16 +13,22 @@
 This tutorial provides an introduction to using the cross virtual machine (VM) connector mechanisms
 provided by seL4 and Camkes in order to connect processes in a guest Linux instance to Camkes components.
 
-## Prerequisites
-
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies#camkes-build-dependencies).
-1. [Camkes VM](https://docs.sel4.systems/Tutorials/camkes-vm-linux)
-
-## Outcomes
-
-By the end of this tutorial, you should be able to:
+In this tutorial you will learn how to:
 
 * Configure processes in a Linux guest VM to communicate with CAmkES components
+
+## Initialising
+
+```sh
+# For instructions about obtaining the tutorial sources see https://docs.sel4.systems/Tutorials/#get-the-code
+#
+# Follow these instructions to initialise the tutorial
+# initialising the build directory with a tutorial exercise
+./init --tut camkes-vm-crossvm
+# building the tutorial exercise
+cd  camkes-vm-crossvm
+ninja
+```
 
 ## Background
 
