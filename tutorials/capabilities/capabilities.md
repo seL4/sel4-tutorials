@@ -24,7 +24,7 @@ You will learn:
 <br>
 All tutorials come with complete solutions. To get solutions run:
 
-/*? macros.tutorial_init_with_solutions("capabilities") ?*/
+/*? macros.tutorial_init_with_solution("capabilities") ?*/
 
 Answers are also available in drop down menus under each section.
 </details>

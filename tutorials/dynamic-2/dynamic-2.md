@@ -69,9 +69,8 @@ Learning outcomes:
 <br>
 All tutorials come with complete solutions. To get solutions run:
 
-```
-./init --solution --tut dynamic-2
-```
+/*? macros.tutorial_init_with_solution("dynamic-2") ?*/
+
 Answers are also available in drop down menus under each section.
 </details>
 

@@ -26,9 +26,8 @@ well-defined, static system.
 <br>
 All tutorials come with complete solutions. To get solutions run:
 
-```
-./init --solution --tut hello-camkes-1
-```
+/*? macros.tutorial_init_with_solution("hello-camkes-1") ?*/
+
 </details>
 
 ## Background

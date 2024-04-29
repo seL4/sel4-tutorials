@@ -29,9 +29,8 @@ You will learn:
 <br>
 All tutorials come with complete solutions. To get solutions run:
 
-```
-./init --solution --tut fault-handlers
-```
+/*? macros.tutorial_init_with_solution("fault-handlers") ?*/
+
 </details>
 
 ## CapDL Loader

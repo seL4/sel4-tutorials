@@ -29,9 +29,8 @@ commented out.
 <br>
 All tutorials come with complete solutions. To get solutions run:
 
-```
-./init --solution --tut hello-camkes-timer
-```
+/*? macros.tutorial_init_with_solution("hello-camkes-timer") ?*/
+
 </details>
 
 ## Exercises - Part 1

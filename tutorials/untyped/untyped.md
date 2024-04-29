@@ -18,25 +18,16 @@ By the end of this tutorial, you should be familiar with:
 
 ## Initialising
 
-```sh
-# For instructions about obtaining the tutorial sources see https://docs.sel4.systems/Tutorials/seL4Kernel/setting-ip#get-the-code
-#
-# Follow these instructions to initialise the tutorial
-# initialising the build directory with a tutorial exercise
-./init --tut untyped
-# building the tutorial exercise
-cd untyped_build
-ninja
-```
+/*? macros.tutorial_init("untyped") ?*/
+
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
 <br>
 All tutorials come with complete solutions. To get solutions run:
 
-```sh
-./init --solution --tut untyped
-```
+/*? macros.tutorial_init_with_solution("untyped") ?*/
+
 Answers are also available in drop down menus under each section.
 </details>
 

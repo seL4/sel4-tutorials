@@ -14,25 +14,15 @@ In this tutorial, you will learn how to map and unmap virtual memory pages in se
 
 ## Initialising
 
-```sh
-# For instructions about obtaining the tutorial sources see https://docs.sel4.systems/Tutorials/seL4Kernel/setting-ip#get-the-code
-#
-# Follow these instructions to initialise the tutorial
-# initialising the build directory with a tutorial exercise
-./init --tut mapping
-# building the tutorial exercise
-cd mapping_build
-ninja
-```
+/*? macros.tutorial_init("mapping") ?*/
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
 <br>
 All tutorials come with complete solutions. To get solutions run:
 
-```
-./init --solution --tut mapping
-```
+/*? macros.tutorial_init_with_solution("mapping") ?*/
+
 Answers are also available in drop down menus under each section.
 </details>
 

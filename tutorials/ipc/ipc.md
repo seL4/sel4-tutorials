@@ -24,9 +24,8 @@ You will learn
 <br>
 All tutorials come with complete solutions. To get solutions run:
 
-```
-./init --solution --tut ipc
-```
+/*? macros.tutorial_init_with_solution("ipc") ?*/
+
 Answers are also available in drop down menus under each section.
 </details>
 

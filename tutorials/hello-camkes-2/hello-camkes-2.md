@@ -23,9 +23,8 @@ Learn how to:
 <br>
 All tutorials come with complete solutions. To get solutions run:
 
-```
-./init --solution --tut hello-camkes-2
-```
+/*? macros.tutorial_init_with_solution("hello-camkes-2") ?*/
+
 </details>
 
 

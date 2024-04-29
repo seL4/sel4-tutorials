@@ -32,9 +32,8 @@ Then initialise the tutorial:
 <br>
 All tutorials come with complete solutions. To get solutions run:
 
-```
-./init --solution --tut mcs
-```
+/*? macros.tutorial_init_with_solution("mcs") ?*/
+
 </details>
 
 ## Background
