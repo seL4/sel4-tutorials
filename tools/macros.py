@@ -69,3 +69,17 @@ cd %s_build
 ninja
 ```
 ''' % (name, name)
+
+
+def tutorial_init_with_solution(name):
+    return '''```sh
+# For instructions about obtaining the tutorial sources see https://docs.sel4.systems/Tutorials/#get-the-code
+#
+# Follow these instructions to initialise the tutorial
+# initialising the build directory with a tutorial exercise
+./init --solution --tut %s
+# building the tutorial exercise
+cd %s_build
+ninja
+```
+''' % (name, name)

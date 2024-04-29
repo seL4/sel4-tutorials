@@ -44,11 +44,8 @@ This step creates two new directories in `sel4-tutorials-manifest`, namely `hell
 All tutorials come with complete solutions. To get solutions run:
 
 
-```
+/*? macros.tutorial_init_with_solution("hello-world") ?*/
 
-./init --solution --tut hello-world
-
-```
 
 
 This will generate another `hello-world` directory and `hello-world_build` directory, with unique names, e.g. `hello-world44h1po5q` and `hello-world44h1po5q_build`.
