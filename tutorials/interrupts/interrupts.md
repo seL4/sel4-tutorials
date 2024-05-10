@@ -8,7 +8,7 @@
 This tutorial covers seL4 interrupts.
 
 You will learn
-* The purpose of the IRQControl capability.
+* the IRQControl capability's purpose.
 * How to obtain capabilities for specific interrupts.
 * How to handle interrupts and their relation with notification objects.
 
@@ -29,7 +29,7 @@ Answers are also available in drop down menus under each section.
 
 ## CapDL Loader
 
-This tutorial uses a the *capDL loader*, a root task which allocates statically
+This tutorial uses the *capDL loader*, a root task which allocates statically
  configured objects and capabilities.
 
 <details markdown='1'>
@@ -89,7 +89,7 @@ can set different badges on the notification capabilities bound to each IRQHandl
 the badge of the notification object bound to that IRQHandler is bitwise orred with the data
 word in the notification object.
 Recall the badging technique for differentiating signals from the
- [notification tutorial](https://docs.sel4.systems/Tutorials/notifications).
+ [notification tutorial](https://docs.sel4.systems/Tutorials/seL4Kernel/notifications).
 
 Interrupts can be polled for using `seL4_Poll` or waited for using `seL4_Wait`. Either system
 call results in the data word of the notification object being delivered as the badge of the
@@ -243,8 +243,6 @@ timer client wakes up
 
 That's it for this tutorial.
 
-
-
 /*-- filter ExcludeDocs() -*/
 ```c
 /*-- filter ELF("client") -*/
@@ -395,8 +393,8 @@ int main(void) {
     return 0;
 }
 
-
 /*-- endfilter -*/
 ```
+
 /*? ExternalFile("CMakeLists.txt") ?*/
 /*- endfilter -*/
