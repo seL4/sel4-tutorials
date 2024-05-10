@@ -893,7 +893,7 @@ main: got a reply: [0xffff9e9e|0xffffffffffff9e9e]
 
 That's it for this tutorial.
 
-/*? macros.help_block() ?*/
+
 
 /*- filter ExcludeDocs() -*/
 /*? ExternalFile("CMakeLists.txt") ?*/

@@ -243,7 +243,7 @@ timer client wakes up
 
 That's it for this tutorial.
 
-/*? macros.help_block() ?*/
+
 
 /*-- filter ExcludeDocs() -*/
 ```c

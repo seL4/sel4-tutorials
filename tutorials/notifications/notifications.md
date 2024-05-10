@@ -259,7 +259,7 @@ to become more familiar with IPC.
 * Create a counting semaphore implementation using notification objects.
 * Create a bounded-buffer producer consumer with a buffer size greater than 1.
 
-/*? macros.help_block() ?*/
+
 
 /*-- filter ExcludeDocs() -*/
 

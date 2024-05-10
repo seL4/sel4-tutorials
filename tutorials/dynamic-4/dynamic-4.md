@@ -290,7 +290,7 @@ The output should not change on successful completion of completing this task.
 
 That's it for this tutorial.
 
-/*? macros.help_block() ?*/
+
 /*-- filter ExcludeDocs() -*/
 /*? ExternalFile("CMakeLists.txt") ?*/
 ```

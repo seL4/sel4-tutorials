@@ -269,7 +269,7 @@ to become more familiar with virtual memory management on seL4.
 * Port this tutorial to another architecture (ARM, RISCV).
 * Create a generic function for converting from `seL4_MappingFailedLookupLevel` to the required seL4 object.
 
-/*? macros.help_block() ?*/
+
 
 /*-- filter ExcludeDocs() -*/
 ```c

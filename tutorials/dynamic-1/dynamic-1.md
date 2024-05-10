@@ -722,7 +722,7 @@ On success, you should see output from your new thread.
 
 That's it for this tutorial.
 
-/*? macros.help_block() ?*/
+
 
 /*-- filter ExcludeDocs() -*/
 /*? ExternalFile("CMakeLists.txt") ?*/

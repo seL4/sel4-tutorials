@@ -186,7 +186,7 @@ Hello CAmkES World
 structure of ADL: it's key to understanding CAmkES. And well done on
 building and running your first CAmkES application.
 
-/*? macros.help_block() ?*/
+
 
 /*- filter ExcludeDocs() -*/
 

@@ -567,7 +567,7 @@ process_2: got a reply: 0xffffffffffff9e9e
 
 That's it for this tutorial.
 
-/*? macros.help_block() ?*/
+
 /*-- filter ExcludeDocs() -*/
 /*? ExternalFile("CMakeLists.txt") ?*/
 ```

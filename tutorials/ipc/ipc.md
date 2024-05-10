@@ -424,7 +424,7 @@ to become more familiar with IPC.
 * Try using `seL4_Send` and `seL4_Recv`.
 * Try the non-blocking variants, `seL4_NBSend` and `seL4_NBRecv`.
 
-/*? macros.help_block() ?*/
+
 
 /*-- filter ExcludeDocs() -*/
 ```c

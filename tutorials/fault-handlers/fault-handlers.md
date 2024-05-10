@@ -339,7 +339,7 @@ Finally, to have the `faulter` thread wake up and try to execute again, we
 If you'd like to challenge yourself, make sure to set up the fault handling on
 both versions of the kernel: master and MCS.
 
-/*? macros.help_block() ?*/
+
 
 /*-- filter ExcludeDocs() -*/
 

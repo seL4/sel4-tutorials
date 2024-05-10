@@ -249,7 +249,7 @@ Second hello
 /*- endfilter -*/
 ```
 
-/*? macros.help_block() ?*/
+
 
 /*- filter ExcludeDocs() -*/
 

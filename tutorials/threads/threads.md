@@ -585,7 +585,7 @@ to become more familiar with TCBs and threading in seL4.
 - Trying to repeat this tutorial in the root task where there are more resources available to
   create more thread objects.
 
-/*? macros.help_block() ?*/
+
 
 /*- filter ExcludeDocs() -*/
 

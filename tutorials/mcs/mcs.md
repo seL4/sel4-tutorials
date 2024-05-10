@@ -543,7 +543,7 @@ to become more familiar with the MCS extensions.
 * Experiment with notification binding on a passive server, by binding both a notification object to the
 server TCB and an SC to the notification object.
 
-/*? macros.help_block() ?*/
+
 
 /*-- filter ExcludeDocs() -*/
 ```c

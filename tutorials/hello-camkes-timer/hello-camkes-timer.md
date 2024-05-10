@@ -461,7 +461,7 @@ Task 7 to 10 are the exact same as the tasks in part one.
 
 You should also expect the same output as the first part.
 
-/*? macros.help_block() ?*/
+
 
 /*-- filter ExcludeDocs() -*/
 ```c
