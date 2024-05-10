@@ -82,6 +82,7 @@ with the IRQHandler capability for that irq, as follows:
 ```bash
 seL4_IRQHandler_SetNotification(irq_handler, notification);
 ```
+
 On success, this call will result in signals being delivered to the notification object when
 an interrupt occurs. To handle multiple interrupts on the same notification object, you
 can set different badges on the notification capabilities bound to each IRQHandler.
@@ -147,6 +148,7 @@ the place the `IRQHandler` capability for `TTC0_TIMER1_IRQ` into the `irq_handle
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
@@ -154,6 +156,7 @@ the place the `IRQHandler` capability for `TTC0_TIMER1_IRQ` into the `irq_handle
     error = seL4_IRQControl_Get(irq_control, TTC0_TIMER1_IRQ, cnode, irq_handler, seL4_WordBits);
     ZF_LOGF_IF(error, "Failed to get IRQ capability");
 ```
+
 </details>
 
 
@@ -192,6 +195,7 @@ notification capability is set to sent a signal to.
     error =  seL4_IRQHandler_SetNotification(irq_handler, ntfn);
     ZF_LOGF_IF(error, "Failed to set notification");
 ```
+
 </details>
 
 
@@ -231,6 +235,7 @@ before replying to the client.
     error = seL4_IRQHandler_Ack(irq_handler);
     ZF_LOGF_IF(error, "Failed to ack irq");
 ```
+
 </details>
 
 Now the timer interrupts continue to come in, and the reply is delivered to the client.

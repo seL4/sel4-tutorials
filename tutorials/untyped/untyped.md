@@ -264,6 +264,7 @@ This error happens because we are trying to create an untyped of size 0.
     // means that all objects together fit into the size of two TCBs, or 2^(seL4_TCBBits + 1):
     seL4_Word untyped_size_bits = seL4_TCBBits + 1;
 ```
+
 </details>
 
 
@@ -294,6 +295,7 @@ The priority check is failing as `child_tcb` is an empty CSlot.
     /* create a TCB in CSlot child_tcb */
     seL4_Untyped_Retype(child_untyped, seL4_TCBObject, 0, seL4_CapInitThreadCNode, 0, 0, child_tcb, 1);
 ```
+
 </details>
 
 /*-- filter ExcludeDocs() -*/
@@ -350,6 +352,7 @@ The error you see now is caused be an invalid endpoint capability.
     /* create an endpoint in CSlot child_ep */
     seL4_Untyped_Retype(child_untyped, seL4_EndpointObject, 0, seL4_CapInitThreadCNode, 0, 0, child_ep, 1);
 ```
+
 </details>
 
 On success, 'Failed to bind notification' should be output.
@@ -379,6 +382,7 @@ The next part of the tutorial attempts to use a notification object that does no
     // create a notification object in CSlot child_ntfn
     seL4_Untyped_Retype(child_untyped, seL4_NotificationObject, 0, seL4_CapInitThreadCNode, 0, 0, child_ntfn, 1);
 ```
+
 </details>
 
 
@@ -427,6 +431,7 @@ entire untyped object. However, this fails, because the untyped is already compl
     error = seL4_CNode_Revoke(seL4_CapInitThreadCNode, child_untyped, seL4_WordBits);
     assert(error == seL4_NoError);
 ```
+
 </details>
 
 
@@ -447,11 +452,13 @@ entire untyped object. However, this fails, because the untyped is already compl
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
+
 ```c
     // revoke the child untyped
     error = seL4_CNode_Revoke(seL4_CapInitThreadCNode, child_untyped, seL4_WordBits);
     assert(error == seL4_NoError);
 ```
+
 </details>
 
 
