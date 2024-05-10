@@ -41,9 +41,9 @@ but we also use it in the tutorials to reduce redundant code.
 The program that you construct will end up with its own CSpace and VSpace, which are separate
 from the root task, meaning CSlots like `seL4_CapInitThreadVSpace` have no meaning
 in applications loaded by the capDL loader.
-
+<br>
 More information about CapDL projects can be found [here](https://docs.sel4.systems/CapDL.html).
-
+<br>
 For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This can be added in a directory that is adjacent to the tutorials-manifest directory.
 </details>
 
