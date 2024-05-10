@@ -417,6 +417,7 @@ entire untyped object. However, this fails, because the untyped is already compl
 
     printf("Success\n");
 /*-- endfilter -*/
+```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
@@ -443,7 +444,7 @@ entire untyped object. However, this fails, because the untyped is already compl
     printf("Success\n");
 /*-- endfilter -*/
 /*-- endfilter -*/
-```
+
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 ```c
@@ -463,8 +464,6 @@ to become more familiar with untyped objects and memory allocation in seL4.
 
 * Allocate objects at specific physical addresses.
 * Create a simple object allocator for allocating seL4 objects.
-
-/*? macros.help_block() ?*/
 
 /*-- filter ExcludeDocs() -*/
 
