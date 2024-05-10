@@ -28,7 +28,34 @@ When the root task starts there are no available drivers, however a minimal C li
 
 The tutorial is already set up to print "Hello, world!", so at this point  all you need to do is build and run the tutorial.
 
+## Revisiting containers
+
+We will use two terminals, as described in [Setting up your machine](https://docs.sel4.systems/Tutorials/seL4Kernel/setting-up#mapping-a-container).
+
+
+ - Terminal A is just a normal terminal, and is used for git operations, editing (e.g., vim, emacs), and other normal operations.
+
+ - Terminal B is running in a container, and is only used for compilation.
+
+
+This gives you the flexibility to use all the normal tools you are used to, while having the seL4 dependencies separated from your machine.
+
+### Create a container
+
+Open a new terminal, Terminal B, to run a container.
+
+
+Create a container:
+
+```
+
+container
+
+```
+
 ## Initialising
+
+Initialise the tutorial in Terminal B, which is running the container.
 
 /*? macros.tutorial_init("hello-world") ?*/
 
@@ -52,29 +79,6 @@ This will generate another `hello-world` directory and `hello-world_build` direc
 
 </details>
 
-
-We will now use two terminals, as described in [Setting up your machine](https://docs.sel4.systems/Tutorials/seL4Kernel/setting-up#mapping-a-container).
-
-
- - Terminal A is just a normal terminal, and is used for git operations, editing (e.g., vim, emacs), and other normal operations.
-
- - Terminal B is running in a container, and is only used for compilation.
-
-
-This gives you the flexibility to use all the normal tools you are used to, while having the seL4 dependencies separated from your machine.
-
-### Create a container
-
-Open a new terminal, Terminal B, to run a container.
-
-
-Create a container:
-
-```
-
-container
-
-```
 
 
 ### Build the program
