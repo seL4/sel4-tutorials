@@ -39,7 +39,6 @@ Open a new terminal, Terminal B, to run a container.
 Create a container:
 
 ```
-cd sel4-tutorials-manifest
 container
 ```
 
