@@ -20,7 +20,6 @@ By the end of this tutorial, you should be familiar with:
 
 /*? macros.tutorial_init("untyped") ?*/
 
-
 <details markdown='1'>
 <summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
 <br>

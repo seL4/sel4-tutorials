@@ -210,6 +210,7 @@ Yield
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
@@ -250,6 +251,7 @@ Yield
 Yield
 /*-- endfilter -*/
 ```
+
 Before you completed this task, the scheduling context was round-robin, and so was
 schedulable immediately after the call to `seL4_Yield`.
 By changing
@@ -266,6 +268,7 @@ thread state. Unbinding a scheduling context does not alter the thread state, bu
 from the scheduler queues.
 
 **Exercise** Unbind `sched_context` to stop the spinner process from running.
+
 ```c
 /*-- filter TaskContent("mcs-start", TaskContentType.ALL, subtask='unbind') -*/
     //TODO unbind sched_context to stop yielding thread
@@ -294,6 +297,7 @@ Tick 8
     error = seL4_SchedContext_Unbind(sched_context);
     ZF_LOGF_IF(error, "Failed to unbind sched_context");
 ```
+
 </details>
 
 
@@ -325,6 +329,7 @@ Your next task is to use a different process, `sender` to experiment with sporad
     error = seL4_SchedContext_Bind(sched_context, sender_tcb);
     ZF_LOGF_IF(error != seL4_NoError, "Failed to bind schedcontext");
 ```
+
 </details>
 
 The output should look like the following:
@@ -371,6 +376,7 @@ Tock 7
     error = seL4_SchedControl_Configure(sched_control, sched_context, 0.9 * US_IN_S, 1 * US_IN_S, 6, 0);
     ZF_LOGF_IF(error != seL4_NoError, "Failed to configure schedcontext");
 ```
+
 </details>
 
 
@@ -400,6 +406,7 @@ not have a scheduling context, and needs one to initialise.
     error = seL4_SchedContext_Bind(sched_context, server_tcb);
     ZF_LOGF_IF(error != seL4_NoError, "Failed to bind sched_context to server_tcb");
 ```
+
 </details>
 
 Now you should see the server initialise and echo the messages sent. Note the initialisation protocol:
@@ -490,6 +497,7 @@ echo server
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
@@ -497,6 +505,7 @@ echo server
     error = seL4_SchedControl_Configure(sched_control, sched_context, 500, US_IN_S, 0, 5);
     ZF_LOGF_IF(error != seL4_NoError, "Failed to configure sched_context");
 ```
+
 </details>
 
 The code then binds the scheduling context back to `spinner_tcb`, which starts yielding again.
@@ -523,6 +532,7 @@ The code then binds the scheduling context back to `spinner_tcb`, which starts y
     error = seL4_TCB_SetTimeoutEndpoint(spinner_tcb, endpoint);
     ZF_LOGF_IF(error, "Failed to bind sched_context to spinner_tcb");
 ```
+
 </details>
 
 When the `spinner` faults, you should see the following output:

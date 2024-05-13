@@ -4,6 +4,8 @@
   SPDX-License-Identifier: CC-BY-SA-4.0
 -->
 
+/*? declare_task_ordering(['timer-start', 'timer-get', 'timer-set', 'timer-ack']) ?*/
+
 # Interrupts
 This tutorial covers seL4 interrupts.
 

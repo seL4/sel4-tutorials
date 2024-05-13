@@ -7,7 +7,7 @@
 /*? declare_task_ordering(['cnode-start', 'cnode-size', 'cnode-copy', 'cnode-delete', 'cnode-invoke']) ?*/
 
 
-# Capabilities - HI!
+# Capabilities
 
 You will learn:
 1. The jargon CNode, CSpace, CSlot.
