@@ -10,16 +10,11 @@
 In this tutorial you will:
 
 - Run Hello, World! to ensure your setup is working correctly
-
 - Become familiar with the jargon *root task*
-
 - Build and simulate a seL4 project
-
 - Have a basic understanding of the role of the `CMakeLists.txt` file in applications
 
 ## Building your first program
-
-
 seL4 is a microkernel, not an operating system, and as a result only provides very minimal services.
 
 After the kernel boots, an initial thread called the *root task* is started, which is then responsible for setting up the user-level system.
@@ -31,12 +26,8 @@ The tutorial is already set up to print "Hello, world!", so at this point  all y
 ## Revisiting containers
 
 We will use two terminals, as described in [Setting up your machine](https://docs.sel4.systems/Tutorials/seL4Kernel/setting-up#mapping-a-container).
-
-
  - Terminal A is just a normal terminal, and is used for git operations, editing (e.g., vim, emacs), and other normal operations.
-
  - Terminal B is running in a container, and is only used for compilation.
-
 
 This gives you the flexibility to use all the normal tools you are used to, while having the seL4 dependencies separated from your machine.
 
@@ -48,9 +39,8 @@ Open a new terminal, Terminal B, to run a container.
 Create a container:
 
 ```
-
+cd sel4-tutorials-manifest
 container
-
 ```
 
 ## Initialising
@@ -61,19 +51,13 @@ Initialise the tutorial in Terminal B, which is running the container.
 
 This step creates two new directories in `sel4-tutorials-manifest`, namely `hello-world` and `hello-world_build`
 
-
 <details markdown='1'>
 
 <summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
-
 <br>
-
 All tutorials come with complete solutions. To get solutions run:
 
-
 /*? macros.tutorial_init_with_solution("hello-world") ?*/
-
-
 
 This will generate another `hello-world` directory and `hello-world_build` directory, with unique names, e.g. `hello-world44h1po5q` and `hello-world44h1po5q_build`.
 
@@ -83,33 +67,21 @@ This will generate another `hello-world` directory and `hello-world_build` direc
 
 ### Build the program
 
-
 ```
-
 cd sel4-tutorials-manifest/hello-world_build
-
 ```
-
 
 Next, build the program in Terminal B using ninja
 
-
 ```
-
 ninja
-
 ```
-
-
 
 If successful, you should see the final ninja rule passing, e.g.:
 
 ```
-
 [150/150] objcopy kernel into bootable elf
-
 ```
-
 
 ### Run Hello, World using QEMU
 
@@ -136,13 +108,9 @@ because the program hasn't properly cleaned up after itself yet. (This will come
 ## Looking at the sources
 To look at the sources, open a new terminal, Terminal A:
 
-
 ```
-
 cd sel4-tutorials-manifest/hello-world
-
 ls
-
 ```
 
 In your tutorial directory, you will find the following files:
@@ -231,9 +199,7 @@ int main(int argc, char *argv[]) {
 ```
 Once you have made your change, use Terminal B to rebuild the project.
 
-
 *Hint:* Remember to exit the QEMU siumator before rerunning the project with `ctrl-A,x`.
-
 
 Then rebuild using ninja and run the simulator again:
 /*? macros.ninja_block() ?*/
@@ -248,8 +214,6 @@ On success, you should see the following:
 Second hello
 /*- endfilter -*/
 ```
-
-
 
 /*- filter ExcludeDocs() -*/
 
