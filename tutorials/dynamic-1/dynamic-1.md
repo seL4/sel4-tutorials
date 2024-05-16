@@ -22,7 +22,7 @@
 'task-15',
 ]) ?*/
 
-# seL4 Dynamic Libraries: initialisation & threading
+# seL4 Dynamic Libraries: Initialisation & Threading
 
 This tutorial provides code examples and exercises for using the dynamic libraries
 found in [`seL4_libs`](https://github.com/seL4/seL4_libs) to bootstrap a system and start a thread.

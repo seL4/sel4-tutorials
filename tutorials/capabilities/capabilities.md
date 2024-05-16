@@ -400,7 +400,7 @@ Suspending current thread
 main@main.c:56 Failed to suspend current thread
 ```
 
-#### Invoking capabilities
+#### Suspend a thread
 
 **Exercise** Use `seL4_TCB_Suspend` to try and suspend the current thread.
 

@@ -496,7 +496,7 @@ Password:
 -sh: write error: Bad address    # the shell complains, but our module is being invoked!
 ```
 
-### Create a hypercall
+### Creating a hypercall
 
 In `modules/poke/poke.c`, replace `printk("hi\n");` with `kvm_hypercall1(4, 0);`.
 The choice of 4 is because 0..3 are already used by existing hypercalls.

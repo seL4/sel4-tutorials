@@ -35,7 +35,8 @@ All tutorials come with complete solutions. To get solutions run:
 
 ## Exercises - Part 1
 
-### TASK 1
+### Instantiate a Timer and Timerbase
+TASK 1
 
 Start in `hello-camkes-timer.camkes`.
 
@@ -74,7 +75,8 @@ wish to call your driver something else, you'll have to change these lines.
 </details>
 
 
-### TASK 2
+### Connect a timer driver component
+TASK 2
 
 Connect the timer driver component (`Timer`) to the timer hardware component
 (`Timerbase`). The timer hardware component exposes two interfaces which must
@@ -96,7 +98,8 @@ registers. The other represents an interrupt.
 ```
 </details>
 
-### TASK 3
+### Configure a timer hardware component instance
+TASK 3
 
 Configure the timer hardware component instance with device-specific info. The
 physical address of the timer's memory-mapped registers, and its IRQ number
@@ -118,7 +121,8 @@ must both be configured.
 ```
 </details>
 
-### TASK 4
+### Call into a supplied driver to handle the interrupt
+TASK 4
 
 Now open `components/Timer/src/timer.c`.
 
@@ -148,7 +152,8 @@ inform the driver that an interrupt has occurred.
 ```
 </details>
 
-### TASK 5
+### Stop a timer
+TASK 5
 
 Stop the timer from running. The `timer_stop` function will be helpful here.
 
@@ -163,7 +168,8 @@ Stop the timer from running. The `timer_stop` function will be helpful here.
 ```
 </details>
 
-### TASK 6
+### Acknowledge an interrupt
+TASK 6
 
 The interrupt now needs to be acknowledged.
 
@@ -183,7 +189,8 @@ connected with `seL4HardwareInterrupt`).
 ```
 </details>
 
-### TASK 7
+### Get a timer handler
+TASK 7
 
 Now we'll complete `hello__init` - a function which is called once
 before the component's interfaces start running.
@@ -205,7 +212,8 @@ handle to the driver in the global variable `timer_drv`.
 ```
 </details>
 
-### TASK 8
+### Start a timer
+TASK 8
 
 After initialising the timer, we now need to start the timer. Do so by calling
 `timer_start` and passing the handle to the driver.
@@ -222,7 +230,8 @@ After initialising the timer, we now need to start the timer. Do so by calling
 ```
 </details>
 
-### TASK 9
+### Implement a RPC interface
+TASK 9
 
 Note that this task is to understand the existing code. You won't have
 to modify anything for this task.
@@ -262,7 +271,8 @@ need to implement is called `hello_sleep`.
 ```
 </details>
 
-### TASK 10
+### Set a timer interrupt
+TASK 10
 
 Tell the timer to interrupt after the given number of seconds. The
 `timer_set_timeout` function from the included driver will help. Note that it
@@ -308,7 +318,8 @@ kernel, look in the `tools/dts/` folder of the kernel sources. If a suitable
 devicetree blob is not available for your platform, then do not proceed with
 the tutorial.
 
-### TASK 1
+### Instantiate a TimerDTB component
+TASK 1
 
 Navigate to the `hello-camkes-timer.camkes` file.
 
@@ -330,7 +341,8 @@ lines if necessary.
 ```
 </details>
 
-### TASK 2
+### Connect interfaces using the seL4DTBHardware connector
+TASK 2
 
 Remove the `seL4HardwareMMIO` and `seL4HardwareInterrupt` connections. Connect
 the two interfaces inside the `TimerDTB` component with the `seL4DTBHardware`
@@ -350,7 +362,8 @@ connector.
 ```
 </details>
 
-### TASK 3
+### Configure the TimerDTB component
+TASK 3
 
 Before opening `components/Timer/Timer.camkes`, remove the `Timerbase` settings
 inside the configurations block.

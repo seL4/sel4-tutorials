@@ -6,7 +6,7 @@
 
 /*? declare_task_ordering(['hello']) ?*/
 
-# CAmkES Tutorial: Introduction
+# CAmkES Tutorial: Hello CAmkES
 
 This tutorial is an introduction to CAmkES. This will involve introducing the CAmkES syntax, bootstrapping a basic
 static CAmkES application and describing its components.

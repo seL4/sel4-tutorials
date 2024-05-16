@@ -4,7 +4,7 @@
   SPDX-License-Identifier: CC-BY-SA-4.0
 -->
 
-# CAmkES Tutorial 1
+# CAmkES Tutorial: Introduction to CAmkES
 /*? declare_task_ordering(['hello']) ?*/
 
 This tutorial is an introduction to
@@ -132,6 +132,7 @@ the second one was named `a2`? Then in order to call on that second
 
 ## Exercises
 
+### Define an instance in the composition section of the ADL
 
 **Exercise** First modify `hello-1.camkes`. Define instances of `Echo` and `Client` in the
 `composition` section of the ADL.

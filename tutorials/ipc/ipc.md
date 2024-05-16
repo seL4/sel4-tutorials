@@ -200,6 +200,8 @@ uses the badged endpoint, such that the server can identify the client. However,
 currently send the badged capability! We have provided code to badge the endpoint capability, and
 reply to the client.
 
+### Use capability transfer to send the badged capability
+
 **Exercise** Your task is to set up the cap transfer such that the client successfully
 receives the badged endpoint.
 
@@ -258,6 +260,7 @@ receives the badged endpoint.
     seL4_SetCap(0, free_slot);
     info = seL4_MessageInfo_new(0, 0, 1, 0);
 ```
+
 </details>
 
 
@@ -276,7 +279,7 @@ Depending on timing, the messages may be different, the result is the same: the 
 This is because one of the clients has hit the else case, where the badge is set, and the server
 does not respond, or wait for new messages from this point.
 
-### Getting a message
+### Get a message
 
 **Exercise** Your next task is to implement the echo part of the server.
 
@@ -304,6 +307,7 @@ does not respond, or wait for new messages from this point.
     }
     printf("\n");
 ```
+
 </details>
 
 At this point, you should see a single word output to the console in a loop.
@@ -318,7 +322,7 @@ the
 This is because the server does not reply to the client, and continues to spin in a loop
  repeating the last message.
 
- ### Using reply and wait
+### Reply and wait
 
 **Exercise**  Update the code to reply to the clients after printing the message.
 
@@ -332,6 +336,7 @@ This is because the server does not reply to the client, and continues to spin i
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
@@ -359,7 +364,8 @@ fox
 over
 lazy
 ```
-### Saving a reply and storing reply capabilities
+
+### Save a reply and store reply capabilities
 
 **Exercise** Currently each client is scheduled for its full timeslice until it is preempted. Alter
 your server to only print one message from each client, alternating. You will need to use
@@ -396,8 +402,8 @@ capability for each sender. You can use `free_slot` to store the reply capabilit
 
     info = seL4_ReplyRecv(endpoint, info, &sender);
 
-
 ```
+
 </details>
 
 

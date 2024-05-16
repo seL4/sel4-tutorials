@@ -11,7 +11,7 @@
 'task-4',
 'task-5'
 ])?*/
-# seL4 Dynamic Libraries: Timer tutorial
+# seL4 Dynamic Libraries: Timer Tutorial
 
 This tutorial demonstrates how to set up and use a basic timer driver using the
 `seL4_libs` dynamic libraries.
