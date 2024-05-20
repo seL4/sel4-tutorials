@@ -294,7 +294,6 @@ The error occurs as the existing code tries to set the priority of the initial t
     /* use seL4_CNode_Copy to make another copy of the initial TCB capability to the last slot in the CSpace */
     error = seL4_CNode_Copy(seL4_CapInitThreadCNode, last_slot, seL4_WordBits,
                       seL4_CapInitThreadCNode, first_free_slot, seL4_WordBits, seL4_AllRights);
-    ZF_LOGF_IF(error, "Failed to copy cap!");
 ```
 
 </details>

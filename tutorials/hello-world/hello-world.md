@@ -72,9 +72,7 @@ cd sel4-tutorials-manifest/hello-world_build
 
 Next, build the program in Terminal B using ninja
 
-```
-ninja
-```
+/*? macros.ninja_block() ?*/
 
 If successful, you should see the final ninja rule passing, e.g.:
 
@@ -86,7 +84,9 @@ If successful, you should see the final ninja rule passing, e.g.:
 
 The final image can be run *inside* the container using the command:
 
-/*? macros.ninja_block() ?*/
+```
+./simulate
+```
 
 This will run the result on an instance of the [QEMU](https://www.qemu.org) simulator.
 

@@ -354,7 +354,7 @@ The error you see now is caused be an invalid endpoint capability.
 
 </details>
 
-On success, 'Failed to bind notification' should be output.
+On success, the output will be "Failed to bind notification."
 
 ### Create a notification object
 
@@ -384,6 +384,7 @@ The next part of the tutorial attempts to use a notification object that does no
 
 </details>
 
+On success, the output will be "Failed to create endpoints."
 
 /*-- filter ExcludeDocs() -*/
 
@@ -449,19 +450,7 @@ entire untyped object. However, this fails, because the untyped is already compl
 /*-- endfilter -*/
 /*-- endfilter -*/
 
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-    // revoke the child untyped
-    error = seL4_CNode_Revoke(seL4_CapInitThreadCNode, child_untyped, seL4_WordBits);
-    assert(error == seL4_NoError);
-```
-
-</details>
-
-
-Once the tutorial is completed successfully, you should see the message "Success".
+Once the tutorial is completed successfully, you should see the message "Success."
 
 ### Further exercises
 

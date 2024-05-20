@@ -20,24 +20,10 @@ In this tutorial, you will
 5. Understand thread priorities and their interaction with the seL4 scheduler.
 6. Gain a basic understanding of exceptions and debug fault handlers.
 
-## Initialising
-
-/*? macros.tutorial_init("threads") ?*/
-
-<details markdown='1'>
-<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
-<br>
-All tutorials come with complete solutions. To get solutions run:
-
-/*? macros.tutorial_init_with_solution("threads") ?*/
-
-Answers are also available in drop down menus under each section.
-</details>
-
 ## CapDL Loader
 
 Previous tutorials have taken place in the root task where the starting CSpace layout is set by the
-seL4 boot protocol. This tutorial uses a the *capDL loader*, a root task which allocates statically
+seL4 boot protocol. This tutorial uses the *capDL loader*, a root task which allocates statically
  configured objects and capabilities.
 
 The capDL loader parses
@@ -52,6 +38,19 @@ More information about CapDL projects can be found [here](https://docs.sel4.syst
 
 For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This can be added in a directory that is adjacent to the tutorials-manifest directory.
 
+## Initialising
+
+/*? macros.tutorial_init("threads") ?*/
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<br>
+All tutorials come with complete solutions. To get solutions run:
+
+/*? macros.tutorial_init_with_solution("threads") ?*/
+
+Answers are also available in drop down menus under each section.
+</details>
 
 ## Background
 
@@ -463,27 +462,40 @@ arg2, and arg3 respectively.
 
 ```c
 /*-- filter TaskContent("threads-context-2", TaskContentType.ALL, subtask='context', completion='Hello2: arg1 0x1, arg2 0x2, arg3 0x3') -*/
-    UNUSED seL4_UserContext regs = {0};
+    seL4_UserContext regs = {0};
     int error = seL4_TCB_ReadRegisters(tcb_cap_slot, 0, 0, sizeof(regs)/sizeof(seL4_Word), &regs);
-    ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
-                  "\tDid you write the correct number of registers? See arg4.\n");
+    ZF_LOGF_IFERR(error, "Failed to read the new thread's register set.\n");
 
-    sel4utils_arch_init_local_context((void*)new_thread,
-                                  (void *)1, (void *)2, (void *)3,
-                                  (void *)tcb_stack_top, &regs);
+     // use valid instruction pointer
+    sel4utils_set_instruction_pointer(&regs, (seL4_Word) new_thread);
+    // use valid stack pointer
+    sel4utils_set_stack_pointer(&regs, tcb_stack_top);
+    // fix parameters to this invocation
     error = seL4_TCB_WriteRegisters(tcb_cap_slot, 0, 0, sizeof(regs)/sizeof(seL4_Word), &regs);
+
     ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
                   "\tDid you write the correct number of registers? See arg4.\n");
+    seL4_DebugDumpScheduler();
+
 /*-- endfilter -*/
 ```
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+    UNUSED seL4_UserContext regs = {0};
+    int error = seL4_TCB_ReadRegisters(tcb_cap_slot, 0, 0, sizeof(regs)/sizeof(seL4_Word), &regs);
+    ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
+                  "\tDid you write the correct number of registers? See arg4.\n");
+
+
     sel4utils_arch_init_local_context((void*)new_thread,
                                   (void *)1, (void *)2, (void *)3,
+
                                   (void *)tcb_stack_top, &regs);
     error = seL4_TCB_WriteRegisters(tcb_cap_slot, 0, 0, sizeof(regs)/sizeof(seL4_Word), &regs);
+    ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
+                  "\tDid you write the correct number of registers? See arg4.\n");
 
 ```
 </details>
@@ -542,7 +554,12 @@ You should be able to see that `arg2` is being dereferenced, but does not point 
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
-Fix `sel4utils_arch_init_local_context`
+Create a new variable
+```c
+    int data = 42;
+```
+
+And fix `sel4utils_arch_init_local_context`
 
 ```c
     sel4utils_arch_init_local_context((void*)new_thread,
@@ -562,7 +579,6 @@ Create a new function
     int call_once(int arg) {
         printf("Hello 3 %d\n", arg);
     }
-
 ```
 and fix `sel4utils_arch_init_local_context`
 ```c
