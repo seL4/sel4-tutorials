@@ -390,17 +390,26 @@ capability for each sender. You can use `free_slot` to store the reply capabilit
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-    error = seL4_CNode_SaveCaller(cnode, free_slot, seL4_WordBits);
-    assert(error == 0);
-    info = seL4_Recv(endpoint, &sender);
-    for (int i = 0; i < seL4_MessageInfo_get_length(info); i++) {
-        printf("%c", (char) seL4_GetMR(i));
+    } else {
+
+        for (int i = 0; i < seL4_MessageInfo_get_length(info); i++) {
+                 printf("%c", (char) seL4_GetMR(i));
+             }
+             printf("\n");
+
+              error = seL4_CNode_SaveCaller(cnode, free_slot, seL4_WordBits);
+              assert(error == 0);
+              info = seL4_Recv(endpoint, &sender);
+              for (int i = 0; i < seL4_MessageInfo_get_length(info); i++) {
+                 printf("%c", (char) seL4_GetMR(i));
+              }
+              printf("\n");
+              seL4_Send(free_slot, seL4_MessageInfo_new(0, 0, 0, 0));
+
+             info = seL4_ReplyRecv(endpoint, info, &sender);
+             
+        }
     }
-    printf("\n");
-
-    seL4_Send(free_slot, seL4_MessageInfo_new(0, 0, 0, 0));
-
-    info = seL4_ReplyRecv(endpoint, info, &sender);
 
 ```
 
