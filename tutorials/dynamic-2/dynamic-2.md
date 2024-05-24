@@ -252,8 +252,8 @@ Booting all finished, dropped to user space
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+    vka_object_t pt_object;
     error =  vka_alloc_page_table(&vka, &pt_object);
-    ZF_LOGF_IFERR(error, "Failed to allocate new page table.\n");
 ```
 </details>
 
@@ -308,10 +308,8 @@ On completion, you will see another fault.
 ```c
     error = seL4_ARCH_PageTable_Map(pt_object.cptr, pd_cap,
                                         ipc_buffer_vaddr, seL4_ARCH_Default_VMAttributes);
-    ZF_LOGF_IFERR(error, "Failed to map page table into VSpace.\n"
-                    "\tWe are inserting a new page table into the top-level table.\n"
-                    "\tPass a capability to the new page table, and not for example, the IPC buffer frame vaddr.\n")
 ```
+
 </details>
 
 ### Map a page
@@ -335,6 +333,16 @@ should fail. Complete it and proceed.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+       error = seL4_ARCH_Page_Map(ipc_frame_object.cptr, pd_cap,
+                                   ipc_buffer_vaddr, seL4_AllRights, seL4_ARCH_Default_VMAttributes);
+```
+</details>
+
 On completion, you will see the following:
 ```
 /*--filter TaskCompletion("task-5", TaskContentType.COMPLETED) -*/
@@ -344,19 +352,6 @@ dynamic-2: main@main.c:464 [Cond failed: seL4_MessageInfo_get_length(tag) != 1]
 	Response data from thread_2 was not the length expected.
 	How many registers did you set with seL4_SetMR within thread_2?
 ```
-
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-       error = seL4_ARCH_Page_Map(ipc_frame_object.cptr, pd_cap,
-                                   ipc_buffer_vaddr, seL4_AllRights, seL4_ARCH_Default_VMAttributes);
-        ZF_LOGF_IFERR(error, "Failed again to map the IPC buffer frame into the VSpace.\n"
-                      "\t(It's not supposed to fail.)\n"
-                      "\tPass a capability to the IPC buffer's physical frame.\n"
-                      "\tRevisit the first seL4_ARCH_Page_Map call above and double-check your arguments.\n");
-```
-</details>
 
 ### Allocate an endpoint
 
@@ -397,7 +392,6 @@ and proceed.
 
 ```c
     error = vka_alloc_endpoint(&vka, &ep_object);
-    ZF_LOGF_IFERR(error, "Failed to allocate new endpoint object.\n");
 ```
 </details>
 
@@ -461,10 +455,6 @@ data, and know which sender you are. Complete the step and proceed.
 ```c
     error = vka_mint_object(&vka, &ep_object, &ep_cap_path, seL4_AllRights,
                             EP_BADGE);
-    ZF_LOGF_IFERR(error, "Failed to mint new badged copy of IPC endpoint.\n"
-                  "\tseL4_Mint is the backend for vka_mint_object.\n"
-                  "\tseL4_Mint is simply being used here to create a badged copy of the same IPC endpoint.\n"
-                  "\tThink of a badge in this case as an IPC context cookie.\n");
 ```
 </details>
 
@@ -527,14 +517,6 @@ transmitted in the message.
 /*-- endfilter -*/
 ```
 
-On completion, the output should change as follows:
-```
-dynamic-2: main@main.c:472 [Cond failed: msg != ~MSG_DATA]
-/*-- filter TaskCompletion("task-8", TaskContentType.COMPLETED) -*/
-	Response data from thread_2's content was not what was expected.
-/*-- endfilter -*/
-```
-
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
@@ -543,6 +525,14 @@ dynamic-2: main@main.c:472 [Cond failed: msg != ~MSG_DATA]
     seL4_SetMR(0, MSG_DATA);
 ```
 </details>
+
+On completion, the output should change as follows:
+```
+dynamic-2: main@main.c:472 [Cond failed: msg != ~MSG_DATA]
+/*-- filter TaskCompletion("task-8", TaskContentType.COMPLETED) -*/
+	Response data from thread_2's content was not what was expected.
+/*-- endfilter -*/
+```
 
 ### IPC
 
@@ -603,6 +593,14 @@ response message, if the sender doesn't want it to.
 /*-- endfilter -*/
 ```
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    tag = seL4_Call(ep_cap_path.capPtr, tag);
+```
+</details>
+
 On completion, you should see thread_2 fault as follows:
 ```
 /*--filter TaskCompletion("task-9", TaskContentType.COMPLETED) -*/
@@ -617,13 +615,6 @@ in thread 0xffffff801ffb4400 "child of: 'rootserver'" at address (nil)
 With stack:
 ```
 
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-    tag = seL4_Call(ep_cap_path.capPtr, tag);
-```
-</details>
 
 ### Receive a reply
 
@@ -698,7 +689,7 @@ explicitly interested in distinguishing the sender.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
-<details>
+<details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
@@ -789,7 +780,6 @@ Again, just reading the data from the Message Registers.
 
 ```c
     msg = seL4_GetMR(0);
-    printf("thread_2: got a message %#" PRIxPTR " from %#" PRIxPTR "\n", msg, sender_badge);
 ```
 </details>
 
@@ -876,12 +866,6 @@ Complete the step and pat yourself on the back.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
-On completion, the output should change, with the fault message replaced with the following:
-```
-/*--filter TaskCompletion("task-15", TaskContentType.COMPLETED) -*/
-main: got a reply: [0xffff9e9e|0xffffffffffff9e9e]
-/*-- endfilter -*/
-```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
@@ -890,6 +874,13 @@ main: got a reply: [0xffff9e9e|0xffffffffffff9e9e]
     seL4_ReplyRecv(ep_object.cptr, tag, &sender_badge);
 ```
 </details>
+
+On completion, the output should change, with the fault message replaced with the following:
+```
+/*--filter TaskCompletion("task-15", TaskContentType.COMPLETED) -*/
+main: got a reply: [0xffff9e9e|0xffffffffffff9e9e]
+/*-- endfilter -*/
+```
 
 That's it for this tutorial.
 
