@@ -155,9 +155,14 @@ However, we do not map the second buffer in, so producer 2 crashes immediately.
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-    error = seL4_CNode_Copy(cnode, mapping_2, seL4_WordBits,
+   /* share buf2_frame_cap with producer_2 */
+   error = seL4_CNode_Copy(cnode, mapping_2, seL4_WordBits,
                         cnode, buf2_frame_cap, seL4_WordBits, seL4_AllRights);
     ZF_LOGF_IFERR(error, "Failed to copy cap");
+   /* now do the mapping */
+    error = seL4_ARCH_Page_Map(mapping_2, producer_2_vspace, BUF_VADDR,
+                               seL4_AllRights, seL4_ARCH_Default_VMAttributes);
+    ZF_LOGF_IFERR(error, "Failed to map frame");
 ```
 </details>
 
