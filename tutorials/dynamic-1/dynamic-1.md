@@ -120,7 +120,6 @@ It also sets up the IPC buffer so that it can perform some syscalls such as `seL
 
 ```c
     info = platsupport_get_bootinfo();
-    ZF_LOGF_IF(info == NULL, "Failed to get bootinfo.");
 ```
 </details>
 
@@ -249,9 +248,6 @@ step.
 
 ```c
     allocman = bootstrap_use_current_simple(&simple, ALLOCATOR_STATIC_POOL_SIZE, allocator_mem_pool);
-    ZF_LOGF_IF(allocman == NULL, "Failed to initialize alloc manager.\n"
-               "\tMemory pool sufficiently sized?\n"
-               "\tMemory pool pointer valid?\n");
 ```
 </details>
 
@@ -414,8 +410,6 @@ On successful completion this task, the output should not change.
 
 ```c
     error = vka_alloc_tcb(&vka, &tcb_object);
-    ZF_LOGF_IFERR(error, "Failed to allocate new TCB.\n"
-                  "\tVKA given sufficient bootstrap memory?");
 ```
 </details>
 
@@ -472,10 +466,6 @@ main: hello world
 
 ```c
     error = seL4_TCB_Configure(tcb_object.cptr, seL4_CapNull,  cspace_cap, seL4_NilData, pd_cap, seL4_NilData, 0, 0);
-    ZF_LOGF_IFERR(error, "Failed to configure the new TCB object.\n"
-                  "\tWe're running the new thread with the root thread's CSpace.\n"
-                  "\tWe're running the new thread in the root thread's VSpace.\n"
-                  "\tWe will not be executing any IPC in this app.\n");
 ```
 </details>
 
@@ -632,8 +622,6 @@ On successful completion this task, the output should not change.
 
 ```c
     error = seL4_TCB_WriteRegisters(tcb_object.cptr, 0, 0, 2, &regs);
-    ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
-                  "\tDid you write the correct number of registers? See arg4.\n");
 ```
 </details>
 
@@ -667,7 +655,6 @@ On successful completion this task, the output should not change.
 
 ```c
     error = seL4_TCB_Resume(tcb_object.cptr);
-    ZF_LOGF_IFERR(error, "Failed to start new thread.\n");
 ```
 </details>
 
