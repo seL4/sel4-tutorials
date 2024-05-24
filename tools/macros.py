@@ -45,7 +45,8 @@ GenerateSimulateScript()
 
 def tutorial_init(name):
     return '''```sh
-# For instructions about obtaining the tutorial sources see https://docs.sel4.systems/Tutorials/seL4Kernel/setting-up
+# For instructions about obtaining the tutorial sources see 
+https://docs.sel4.systems/Tutorials/seL4Kernel/get-the-tutorials
 #
 # Follow these instructions to initialise the tutorial
 # initialising the build directory with a tutorial exercise
@@ -59,7 +60,7 @@ ninja
 
 def tutorial_init_with_solution(name):
     return '''```sh
-# For instructions about obtaining the tutorial sources see https://docs.sel4.systems/Tutorials/seL4Kernel/setting-up
+# For instructions about obtaining the tutorial sources see https://docs.sel4.systems/Tutorials/seL4Kernel/get-the-tutorials
 #
 # Follow these instructions to initialise the tutorial
 # initialising the build directory with a tutorial exercise
