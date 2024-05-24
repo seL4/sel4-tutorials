@@ -135,9 +135,6 @@ function may seem tedious, it's doing some important things.
 ```c
     error = sel4utils_bootstrap_vspace_with_bootinfo_leaky(&vspace,
                                                            &data, simple_get_pd(&simple), &vka, info);
-    ZF_LOGF_IFERR(error, "Failed to prepare root thread's VSpace for use.\n"
-                  "\tsel4utils_bootstrap_vspace_with_bootinfo reserves important vaddresses.\n"
-                  "\tIts failure means we can't safely use our vaddrspace.\n");
 ```
 </details>
 
@@ -194,9 +191,6 @@ thread.
     sel4utils_process_t new_process;
     sel4utils_process_config_t config = process_config_default_simple(&simple, APP_IMAGE_NAME, APP_PRIORITY);
     error = sel4utils_configure_process_custom(&new_process, &vka, &vspace, config);
-    ZF_LOGF_IFERR(error, "Failed to spawn a new thread.\n" "\tsel4utils_configure_process expands an ELF file into our VSpace.\n"
-                  "\tBe sure you've properly configured a VSpace manager using sel4utils_bootstrap_vspace_with_bootinfo.\n"
-                  "\tBe sure you've passed the correct component name for the new thread!\n");
 ```
 </details>
 
@@ -209,16 +203,6 @@ On success, you should see a different error:
 	sel4utils_mint_cap_to_process takes a cspacepath_t: double check what you passed.
 /*-- endfilter -*/
 ```
-
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-    cspacepath_t ep_cap_path;
-    seL4_CPtr new_ep_cap = 0;
-    vka_cspace_make_path(&vka, ep_object.cptr, &ep_cap_path);
-```
-</details>
 
 ### Get a `cspacepath`
 
@@ -277,8 +261,6 @@ wouldn't know who was whom.
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-    cspacepath_t ep_cap_path;
-    seL4_CPtr new_ep_cap = 0;
     vka_cspace_make_path(&vka, ep_object.cptr, &ep_cap_path);
 ```
 </details>
@@ -324,8 +306,6 @@ free slot that the VKA library found for us.
 ```c
     new_ep_cap = sel4utils_mint_cap_to_process(&new_process, ep_cap_path,
                                                seL4_AllRights, EP_BADGE);
-    ZF_LOGF_IF(new_ep_cap == 0, "Failed to mint a badged copy of the IPC endpoint into the new thread's CSpace.\n"
-               "\tsel4utils_mint_cap_to_process takes a cspacepath_t: double check what you passed.\n");
 ```
 </details>
 
@@ -399,10 +379,6 @@ communicate with us, we can let it run. Complete this step and proceed.
     char* argv[argc];
     sel4utils_create_word_args(string_args, argv, argc, new_ep_cap);
     error = sel4utils_spawn_process_v(&new_process, &vka, &vspace, argc, (char**) &argv, 1);
-    ZF_LOGF_IFERR(error, "Failed to spawn and start the new thread.\n"
-                  "\tVerify: the new thread is being executed in the root thread's VSpace.\n"
-                  "\tIn this case, the CSpaces are different, but the VSpaces are the same.\n"
-                  "\tDouble check your vspace_t argument.\n");
 ```
 </details>
 
@@ -460,12 +436,6 @@ Then we verify the fidelity of the data that was transmitted.
 
 ```c
     tag = seL4_Recv(ep_cap_path.capPtr, &sender_badge);
-   /* make sure it is what we expected */
-    ZF_LOGF_IF(sender_badge != EP_BADGE,
-               "The badge we received from the new thread didn't match our expectation.\n");
-    ZF_LOGF_IF(seL4_MessageInfo_get_length(tag) != 1,
-               "Response data from the new process was not the length expected.\n"
-               "\tHow many registers did you set with seL4_SetMR within the new process?\n");
 ```
 </details>
 
@@ -551,7 +521,6 @@ that was sent, and that's the end.
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-    seL4_CPtr ep = (seL4_CPtr) atol(argv[0]);
     tag = seL4_Call(ep, tag);
 ```
 </details>
