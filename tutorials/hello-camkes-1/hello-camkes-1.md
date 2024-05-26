@@ -142,14 +142,7 @@ the second one was named `a2`? Then in order to call on that second
 assembly {
     composition {
          component EmptyComponent empty;
-         // TODO remove the empty component, and define an Echo and a Client component
-/*-- endfilter -*/
-/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="define") -*/
-assembly {
-    composition {
-         component EmptyComponent empty;
-         component Client client;
-         component Echo echo;
+         // Define an Echo and a Client component
 /*-- endfilter -*/
 ```
 
@@ -175,9 +168,6 @@ assembly {
          * hint 2: look at
          * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
          */
-/*-- endfilter -*/
-/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="connect") -*/
-        connection seL4RPCCall hello_con(from client.hello, to echo.hello);
 /*-- endfilter -*/
 ```
 
@@ -233,7 +223,7 @@ procedure HelloSimple {
 #include <camkes.h>
 
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="rpc") -*/
-/* TASK 5: implement the RPC function. */
+/* Implement the RPC function. */
 /* hint 1: the name of the function to implement is a composition of an interface name and a function name:
  * i.e.: <interface>_<function>
  * hint 2: the interfaces available are defined by the component, e.g. in hello-1.camkes
@@ -246,7 +236,7 @@ procedure HelloSimple {
 /*-- endfilter -*/
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="rpc") -*/
 void hello_say_hello(const char *str) {
-    printf("Component %s saying: %s\n", get_instance_name(), str);
+    /* print str here */
 }
 /*-- endfilter -*/
 /*-- endfilter -*/
@@ -291,13 +281,6 @@ int run(void) {
      * hint 5: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
      */
 /*-- endfilter -*/
-/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="hello") -*/
-    char *shello = "hello world";
-    hello_say_hello(shello);
-/*-- endfilter -*/
-
-    printf("After the client\n");
-    return 0;
 }
 
 /*-- endfilter -*/
@@ -311,12 +294,6 @@ int run(void) {
     hello_say_hello(shello);
 ```
 </details>
-
-### TASK 5
- Here you define the callee-side invocation functions for
-the Hello interface exposed by Echo.
-
-**Can't find a solution---------------------------------------------------------**
 
 ## Done
 
