@@ -20,6 +20,26 @@ The solutions to this tutorial primarily uses the method of manually defining
 hardware details. The solutions to the second part are also included, albeit
 commented out.
 
+## CapDL Loader
+
+This tutorial uses the *capDL loader*, a root task which allocates statically
+ configured objects and capabilities.
+
+<details markdown='1'>
+<summary style="display:list-item">Get CapDL</summary>
+The capDL loader parses
+a static description of the system and the relevant ELF binaries.
+It is primarily used in [Camkes](https://docs.sel4.systems/CAmkES/) projects
+but we also use it in the tutorials to reduce redundant code.
+The program that you construct will end up with its own CSpace and VSpace, which are separate
+from the root task, meaning CSlots like `seL4_CapInitThreadVSpace` have no meaning
+in applications loaded by the capDL loader.
+<br>
+More information about CapDL projects can be found [here](https://docs.sel4.systems/CapDL.html).
+<br>
+For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This can be added in a directory that is adjacent to the tutorials-manifest directory.
+</details>
+
 ## Initialising
 
 /*? macros.tutorial_init("hello-camkes-timer") ?*/
@@ -60,15 +80,18 @@ timer.hello);` and `timer.sem_value = 0;` in the `hello-camkes-timer.camkes`
 file. They assume that the name of the timer ''driver'' will be `timer`. If you
 wish to call your driver something else, you'll have to change these lines.
 
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
 ```
     /* Part 1, TASK 1: component instances */
     /* hint 1: one hardware component and one driver component
         * hint 2: look at
         * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
         */
+```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```
     component Timerbase timerbase;
     component Timer timer;
 ```
@@ -83,9 +106,6 @@ Connect the timer driver component (`Timer`) to the timer hardware component
 be connected to the timer driver. One of these represents memory-mapped
 registers. The other represents an interrupt.
 
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
 ```
     /* Part 1, TASK 2: connections */
     /* hint 1: use seL4HardwareMMIO to connect device memory
@@ -93,6 +113,12 @@ registers. The other represents an interrupt.
         * hint 3: look at
         * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
         */
+```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```
     connection seL4HardwareMMIO timer_mem(from timer.reg, to timerbase.reg);
     connection seL4HardwareInterrupt timer_irq(from timerbase.irq, to timer.irq);
 ```
@@ -105,9 +131,6 @@ Configure the timer hardware component instance with device-specific info. The
 physical address of the timer's memory-mapped registers, and its IRQ number
 must both be configured.
 
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
 ```
     /* Part 1, TASK 3: hardware resources */
     /* Timer and Timerbase:
@@ -115,6 +138,12 @@ must both be configured.
         * hint 2: look at
         * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#hardware-components
         */
+```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```
     timerbase.reg_paddr = 0xF8001000;   // paddr of mmio registers
     timerbase.reg_size = 0x1000;        // size of mmio registers
     timerbase.irq_irq_number = 42;      // timer irq number
@@ -141,13 +170,15 @@ where the initial `repo init` command was executed.
 This task is to call the `timer_handle_irq` function from the supply driver to
 inform the driver that an interrupt has occurred.
 
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
 ```c
     /* Part 1, TASK 4: call into the supplied driver to handle the interrupt. */
     /* hint: timer_handle_irq
      */
+```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+```c
     timer_handle_irq(&timer_drv);
 ```
 </details>
@@ -157,13 +188,16 @@ TASK 5
 
 Stop the timer from running. The `timer_stop` function will be helpful here.
 
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
 ```c
     /* Part 1, TASK 5: stop the timer. */
     /* hint: timer_stop
      */
+```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
     timer_stop(&timer_drv);
 ```
 </details>
@@ -177,13 +211,16 @@ CAmkES generates the seL4-specific code for ack-ing an interrupt and provides a
 function `<interface>_acknowldege` for IRQ interfaces (specifically those
 connected with `seL4HardwareInterrupt`).
 
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
 ```c
     /* Part 1, TASK 6: acknowledge the interrupt */
     /* hint 1: use the function <irq interface name>_acknowledge()
      */
+```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
     error = irq_acknowledge();
     ZF_LOGF_IF(error != 0, "failed to acknowledge interrupt");
 ```
@@ -198,15 +235,18 @@ before the component's interfaces start running.
 We need to initialise a handle to the timer driver for this device, and store a
 handle to the driver in the global variable `timer_drv`.
 
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
 ```c
     /* Part 1, TASK 7: call into the supplied driver to get the timer handler */
     /* hint1: timer_init
      * hint2: The timer ID is supplied as a #define in this file
      * hint3: The register's variable name is the same name as the dataport in the Timer component
      */
+```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
     int error = timer_init(&timer_drv, DEFAULT_TIMER_ID, reg);
     assert(error == 0);
 ```
@@ -218,13 +258,16 @@ TASK 8
 After initialising the timer, we now need to start the timer. Do so by calling
 `timer_start` and passing the handle to the driver.
 
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
 ```c
     /* Part 1, TASK 8: start the timer
      * hint: timer_start
      */
+```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
     error = timer_start(&timer_drv);
     assert(error == 0);
 ```
@@ -243,9 +286,6 @@ should return after a given number of seconds. in
 exposed by the `Timer` component is called `hello`. Thus, the function we
 need to implement is called `hello_sleep`.
 
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
 ```c
     /* part 1, TASK 9: implement the rpc function. */
     /* hint 1: the name of the function to implement is a composition of an interface name and a function name:
@@ -257,19 +297,26 @@ need to implement is called `hello_sleep`.
     * hint 6: invoke a function in supplied driver the to set up the timer
     * hint 7: look at https://github.com/sel4/camkes-tool/blob/master/docs/index.md#creating-an-application
     */
+```
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
     void hello_sleep(int sec) {
-        int error = 0;
-        /* Part 1, TASK 10: invoke a function in the supplied driver to set a timeout */
-        /* hint1: timer_set_timeout
-        * hint2: periodic should be set to false
-        */
-        error = timer_set_timeout(&timer_drv, sec * NS_IN_SECOND, false);
-        assert(error == 0);
-        error = sem_wait();
-        ZF_LOGF_IF(error != 0, "failed to wait on semaphore");
-    }
+    int error = 0;
+
+    /* Part 1, TASK 10: invoke a function in the supplied driver to set a timeout */
+    /* hint1: timer_set_timeout
+     * hint2: periodic should be set to false
+     */
+
+    error = sem_wait();
+    ZF_LOGF_IF(error != 0, "failed to wait on semaphore");
+}
 ```
 </details>
+
+
 
 ### Set a timer interrupt
 TASK 10
@@ -277,6 +324,27 @@ TASK 10
 Tell the timer to interrupt after the given number of seconds. The
 `timer_set_timeout` function from the included driver will help. Note that it
 expects its time argument to be given in nanoseconds.
+
+```c
+    * Part 1, TASK 10: invoke a function in the supplied driver to set a timeout */
+    /* hint1: timer_set_timeout
+     * hint2: periodic should be set to false
+     */
+     
+     error = sem_wait();
+    ZF_LOGF_IF(error != 0, "failed to wait on semaphore");
+```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    error = timer_set_timeout(&timer_drv, sec * NS_IN_SECOND, false);
+    assert(error == 0);
+
+```
+</details>
+
 
 Note the existing code in `hello_sleep`. It waits on a binary semaphore.
 `irq_handle` will be called on another thread when the timer interrupt occurs,
@@ -290,19 +358,6 @@ Starting the client
 ------Sleep for 2 seconds------
 After the client: wakeup
 ```
-
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-    * Part 1, TASK 10: invoke a function in the supplied driver to set a timeout */
-    /* hint1: timer_set_timeout
-     * hint2: periodic should be set to false
-     */
-    error = timer_set_timeout(&timer_drv, sec * NS_IN_SECOND, false);
-    assert(error == 0);
-```
-</details>
 
 ## Exercises - Part 2
 
@@ -328,15 +383,18 @@ Remove the `Timerbase` and `Timer` component instantiations and instantiate a
 hello_timer(from client.hello, to timer.hello);` and `timer.sem_value = 0;`
 lines if necessary.
 
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
 ```
     /* Part 2, TASK 1: component instances */
     /* hint 1: a single TimerDTB component
     * hint 2: look at
     * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
     */
+```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```
     component TimerDTB timer;
 ```
 </details>
@@ -348,9 +406,6 @@ Remove the `seL4HardwareMMIO` and `seL4HardwareInterrupt` connections. Connect
 the two interfaces inside the `TimerDTB` component with the `seL4DTBHardware`
 connector.
 
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
 ```
     /* Part 2, TASK 2: connections */
     /* hint 1: connect the dummy_source and timer interfaces
@@ -358,6 +413,11 @@ connector.
     * hint 3: look at
     * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
     */
+```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+```
     connection seL4DTBHardware timer_dtb(from timer.dummy_source, to timer.tmr);
 ```
 </details>
@@ -375,9 +435,6 @@ and grab the necessary data to initialise hardware resources. More
 specifically, it reads the registers field and optionally the interrupts field
 to allocate memory and interrupts.
 
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
 ```
     /* Part 2, TASK 3: hardware resources */
     /* TimerDTB:
@@ -386,12 +443,19 @@ to allocate memory and interrupts.
      *         e.g. foo.dtb = dtb({"path" : "/bar"});
      * hint 3: set the 'generate_interrupts' setting to 1
      */
+```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```
     tmr.dtb = dtb({"path" : "/amba/timer@f8001000"});   // path of the timer in the DTB
     tmr.generate_interrupts = 1;                        // tell seL4DTBHardware to init interrupts
 ```
 </details>
 
-### TASK 4
+### Handle the interrupt
+TASK 4
 
 Move to `components/TimerDTB/src/timerdtb.c`.
 
@@ -413,33 +477,41 @@ Likewise with part one, the implementation of the timer driver is in the
 included driver in `timer_driver` and the task here is to call
 `timer_handle_irq`.
 
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
 ```c
     /* Part 2, TASK 4: call into the supplied driver to handle the interrupt. */
     /* hint: timer_handle_irq
      */
+```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
     timer_handle_irq(&timer_drv);
 ```
 </details>
 
-### TASK 5
+### Stop the timer
+TASK 5
 
 The timer needs to be stopped, the task here is the same as part one's task 5.
-
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
     /* Part 2, TASK 5: stop the timer. */
     /* hint: timer_stop
      */
+```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
     timer_stop(&timer_drv);
 ```
 </details>
 
-### TASK 6
+### Get the timer handler
+TASK 6
 
 Again, the interrupt now has to be acknowledged.
 
@@ -450,10 +522,7 @@ takes in a `ps_irq_t *` argument. Similarly, the `ps_irq_t *` argument helps
 CAmkES to differentiate between the possibly many interrupts of a device that
 you wish to acknowledge.
 
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```
+```c
     /* Part 2, TASK 7: call into the supplied driver to get the timer handler */
     /* hint1: timer_init
      * hint2: The timer ID is supplied as a #define in this file
@@ -463,6 +532,12 @@ you wish to acknowledge.
      * and "register number" is the index of the register block in the device
      * node in the devicetree blob
      */
+```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
     int error = timer_init(&timer_drv, DEFAULT_TIMER_ID, tmr_0);
     assert(error == 0);
 ```
