@@ -175,7 +175,7 @@ application to transparently interact with these events.
 ```c
   /* TASK 15: wait to get an event back signalling that data has been read */
   /* hint 1: we've already done this before */
-```  
+```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
@@ -241,7 +241,7 @@ instance. These steps help you to become familiar with this approach.
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
-```c     
+```c
     int error = echo_reg_callback(callback_handler_1, NULL);
     ZF_LOGF_IF(error != 0, "Failed to register callback");
 ```
@@ -543,6 +543,7 @@ code to access and manipulate the data in the shared memory mapping
 ```
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
+
 ```c
   char *str;
   for (int i = 0; i < d_ptrs->n; i++) {

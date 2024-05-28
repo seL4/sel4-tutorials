@@ -407,7 +407,6 @@ capability for each sender. You can use `free_slot` to store the reply capabilit
               seL4_Send(free_slot, seL4_MessageInfo_new(0, 0, 0, 0));
 
              info = seL4_ReplyRecv(endpoint, info, &sender);
-             
         }
     }
 

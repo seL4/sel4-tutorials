@@ -330,7 +330,6 @@ expects its time argument to be given in nanoseconds.
     /* hint1: timer_set_timeout
      * hint2: periodic should be set to false
      */
-     
      error = sem_wait();
     ZF_LOGF_IF(error != 0, "failed to wait on semaphore");
 ```
