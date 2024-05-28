@@ -1,5 +1,5 @@
 <!--
-  2024 seL4 Project a Series of LF Projects, LLC.
+  Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
   SPDX-License-Identifier: CC-BY-SA-4.0
 -->
@@ -891,7 +891,7 @@ That's it for this tutorial.
 ```
 /*-- filter File("main.c") -*/
 /*
- * 2024 seL4 Project a Series of LF Projects, LLC.
+ * Copyright 2024, seL4 Project a Series of LF Projects, LLC.
  *
  * SPDX-License-Identifier: CC-BY-SA-4.0
  */
