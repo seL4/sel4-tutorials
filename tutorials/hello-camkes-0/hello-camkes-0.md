@@ -1,24 +1,17 @@
 <!--
-  Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
+  Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
-  SPDX-License-Identifier: BSD-2-Clause
+  SPDX-License-Identifier: CC-BY-SA-4.0
 -->
 
 /*? declare_task_ordering(['hello']) ?*/
 
-# CAmkES Tutorial: Introduction
+# CAmkES Tutorial: Hello CAmkES
 
 This tutorial is an introduction to CAmkES. This will involve introducing the CAmkES syntax, bootstrapping a basic
 static CAmkES application and describing its components.
 
-## Prerequisites
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies#camkes-build-dependencies).
-2. [Hello world](https://docs.sel4.systems/Tutorials/hello-world)
-2. Familiarize yourself with the [CAmkES manual](https://github.com/seL4/camkes-tool/blob/master/docs/index.md).
-Note that it's possible to successfully complete the CAmkES tutorial without having read the manual, however highly
-recommended.
-
-## Outcomes
+Outcomes:
 
 - Understand the structure of a CAmkES application, as a described, well-defined, static system.
 - Understand the file-layout of a CAmkES ADL project.
@@ -193,7 +186,7 @@ Hello CAmkES World
 structure of ADL: it's key to understanding CAmkES. And well done on
 building and running your first CAmkES application.
 
-/*? macros.help_block() ?*/
+
 
 /*- filter ExcludeDocs() -*/
 

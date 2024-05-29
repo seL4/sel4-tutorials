@@ -1,32 +1,34 @@
 <!--
-  Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
+  Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
-  SPDX-License-Identifier: BSD-2-Clause
+  SPDX-License-Identifier: CC-BY-SA-4.0
 -->
 
-# CAmkES Tutorial 1
+# CAmkES Tutorial: Introduction to CAmkES
 /*? declare_task_ordering(['hello']) ?*/
 
 This tutorial is an introduction to
 CAmkES: bootstrapping a basic static CAmkES application, describing its
 components, and linking them together.
 
-## Prerequisites
-
-
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies#camkes-build-dependencies).
-2. [Camkes hello world](https://docs.sel4.systems/Tutorials/hello-camkes-0)
+Outcomes:
+1. Understand the structure of a CAmkES application, as a described,
+well-defined, static system.
+2. Understand the file-layout of a CAmkES ADL project.
+3. Become acquainted with the basics of creating a practical CAmkES application.
 
 ## Initialising
 
 /*? macros.tutorial_init("hello-camkes-1") ?*/
 
-## Outcomes
+<details markdown='1'>
+<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<br>
+All tutorials come with complete solutions. To get solutions run:
 
-1. Understand the structure of a CAmkES application, as a described,
-well-defined, static system.
-1. Understand the file-layout of a CAmkES ADL project.
-1. Become acquainted with the basics of creating a practical CAmkES application.
+/*? macros.tutorial_init_with_solution("hello-camkes-1") ?*/
+
+</details>
 
 ## Background
 
@@ -70,10 +72,10 @@ a communication channel then, also are well defined, and logically
 grouped so as to provide clear directional understanding of all
 transmissions over a connection. Components are connected together in
 CAmkES, yes -- but the interfaces that are exposed over each connection
-for calling by other components, are also described. 
+for calling by other components, are also described.
 
 There are different
-kinds of interfaces: 
+kinds of interfaces:
 -Dataports,
 -Procedural interfaces,
 -and Notifications.
@@ -88,7 +90,7 @@ Procedure interface may be found here:
 Find the "Procedure" keyword definition here:
 <https://github.com/seL4/camkes-tool/blob/master/docs/index.md#procedure>
 
-### Component source 
+### Component source
 
  Based on the ADL, CAmkES generates boilerplate which
 conforms to your system's architecture, and enables you to fill in the
@@ -130,10 +132,12 @@ the second one was named `a2`? Then in order to call on that second
 
 ## Exercises
 
+### Define an instance in the composition section of the ADL
 
-**Exercise** First modify `hello-1.camkes`. Define instances of `Echo` and `Client` in the 
+**Exercise** First modify `hello-1.camkes`. Define instances of `Echo` and `Client` in the
 `composition` section of the ADL.
 
+/*-- filter ExcludeDocs() -*/
 ```
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="define",completion="Booting all finished, dropped to user space") -*/
 assembly {
@@ -149,10 +153,33 @@ assembly {
          component Echo echo;
 /*-- endfilter -*/
 ```
+/*-- endfilter -*/
+
+```
+assembly {
+    composition {
+         component EmptyComponent empty;
+         // Define an Echo and a Client component
+```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```
+    assembly {
+    composition {
+         component EmptyComponent empty;
+         component Client client;
+         component Echo echo;
+```
+</details>
+
+### Add a connection
 
 **Exercise** Now add a connection from `client.hello` to `echo.hello`.
 
-```
+/*-- filter ExcludeDocs() -*/
+```c
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="connect") -*/
         /* hint 1: use seL4RPCCall as the connector (or you could use seL4RPC if you prefer)
          * hint 2: look at
@@ -163,9 +190,29 @@ assembly {
         connection seL4RPCCall hello_con(from client.hello, to echo.hello);
 /*-- endfilter -*/
 ```
+/*-- endfilter -*/
+
+```c
+        /* hint 1: use seL4RPCCall as the connector (or you could use seL4RPC if you prefer)
+         * hint 2: look at
+         * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+         */
+```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    connection seL4RPCCall hello_con(from client.hello, to echo.hello);
+```
+</details>
+
+### Define an interface
 
 **Exercise** Define the interface for hello in `interfaces/HelloSimple.idl4`. 
 
+
+/*-- filter ExcludeDocs() -*/
 ```c
 /* Simple RPC interface */
 procedure HelloSimple {
@@ -175,16 +222,35 @@ procedure HelloSimple {
      * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
      */
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="interface") -*/
     void say_hello(in string str);
 /*-- endfilter -*/
+};
+```
 /*-- endfilter -*/
+
+```c
+/* Simple RPC interface */
+procedure HelloSimple {
+    /* TODO define RPC functions */
+    /* hint 1: define at least one function that takes a string as input parameter. call it say_hello. no return value
+     * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+     */
 };
 ```
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```
+    void say_hello(in string str);
+```
+</details>
+
+### Implement a RPC function
 **Exercise** Implement the RPC hello function.
 
+/*-- filter ExcludeDocs() -*/
 ```c
 /*- filter File("components/Echo/src/echo.c") --*/
 /*
@@ -196,7 +262,7 @@ procedure HelloSimple {
 #include <camkes.h>
 
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="rpc") -*/
-/* TASK 5: implement the RPC function. */
+/* Implement the RPC function. */
 /* hint 1: the name of the function to implement is a composition of an interface name and a function name:
  * i.e.: <interface>_<function>
  * hint 2: the interfaces available are defined by the component, e.g. in hello-1.camkes
@@ -214,8 +280,46 @@ void hello_say_hello(const char *str) {
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+/*-- endfilter -*/
+
+```c
+/*
+ * CAmkES tutorial part 1: components with RPC. Server part.
+ */
+#include <stdio.h>
+
+/* generated header for our component */
+#include <camkes.h>
+
+    /* Implement the RPC function. */
+    /* hint 1: the name of the function to implement is a composition of an interface name and a function name:
+     * i.e.: <interface>_<function>
+     * hint 2: the interfaces available are defined by the component, e.g. in hello-1.camkes
+     * hint 3: the function name is defined by the interface definition, e.g. in interfaces/HelloSimple.idl4
+     * hint 4: so the function would be: hello_say_hello()
+     * hint 5: the CAmkES 'string' type maps to 'const char *' in C
+     * hint 6: make the function print out a mesage using printf
+     * hint 7: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+     */
+    void hello_say_hello(const char *str) {
+        /* print str here */
+```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```
+void hello_say_hello(const char *str) {
+    printf("Component %s saying: %s\n", get_instance_name(), str);
+}
+```
+</details>
+
+### Invoke a RPC function
 
 **Exercise** Invoke the RPC function in `components/Client/src/client.c`.
+
+/*-- filter ExcludeDocs() -*/
 ```c
 /*- filter File("components/Client/src/client.c") --*/
 /*
@@ -253,10 +357,42 @@ int run(void) {
 
 /*-- endfilter -*/
 ```
+/*-- endfilter -*/
 
-### TASK 5
- Here you define the callee-side invocation functions for
-the Hello interface exposed by Echo.
+```c
+/*
+ * CAmkES tutorial part 1: components with RPC. Client part.
+ */
+
+#include <stdio.h>
+
+/* generated header for our component */
+#include <camkes.h>
+
+/* run the control thread */
+int run(void) {
+    printf("Starting the client\n");
+    printf("-------------------\n");
+    /* TODO: invoke the RPC function */
+    /* hint 1: the name of the function to invoke is a composition of an interface name and a function name:
+     * i.e.: <interface>_<function>
+     * hint 2: the interfaces available are defined by the component, e.g. in hello-1.camkes
+     * hint 3: the function name is defined by the interface definition, e.g. in interfaces/HelloSimple.idl4
+     * hint 4: so the function would be:  hello_say_hello()
+     * hint 5: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+     */
+```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```
+    char *shello = "hello world";
+    hello_say_hello(shello);
+    printf("After the client\n");
+    return 0;
+```
+</details>
 
 ## Done
 
@@ -264,7 +400,7 @@ Now build and run the project, if it compiles: Congratulations! Be sure to read 
 structure of ADL: it's key to understanding CAmkES. And well done on
 writing your first CAmkES application.
 
-/*? macros.help_block() ?*/
+
 
 /*-- filter ExcludeDocs() -*/
 ```

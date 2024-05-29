@@ -1,7 +1,7 @@
 <!--
-  Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
+  Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
-  SPDX-License-Identifier: BSD-2-Clause
+  SPDX-License-Identifier: CC-BY-SA-4.0
 -->
 
 /*? declare_task_ordering(
@@ -39,7 +39,7 @@ tutorial are filled out and you don't have to repeat them: in much the
 same way, we won't be repeating conceptual explanations on this page, if
 they were covered by a previous tutorial in the series.
 
-## Learning outcomes
+Learning outcomes:
 
 - Repeat the spawning of a thread. "''If it's nice, do it twice''"
         -- Caribbean folk-saying. Once again, the new thread will be
@@ -58,19 +58,21 @@ they were covered by a previous tutorial in the series.
         both an Endpoint and a Notification using "Bound Notifications".
 - Understand CSpace pointers, which are really just integers with
         multiple indexes concatenated into one. Understanding them well
-        however, is important to understanding how capabilities work. Be
-        sure you understand the diagram on the "**CSpace example and
-        addressing**" slide.
+        however, is important to understanding how capabilities work.
 
 ## Initialising
 
 /*? macros.tutorial_init("dynamic-2") ?*/
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<br>
+All tutorials come with complete solutions. To get solutions run:
 
-## Prerequisites
+/*? macros.tutorial_init_with_solution("dynamic-2") ?*/
 
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-1. [dynamic-1](https://docs.sel4.systems/Tutorials/dynamic-1)
+Answers are also available in drop down menus under each section.
+</details>
 
 ## Exercises
 
@@ -130,6 +132,16 @@ Booting all finished, dropped to user space
 /*-- endfilter -*/
 ```
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    error = vka_alloc_frame(&vka, IPCBUF_FRAME_SIZE_BITS, &ipc_frame_object);
+    ZF_LOGF_IFERR(error, "Failed to alloc a frame for the IPC buffer.\n"
+                  "\tThe frame size is not the number of bytes, but an exponent.\n"
+                  "\tNB: This frame is not an immediately usable, virtually mapped page.\n")
+```
+</details>
 On completion, the output will not change.
 
 ### Try to map a page
@@ -189,6 +201,15 @@ into a VSpace, and the mapping of a new page-table into a VSpace.
 /*-- endfilter -*/
 ```
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    error = seL4_ARCH_Page_Map(ipc_frame_object.cptr, pd_cap, ipc_buffer_vaddr,
+                               seL4_AllRights, seL4_ARCH_Default_VMAttributes);
+```
+</details>
+
 On completion, the output will be as follows:
 ```
 dynamic-2: main@main.c:260 [Err seL4_FailedLookup]:
@@ -226,6 +247,16 @@ Booting all finished, dropped to user space
 /*-- endfilter -*/
 /*-- endfilter -*/
  ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    vka_object_t pt_object;
+    error =  vka_alloc_page_table(&vka, &pt_object);
+```
+</details>
+
 On completion, you will see another fault.
 
 ### Map a page table
@@ -269,7 +300,17 @@ Booting all finished, dropped to user space
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
 On completion, you will see another fault.
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    error = seL4_ARCH_PageTable_Map(pt_object.cptr, pd_cap,
+                                        ipc_buffer_vaddr, seL4_ARCH_Default_VMAttributes);
+```
+
+</details>
 
 ### Map a page
 
@@ -292,6 +333,16 @@ should fail. Complete it and proceed.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+       error = seL4_ARCH_Page_Map(ipc_frame_object.cptr, pd_cap,
+                                   ipc_buffer_vaddr, seL4_AllRights, seL4_ARCH_Default_VMAttributes);
+```
+</details>
+
 On completion, you will see the following:
 ```
 /*--filter TaskCompletion("task-5", TaskContentType.COMPLETED) -*/
@@ -335,6 +386,15 @@ and proceed.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    error = vka_alloc_endpoint(&vka, &ep_object);
+```
+</details>
+
 On completion, the output will not change.
 
 ### Badge an endpoint
@@ -388,6 +448,16 @@ data, and know which sender you are. Complete the step and proceed.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    error = vka_mint_object(&vka, &ep_object, &ep_cap_path, seL4_AllRights,
+                            EP_BADGE);
+```
+</details>
+
 On completion, the output will not change.
 
 ### Message registers
@@ -446,6 +516,15 @@ transmitted in the message.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    tag = seL4_MessageInfo_new(0, 0, 0, 1);
+    seL4_SetMR(0, MSG_DATA);
+```
+</details>
 
 On completion, the output should change as follows:
 ```
@@ -514,6 +593,14 @@ response message, if the sender doesn't want it to.
 /*-- endfilter -*/
 ```
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    tag = seL4_Call(ep_cap_path.capPtr, tag);
+```
+</details>
+
 On completion, you should see thread_2 fault as follows:
 ```
 /*--filter TaskCompletion("task-9", TaskContentType.COMPLETED) -*/
@@ -527,6 +614,7 @@ in thread 0xffffff801ffb4400 "child of: 'rootserver'" at address (nil)
 in thread 0xffffff801ffb4400 "child of: 'rootserver'" at address (nil)
 With stack:
 ```
+
 
 ### Receive a reply
 
@@ -555,6 +643,15 @@ designated, single IPC buffer.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    msg = seL4_GetMR(0);
+```
+</details>
+
 On completion, the output should not change.
 
 ### Receive an IPC
@@ -592,6 +689,14 @@ explicitly interested in distinguishing the sender.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    tag = seL4_Recv(ep_object.cptr, &sender_badge);
+```
+</details>
+
 On completion, the output should change slightly:
 ```
 /*-- filter TaskCompletion("task-11", TaskContentType.COMPLETED) -*/
@@ -633,6 +738,18 @@ Complete them and proceed to the next step.
 /*-- endfilter -*/
 ```
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    ZF_LOGF_IF(sender_badge != EP_BADGE,
+               "Badge on the endpoint was not what was expected.\n");
+    ZF_LOGF_IF(seL4_MessageInfo_get_length(tag) != 1,
+               "Length of the data send from root thread was not what was expected.\n"
+               "\tHow many registers did you set with seL4_SetMR, within the root thread?\n");
+```
+</details>
+
 On completion, the output should not change.
 
 ### Read the message registers
@@ -657,6 +774,15 @@ Again, just reading the data from the Message Registers.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    msg = seL4_GetMR(0);
+```
+</details>
+
 On completion, the output should change slightly:
 ```
 /*--filter TaskCompletion("task-13", TaskContentType.COMPLETED) -*/
@@ -686,6 +812,15 @@ And writing Message Registers again.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    seL4_SetMR(0, msg);
+```
+</details>
+
 On completion, the output should not change.
 
 ### Reply to a message
@@ -731,24 +866,34 @@ Complete the step and pat yourself on the back.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    seL4_ReplyRecv(ep_object.cptr, tag, &sender_badge);
+```
+</details>
+
 On completion, the output should change, with the fault message replaced with the following:
 ```
 /*--filter TaskCompletion("task-15", TaskContentType.COMPLETED) -*/
 main: got a reply: [0xffff9e9e|0xffffffffffff9e9e]
 /*-- endfilter -*/
 ```
+
 That's it for this tutorial.
 
-/*? macros.help_block() ?*/
+
 
 /*- filter ExcludeDocs() -*/
 /*? ExternalFile("CMakeLists.txt") ?*/
 ```
 /*-- filter File("main.c") -*/
 /*
- * Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
+ * Copyright 2024, seL4 Project a Series of LF Projects, LLC.
  *
- * SPDX-License-Identifier: BSD-2-Clause
+ * SPDX-License-Identifier: CC-BY-SA-4.0
  */
 
 /*

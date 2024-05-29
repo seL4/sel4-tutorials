@@ -1,26 +1,53 @@
 <!--
-  Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
+  Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
-  SPDX-License-Identifier: BSD-2-Clause
+  SPDX-License-Identifier: CC-BY-SA-4.0
 -->
 
-# Interrupts
 /*? declare_task_ordering(['timer-start', 'timer-get', 'timer-set', 'timer-ack']) ?*/
 
-## Prerequisites
+# Interrupts
+This tutorial covers seL4 interrupts.
 
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-2. [Notification tutorial](https://docs.sel4.systems/Tutorials/notifications)
+You will learn
+* the IRQControl capability's purpose.
+* How to obtain capabilities for specific interrupts.
+* How to handle interrupts and their relation with notification objects.
+
 
 # Initialising
 
 /*? macros.tutorial_init("interrupts") ?*/
 
-## Outcomes
+<details markdown='1'>
+<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<br>
+All tutorials come with complete solutions. To get solutions run:
 
-* Understand the purpose of the IRQControl capability.
-* Be able to obtain capabilities for specific interrupts.
-* Learn how to handle interrupts and their relation with notification objects.
+/*? macros.tutorial_init_with_solution("interrupts") ?*/
+
+Answers are also available in drop down menus under each section.
+</details>
+
+## CapDL Loader
+
+This tutorial uses the *capDL loader*, a root task which allocates statically
+ configured objects and capabilities.
+
+<details markdown='1'>
+<summary style="display:list-item">Get CapDL</summary>
+The capDL loader parses
+a static description of the system and the relevant ELF binaries.
+It is primarily used in [Camkes](https://docs.sel4.systems/CAmkES/) projects
+but we also use it in the tutorials to reduce redundant code.
+The program that you construct will end up with its own CSpace and VSpace, which are separate
+from the root task, meaning CSlots like `seL4_CapInitThreadVSpace` have no meaning
+in applications loaded by the capDL loader.
+<br>
+More information about CapDL projects can be found [here](https://docs.sel4.systems/CapDL.html).
+<br>
+For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This can be added in a directory that is adjacent to the tutorials-manifest directory.
+</details>
 
 ## Background
 
@@ -57,6 +84,7 @@ with the IRQHandler capability for that irq, as follows:
 ```bash
 seL4_IRQHandler_SetNotification(irq_handler, notification);
 ```
+
 On success, this call will result in signals being delivered to the notification object when
 an interrupt occurs. To handle multiple interrupts on the same notification object, you
 can set different badges on the notification capabilities bound to each IRQHandler.
@@ -64,7 +92,7 @@ can set different badges on the notification capabilities bound to each IRQHandl
 the badge of the notification object bound to that IRQHandler is bitwise orred with the data
 word in the notification object.
 Recall the badging technique for differentiating signals from the
- [notification tutorial](https://docs.sel4.systems/Tutorials/notifications).
+ [notification tutorial](https://docs.sel4.systems/Tutorials/seL4Kernel/notifications).
 
 Interrupts can be polled for using `seL4_Poll` or waited for using `seL4_Wait`. Either system
 call results in the data word of the notification object being delivered as the badge of the
@@ -104,6 +132,8 @@ main@timer.c:78 [Cond failed: error]
 
 The timer driver we are using emits an interrupt in the `TTC0_TIMER1_IRQ` number.
 
+### Invoke IRQ control
+
 **Exercise** Invoke `irq_control`, which contains the `seL4_IRQControl` capability,
 the place the `IRQHandler` capability for `TTC0_TIMER1_IRQ` into the `irq_handler` CSlot.
 
@@ -121,6 +151,17 @@ the place the `IRQHandler` capability for `TTC0_TIMER1_IRQ` into the `irq_handle
 /*-- endfilter -*/
 ```
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    error = seL4_IRQControl_Get(irq_control, TTC0_TIMER1_IRQ, cnode, irq_handler, seL4_WordBits);
+    ZF_LOGF_IF(error, "Failed to get IRQ capability");
+```
+
+</details>
+
+
 On success, you should see the following output, without the error message that occurred earlier,
 as the irq_handle capability is now valid:
 
@@ -133,6 +174,7 @@ Undelivered IRQ: 42
 This is a warning message from the kernel that an IRQ was recieved for irq number 42, but no
 notification capability is set to sent a signal to.
 
+### Set NTFN
 **Exercise** Now set the notification capability (`ntfn`) by invoking the irq handler.
 
 ```
@@ -148,6 +190,17 @@ notification capability is set to sent a signal to.
 /*-- endfilter -*/
 ```
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    error =  seL4_IRQHandler_SetNotification(irq_handler, ntfn);
+    ZF_LOGF_IF(error, "Failed to set notification");
+```
+
+</details>
+
+
 Now the output will be:
 
 ```
@@ -159,6 +212,8 @@ Tick
 Only one interrupt is delivered, as the interrupt has not been acknowledged. The timer driver is
 programmed to emit an interrupt every millisecond, so we need to count 2000 interrupts
 before replying to the client.
+
+### Acknowledge an interrupt
 
 **Exercise** Acknowledge the interrupt after handling it in the timer driver.
 
@@ -175,6 +230,16 @@ before replying to the client.
 /*-- endfilter -*/
 ```
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    error = seL4_IRQHandler_Ack(irq_handler);
+    ZF_LOGF_IF(error, "Failed to ack irq");
+```
+
+</details>
+
 Now the timer interrupts continue to come in, and the reply is delivered to the client.
 
 ```
@@ -184,8 +249,6 @@ timer client wakes up
 ```
 
 That's it for this tutorial.
-
-/*? macros.help_block() ?*/
 
 /*-- filter ExcludeDocs() -*/
 ```c
@@ -337,8 +400,8 @@ int main(void) {
     return 0;
 }
 
-
 /*-- endfilter -*/
 ```
+
 /*? ExternalFile("CMakeLists.txt") ?*/
 /*- endfilter -*/

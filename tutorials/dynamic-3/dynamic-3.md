@@ -1,7 +1,7 @@
 <!--
-  Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
+  Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
-  SPDX-License-Identifier: BSD-2-Clause
+  SPDX-License-Identifier: CC-BY-SA-4.0
 -->
 
 /*? declare_task_ordering(
@@ -31,7 +31,7 @@ tutorial are filled out and you don't have to repeat them: in much the
 same way, we won't be repeating conceptual explanations on this page, if
 they were covered by a previous tutorial in the series.
 
-## Learning outcomes
+Learning outcomes:
 
 - Once again, repeat the spawning of a thread: however, this time
         the two threads will only share the same vspace, but have
@@ -50,10 +50,16 @@ they were covered by a previous tutorial in the series.
 
 /*? macros.tutorial_init("dynamic-3") ?*/
 
-## Prerequisites
+<details markdown='1'>
+<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<br>
+All tutorials come with complete solutions. To get solutions run:
 
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-1. [dynamic-2](https://docs.sel4.systems/Tutorials/dynamic-2)
+/*? macros.tutorial_init_with_solution("dynamic-3") ?*/
+
+Answers are also available in drop down menus under each section.
+</details>
+
 
 ## Exercises
 
@@ -123,6 +129,15 @@ function may seem tedious, it's doing some important things.
 /*-- endfilter -*/
 ```
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    error = sel4utils_bootstrap_vspace_with_bootinfo_leaky(&vspace,
+                                                           &data, simple_get_pd(&simple), &vka, info);
+```
+</details>
+
 On success, you should see a different error:
 
 ```
@@ -168,6 +183,16 @@ thread.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    sel4utils_process_t new_process;
+    sel4utils_process_config_t config = process_config_default_simple(&simple, APP_IMAGE_NAME, APP_PRIORITY);
+    error = sel4utils_configure_process_custom(&new_process, &vka, &vspace, config);
+```
+</details>
 
 On success, you should see a different error:
 
@@ -231,6 +256,15 @@ wouldn't know who was whom.
 /*-- endfilter -*/
 /*-- endfilter -*/
  ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    vka_cspace_make_path(&vka, ep_object.cptr, &ep_cap_path);
+```
+</details>
+
 On success, the output should not change.
 
 ### Badge a capability
@@ -265,6 +299,15 @@ free slot that the VKA library found for us.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    new_ep_cap = sel4utils_mint_cap_to_process(&new_process, ep_cap_path,
+                                               seL4_AllRights, EP_BADGE);
+```
+</details>
 
 On success, the output should look something like:
 
@@ -325,6 +368,21 @@ communicate with us, we can let it run. Complete this step and proceed.
 /*-- endfilter -*/
 ```
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    new_ep_cap = sel4utils_mint_cap_to_process(&new_process, ep_cap_path,
+                                               seL4_AllRights, EP_BADGE);
+    seL4_Word argc = 1;
+    char string_args[argc][WORD_STRING_SIZE];
+    char* argv[argc];
+    sel4utils_create_word_args(string_args, argv, argc, new_ep_cap);
+    error = sel4utils_spawn_process_v(&new_process, &vka, &vspace, argc, (char**) &argv, 1);
+```
+</details>
+
+
 On success, you should be able to see the second process running. The output should
 be as follows:
 
@@ -372,6 +430,15 @@ Then we verify the fidelity of the data that was transmitted.
 /*-- endfilter -*/
 ```
 
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    tag = seL4_Recv(ep_cap_path.capPtr, &sender_badge);
+```
+</details>
+
 On success, the badge error should no longer be visible.
 
 ### Send a reply
@@ -406,6 +473,14 @@ message sent by the new thread.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    seL4_ReplyRecv(ep_cap_path.capPtr, tag, &sender_badge);
+```
+</details>
 
 On success, the output should not change.
 
@@ -442,6 +517,13 @@ that was sent, and that's the end.
 /*-- endfilter -*/
 ```
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    tag = seL4_Call(ep, tag);
+```
+</details>
 On success, you should see the following:
 
 ```
@@ -454,15 +536,15 @@ process_2: got a reply: 0xffffffffffff9e9e
 
 That's it for this tutorial.
 
-/*? macros.help_block() ?*/
+
 /*-- filter ExcludeDocs() -*/
 /*? ExternalFile("CMakeLists.txt") ?*/
 ```
 /*-- filter File("main.c") -*/
 /*
- * Copyright 2017, Data61, CSIRO (ABN 41 687 119 230).
+ * Copyright 2024, seL4 Project a Series of LF Projects, LLC..
  *
- * SPDX-License-Identifier: BSD-2-Clause
+ * SPDX-License-Identifier: CC-BY-SA-4.0
  */
 #include <autoconf.h>
 
@@ -640,9 +722,9 @@ int main(void) {
 /*-- endfilter -*/
 /*-- filter File("app.c") -*/
 /*
- * Copyright 2017, Data61, CSIRO (ABN 41 687 119 230).
+ * Copyright 2024, seL4 Project a Series of LF Projects, LLC..
  *
- * SPDX-License-Identifier: BSD-2-Clause
+ * SPDX-License-Identifier: CC-BY-SA-4.0
  */
 
 /*

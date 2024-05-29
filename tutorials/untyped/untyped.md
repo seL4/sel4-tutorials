@@ -1,7 +1,7 @@
 <!--
-  Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
+  Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
-  SPDX-License-Identifier: BSD-2-Clause
+  SPDX-License-Identifier: CC-BY-SA-4.0
 -->
 
 /*? declare_task_ordering(['untyped-start','untyped-next','untyped-tcb','untyped-ep','untyped-ntfn','untyped-revoke']) ?*/
@@ -10,18 +10,26 @@
 
 This tutorial provides an introduction to physical memory management on seL4.
 
-## Prerequisites
-
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-1. [Capabilities tutorial](https://docs.sel4.systems/Tutorials/capabilities)
-
-## Outcomes
-
 By the end of this tutorial, you should be familiar with:
 
 1. The jargon *untyped*, *device untyped*, and *bit size*.
 2. Know how to create objects from untyped memory in seL4.
 3. Know how to reclaim objects.
+
+## Initialising
+
+/*? macros.tutorial_init("untyped") ?*/
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<br>
+All tutorials come with complete solutions. To get solutions run:
+
+/*? macros.tutorial_init_with_solution("untyped") ?*/
+
+Answers are also available in drop down menus under each section.
+</details>
+
 
 ## Background
 
@@ -247,6 +255,18 @@ This error happens because we are trying to create an untyped of size 0.
 /*-- endfilter -*/
 ```
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    // seL4_EndpointBits and seL4_NotificationBits are both less than seL4_TCBBits, which
+    // means that all objects together fit into the size of two TCBs, or 2^(seL4_TCBBits + 1):
+    seL4_Word untyped_size_bits = seL4_TCBBits + 1;
+```
+
+</details>
+
+
 On success, the tutorial will progress further, printing "Failed to set priority"
 
 ### Create a TCB Object
@@ -266,6 +286,16 @@ The priority check is failing as `child_tcb` is an empty CSlot.
     ZF_LOGF_IF(error != seL4_NoError, "Failed to set priority");
 /*-- endfilter -*/
 ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    /* create a TCB in CSlot child_tcb */
+    seL4_Untyped_Retype(child_untyped, seL4_TCBObject, 0, seL4_CapInitThreadCNode, 0, 0, child_tcb, 1);
+```
+
+</details>
 
 /*-- filter ExcludeDocs() -*/
 
@@ -314,7 +344,17 @@ The error you see now is caused be an invalid endpoint capability.
 /*-- endfilter -*/
 ```
 
-On success, 'Failed to bind notification' should be output.
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    /* create an endpoint in CSlot child_ep */
+    seL4_Untyped_Retype(child_untyped, seL4_EndpointObject, 0, seL4_CapInitThreadCNode, 0, 0, child_ep, 1);
+```
+
+</details>
+
+On success, the output will be "Failed to bind notification."
 
 ### Create a notification object
 
@@ -333,6 +373,18 @@ The next part of the tutorial attempts to use a notification object that does no
     ZF_LOGF_IF(error != seL4_NoError, "Failed to bind notification.");
 /*-- endfilter -*/
 ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    // create a notification object in CSlot child_ntfn
+    seL4_Untyped_Retype(child_untyped, seL4_NotificationObject, 0, seL4_CapInitThreadCNode, 0, 0, child_ntfn, 1);
+```
+
+</details>
+
+On success, the output will be "Failed to create endpoints."
 
 /*-- filter ExcludeDocs() -*/
 
@@ -369,6 +421,20 @@ entire untyped object. However, this fails, because the untyped is already compl
 
     printf("Success\n");
 /*-- endfilter -*/
+```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    // revoke the child untyped
+    error = seL4_CNode_Revoke(seL4_CapInitThreadCNode, child_untyped, seL4_WordBits);
+    assert(error == seL4_NoError);
+```
+
+</details>
+
+
 /*-- filter ExcludeDocs() -*/
 /*-- filter TaskContent("untyped-revoke", TaskContentType.COMPLETED, subtask='revoke', completion='Success') -*/
     error = seL4_CNode_Revoke(seL4_CapInitThreadCNode, child_untyped, seL4_WordBits);
@@ -383,9 +449,8 @@ entire untyped object. However, this fails, because the untyped is already compl
     printf("Success\n");
 /*-- endfilter -*/
 /*-- endfilter -*/
-```
 
-Once the tutorial is completed successfully, you should see the message "Success".
+Once the tutorial is completed successfully, you should see the message "Success."
 
 ### Further exercises
 
@@ -394,8 +459,6 @@ to become more familiar with untyped objects and memory allocation in seL4.
 
 * Allocate objects at specific physical addresses.
 * Create a simple object allocator for allocating seL4 objects.
-
-/*? macros.help_block() ?*/
 
 /*-- filter ExcludeDocs() -*/
 

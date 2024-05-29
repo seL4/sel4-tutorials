@@ -1,7 +1,7 @@
 <!--
-  Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
+  Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
-  SPDX-License-Identifier: BSD-2-Clause
+  SPDX-License-Identifier: CC-BY-SA-4.0
 -->
 
 /*? declare_task_ordering(
@@ -11,7 +11,7 @@
 'task-4',
 'task-5'
 ])?*/
-# seL4 Dynamic Libraries: Timer tutorial
+# seL4 Dynamic Libraries: Timer Tutorial
 
 This tutorial demonstrates how to set up and use a basic timer driver using the
 `seL4_libs` dynamic libraries.
@@ -21,7 +21,7 @@ tutorials are already filled out and you don't have to repeat them: in
 much the same way, we won't be repeating conceptual explanations on this
 page, if they were covered by a previous tutorial in the series.
 
-## Learning outcomes
+Learning outcomes:
 
 - Allocate a notification object.
 - Set up a timer provided by `util_libs`.
@@ -32,10 +32,15 @@ page, if they were covered by a previous tutorial in the series.
 
 /*? macros.tutorial_init("dynamic-4") ?*/
 
-## Prerequisites
+<details markdown='1'>
+<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<br>
+All tutorials come with complete solutions. To get solutions run:
 
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-1. [dynamic-3](https://docs.sel4.systems/Tutorials/dynamic-3)
+/*? macros.tutorial_init_with_solution("dynamic-4") ?*/
+
+Answers are also available in drop down menus under each section.
+</details>
 
 ## Exercises
 
@@ -89,6 +94,16 @@ interrupts on.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    error = vka_alloc_notification(&vka, &ntfn_object);
+    assert(error == 0);
+```
+</details>
+
 The output will not change as a result of completing this task.
 
 ### Initialise the timer
@@ -118,11 +133,21 @@ initialise a timer driver. Assign it to the `timer` global variable.
 /*? task_2_desc ?*/
 /*-- filter ExcludeDocs() -*/
 /*-- filter TaskContent("task-2", TaskContentType.COMPLETED) -*/
-    error = ltimer_default_init(&timer, ops, NULL, NULL); 
+    error = ltimer_default_init(&timer, ops, NULL, NULL);
     assert(error == 0);
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    error = ltimer_default_init(&timer, ops, NULL, NULL);
+    assert(error == 0);
+```
+</details>
+
 After this change, the server will output non-zero for the tick value at the end.
 ```
 /*-- filter TaskCompletion("task-2", TaskContentType.COMPLETED) -*/
@@ -157,6 +182,16 @@ it.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    error = ltimer_set_timeout(&timer, NS_IN_MS, TIMEOUT_PERIODIC);
+    assert(error == 0);
+```
+</details>
+
 The output will cease after the following line as a result of completing this task.
 ```
 /*-- filter TaskCompletion("task-3", TaskContentType.COMPLETED) -*/
@@ -167,7 +202,7 @@ main: got a message from 0x61 to sleep 2 seconds
 ### Handle the interrupt
 
 In order to receive more interrupts, you need to handle the interrupt in the driver
-and acknowledge the irq. 
+and acknowledge the irq.
 
 ```c
 /*-- set task_4_desc -*/
@@ -194,6 +229,20 @@ main: got a message from 0x61 to sleep 2 seconds
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    seL4_Word badge;
+    seL4_Wait(ntfn_object.cptr, &badge);
+    sel4platsupport_irq_handle(&ops.irq_ops, MINI_IRQ_INTERFACE_NTFN_ID, badge);
+    count++;
+    if (count == 1000 * msg) {
+        break;
+    }
+```
+</details>
 The timer interrupts are bound to the IRQ interface initialised in Task 2,
 hence when we receive an interrupt, we forward it to the interface and let it notify the timer driver.
 
@@ -213,7 +262,7 @@ timer client wakes up:
 /*-- set task_5_desc -*/
     /*
      * TASK 5: Stop the timer
-     * hint: ltimer_destroy 
+     * hint: ltimer_destroy
      */
 /*-- endset -*/
 /*? task_5_desc ?*/
@@ -227,11 +276,21 @@ timer client wakes up:
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    ltimer_destroy(&timer);
+```
+</details>
+
+
 The output should not change on successful completion of completing this task.
 
 That's it for this tutorial.
 
-/*? macros.help_block() ?*/
+
 /*-- filter ExcludeDocs() -*/
 /*? ExternalFile("CMakeLists.txt") ?*/
 ```
@@ -239,7 +298,7 @@ That's it for this tutorial.
 /*
  * Copyright 2018, Data61, CSIRO (ABN 41 687 119 230).
  *
- * SPDX-License-Identifier: BSD-2-Clause
+ * SPDX-License-Identifier: CC-BY-SA-4.0
  */
 /* Include Kconfig variables. */
 #include <autoconf.h>
@@ -435,9 +494,9 @@ int main(void) {
 /*-- endfilter -*/
 /*-- filter File("client.c") -*/
 /*
- * Copyright 2017, Data61, CSIRO (ABN 41 687 119 230).
+ * Copyright 2024, seL4 Project a Series of LF Projects, LLC..
  *
- * SPDX-License-Identifier: BSD-2-Clause
+ * SPDX-License-Identifier: CC-BY-SA-4.0
  */
 #include <stdio.h>
 #include <assert.h>
