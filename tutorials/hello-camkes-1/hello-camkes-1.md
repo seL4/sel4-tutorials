@@ -373,7 +373,6 @@ int run(void) {
 int run(void) {
     printf("Starting the client\n");
     printf("-------------------\n");
-    
     /* TODO: invoke the RPC function */
     /* hint 1: the name of the function to invoke is a composition of an interface name and a function name:
      * i.e.: <interface>_<function>
@@ -390,7 +389,6 @@ int run(void) {
 ```
     char *shello = "hello world";
     hello_say_hello(shello);
-    
     printf("After the client\n");
     return 0;
 ```
