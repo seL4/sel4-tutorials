@@ -137,13 +137,23 @@ the second one was named `a2`? Then in order to call on that second
 **Exercise** First modify `hello-1.camkes`. Define instances of `Echo` and `Client` in the
 `composition` section of the ADL.
 
+/*-- filter ExcludeDocs() -*/
 ```
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="define",completion="Booting all finished, dropped to user space") -*/
 assembly {
     composition {
          component EmptyComponent empty;
-         // Define an Echo and a Client component
+         component Client client;
+         component Echo echo;
 /*-- endfilter -*/
+```
+/*-- endfilter -*/
+
+```
+assembly {
+    composition {
+         component EmptyComponent empty;
+         // Define an Echo and a Client component
 ```
 
 <details markdown='1'>
@@ -162,13 +172,23 @@ assembly {
 
 **Exercise** Now add a connection from `client.hello` to `echo.hello`.
 
+/*-- filter ExcludeDocs() -*/
 ```
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="connect") -*/
         /* hint 1: use seL4RPCCall as the connector (or you could use seL4RPC if you prefer)
          * hint 2: look at
          * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
          */
+         connection seL4RPCCall hello_con(from client.hello, to echo.hello);
 /*-- endfilter -*/
+```
+/*-- endfilter -*/
+
+```
+        /* hint 1: use seL4RPCCall as the connector (or you could use seL4RPC if you prefer)
+         * hint 2: look at
+         * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+         */
 ```
 
 <details markdown='1'>
@@ -234,12 +254,20 @@ procedure HelloSimple {
  * hint 7: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
  */
 /*-- endfilter -*/
+
+
+/*- filter ExcludeDocs() -*/
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="rpc") -*/
 void hello_say_hello(const char *str) {
-    /* print str here */
+    printf("Component %s saying: %s\n", get_instance_name(), str);
 }
 /*-- endfilter -*/
 /*-- endfilter -*/
+/*-- endfilter -*/
+```
+
+```
+    /* print str here */
 ```
 
 <details markdown='1'>
@@ -271,6 +299,7 @@ int run(void) {
     printf("Starting the client\n");
     printf("-------------------\n");
 
+/*-- filter ExcludeDocs() -*/
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="hello") -*/
     /* TODO: invoke the RPC function */
     /* hint 1: the name of the function to invoke is a composition of an interface name and a function name:
@@ -280,7 +309,19 @@ int run(void) {
      * hint 4: so the function would be:  hello_say_hello()
      * hint 5: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
      */
+     char *shello = "hello world";
+    hello_say_hello(shello);
 /*-- endfilter -*/
+/*-- endfilter -*/
+
+    /* TODO: invoke the RPC function */
+    /* hint 1: the name of the function to invoke is a composition of an interface name and a function name:
+     * i.e.: <interface>_<function>
+     * hint 2: the interfaces available are defined by the component, e.g. in hello-1.camkes
+     * hint 3: the function name is defined by the interface definition, e.g. in interfaces/HelloSimple.idl4
+     * hint 4: so the function would be:  hello_say_hello()
+     * hint 5: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+     */
 }
 
 /*-- endfilter -*/
