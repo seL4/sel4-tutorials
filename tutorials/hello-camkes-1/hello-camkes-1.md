@@ -143,6 +143,12 @@ the second one was named `a2`? Then in order to call on that second
 assembly {
     composition {
          component EmptyComponent empty;
+         // TODO remove the empty component, and define an Echo and a Client component
+/*-- endfilter -*/
+/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="define") -*/
+assembly {
+    composition {
+         component EmptyComponent empty;
          component Client client;
          component Echo echo;
 /*-- endfilter -*/
@@ -179,7 +185,9 @@ assembly {
          * hint 2: look at
          * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
          */
-         connection seL4RPCCall hello_con(from client.hello, to echo.hello);
+/*-- endfilter -*/
+/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="connect") -*/
+        connection seL4RPCCall hello_con(from client.hello, to echo.hello);
 /*-- endfilter -*/
 ```
 /*-- endfilter -*/
@@ -309,11 +317,21 @@ int run(void) {
      * hint 4: so the function would be:  hello_say_hello()
      * hint 5: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
      */
-     char *shello = "hello world";
+/*-- endfilter -*/
+/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="hello") -*/
+    char *shello = "hello world";
     hello_say_hello(shello);
 /*-- endfilter -*/
 /*-- endfilter -*/
 
+    printf("After the client\n");
+    return 0;
+}
+
+/*-- endfilter -*/
+```
+
+```c
     /* TODO: invoke the RPC function */
     /* hint 1: the name of the function to invoke is a composition of an interface name and a function name:
      * i.e.: <interface>_<function>
@@ -322,9 +340,6 @@ int run(void) {
      * hint 4: so the function would be:  hello_say_hello()
      * hint 5: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
      */
-}
-
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
