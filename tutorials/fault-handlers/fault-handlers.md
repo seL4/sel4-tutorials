@@ -266,7 +266,6 @@ using the Master kernel, we need to pass a CPtr that can be resolved from within
 the CSpace of the `faulter` thread:
 
 ```c
-/*-- filter TaskContent("fault-ep-setup", TaskContentType.COMPLETED, subtask="setup", completion="About to touch fault vaddr.") -*/
     /* Here we need to keep in mind which CPtr we give the kernel. On the MCS
      * kernel, we must give a CPtr which can be resolved during the course of
      * this seL4_TCB_SetSpace syscall, from within our own CSpace.
@@ -293,9 +292,20 @@ the CSpace of the `faulter` thread:
     seL4_Reply(seL4_MessageInfo_new(0, 0, 0, 0));
     /* Now wait for the fault IPC message from the kernel. */
     seL4_Recv(faulter_fault_ep_cap, &tmp_badge);
-
+```
+/*-- filter ExcludeDocs() -*/
+```c
+/*-- filter TaskContent("fault-ep-setup", TaskContentType.COMPLETED, subtask="setup", completion="About to touch fault vaddr.") -*/
+    error = seL4_TCB_SetSpace(
+        faulter_tcb_cap,
+        foreign_badged_faulter_empty_slot_cap,
+        faulter_cspace_root,
+        0,
+        faulter_vspace_root,
+        0);
 /*-- endfilter -*/
 ```
+/*-- endfilter -*/
 
 ### Receiving the IPC message from the kernel
 
@@ -304,7 +314,6 @@ endpoint. To wait for a fault IPC message simply `seL4_Recv()`, the same way
 you'd wait for any other IPC message:
 
 ```c
-/*-- filter TaskContent("fault-ipc-recv", TaskContentType.COMPLETED, subtask="getmr", completion="Fault occured at cap addr 3 within faulter's cspace.") -*/
     /* The IPC message for a cap fault contains the cap address of the slot
      * which generated the cap fault.
      *
@@ -318,8 +327,16 @@ you'd wait for any other IPC message:
     printf(PROGNAME "Received fault IPC message from the kernel.\n"
            PROGNAME "Fault occured at cap addr %lu within faulter's cspace.\n",
            foreign_faulter_capfault_cap);
+```
+
+/*-- filter ExcludeDocs() -*/
+```c
+/*-- filter TaskContent("fault-ipc-recv", TaskContentType.COMPLETED, subtask="getmr", completion="Fault occured at cap addr 3 within faulter's cspace.") -*/
+    foreign_faulter_capfault_cap = seL4_GetMR(seL4_CapFault_Addr);
 /*-- endfilter -*/
 ```
+/*-- endfilter -*/
+
 
 ### Finding out information about the generated thread fault
 
@@ -343,7 +360,6 @@ no thread fault will be generated.
 So here we'll copy an endpoint cap into the faulting slot:
 
 ```c
-/*-- filter TaskContent("fault-handle", TaskContentType.COMPLETED, subtask="copy", completion="Successfully copied a cap into foreign faulting slot.") -*/
     /* Handle the fault by copying an endpoint cap into the empty slot. It
      * doesn't matter which one: as long as we copy it in with receive rights
      * because the faulter is going to attempt to perform an seL4_NBRecv() on
@@ -362,9 +378,22 @@ So here we'll copy an endpoint cap into the faulting slot:
     ZF_LOGF_IF(error != 0, PROGNAME "Failed to copy a cap into faulter's cspace to resolve the fault!");
     printf(PROGNAME "Successfully copied a cap into foreign faulting slot.\n"
            PROGNAME "About to resume the faulter thread.\n");
+```
 
+/*-- filter ExcludeDocs() -*/
+```c
+/*-- filter TaskContent("fault-handle", TaskContentType.COMPLETED, subtask="copy", completion="Successfully copied a cap into foreign faulting slot.") -*/
+    error = seL4_CNode_Copy(
+        faulter_cspace_root,
+        foreign_faulter_capfault_cap,
+        seL4_WordBits,
+        handler_cspace_root,
+        sequencing_ep_cap,
+        seL4_WordBits,
+        seL4_AllRights);
 /*-- endfilter -*/
 ```
+/*-- endfilter -*/
 
 ### Resuming a faulting thread
 
@@ -372,13 +401,19 @@ Finally, to have the `faulter` thread wake up and try to execute again, we
 `seL4_Reply()` to it:
 
 ```c
-/*-- filter TaskContent("fault-resume", TaskContentType.COMPLETED, subtask="reply", completion="Faulter: Finished execution.") -*/
      seL4_Reply(seL4_MessageInfo_new(0, 0, 0, 0));
 
     printf(PROGNAME "Successfully resumed faulter thread.\n"
            PROGNAME "Finished execution.\n");
+```
+
+/*-- filter ExcludeDocs() -*/
+```c
+/*-- filter TaskContent("fault-resume", TaskContentType.COMPLETED, subtask="reply", completion="Faulter: Finished execution.") -*/
+     seL4_Reply(seL4_MessageInfo_new(0, 0, 0, 0));
 /*-- endfilter -*/
 ```
+/*-- endfilter -*/
 
 ## Further exercises
 
