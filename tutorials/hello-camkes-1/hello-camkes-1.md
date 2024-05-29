@@ -240,6 +240,7 @@ procedure HelloSimple {
 ### Implement a RPC function
 **Exercise** Implement the RPC hello function.
 
+/*-- filter ExcludeDocs() -*/
 ```c
 /*- filter File("components/Echo/src/echo.c") --*/
 /*
@@ -262,20 +263,36 @@ procedure HelloSimple {
  * hint 7: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
  */
 /*-- endfilter -*/
-
-
-/*- filter ExcludeDocs() -*/
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="rpc") -*/
 void hello_say_hello(const char *str) {
     printf("Component %s saying: %s\n", get_instance_name(), str);
 }
 /*-- endfilter -*/
 /*-- endfilter -*/
+```
 /*-- endfilter -*/
-```
 
-```
-    /* print str here */
+```c
+/*
+ * CAmkES tutorial part 1: components with RPC. Server part.
+ */
+#include <stdio.h>
+
+/* generated header for our component */
+#include <camkes.h>
+
+    /* Implement the RPC function. */
+    /* hint 1: the name of the function to implement is a composition of an interface name and a function name:
+     * i.e.: <interface>_<function>
+     * hint 2: the interfaces available are defined by the component, e.g. in hello-1.camkes
+     * hint 3: the function name is defined by the interface definition, e.g. in interfaces/HelloSimple.idl4
+     * hint 4: so the function would be: hello_say_hello()
+     * hint 5: the CAmkES 'string' type maps to 'const char *' in C
+     * hint 6: make the function print out a mesage using printf
+     * hint 7: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+     */
+    void hello_say_hello(const char *str) {
+        /* print str here */
 ```
 
 <details markdown='1'>
@@ -291,6 +308,8 @@ void hello_say_hello(const char *str) {
 ### Invoke a RPC function
 
 **Exercise** Invoke the RPC function in `components/Client/src/client.c`.
+
+/*-- filter ExcludeDocs() -*/
 ```c
 /*- filter File("components/Client/src/client.c") --*/
 /*
@@ -307,7 +326,6 @@ int run(void) {
     printf("Starting the client\n");
     printf("-------------------\n");
 
-/*-- filter ExcludeDocs() -*/
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="hello") -*/
     /* TODO: invoke the RPC function */
     /* hint 1: the name of the function to invoke is a composition of an interface name and a function name:
@@ -322,7 +340,6 @@ int run(void) {
     char *shello = "hello world";
     hello_say_hello(shello);
 /*-- endfilter -*/
-/*-- endfilter -*/
 
     printf("After the client\n");
     return 0;
@@ -330,8 +347,23 @@ int run(void) {
 
 /*-- endfilter -*/
 ```
+/*-- endfilter -*/
 
 ```c
+/*
+ * CAmkES tutorial part 1: components with RPC. Client part.
+ */
+
+#include <stdio.h>
+
+/* generated header for our component */
+#include <camkes.h>
+
+/* run the control thread */
+int run(void) {
+    printf("Starting the client\n");
+    printf("-------------------\n");
+    
     /* TODO: invoke the RPC function */
     /* hint 1: the name of the function to invoke is a composition of an interface name and a function name:
      * i.e.: <interface>_<function>
@@ -348,6 +380,9 @@ int run(void) {
 ```
     char *shello = "hello world";
     hello_say_hello(shello);
+    
+    printf("After the client\n");
+    return 0;
 ```
 </details>
 
