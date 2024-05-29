@@ -461,7 +461,6 @@ for your target architecture.
 arg2, and arg3 respectively.
 
 ```c
-/*-- filter TaskContent("threads-context-2", TaskContentType.ALL, subtask='context', completion='Hello2: arg1 0x1, arg2 0x2, arg3 0x3') -*/
     seL4_UserContext regs = {0};
     int error = seL4_TCB_ReadRegisters(tcb_cap_slot, 0, 0, sizeof(regs)/sizeof(seL4_Word), &regs);
     ZF_LOGF_IFERR(error, "Failed to read the new thread's register set.\n");
@@ -476,9 +475,27 @@ arg2, and arg3 respectively.
     ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
                   "\tDid you write the correct number of registers? See arg4.\n");
     seL4_DebugDumpScheduler();
+```
 
+/*- filter ExcludeDocs() -*/
+```c
+/*-- filter TaskContent("threads-context-2", TaskContentType.ALL, subtask='context', completion='Hello2: arg1 0x1, arg2 0x2, arg3 0x3') -*/
+
+UNUSED seL4_UserContext regs = {0};
+    int error = seL4_TCB_ReadRegisters(tcb_cap_slot, 0, 0, sizeof(regs)/sizeof(seL4_Word), &regs);
+    ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
+                  "\tDid you write the correct number of registers? See arg4.\n");
+
+    sel4utils_arch_init_local_context((void*)new_thread,
+                                  (void *)1, (void *)2, (void *)3,
+                                  (void *)tcb_stack_top, &regs);
+    error = seL4_TCB_WriteRegisters(tcb_cap_slot, 0, 0, sizeof(regs)/sizeof(seL4_Word), &regs);
+    ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
+                  "\tDid you write the correct number of registers? See arg4.\n");
 /*-- endfilter -*/
 ```
+/*-- endfilter -*/
+
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
