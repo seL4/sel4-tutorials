@@ -179,7 +179,7 @@ assembly {
 **Exercise** Now add a connection from `client.hello` to `echo.hello`.
 
 /*-- filter ExcludeDocs() -*/
-```
+```c
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="connect") -*/
         /* hint 1: use seL4RPCCall as the connector (or you could use seL4RPC if you prefer)
          * hint 2: look at
@@ -192,7 +192,7 @@ assembly {
 ```
 /*-- endfilter -*/
 
-```
+```c
         /* hint 1: use seL4RPCCall as the connector (or you could use seL4RPC if you prefer)
          * hint 2: look at
          * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
@@ -202,7 +202,7 @@ assembly {
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
-```
+```c
     connection seL4RPCCall hello_con(from client.hello, to echo.hello);
 ```
 </details>
@@ -212,6 +212,7 @@ assembly {
 **Exercise** Define the interface for hello in `interfaces/HelloSimple.idl4`. 
 
 
+/*-- filter ExcludeDocs() -*/
 ```c
 /* Simple RPC interface */
 procedure HelloSimple {
@@ -221,11 +222,20 @@ procedure HelloSimple {
      * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
      */
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="interface") -*/
     void say_hello(in string str);
 /*-- endfilter -*/
+};
+```
 /*-- endfilter -*/
+
+```c
+/* Simple RPC interface */
+procedure HelloSimple {
+    /* TODO define RPC functions */
+    /* hint 1: define at least one function that takes a string as input parameter. call it say_hello. no return value
+     * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+     */
 };
 ```
 
