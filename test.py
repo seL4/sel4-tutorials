@@ -47,10 +47,10 @@ def run_single_test_iteration(build_dir, solution, logfile):
 
     check = sh.Command(os.path.join(build_dir, "check"))
     if solution:
-        result = check(_out=logfile, _cwd=build_dir)
+        result = check(_out=logfile, _cwd=build_dir, _return_cmd=True)
     else:
         # We check the start state if not solution
-        result = check("--start", _out=logfile, _cwd=build_dir)
+        result = check("--start", _out=logfile, _cwd=build_dir, _return_cmd=True)
     for proc in psutil.process_iter():
         if "qemu" in proc.name():
             proc.kill()
