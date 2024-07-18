@@ -92,7 +92,7 @@ can set different badges on the notification capabilities bound to each IRQHandl
 the badge of the notification object bound to that IRQHandler is bitwise orred with the data
 word in the notification object.
 Recall the badging technique for differentiating signals from the
- [notification tutorial](https://docs.sel4.systems/Tutorials/seL4Kernel/notifications).
+ [notification tutorial](https://docs.sel4.systems/tutorials/notifications).
 
 Interrupts can be polled for using `seL4_Poll` or waited for using `seL4_Wait`. Either system
 call results in the data word of the notification object being delivered as the badge of the
