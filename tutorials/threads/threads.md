@@ -1,7 +1,7 @@
 <!--
   Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
 
-Copyright 2024, seL4 Project a Series of LF Projects, LLC.
+  Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
   SPDX-License-Identifier: BSD-2-Clause
 -->
@@ -226,20 +226,17 @@ int main(int c, char* arbv[]) {
     ZF_LOGF_IF(result, "Failed to retype thread: %d", result);
     seL4_DebugDumpScheduler();
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("threads-retype", TaskContentType.COMPLETED, subtask='retype', completion="Failed to configure thread") -*/
-    seL4_Error result = seL4_Untyped_Retype(tcb_untyped, seL4_TCBObject, seL4_TCBBits, root_cnode, 0, 0, tcb_cap_slot, 1);
-    ZF_LOGF_IF(result, "Failed to retype thread: %d", result);
-    seL4_DebugDumpScheduler();
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-        seL4_Error result = seL4_Untyped_Retype(tcb_untyped, seL4_TCBObject, seL4_TCBBits, root_cnode, 0, 0, tcb_cap_slot, 1);
+/*-- filter TaskContent("threads-retype", TaskContentType.COMPLETED, subtask='retype', completion="Failed to configure thread") -*/
+    seL4_Error result = seL4_Untyped_Retype(tcb_untyped, seL4_TCBObject, seL4_TCBBits, root_cnode, 0, 0, tcb_cap_slot, 1);
+    ZF_LOGF_IF(result, "Failed to retype thread: %d", result);
+    seL4_DebugDumpScheduler();
+/*-- endfilter -*/
 ```
 </details>
 
@@ -266,7 +263,10 @@ as the current thread. Use the IPC buffer we have provided, but don't set a faul
     ZF_LOGF_IF(result, "Failed to configure thread: %d", result);
 /*-- endfilter -*/
 ```
-/*- filter ExcludeDocs() -*/
+
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("threads-configure", TaskContentType.COMPLETED, subtask='configure', completion="child of: 'tcb_threads'") -*/
@@ -274,14 +274,7 @@ as the current thread. Use the IPC buffer we have provided, but don't set a faul
     ZF_LOGF_IF(result, "Failed to configure thread: %d", result);
 /*-- endfilter -*/
 ```
-/*- endfilter -*/
 
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-    result = seL4_TCB_Configure(tcb_cap_slot, seL4_CapNull, root_cnode, 0, root_vspace, 0, (seL4_Word) thread_ipc_buff_sym, tcb_ipc_frame);
-```
 </details>
 
 
@@ -313,7 +306,9 @@ TCB capability, which has an MCP of 254.
     seL4_DebugDumpScheduler();
 /*-- endfilter -*/
 ```
-/*- filter ExcludeDocs() -*/
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("threads-priority", TaskContentType.COMPLETED, subtask='priority') -*/
@@ -321,15 +316,6 @@ TCB capability, which has an MCP of 254.
     ZF_LOGF_IF(result, "Failed to set the priority for the new TCB object.\n");
     seL4_DebugDumpScheduler();
 /*-- endfilter -*/
-```
-
-/*- endfilter -*/
-
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-        result = seL4_TCB_SetPriority(tcb_cap_slot, root_tcb, 254);
 ```
 </details>
 
@@ -380,7 +366,10 @@ you have at least set the instruction pointer (IP) correctly.
 
 /*-- endfilter -*/
 ```
-/*-- filter ExcludeDocs() -*/
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
 ```c
 /*-- filter TaskContent("threads-context", TaskContentType.COMPLETED, subtask='context', completion='Failed to start new thread') -*/
     seL4_UserContext regs = {0};
@@ -394,19 +383,6 @@ you have at least set the instruction pointer (IP) correctly.
                   "\tDid you write the correct number of registers? See arg4.\n");
     seL4_DebugDumpScheduler();
 /*-- endfilter -*/
-```
-/*-- endfilter -*/
-
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-    // use valid instruction pointer
-    sel4utils_set_instruction_pointer(&regs, (seL4_Word) new_thread);
-    // use valid stack pointer
-    sel4utils_set_stack_pointer(&regs, tcb_stack_top);
-    // fix parameters to this invocation
-    error = seL4_TCB_WriteRegisters(tcb_cap_slot, 0, 0, sizeof(regs)/sizeof(seL4_Word), &regs);
 ```
 </details>
 
@@ -432,21 +408,16 @@ Finally you are ready to start the thread, which makes the TCB runnable and elig
     ZF_LOGF_IFERR(error, "Failed to start new thread.\n");
 /*-- endfilter -*/
 ```
-/*- filter ExcludeDocs() -*/
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
 ```c
 /*-- filter TaskContent("threads-resume", TaskContentType.COMPLETED, subtask='resume', completion='Hello2: arg1 0, arg2 0, arg3 0') -*/
     // resume the new thread
     error = seL4_TCB_Resume(tcb_cap_slot);
     ZF_LOGF_IFERR(error, "Failed to start new thread.\n");
 /*-- endfilter -*/
-```
-/*-- endfilter -*/
-
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-        error = seL4_TCB_Resume(tcb_cap_slot);
 ```
 </details>
 
@@ -479,7 +450,10 @@ arg2, and arg3 respectively.
     seL4_DebugDumpScheduler();
 ```
 
-/*- filter ExcludeDocs() -*/
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
 ```c
 /*-- filter TaskContent("threads-context-2", TaskContentType.ALL, subtask='context', completion='Hello2: arg1 0x1, arg2 0x2, arg3 0x3') -*/
 
@@ -496,27 +470,7 @@ UNUSED seL4_UserContext regs = {0};
                   "\tDid you write the correct number of registers? See arg4.\n");
 /*-- endfilter -*/
 ```
-/*-- endfilter -*/
 
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-    UNUSED seL4_UserContext regs = {0};
-    int error = seL4_TCB_ReadRegisters(tcb_cap_slot, 0, 0, sizeof(regs)/sizeof(seL4_Word), &regs);
-    ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
-                  "\tDid you write the correct number of registers? See arg4.\n");
-
-
-    sel4utils_arch_init_local_context((void*)new_thread,
-                                  (void *)1, (void *)2, (void *)3,
-
-                                  (void *)tcb_stack_top, &regs);
-    error = seL4_TCB_WriteRegisters(tcb_cap_slot, 0, 0, sizeof(regs)/sizeof(seL4_Word), &regs);
-    ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
-                  "\tDid you write the correct number of registers? See arg4.\n");
-
-```
 </details>
 
 ### Resolving a fault
@@ -584,6 +538,7 @@ And fix `sel4utils_arch_init_local_context`
     sel4utils_arch_init_local_context((void*)new_thread,
                                   (void *)1, (void *)&data, (void *)3,
                                   (void *)tcb_stack_top, &regs);
+                                  
 ```
 </details>
 
@@ -595,15 +550,31 @@ Next, another fault will occur as the new thread expects `arg1` to be a pointer 
 <summary style="display:list-item"><em>Quick solution</em></summary>
 Create a new function
 ```c
-    int call_once(int arg) {
-        printf("Hello 3 %d\n", arg);
-    }
+/*-- filter TaskContent("threads-fault", TaskContentType.COMPLETED, subtask='func2', completion='Hello 3 42') -*/
+int call_once(int arg) {
+    printf("Hello 3 %d\n", arg);
+}
+/*-- endfilter -*/
 ```
+
 and fix `sel4utils_arch_init_local_context`
+
 ```c
+/*-- filter TaskContent("threads-fault", TaskContentType.COMPLETED, subtask='context') -*/
+    UNUSED seL4_UserContext regs = {0};
+    int error = seL4_TCB_ReadRegisters(tcb_cap_slot, 0, 0, sizeof(regs)/sizeof(seL4_Word), &regs);
+    ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
+                  "\tDid you write the correct number of registers? See arg4.\n");
+
+
     sel4utils_arch_init_local_context((void*)new_thread,
                                   (void *)call_once, (void *)&data, (void *)3,
+
                                   (void *)tcb_stack_top, &regs);
+    error = seL4_TCB_WriteRegisters(tcb_cap_slot, 0, 0, sizeof(regs)/sizeof(seL4_Word), &regs);
+    ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
+                  "\tDid you write the correct number of registers? See arg4.\n");
+/*- endfilter -*/
 ```
 </details>
 
@@ -635,32 +606,6 @@ int new_thread(void *arg1, void *arg2, void *arg3) {
     while(1);
 }
 /*-- endfilter -*/
-```
-
-```c
-/*-- filter TaskContent("threads-fault", TaskContentType.COMPLETED, subtask='func2', completion='Hello 3 42') -*/
-int call_once(int arg) {
-    printf("Hello 3 %d\n", arg);
-}
-/*-- endfilter -*/
-```
-
-```c
-/*-- filter TaskContent("threads-fault", TaskContentType.COMPLETED, subtask='context') -*/
-    UNUSED seL4_UserContext regs = {0};
-    int error = seL4_TCB_ReadRegisters(tcb_cap_slot, 0, 0, sizeof(regs)/sizeof(seL4_Word), &regs);
-    ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
-                  "\tDid you write the correct number of registers? See arg4.\n");
-
-
-    sel4utils_arch_init_local_context((void*)new_thread,
-                                  (void *)call_once, (void *)&data, (void *)3,
-
-                                  (void *)tcb_stack_top, &regs);
-    error = seL4_TCB_WriteRegisters(tcb_cap_slot, 0, 0, sizeof(regs)/sizeof(seL4_Word), &regs);
-    ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
-                  "\tDid you write the correct number of registers? See arg4.\n");
-/*- endfilter -*/
 ```
 
 ```c
