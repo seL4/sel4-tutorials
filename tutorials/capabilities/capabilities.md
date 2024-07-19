@@ -8,8 +8,7 @@ Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
 /*? declare_task_ordering(['cnode-start', 'cnode-size', 'cnode-copy', 'cnode-delete', 'cnode-invoke']) ?*/
 
-
-# Capabilities
+# Capabilitieshelloo
 
 You will learn:
 1. The jargon CNode, CSpace, CSlot.
@@ -238,7 +237,8 @@ The third line stating the number of slots in the CSpace, is incorrect, and your
 /*-- endfilter -*/
 ```
 
-/*-- filter ExcludeDocs() -*/
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("cnode-size", TaskContentType.COMPLETED, subtask='size', completion='The CNode is [0-9]+ bytes in size') -*/
@@ -247,14 +247,6 @@ The third line stating the number of slots in the CSpace, is incorrect, and your
 /*-- endfilter -*/
 ```
 
-/*-- endfilter -*/
-
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-    size_t initial_cnode_object_size_bytes = initial_cnode_object_size * (1u << seL4_SlotBits);
-```
 </details>
 
 ### Copy a capability between CSlots
@@ -293,16 +285,6 @@ The error occurs as the existing code tries to set the priority of the initial t
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-    /* use seL4_CNode_Copy to make another copy of the initial TCB capability to the last slot in the CSpace */
-    error = seL4_CNode_Copy(seL4_CapInitThreadCNode, last_slot, seL4_WordBits,
-                      seL4_CapInitThreadCNode, first_free_slot, seL4_WordBits, seL4_AllRights);
-```
-
-</details>
-
-/*-- filter ExcludeDocs() -*/
-
-```c
 /*-- filter TaskContent("cnode-copy", TaskContentType.COMPLETED, subtask='copy', completion='first_free_slot is not empty') -*/
     seL4_CPtr first_free_slot = info->empty.start;
     seL4_Error error = seL4_CNode_Copy(seL4_CapInitThreadCNode, first_free_slot, seL4_WordBits,
@@ -321,8 +303,8 @@ The error occurs as the existing code tries to set the priority of the initial t
     ZF_LOGF_IF(error, "Failed to set priority");
 /*-- endfilter -*/
 ```
+</details>
 
-/*-- endfilter -*/
 On success, you will now see the output:
 
 ```
@@ -365,15 +347,6 @@ by a neat hack: by attempting to move the CSlots onto themselves. This should fa
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-    // delete the created TCB capabilities
-    seL4_CNode_Revoke(seL4_CapInitThreadCNode, seL4_CapInitThreadTCB, seL4_WordBits);
-```
-</details>
-
-
-/*-- filter ExcludeDocs() -*/
-
-```c
 /*-- filter TaskContent("cnode-delete", TaskContentType.COMPLETED, subtask='delete', completion='Failed to suspend current thread') -*/
     // delete the created TCB capabilities
     seL4_CNode_Revoke(seL4_CapInitThreadCNode, seL4_CapInitThreadTCB, seL4_WordBits);
@@ -390,7 +363,7 @@ by a neat hack: by attempting to move the CSlots onto themselves. This should fa
 /*-- endfilter -*/
 ```
 
-/*-- endfilter -*/
+</details>
 
 On success, the output will now show:
 
@@ -416,13 +389,6 @@ main@main.c:56 Failed to suspend current thread
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
-```c
-    // suspend the current thread
-    seL4_TCB_Suspend(seL4_CapInitThreadTCB);
-```
-</details>
-
-/*-- filter ExcludeDocs() -*/
 
 ```c
 /*-- filter TaskContent("cnode-invoke", TaskContentType.COMPLETED, subtask='invoke', completion='Suspending current thread') -*/
@@ -431,8 +397,7 @@ main@main.c:56 Failed to suspend current thread
     ZF_LOGF("Failed to suspend current thread\n");
 /*-- endfilter -*/
 ```
-
-/*-- endfilter -*/
+</details>
 
 On success, the output will be as follows:
 
