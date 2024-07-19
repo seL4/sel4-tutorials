@@ -1,5 +1,9 @@
 <!--
   Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
+
+  Copyright 2024, seL4 Project a Series of LF Projects, LLC.
+
+  SPDX-License-Identifier: BSD-2-Clause
 -->
 
 # IPC
@@ -10,7 +14,7 @@ This tutorial is about interprocess communication (IPC), the microkernel mechani
 You will learn
 1. How to use IPC to send data and capabilities between processes.
 2. The jargon *cap transfer*.
-3. How to to differentiate requests via badged capabilities.
+3. How to differentiate requests via badged capabilities.
 4. Design protocols that use the IPC fastpath.
 
 ## Initialising
@@ -29,7 +33,7 @@ Answers are also available in drop down menus under each section.
 
 ## CapDL Loader
 
-This tutorial uses a the *capDL loader*, a root task which allocates statically
+This tutorial uses the *capDL loader*, a root task which allocates statically
  configured objects and capabilities.
 
 <details markdown='1'>
@@ -224,7 +228,12 @@ receives the badged endpoint.
              /* wait for the next message */
              info = seL4_Recv(endpoint, &sender);
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("ipc-badge", TaskContentType.COMPLETED, subtask="badge", completion='received badged endpoint') -*/
              /* No badge! give this sender a badged copy of the endpoint */
              seL4_Word badge = seL4_GetMR(0);
@@ -247,16 +256,6 @@ receives the badged endpoint.
              /* wait for the next message */
              info = seL4_Recv(endpoint, &sender);
 /*-- endfilter -*/
-/*-- endfilter -*/
-```
-
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-    // use cap transfer to send the badged cap in the reply
-    seL4_SetCap(0, free_slot);
-    info = seL4_MessageInfo_new(0, 0, 1, 0);
 ```
 
 </details>
@@ -286,24 +285,18 @@ does not respond, or wait for new messages from this point.
              // TODO use printf to print out the message sent by the client
              // followed by a new line
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("ipc-echo", TaskContentType.COMPLETED, subtask="echo") -*/
-             for (int i = 0; i < seL4_MessageInfo_get_length(info); i++) {
-                 printf("%c", (char) seL4_GetMR(i));
-             }
-             printf("\n");
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-    for (int i = 0; i < seL4_MessageInfo_get_length(info); i++) {
-        printf("%c", (char) seL4_GetMR(i));
-    }
-    printf("\n");
+/*-- filter TaskContent("ipc-echo", TaskContentType.COMPLETED, subtask="echo") -*/
+             for (int i = 0; i < seL4_MessageInfo_get_length(info); i++) {
+                 printf("%c", (char) seL4_GetMR(i));
+             }
+             printf("\n");
+/*-- endfilter -*/
 ```
 
 </details>
@@ -328,22 +321,16 @@ This is because the server does not reply to the client, and continues to spin i
 /*-- filter TaskContent("ipc-start", TaskContentType.ALL, subtask="reply") -*/
              // TODO reply to the client and wait for the next message
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("ipc-reply", TaskContentType.COMPLETED, subtask="reply", completion="lazy") -*/
-             info = seL4_ReplyRecv(endpoint, info, &sender);
-/*-- endfilter -*/
-/*-- endfilter -*/
+
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-    info = seL4_ReplyRecv(endpoint, info, &sender);
-    for (int i = 0; i < seL4_MessageInfo_get_length(info); i++) {
-        printf("%c", (char) seL4_GetMR(i));
-    }
-    printf("\n");
+/*-- filter TaskContent("ipc-reply", TaskContentType.COMPLETED, subtask="reply", completion="lazy") -*/
+             info = seL4_ReplyRecv(endpoint, info, &sender);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -369,7 +356,11 @@ lazy
 your server to only print one message from each client, alternating. You will need to use
 [`seL4_CNode_SaveCaller`](https://docs.sel4.systems/ApiDoc.html#save-caller)  to save the reply
 capability for each sender. You can use `free_slot` to store the reply capabilities.
-/*-- filter ExcludeDocs() -*/
+
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
 ```c
 /*-- filter TaskContent("ipc-order", TaskContentType.COMPLETED, subtask="order", completion="dog") -*/
               error = seL4_CNode_SaveCaller(cnode, free_slot, seL4_WordBits);
@@ -381,33 +372,6 @@ capability for each sender. You can use `free_slot` to store the reply capabilit
               printf("\n");
               seL4_Send(free_slot, seL4_MessageInfo_new(0, 0, 0, 0));
 /*-- endfilter -*/
-```
-/*-- endfilter -*/
-
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-    } else {
-
-        for (int i = 0; i < seL4_MessageInfo_get_length(info); i++) {
-                 printf("%c", (char) seL4_GetMR(i));
-             }
-             printf("\n");
-
-              error = seL4_CNode_SaveCaller(cnode, free_slot, seL4_WordBits);
-              assert(error == 0);
-              info = seL4_Recv(endpoint, &sender);
-              for (int i = 0; i < seL4_MessageInfo_get_length(info); i++) {
-                 printf("%c", (char) seL4_GetMR(i));
-              }
-              printf("\n");
-              seL4_Send(free_slot, seL4_MessageInfo_new(0, 0, 0, 0));
-
-             info = seL4_ReplyRecv(endpoint, info, &sender);
-        }
-    }
-
 ```
 
 </details>
