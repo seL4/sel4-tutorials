@@ -1,7 +1,7 @@
 <!--
   Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
 
-Copyright 2024, seL4 Project a Series of LF Projects, LLC.
+  Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
   SPDX-License-Identifier: BSD-2-Clause
 -->
