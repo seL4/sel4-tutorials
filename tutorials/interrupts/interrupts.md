@@ -1,7 +1,7 @@
 <!--
   Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
 
-Copyright 2024, seL4 Project a Series of LF Projects, LLC.
+  Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
   SPDX-License-Identifier: BSD-2-Clause
 -->
@@ -144,21 +144,18 @@ the place the `IRQHandler` capability for `TTC0_TIMER1_IRQ` into the `irq_handle
     /* TODO invoke irq_control to put the interrupt for TTC0_TIMER1_IRQ in
        cslot irq_handler (depth is seL4_WordBits) */
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("timer-get", TaskContentType.COMPLETED, subtask='get') -*/
-    /* put the interrupt handle for TTC0_TIMER1_IRQ in the irq_handler cslot */
-    error = seL4_IRQControl_Get(irq_control, TTC0_TIMER1_IRQ, cnode, irq_handler, seL4_WordBits);
-    ZF_LOGF_IF(error, "Failed to get irq capability");
-/*-- endfilter -*/
-/*-- endfilter -*/
+
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("timer-get", TaskContentType.COMPLETED, subtask='get') -*/
+    /* put the interrupt handle for TTC0_TIMER1_IRQ in the irq_handler cslot */
     error = seL4_IRQControl_Get(irq_control, TTC0_TIMER1_IRQ, cnode, irq_handler, seL4_WordBits);
-    ZF_LOGF_IF(error, "Failed to get IRQ capability");
+    ZF_LOGF_IF(error, "Failed to get irq capability");
+/*-- endfilter -*/
 ```
 
 </details>
@@ -183,21 +180,18 @@ notification capability is set to sent a signal to.
 /*-- filter TaskContent("timer-start", TaskContentType.ALL, subtask='set') -*/
      /* TODO set ntfn as the notification for irq_handler */
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("timer-set", TaskContentType.COMPLETED, subtask='set') -*/
-    /* set ntfn as the notification for irq_handler */
-    error =  seL4_IRQHandler_SetNotification(irq_handler, ntfn);
-    ZF_LOGF_IF(error, "Failed to set notification");
-/*-- endfilter -*/
-/*-- endfilter -*/
+
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("timer-set", TaskContentType.COMPLETED, subtask='set') -*/
+    /* set ntfn as the notification for irq_handler */
     error =  seL4_IRQHandler_SetNotification(irq_handler, ntfn);
     ZF_LOGF_IF(error, "Failed to set notification");
+/*-- endfilter -*/
 ```
 
 </details>
@@ -223,21 +217,18 @@ before replying to the client.
 /*-- filter TaskContent("timer-start", TaskContentType.ALL, subtask='ack') -*/
         /* TODO ack the interrupt */
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("timer-ack", TaskContentType.COMPLETED, subtask='ack') -*/
-        /* ack the interrupt */
-        error = seL4_IRQHandler_Ack(irq_handler);
-        ZF_LOGF_IF(error, "Failed to ack irq");
-/*-- endfilter -*/
-/*-- endfilter -*/
+
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-    error = seL4_IRQHandler_Ack(irq_handler);
-    ZF_LOGF_IF(error, "Failed to ack irq");
+/*-- filter TaskContent("timer-ack", TaskContentType.COMPLETED, subtask='ack') -*/
+        /* ack the interrupt */
+        error = seL4_IRQHandler_Ack(irq_handler);
+        ZF_LOGF_IF(error, "Failed to ack irq");
+/*-- endfilter -*/
 ```
 
 </details>
