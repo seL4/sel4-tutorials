@@ -1,7 +1,7 @@
 <!--
   Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
 
-Copyright 2024, seL4 Project a Series of LF Projects, LLC.
+  Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
   SPDX-License-Identifier: BSD-2-Clause
 -->
@@ -233,7 +233,13 @@ This error happens because we are trying to create an untyped of size 0.
         }
     }
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
+
+```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("untyped-next", TaskContentType.COMPLETED, subtask='setup', completion='Failed to set priority') -*/
     // list of general seL4 objects
     seL4_Word objects[] = {seL4_TCBObject, seL4_EndpointObject, seL4_NotificationObject};
@@ -254,16 +260,6 @@ This error happens because we are trying to create an untyped of size 0.
         }
     }
 /*-- endfilter -*/
-/*-- endfilter -*/
-```
-
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-    // seL4_EndpointBits and seL4_NotificationBits are both less than seL4_TCBBits, which
-    // means that all objects together fit into the size of two TCBs, or 2^(seL4_TCBBits + 1):
-    seL4_Word untyped_size_bits = seL4_TCBBits + 1;
 ```
 
 </details>
@@ -293,15 +289,6 @@ The priority check is failing as `child_tcb` is an empty CSlot.
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-    /* create a TCB in CSlot child_tcb */
-    seL4_Untyped_Retype(child_untyped, seL4_TCBObject, 0, seL4_CapInitThreadCNode, 0, 0, child_tcb, 1);
-```
-
-</details>
-
-/*-- filter ExcludeDocs() -*/
-
-```c
 /*-- filter TaskContent("untyped-tcb", TaskContentType.COMPLETED, subtask='tcb', completion='Endpoint cap is null cap') -*/
     // use the slot after child_untyped for the new TCB cap:
     seL4_CPtr child_tcb = child_untyped + 1;
@@ -312,8 +299,8 @@ The priority check is failing as `child_tcb` is an empty CSlot.
     ZF_LOGF_IF(error != seL4_NoError, "Failed to set priority");
 /*-- endfilter -*/
 ```
+</details>
 
-/*-- endfilter -*/
 
 On success, the tutorial will progress further, printing "Endpoint cap is null cap".
 
@@ -333,7 +320,13 @@ The error you see now is caused be an invalid endpoint capability.
     uint32_t cap_id = seL4_DebugCapIdentify(child_ep);
     ZF_LOGF_IF(cap_id == 0, "Endpoint cap is null cap");
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
+
+```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("untyped-ep", TaskContentType.COMPLETED, subtask='ep', completion='Failed to bind notification.') -*/
     // use the slot after child_tcb for the new endpoint cap:
     seL4_CPtr child_ep = child_tcb + 1;
@@ -343,15 +336,6 @@ The error you see now is caused be an invalid endpoint capability.
     uint32_t cap_id = seL4_DebugCapIdentify(child_ep);
     ZF_LOGF_IF(cap_id == 0, "Endpoint cap is null cap");
 /*-- endfilter -*/
-/*-- endfilter -*/
-```
-
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-    /* create an endpoint in CSlot child_ep */
-    seL4_Untyped_Retype(child_untyped, seL4_EndpointObject, 0, seL4_CapInitThreadCNode, 0, 0, child_ep, 1);
 ```
 
 </details>
@@ -380,17 +364,6 @@ The next part of the tutorial attempts to use a notification object that does no
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-    // create a notification object in CSlot child_ntfn
-    seL4_Untyped_Retype(child_untyped, seL4_NotificationObject, 0, seL4_CapInitThreadCNode, 0, 0, child_ntfn, 1);
-```
-
-</details>
-
-On success, the output will be "Failed to create endpoints."
-
-/*-- filter ExcludeDocs() -*/
-
-```c
 /*-- filter TaskContent("untyped-ntfn", TaskContentType.COMPLETED, subtask='ntfn', completion='Failed to create endpoints..') -*/
     // use the slot after child_ep for the new notification cap:
     seL4_CPtr child_ntfn = child_ep + 1;
@@ -402,7 +375,11 @@ On success, the output will be "Failed to create endpoints."
 /*-- endfilter -*/
 ```
 
-/*-- endfilter -*/
+</details>
+
+On success, the output will be "Failed to create endpoints."
+
+
 
 ### Delete the objects
 
@@ -429,15 +406,6 @@ entire untyped object. However, this fails, because the untyped is already compl
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-    // revoke the child untyped
-    error = seL4_CNode_Revoke(seL4_CapInitThreadCNode, child_untyped, seL4_WordBits);
-    assert(error == seL4_NoError);
-```
-
-</details>
-
-
-/*-- filter ExcludeDocs() -*/
 /*-- filter TaskContent("untyped-revoke", TaskContentType.COMPLETED, subtask='revoke', completion='Success') -*/
     error = seL4_CNode_Revoke(seL4_CapInitThreadCNode, child_untyped, seL4_WordBits);
     assert(error == seL4_NoError);
@@ -450,7 +418,11 @@ entire untyped object. However, this fails, because the untyped is already compl
 
     printf("Success\n");
 /*-- endfilter -*/
-/*-- endfilter -*/
+```
+
+</details>
+
+
 
 Once the tutorial is completed successfully, you should see the message "Success."
 
