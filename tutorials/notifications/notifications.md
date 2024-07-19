@@ -1,7 +1,7 @@
 <!--
   Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
 
-Copyright 2024, seL4 Project a Series of LF Projects, LLC.
+  Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
   SPDX-License-Identifier: BSD-2-Clause
 -->
@@ -33,7 +33,7 @@ Answers are also available in drop down menus under each section.
 
 ## CapDL Loader
 
-This tutorial uses a the *capDL loader*, a root task which allocates statically
+This tutorial uses the *capDL loader*, a root task which allocates statically
  configured objects and capabilities.
 
 <details markdown='1'>
@@ -140,7 +140,12 @@ However, we do not map the second buffer in, so producer 2 crashes immediately.
 /*-- filter TaskContent("ntfn-start", TaskContentType.ALL, subtask="shmem2", completion="Caught cap fault in send phase") -*/
     // TODO share buf2_frame_cap with producer_2
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
+
+```
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("ntfn-shmem", TaskContentType.COMPLETED, subtask="shmem2", completion="Waiting for producer") -*/
     /* set up shared memory for producer 2 */
     error = seL4_CNode_Copy(cnode, mapping_2, seL4_WordBits,
@@ -151,20 +156,6 @@ However, we do not map the second buffer in, so producer 2 crashes immediately.
                                seL4_AllRights, seL4_ARCH_Default_VMAttributes);
     ZF_LOGF_IFERR(error, "Failed to map frame");
 /*-- endfilter -*/
-/*-- endfilter -*/
-```
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-   /* share buf2_frame_cap with producer_2 */
-   error = seL4_CNode_Copy(cnode, mapping_2, seL4_WordBits,
-                        cnode, buf2_frame_cap, seL4_WordBits, seL4_AllRights);
-    ZF_LOGF_IFERR(error, "Failed to copy cap");
-   /* now do the mapping */
-    error = seL4_ARCH_Page_Map(mapping_2, producer_2_vspace, BUF_VADDR,
-                               seL4_AllRights, seL4_ARCH_Default_VMAttributes);
-    ZF_LOGF_IFERR(error, "Failed to map frame");
 ```
 </details>
 
@@ -181,19 +172,15 @@ to be written to.
 /*-- filter TaskContent("ntfn-start", TaskContentType.ALL, subtask="signal", completion="Waiting for producer") -*/
     // TODO signal both producers
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("ntfn-signal", TaskContentType.COMPLETED, subtask="signal", completion="Got badge") -*/
-    seL4_Signal(buf1_empty);
-    seL4_Signal(buf2_empty);
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("ntfn-signal", TaskContentType.COMPLETED, subtask="signal", completion="Got badge") -*/
     seL4_Signal(buf1_empty);
     seL4_Signal(buf2_empty);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -224,7 +211,12 @@ which of the producers (it may be both) has produced data.
     // TODO, use the badge to check which producer has signalled you, and signal it back. Note that you
     // may recieve more than 1 signal at a time.
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
+
+```
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("ntfn-badge", TaskContentType.COMPLETED, subtask="badge", completion="Success") -*/
         if (badge & 0b01) {
             assert(*buf1 == 1);
@@ -237,22 +229,6 @@ which of the producers (it may be both) has produced data.
             seL4_Signal(buf2_empty);
         }
 /*-- endfilter -*/
-/*-- endfilter -*/
-```
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-    if (badge & 0b01) {
-        assert(*buf1 == 1);
-        *buf1 = 0;
-        seL4_Signal(buf1_empty);
-    }
-    if (badge & 0b10) {
-        assert(*buf2 == 2);
-        *buf2 = 0;
-        seL4_Signal(buf2_empty);
-    }
 ```
 </details>
 
