@@ -1,7 +1,7 @@
 <!--
   Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
 
-Copyright 2024, seL4 Project a Series of LF Projects, LLC.
+  Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
   SPDX-License-Identifier: BSD-2-Clause
 -->
@@ -148,22 +148,15 @@ the number of bits in the virtual address that could not be resolved due to miss
     // TODO map a page directory object
 /*-- endfilter -*/
 ```
-/*-- filter ExcludeDocs() -*/
-```c
-/*-- filter TaskContent("mapping-pd", TaskContentType.COMPLETED, subtask='pd',completion='Failed to map page') -*/
-    error = seL4_X86_PageDirectory_Map(pd, seL4_CapInitThreadVSpace, TEST_VADDR, seL4_X86_Default_VMAttributes);
-    assert(error == seL4_NoError);
-/*-- endfilter -*/
-```
-/*-- endfilter -*/
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-    // TODO map a page directory object
-    error = seL4_X86_PageDirectory_Map(pd,seL4_CapInitThreadVSpace, TEST_VADDR, seL4_X86_Default_VMAttributes);
+/*-- filter TaskContent("mapping-pd", TaskContentType.COMPLETED, subtask='pd',completion='Failed to map page') -*/
+    error = seL4_X86_PageDirectory_Map(pd, seL4_CapInitThreadVSpace, TEST_VADDR, seL4_X86_Default_VMAttributes);
     assert(error == seL4_NoError);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -186,23 +179,17 @@ Note that in the above output, the number of failed bits has changed from `30` t
     // TODO map a page table object
 /*-- endfilter -*/
 ```
-/*-- filter ExcludeDocs() -*/
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
 ```c
 /*-- filter TaskContent("mapping-pt", TaskContentType.COMPLETED, subtask='pt', completion='Caught cap fault') -*/
     error = seL4_X86_PageTable_Map(pt, seL4_CapInitThreadVSpace, TEST_VADDR, seL4_X86_Default_VMAttributes);
     assert(error == seL4_NoError);
 /*-- endfilter -*/
 ```
-/*-- endfilter -*/
 
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-    // map a page table object
-    error = seL4_X86_PageTable_Map(pt, seL4_CapInitThreadVSpace, TEST_VADDR, seL4_X86_Default_VMAttributes);
-    assert(error == seL4_NoError);
-```
 </details>
 
 On success, you should see the following:
@@ -238,23 +225,17 @@ that the fault occured on (address).
     // TODO remap the page
 /*-- endfilter -*/
 ```
-/*-- filter ExcludeDocs() -*/
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
 ```c
 /*-- filter TaskContent("mapping-remap", TaskContentType.COMPLETED, subtask='remap', completion='Success!') -*/
     error = seL4_X86_Page_Map(frame, seL4_CapInitThreadVSpace, TEST_VADDR, seL4_ReadWrite, seL4_X86_Default_VMAttributes);
     assert(error == seL4_NoError);
 /*-- endfilter -*/
 ```
-/*-- endfilter -*/
 
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-    // remap the page
-    error = seL4_X86_Page_Map(frame, seL4_CapInitThreadVSpace, TEST_VADDR, seL4_ReadWrite, seL4_X86_Default_VMAttributes);
-    assert(error == seL4_NoError);
-```
 </details>
 
 ### Unmapping pages
