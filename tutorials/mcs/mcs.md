@@ -1,7 +1,7 @@
 <!--
   Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
 
-Copyright 2024, seL4 Project a Series of LF Projects, LLC.
+  Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
   SPDX-License-Identifier: BSD-2-Clause
 -->
@@ -16,10 +16,10 @@ verification. For further context on the new features, please see the
  which provides a comprehensive background on the changes.
 
 Learn:
-1. About the MCS new kernel API.
-1. How to create and configure scheduling contexts.
-2. The jargon *passive server*.
-3. How to spawn round-robin and periodic threads.
+1. About the MCS new kernel API. 
+2. How to create and configure scheduling contexts. 
+3. The jargon *passive server*. 
+4. How to spawn round-robin and periodic threads.
 
 
 
@@ -204,21 +204,17 @@ Yield
 /*-- filter TaskContent("mcs-start", TaskContentType.ALL, subtask='periodic') -*/
     //TODO reconfigure sched_context to be periodic
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("mcs-periodic", TaskContentType.COMPLETED, subtask='periodic') -*/
-    // reconfigure sched_context to be periodic
-    error = seL4_SchedControl_Configure(sched_control, sched_context, 0.9 * US_IN_S, 1 * US_IN_S, 0, 0);
-    ZF_LOGF_IF(error != seL4_NoError, "Failed to configure schedcontext");
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("mcs-periodic", TaskContentType.COMPLETED, subtask='periodic') -*/
+    // reconfigure sched_context to be periodic
     error = seL4_SchedControl_Configure(sched_control, sched_context, 0.9 * US_IN_S, 1 * US_IN_S, 0, 0);
     ZF_LOGF_IF(error != seL4_NoError, "Failed to configure schedcontext");
+/*-- endfilter -*/
 ```
 </details>
 
@@ -276,11 +272,6 @@ from the scheduler queues.
     //TODO unbind sched_context to stop yielding thread
 /*- endfilter --*/
 /*-- filter ExcludeDocs() --*/
-/*-- filter TaskContent("mcs-unbind", TaskContentType.COMPLETED, subtask='unbind') -*/
-    // unbind sched_context to stop the yielding thread
-    error = seL4_SchedContext_Unbind(sched_context);
-    ZF_LOGF_IF(error, "Failed to unbind sched_context");
-/*-- endfilter -*/
 /*-- filter TaskCompletion("mcs-unbind", TaskContentType.COMPLETED) -*/
 Tick 6
 Yield
@@ -296,8 +287,11 @@ Tick 8
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("mcs-unbind", TaskContentType.COMPLETED, subtask='unbind') -*/
+    // unbind sched_context to stop the yielding thread
     error = seL4_SchedContext_Unbind(sched_context);
     ZF_LOGF_IF(error, "Failed to unbind sched_context");
+/*-- endfilter -*/
 ```
 
 </details>
@@ -316,20 +310,16 @@ Your next task is to use a different process, `sender` to experiment with sporad
 /*-- filter TaskContent("mcs-start", TaskContentType.ALL, subtask='bind') -*/
     //TODO bind sched_context to sender_tcb
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("mcs-bind", TaskContentType.COMPLETED, subtask='bind') -*/
-    // bind sched_context to sender_tcb
-    error = seL4_SchedContext_Bind(sched_context, sender_tcb);
-    ZF_LOGF_IF(error != seL4_NoError, "Failed to bind schedcontext");
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("mcs-bind", TaskContentType.COMPLETED, subtask='bind') -*/
+    // bind sched_context to sender_tcb
     error = seL4_SchedContext_Bind(sched_context, sender_tcb);
     ZF_LOGF_IF(error != seL4_NoError, "Failed to bind schedcontext");
+/*-- endfilter -*/
 ```
 
 </details>
@@ -358,11 +348,6 @@ occurs in one go.
     //TODO reconfigure sched_context to be periodic with 6 extra refills
 /*-- endfilter -*/
 /*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("mcs-sporadic", TaskContentType.COMPLETED, subtask='sporadic') -*/
-    // reconfigure sched_context to be periodic with 6 extra refills
-    error = seL4_SchedControl_Configure(sched_control, sched_context, 0.9 * US_IN_S, 1 * US_IN_S, 6, 0);
-    ZF_LOGF_IF(error != seL4_NoError, "Failed to configure schedcontext");
-/*-- endfilter -*/
 /*-- filter TaskCompletion("mcs-sporadic", TaskContentType.ALL) -*/
 Tock 4
 Tock 5
@@ -375,8 +360,11 @@ Tock 7
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("mcs-sporadic", TaskContentType.COMPLETED, subtask='sporadic') -*/
+    // reconfigure sched_context to be periodic with 6 extra refills
     error = seL4_SchedControl_Configure(sched_control, sched_context, 0.9 * US_IN_S, 1 * US_IN_S, 6, 0);
     ZF_LOGF_IF(error != seL4_NoError, "Failed to configure schedcontext");
+/*-- endfilter -*/
 ```
 
 </details>
@@ -393,20 +381,16 @@ not have a scheduling context, and needs one to initialise.
 /*-- filter TaskContent("mcs-start", TaskContentType.ALL, subtask='server') -*/
     //TODO bind sched_context to server_tcb
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("mcs-server", TaskContentType.COMPLETED, subtask='server') -*/
-    // bind the servers sched context
-    error = seL4_SchedContext_Bind(sched_context, server_tcb);
-    ZF_LOGF_IF(error != seL4_NoError, "Failed to bind sched_context to server_tcb");
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("mcs-server", TaskContentType.COMPLETED, subtask='server') -*/
+    // bind the servers sched context
     error = seL4_SchedContext_Bind(sched_context, server_tcb);
     ZF_LOGF_IF(error != seL4_NoError, "Failed to bind sched_context to server_tcb");
+/*-- endfilter -*/
 ```
 
 </details>
@@ -482,12 +466,6 @@ budget and 0 extra refills.
     //TODO reconfigure sched_context with 10s period, 1ms budget, 0 extra refills and data of 5.
 /*-- endfilter -*/
 /*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("mcs-badge", TaskContentType.COMPLETED, subtask='badge') -*/
-
-    // reconfigure sched_context with 1s period, 500 microsecond budget, 0 extra refills and data of 5.
-    error = seL4_SchedControl_Configure(sched_control, sched_context, 500, US_IN_S, 0, 5);
-    ZF_LOGF_IF(error != seL4_NoError, "Failed to configure sched_context");
-/*-- endfilter -*/
 /*-- filter TaskCompletion("mcs-badge", TaskContentType.COMPLETED) -*/
 Tock 8
 Starting server
@@ -504,8 +482,12 @@ echo server
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("mcs-badge", TaskContentType.COMPLETED, subtask='badge') -*/
+
+    // reconfigure sched_context with 1s period, 500 microsecond budget, 0 extra refills and data of 5.
     error = seL4_SchedControl_Configure(sched_control, sched_context, 500, US_IN_S, 0, 5);
     ZF_LOGF_IF(error != seL4_NoError, "Failed to configure sched_context");
+/*-- endfilter -*/
 ```
 
 </details>
@@ -519,20 +501,16 @@ The code then binds the scheduling context back to `spinner_tcb`, which starts y
 /*-- filter TaskContent("mcs-start", TaskContentType.ALL, subtask='fault') -*/
     //TODO set endpoint as the timeout fault handler for spinner_tcb
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("mcs-fault", TaskContentType.COMPLETED, subtask='fault') -*/
-    // set endpoint as the timeout fault handler for spinner_tcb
-    error = seL4_TCB_SetTimeoutEndpoint(spinner_tcb, endpoint);
-    ZF_LOGF_IF(error != seL4_NoError, "Failed to set timeout fault endpoint for spinner");
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("mcs-fault", TaskContentType.COMPLETED, subtask='fault') -*/
+    // set endpoint as the timeout fault handler for spinner_tcb
     error = seL4_TCB_SetTimeoutEndpoint(spinner_tcb, endpoint);
-    ZF_LOGF_IF(error, "Failed to bind sched_context to spinner_tcb");
+    ZF_LOGF_IF(error != seL4_NoError, "Failed to set timeout fault endpoint for spinner");
+/*-- endfilter -*/
 ```
 
 </details>
