@@ -1,5 +1,5 @@
 <!--
-  Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
+  Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
   Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
@@ -424,6 +424,10 @@ entire untyped object. However, this fails, because the untyped is already compl
 
 
 
+=======
+/*-- endfilter -*/
+
+>>>>>>> refs/remotes/origin/update_tutorials
 Once the tutorial is completed successfully, you should see the message "Success."
 
 ### Further exercises

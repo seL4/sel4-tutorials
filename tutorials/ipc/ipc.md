@@ -1,5 +1,5 @@
 <!--
-  Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
+  Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
   Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
@@ -298,7 +298,6 @@ does not respond, or wait for new messages from this point.
              printf("\n");
 /*-- endfilter -*/
 ```
-
 </details>
 
 At this point, you should see a single word output to the console in a loop.
@@ -331,6 +330,18 @@ This is because the server does not reply to the client, and continues to spin i
 /*-- filter TaskContent("ipc-reply", TaskContentType.COMPLETED, subtask="reply", completion="lazy") -*/
              info = seL4_ReplyRecv(endpoint, info, &sender);
 /*-- endfilter -*/
+```
+</details>
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    info = seL4_ReplyRecv(endpoint, info, &sender);
+    for (int i = 0; i < seL4_MessageInfo_get_length(info); i++) {
+        printf("%c", (char) seL4_GetMR(i));
+    }
+    printf("\n");
 ```
 </details>
 
@@ -372,6 +383,35 @@ capability for each sender. You can use `free_slot` to store the reply capabilit
               printf("\n");
               seL4_Send(free_slot, seL4_MessageInfo_new(0, 0, 0, 0));
 /*-- endfilter -*/
+```
+
+</details>
+
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    } else {
+
+        for (int i = 0; i < seL4_MessageInfo_get_length(info); i++) {
+                 printf("%c", (char) seL4_GetMR(i));
+             }
+             printf("\n");
+
+              error = seL4_CNode_SaveCaller(cnode, free_slot, seL4_WordBits);
+              assert(error == 0);
+              info = seL4_Recv(endpoint, &sender);
+              for (int i = 0; i < seL4_MessageInfo_get_length(info); i++) {
+                 printf("%c", (char) seL4_GetMR(i));
+              }
+              printf("\n");
+              seL4_Send(free_slot, seL4_MessageInfo_new(0, 0, 0, 0));
+
+             info = seL4_ReplyRecv(endpoint, info, &sender);
+        }
+    }
+
 ```
 
 </details>

@@ -1,5 +1,5 @@
 <!--
-  Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
+  Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
   Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
@@ -8,13 +8,17 @@
 
 /*? declare_task_ordering(['cnode-start', 'cnode-size', 'cnode-copy', 'cnode-delete', 'cnode-invoke']) ?*/
 
-# Capabilitieshelloo
+# Capabilities
 
 You will learn:
 1. The jargon CNode, CSpace, CSlot.
 2. How to invoke a capability.
 3. How to delete and copy CSlots.
 
+You will learn:
+1. The jargon CNode, CSpace, CSlot.
+2. How to invoke a capability.
+3. How to delete and copy CSlots.
 
 ## Initialising
 
@@ -249,6 +253,14 @@ The third line stating the number of slots in the CSpace, is incorrect, and your
 
 </details>
 
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
+    size_t initial_cnode_object_size_bytes = initial_cnode_object_size * (1u << seL4_SlotBits);
+```
+</details>
+
 ### Copy a capability between CSlots
 
 After the output showing the number of bytes in the CSpace, you will see an error:
@@ -388,7 +400,6 @@ main@main.c:56 Failed to suspend current thread
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
-
 
 ```c
 /*-- filter TaskContent("cnode-invoke", TaskContentType.COMPLETED, subtask='invoke', completion='Suspending current thread') -*/
