@@ -123,20 +123,16 @@ function may seem tedious, it's doing some important things.
 /*? task_1_desc ?*/
 /*-- filter TaskContent("task-1", TaskContentType.BEFORE) -*/
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-1", TaskContentType.COMPLETED) -*/
-    error = sel4utils_bootstrap_vspace_with_bootinfo_leaky(&vspace,
-                                                           &data, simple_get_pd(&simple), &vka, info);
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-1", TaskContentType.COMPLETED) -*/
     error = sel4utils_bootstrap_vspace_with_bootinfo_leaky(&vspace,
                                                            &data, simple_get_pd(&simple), &vka, info);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -178,21 +174,16 @@ thread.
      */
 /*-- endset -*/
 /*? task_2_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-2", TaskContentType.COMPLETED) -*/
-    sel4utils_process_config_t config = process_config_default_simple(&simple, APP_IMAGE_NAME, APP_PRIORITY);
-    error = sel4utils_configure_process_custom(&new_process, &vka, &vspace, config);
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-    sel4utils_process_t new_process;
+/*-- filter TaskContent("task-2", TaskContentType.COMPLETED) -*/
     sel4utils_process_config_t config = process_config_default_simple(&simple, APP_IMAGE_NAME, APP_PRIORITY);
     error = sel4utils_configure_process_custom(&new_process, &vka, &vspace, config);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -252,18 +243,15 @@ wouldn't know who was whom.
     seL4_CPtr new_ep_cap = 0;
 /*-- endset -*/
 /*? task_3_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-3", TaskContentType.COMPLETED, completion="what you passed.") -*/
-    vka_cspace_make_path(&vka, ep_object.cptr, &ep_cap_path);
-/*-- endfilter -*/
-/*-- endfilter -*/
  ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-3", TaskContentType.COMPLETED, completion="what you passed.") -*/
     vka_cspace_make_path(&vka, ep_object.cptr, &ep_cap_path);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -294,20 +282,16 @@ free slot that the VKA library found for us.
      */
 /*-- endset -*/
 /*? task_4_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-4", TaskContentType.COMPLETED) -*/
-    new_ep_cap = sel4utils_mint_cap_to_process(&new_process, ep_cap_path,
-                                               seL4_AllRights, EP_BADGE);
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-4", TaskContentType.COMPLETED) -*/
     new_ep_cap = sel4utils_mint_cap_to_process(&new_process, ep_cap_path,
                                                seL4_AllRights, EP_BADGE);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -356,7 +340,12 @@ communicate with us, we can let it run. Complete this step and proceed.
 
 /*-- endset -*/
 /*? task_5_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-5", TaskContentType.COMPLETED) -*/
     new_ep_cap = sel4utils_mint_cap_to_process(&new_process, ep_cap_path,
                                                seL4_AllRights, EP_BADGE);
@@ -367,20 +356,6 @@ communicate with us, we can let it run. Complete this step and proceed.
 
     error = sel4utils_spawn_process_v(&new_process, &vka, &vspace, argc, (char**) &argv, 1);
 /*-- endfilter -*/
-/*-- endfilter -*/
-```
-
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-    new_ep_cap = sel4utils_mint_cap_to_process(&new_process, ep_cap_path,
-                                               seL4_AllRights, EP_BADGE);
-    seL4_Word argc = 1;
-    char string_args[argc][WORD_STRING_SIZE];
-    char* argv[argc];
-    sel4utils_create_word_args(string_args, argv, argc, new_ep_cap);
-    error = sel4utils_spawn_process_v(&new_process, &vka, &vspace, argc, (char**) &argv, 1);
 ```
 </details>
 
@@ -426,9 +401,6 @@ Then we verify the fidelity of the data that was transmitted.
 /*-- filter TaskCompletion("task-6", TaskContentType.COMPLETED) -*/
 	Unexpected response from root thread.
 /*-- endfilter -*/
-/*-- filter TaskContent("task-6", TaskContentType.COMPLETED) -*/
-    tag = seL4_Recv(ep_cap_path.capPtr, &sender_badge);
-/*-- endfilter -*/
 /*-- endfilter -*/
 ```
 
@@ -437,7 +409,9 @@ Then we verify the fidelity of the data that was transmitted.
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-6", TaskContentType.COMPLETED) -*/
     tag = seL4_Recv(ep_cap_path.capPtr, &sender_badge);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -470,9 +444,6 @@ message sent by the new thread.
 /*-- filter TaskCompletion("task-7", TaskContentType.COMPLETED) -*/
 	Unexpected response from root thread.
 /*-- endfilter -*/
-/*-- filter TaskContent("task-7", TaskContentType.COMPLETED) -*/
-    seL4_ReplyRecv(ep_cap_path.capPtr, tag, &sender_badge);
-/*-- endfilter -*/
 /*-- endfilter -*/
 ```
 
@@ -480,7 +451,9 @@ message sent by the new thread.
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-7", TaskContentType.COMPLETED) -*/
     seL4_ReplyRecv(ep_cap_path.capPtr, tag, &sender_badge);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -511,19 +484,15 @@ that was sent, and that's the end.
     seL4_CPtr ep = (seL4_CPtr) atol(argv[0]);
 /*-- endset -*/
 /*? task_8_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-8", TaskContentType.COMPLETED) -*/
-    tag = seL4_Call(ep, tag);
-
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-8", TaskContentType.COMPLETED) -*/
     tag = seL4_Call(ep, tag);
+/*-- endfilter -*/
 ```
 </details>
 On success, you should see the following:

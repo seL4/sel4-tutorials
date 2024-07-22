@@ -121,29 +121,27 @@ of a MMU-utilizing kernel apply.
     vka_object_t ipc_frame_object;
 /*-- endset -*/
 /*? task_1_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-1", TaskContentType.COMPLETED) -*/
-    error = vka_alloc_frame(&vka, IPCBUF_FRAME_SIZE_BITS, &ipc_frame_object);
-    ZF_LOGF_IFERR(error, "Failed to alloc a frame for the IPC buffer.\n"
-                  "\tThe frame size is not the number of bytes, but an exponent.\n"
-                  "\tNB: This frame is not an immediately usable, virtually mapped page.\n")
-/*-- endfilter -*/
-/*--filter TaskCompletion("task-1", TaskContentType.ALL) -*/
-Booting all finished, dropped to user space
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-1", TaskContentType.COMPLETED) -*/
     error = vka_alloc_frame(&vka, IPCBUF_FRAME_SIZE_BITS, &ipc_frame_object);
     ZF_LOGF_IFERR(error, "Failed to alloc a frame for the IPC buffer.\n"
                   "\tThe frame size is not the number of bytes, but an exponent.\n"
                   "\tNB: This frame is not an immediately usable, virtually mapped page.\n")
+/*-- endfilter -*/
 ```
 </details>
+
+/*-- filter ExcludeDocs() -*/
+/*--filter TaskCompletion("task-1", TaskContentType.ALL) -*/
+Booting all finished, dropped to user space
+/*-- endfilter -*/
+/*-- endfilter -*/
+
 On completion, the output will not change.
 
 ### Try to map a page
@@ -195,20 +193,16 @@ into a VSpace, and the mapping of a new page-table into a VSpace.
      */
 /*-- endset -*/
 /*? task_2_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-2", TaskContentType.COMPLETED) -*/
-    error = seL4_ARCH_Page_Map(ipc_frame_object.cptr, pd_cap, ipc_buffer_vaddr,
-                               seL4_AllRights, seL4_ARCH_Default_VMAttributes);
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-2", TaskContentType.COMPLETED) -*/
     error = seL4_ARCH_Page_Map(ipc_frame_object.cptr, pd_cap, ipc_buffer_vaddr,
                                seL4_AllRights, seL4_ARCH_Default_VMAttributes);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -239,27 +233,26 @@ page-table object to use as a leaf page-table in your VSpace.
          */
 /*-- endset -*/
 /*? task_3_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-3", TaskContentType.COMPLETED) -*/
-        vka_object_t pt_object;
-        error =  vka_alloc_page_table(&vka, &pt_object);
-/*-- endfilter -*/
-/*--filter TaskCompletion("task-3", TaskContentType.ALL) -*/
-Booting all finished, dropped to user space
-/*-- endfilter -*/
-/*-- endfilter -*/
  ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-    vka_object_t pt_object;
-    error =  vka_alloc_page_table(&vka, &pt_object);
+/*-- filter TaskContent("task-3", TaskContentType.COMPLETED) -*/
+        vka_object_t pt_object;
+        error =  vka_alloc_page_table(&vka, &pt_object);
+/*-- endfilter -*/
 ```
 </details>
 
 On completion, you will see another fault.
+
+/*-- filter ExcludeDocs() -*/
+/*--filter TaskCompletion("task-3", TaskContentType.ALL) -*/
+Booting all finished, dropped to user space
+/*-- endfilter -*/
+/*-- endfilter -*/
 
 ### Map a page table
 
@@ -292,15 +285,6 @@ try again to finally map the IPC-buffer's frame object into the VSpace.
          */
 /*-- endset -*/
 /*? task_4_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-4", TaskContentType.COMPLETED) -*/
-        error = seL4_ARCH_PageTable_Map(pt_object.cptr, pd_cap,
-                                        ipc_buffer_vaddr, seL4_ARCH_Default_VMAttributes);
-/*-- endfilter -*/
-/*--filter TaskCompletion("task-4", TaskContentType.ALL)--*/
-Booting all finished, dropped to user space
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 On completion, you will see another fault.
@@ -308,11 +292,19 @@ On completion, you will see another fault.
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-    error = seL4_ARCH_PageTable_Map(pt_object.cptr, pd_cap,
+/*-- filter TaskContent("task-4", TaskContentType.COMPLETED) -*/
+        error = seL4_ARCH_PageTable_Map(pt_object.cptr, pd_cap,
                                         ipc_buffer_vaddr, seL4_ARCH_Default_VMAttributes);
+/*-- endfilter -*/
 ```
 
 </details>
+
+/*-- filter ExcludeDocs() -*/
+/*--filter TaskCompletion("task-4", TaskContentType.ALL)--*/
+Booting all finished, dropped to user space
+/*-- endfilter -*/
+/*-- endfilter -*/
 
 ### Map a page
 
@@ -328,20 +320,17 @@ should fail. Complete it and proceed.
          */
 /*-- endset -*/
 /*? task_5_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-5", TaskContentType.COMPLETED) -*/
-        error = seL4_ARCH_Page_Map(ipc_frame_object.cptr, pd_cap,
-                                   ipc_buffer_vaddr, seL4_AllRights, seL4_ARCH_Default_VMAttributes);
-/*-- endfilter -*/
-/*-- endfilter -*/
+
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-       error = seL4_ARCH_Page_Map(ipc_frame_object.cptr, pd_cap,
+/*-- filter TaskContent("task-5", TaskContentType.COMPLETED) -*/
+        error = seL4_ARCH_Page_Map(ipc_frame_object.cptr, pd_cap,
                                    ipc_buffer_vaddr, seL4_AllRights, seL4_ARCH_Default_VMAttributes);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -382,18 +371,15 @@ and proceed.
      */
 /*-- endset -*/
 /*? task_6_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-6", TaskContentType.COMPLETED, completion="main: hello world") -*/
-    error = vka_alloc_endpoint(&vka, &ep_object);
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-6", TaskContentType.COMPLETED, completion="main: hello world") -*/
     error = vka_alloc_endpoint(&vka, &ep_object);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -443,20 +429,16 @@ data, and know which sender you are. Complete the step and proceed.
      */
 /*-- endset -*/
 /*? task_7_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-7", TaskContentType.COMPLETED, completion="main: hello world") -*/
-    error = vka_mint_object(&vka, &ep_object, &ep_cap_path, seL4_AllRights,
-                            EP_BADGE);
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-7", TaskContentType.COMPLETED, completion="main: hello world") -*/
     error = vka_mint_object(&vka, &ep_object, &ep_cap_path, seL4_AllRights,
                             EP_BADGE);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -511,20 +493,16 @@ transmitted in the message.
      */
 /*-- endset -*/
 /*? task_8_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-8", TaskContentType.COMPLETED) -*/
-    tag = seL4_MessageInfo_new(0, 0, 0, 1);
-    seL4_SetMR(0, MSG_DATA);
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-8", TaskContentType.COMPLETED) -*/
     tag = seL4_MessageInfo_new(0, 0, 0, 1);
     seL4_SetMR(0, MSG_DATA);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -588,18 +566,15 @@ response message, if the sender doesn't want it to.
      */
 /*-- endset -*/
 /*? task_9_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-9", TaskContentType.COMPLETED) -*/
-    tag = seL4_Call(ep_cap_path.capPtr, tag);
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-9", TaskContentType.COMPLETED) -*/
     tag = seL4_Call(ep_cap_path.capPtr, tag);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -639,18 +614,15 @@ designated, single IPC buffer.
      */
 /*-- endset -*/
 /*?  task_10_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-10", TaskContentType.COMPLETED, completion="thread_2: hallo wereld") -*/
-    msg = seL4_GetMR(0);
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-10", TaskContentType.COMPLETED, completion="thread_2: hallo wereld") -*/
     msg = seL4_GetMR(0);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -685,17 +657,14 @@ explicitly interested in distinguishing the sender.
      */
 /*-- endset -*/
 /*? task_11_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-11", TaskContentType.COMPLETED) -*/
-    tag = seL4_Recv(ep_object.cptr, &sender_badge);
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-11", TaskContentType.COMPLETED) -*/
     tag = seL4_Recv(ep_object.cptr, &sender_badge);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -728,7 +697,12 @@ Complete them and proceed to the next step.
      */
 /*-- endset -*/
 /*? task_12_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-12", TaskContentType.COMPLETED, completion="thread_2: hallo wereld") -*/
     ZF_LOGF_IF(sender_badge != EP_BADGE,
                "Badge on the endpoint was not what was expected.\n");
@@ -737,18 +711,6 @@ Complete them and proceed to the next step.
                "Length of the data send from root thread was not what was expected.\n"
                "\tHow many registers did you set with seL4_SetMR, within the root thread?\n");
 /*-- endfilter -*/
-/*-- endfilter -*/
-```
-
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-    ZF_LOGF_IF(sender_badge != EP_BADGE,
-               "Badge on the endpoint was not what was expected.\n");
-    ZF_LOGF_IF(seL4_MessageInfo_get_length(tag) != 1,
-               "Length of the data send from root thread was not what was expected.\n"
-               "\tHow many registers did you set with seL4_SetMR, within the root thread?\n");
 ```
 </details>
 
@@ -770,18 +732,15 @@ Again, just reading the data from the Message Registers.
      */
 /*-- endset -*/
 /*? task_13_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-13", TaskContentType.COMPLETED, completion="main: hello world") -*/
-    msg = seL4_GetMR(0);
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-13", TaskContentType.COMPLETED, completion="main: hello world") -*/
     msg = seL4_GetMR(0);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -808,18 +767,15 @@ And writing Message Registers again.
      */
 /*-- endset -*/
 /*? task_14_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-14", TaskContentType.COMPLETED, completion="main: hello world") -*/
-    seL4_SetMR(0, msg);
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-14", TaskContentType.COMPLETED, completion="main: hello world") -*/
     seL4_SetMR(0, msg);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -862,18 +818,15 @@ Complete the step and pat yourself on the back.
      */
 /*-- endset -*/
 /*? task_15_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-15", TaskContentType.COMPLETED, completion="main: hello world") -*/
-    seL4_ReplyRecv(ep_object.cptr, tag, &sender_badge);
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-15", TaskContentType.COMPLETED, completion="main: hello world") -*/
     seL4_ReplyRecv(ep_object.cptr, tag, &sender_badge);
+/*-- endfilter -*/
 ```
 </details>
 

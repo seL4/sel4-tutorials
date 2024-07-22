@@ -109,11 +109,6 @@ It also sets up the IPC buffer so that it can perform some syscalls such as `seL
 /*? task_1_desc ?*/
 /*-- filter TaskContent("task-1", TaskContentType.BEFORE) -*/
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-1", TaskContentType.COMPLETED) -*/
-    info = platsupport_get_bootinfo();
-/*-- endfilter -*/
-/*-- endfilter -*/
 }
 ```
 
@@ -121,7 +116,9 @@ It also sets up the IPC buffer so that it can perform some syscalls such as `seL
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-1", TaskContentType.COMPLETED) -*/
     info = platsupport_get_bootinfo();
+/*-- endfilter -*/
 ```
 </details>
 
@@ -150,17 +147,14 @@ You need to initialize it with some default state before using it.
     */
 /*-- endset -*/
 /*? task_2_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-2", TaskContentType.COMPLETED, completion="Memory pool pointer valid?") -*/
-    simple_default_init_bootinfo(&simple, info);
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-2", TaskContentType.COMPLETED, completion="Memory pool pointer valid?") -*/
     simple_default_init_bootinfo(&simple, info);
+/*-- endfilter -*/
 ```
 </details>
 On successful completion of this task, the output should not change.
@@ -178,18 +172,16 @@ Use a `simple` function to print out the contents of the `seL4_BootInfo` functio
      */
 /*-- endset -*/
 /*? task_3_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-3", TaskContentType.COMPLETED) -*/
-    simple_print(&simple);
-/*-- endfilter -*/
-/*-- endfilter -*/
+
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-3", TaskContentType.COMPLETED) -*/
     simple_print(&simple);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -238,18 +230,15 @@ step.
      */
 /*-- endset -*/
 /*? task_4_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-4", TaskContentType.COMPLETED, completion="main: hello world") -*/
-    allocman = bootstrap_use_current_simple(&simple, ALLOCATOR_STATIC_POOL_SIZE, allocator_mem_pool);
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-4", TaskContentType.COMPLETED, completion="main: hello world") -*/
     allocman = bootstrap_use_current_simple(&simple, ALLOCATOR_STATIC_POOL_SIZE, allocator_mem_pool);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -284,18 +273,15 @@ and the VKA library simplifies this for you, among other things.
      */
 /*-- endset -*/
 /*? task_5_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-5", TaskContentType.COMPLETED, completion="Failed to set the priority for the new TCB object.") -*/
-    allocman_make_vka(&vka, allocman);
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-5", TaskContentType.COMPLETED, completion="Failed to set the priority for the new TCB object.") -*/
     allocman_make_vka(&vka, allocman);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -314,18 +300,15 @@ On successful completion this task, the output should not change.
     seL4_CPtr cspace_cap;
 /*-- endset -*/
 /*? task_6_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-6", TaskContentType.COMPLETED, completion="Failed to set the priority for the new TCB object.") -*/
-    cspace_cap = simple_get_cnode(&simple);
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-6", TaskContentType.COMPLETED, completion="Failed to set the priority for the new TCB object.") -*/
     cspace_cap = simple_get_cnode(&simple);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -363,18 +346,16 @@ On successful completion this task, the output should not change.
     seL4_CPtr pd_cap;
 /*-- endset -*/
 /*? task_7_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-7", TaskContentType.COMPLETED, completion="Failed to set the priority for the new TCB object.") -*/
-    pd_cap = simple_get_pd(&simple);
-/*-- endfilter -*/
-/*-- endfilter -*/
+
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-7", TaskContentType.COMPLETED, completion="Failed to set the priority for the new TCB object.") -*/
     pd_cap = simple_get_pd(&simple);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -400,18 +381,15 @@ On successful completion this task, the output should not change.
     vka_object_t tcb_object = {0};
 /*-- endset -*/
 /*? task_8_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-8", TaskContentType.COMPLETED) -*/
-    error = vka_alloc_tcb(&vka, &tcb_object);
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-8", TaskContentType.COMPLETED) -*/
     error = vka_alloc_tcb(&vka, &tcb_object);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -456,18 +434,15 @@ main: hello world
      */
 /*-- endset -*/
 /*? task_9_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-9", TaskContentType.COMPLETED, completion="main: hello world") -*/
-    error = seL4_TCB_Configure(tcb_object.cptr, seL4_CapNull,  cspace_cap, seL4_NilData, pd_cap, seL4_NilData, 0, 0);
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-9", TaskContentType.COMPLETED, completion="main: hello world") -*/
     error = seL4_TCB_Configure(tcb_object.cptr, seL4_CapNull,  cspace_cap, seL4_NilData, pd_cap, seL4_NilData, 0, 0);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -498,18 +473,15 @@ On successful completion this task, the output should not change.
     /* hint: we've done thread naming before */
 /*-- endset -*/
 /*? task_10_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-10", TaskContentType.COMPLETED, completion="main: hello world") -*/
-    NAME_THREAD(tcb_object.cptr, "dynamic-1: thread_2");
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-10", TaskContentType.COMPLETED, completion="main: hello world") -*/
     NAME_THREAD(tcb_object.cptr, "dynamic-1: thread_2");
+/*-- endfilter -*/
 ```
 </details>
 
@@ -535,18 +507,15 @@ On successful completion this task, the output should not change.
      */
 /*-- endset -*/
 /*? task_11_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-11", TaskContentType.COMPLETED, completion="main: hello world") -*/
-    sel4utils_set_instruction_pointer(&regs, (seL4_Word)thread_2);
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-11", TaskContentType.COMPLETED, completion="main: hello world") -*/
     sel4utils_set_instruction_pointer(&regs, (seL4_Word)thread_2);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -573,18 +542,15 @@ On successful completion this task, the output should not change.
      */
 /*-- endset -*/
 /*? task_12_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-12", TaskContentType.COMPLETED, completion="main: hello world") -*/
-    sel4utils_set_stack_pointer(&regs, thread_2_stack_top);
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-12", TaskContentType.COMPLETED, completion="main: hello world") -*/
     sel4utils_set_stack_pointer(&regs, thread_2_stack_top);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -612,18 +578,15 @@ On successful completion this task, the output should not change.
      */
 /*-- endset -*/
 /*? task_13_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-13", TaskContentType.COMPLETED, completion="main: hello world") -*/
-    error = seL4_TCB_WriteRegisters(tcb_object.cptr, 0, 0, 2, &regs);
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-13", TaskContentType.COMPLETED, completion="main: hello world") -*/
     error = seL4_TCB_WriteRegisters(tcb_object.cptr, 0, 0, 2, &regs);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -645,18 +608,15 @@ On successful completion this task, the output should not change.
      */
 /*-- endset -*/
 /*? task_14_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-14", TaskContentType.COMPLETED, completion="main: hello world") -*/
-    error = seL4_TCB_Resume(tcb_object.cptr);
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-14", TaskContentType.COMPLETED, completion="main: hello world") -*/
     error = seL4_TCB_Resume(tcb_object.cptr);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -675,11 +635,6 @@ On successful completion this task, the output should not change.
     /* hint: printf() */
 /*-- endset -*/
 /*? task_15_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-15", TaskContentType.COMPLETED, completion="thread_2: hallo wereld") -*/
-    printf("thread_2: hallo wereld\n");
-/*-- endfilter -*/
-/*-- endfilter -*/
 }
 ```
 
@@ -687,7 +642,9 @@ On successful completion this task, the output should not change.
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-15", TaskContentType.COMPLETED, completion="thread_2: hallo wereld") -*/
     printf("thread_2: hallo wereld\n");
+/*-- endfilter -*/
 ```
 </details>
 
