@@ -15,11 +15,6 @@ You will learn:
 2. How to invoke a capability.
 3. How to delete and copy CSlots.
 
-You will learn:
-1. The jargon CNode, CSpace, CSlot.
-2. How to invoke a capability.
-3. How to delete and copy CSlots.
-
 ## Initialising
 
 /*? macros.tutorial_init("capabilities") ?*/
@@ -251,14 +246,6 @@ The third line stating the number of slots in the CSpace, is incorrect, and your
 /*-- endfilter -*/
 ```
 
-</details>
-
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-    size_t initial_cnode_object_size_bytes = initial_cnode_object_size * (1u << seL4_SlotBits);
-```
 </details>
 
 ### Copy a capability between CSlots

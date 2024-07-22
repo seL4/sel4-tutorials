@@ -240,14 +240,6 @@ int main(int c, char* arbv[]) {
 ```
 </details>
 
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-        seL4_Error result = seL4_Untyped_Retype(tcb_untyped, seL4_TCBObject, seL4_TCBBits, root_cnode, 0, 0, tcb_cap_slot, 1);
-```
-</details>
-
 Once the TCB has been created it will show up in the `seL4_DebugDumpScheduler()` output as
 `child of: 'tcb_threads'`. Throughout the tutorial you can use this syscall to debug some of the TCB attributes
 that you set.
@@ -283,14 +275,6 @@ as the current thread. Use the IPC buffer we have provided, but don't set a faul
 /*-- endfilter -*/
 ```
 
-</details>
-
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-    result = seL4_TCB_Configure(tcb_cap_slot, seL4_CapNull, root_cnode, 0, root_vspace, 0, (seL4_Word) thread_ipc_buff_sym, tcb_ipc_frame);
-```
 </details>
 
 
@@ -332,14 +316,6 @@ TCB capability, which has an MCP of 254.
     ZF_LOGF_IF(result, "Failed to set the priority for the new TCB object.\n");
     seL4_DebugDumpScheduler();
 /*-- endfilter -*/
-```
-</details>
-
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-        result = seL4_TCB_SetPriority(tcb_cap_slot, root_tcb, 254);
 ```
 </details>
 
@@ -410,19 +386,6 @@ you have at least set the instruction pointer (IP) correctly.
 ```
 </details>
 
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-    // use valid instruction pointer
-    sel4utils_set_instruction_pointer(&regs, (seL4_Word) new_thread);
-    // use valid stack pointer
-    sel4utils_set_stack_pointer(&regs, tcb_stack_top);
-    // fix parameters to this invocation
-    error = seL4_TCB_WriteRegisters(tcb_cap_slot, 0, 0, sizeof(regs)/sizeof(seL4_Word), &regs);
-```
-</details>
-
 On success, you will see the following output:
 ```
 <<seL4(CPU 0) [decodeInvocation/530 T0xffffff800813fc00 "tcb_threads" @4004bf]: Attempted to invoke a null cap #0.>>
@@ -458,13 +421,6 @@ Finally you are ready to start the thread, which makes the TCB runnable and elig
 ```
 </details>
 
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-        error = seL4_TCB_Resume(tcb_cap_slot);
-```
-</details>
 
 If everything has been configured correctly, resuming the thread should result in the string
 `Hello2: arg1 0, arg2 0, arg3 0` followed by a fault.

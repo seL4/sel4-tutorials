@@ -422,12 +422,6 @@ entire untyped object. However, this fails, because the untyped is already compl
 
 </details>
 
-
-
-=======
-/*-- endfilter -*/
-
->>>>>>> refs/remotes/origin/update_tutorials
 Once the tutorial is completed successfully, you should see the message "Success."
 
 ### Further exercises

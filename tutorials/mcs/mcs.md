@@ -217,16 +217,6 @@ Yield
 </details>
 
 
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-    error = seL4_SchedControl_Configure(sched_control, sched_context, 0.9 * US_IN_S, 1 * US_IN_S, 0, 0);
-    ZF_LOGF_IF(error != seL4_NoError, "Failed to configure schedcontext");
-```
-</details>
-
-
 By completing this task successfully, the output will not change, but the rate that the output is
 printed will slow: each subsequent line should be output once the period has elapsed. You should now
 be able to see the loop where the `mcs.c` process and `spinner.c` process alternate, until the `mcs.c`
@@ -329,15 +319,6 @@ Your next task is to use a different process, `sender` to experiment with sporad
     ZF_LOGF_IF(error != seL4_NoError, "Failed to bind schedcontext");
 /*-- endfilter -*/
 ```
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-    error = seL4_SchedContext_Bind(sched_context, sender_tcb);
-    ZF_LOGF_IF(error != seL4_NoError, "Failed to bind schedcontext");
-```
-
-</details>
 
 </details>
 
@@ -409,15 +390,6 @@ not have a scheduling context, and needs one to initialise.
     ZF_LOGF_IF(error != seL4_NoError, "Failed to bind sched_context to server_tcb");
 /*-- endfilter -*/
 ```
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-    error = seL4_SchedContext_Bind(sched_context, server_tcb);
-    ZF_LOGF_IF(error != seL4_NoError, "Failed to bind sched_context to server_tcb");
-```
-
-</details>
 
 </details>
 
@@ -538,15 +510,6 @@ The code then binds the scheduling context back to `spinner_tcb`, which starts y
     ZF_LOGF_IF(error != seL4_NoError, "Failed to set timeout fault endpoint for spinner");
 /*-- endfilter -*/
 ```
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```c
-    error = seL4_TCB_SetTimeoutEndpoint(spinner_tcb, endpoint);
-    ZF_LOGF_IF(error, "Failed to bind sched_context to spinner_tcb");
-```
-
-</details>
 
 </details>
 
