@@ -89,20 +89,16 @@ interrupts on.
 /*? task_1_desc ?*/
 /*-- filter TaskContent("task-1", TaskContentType.BEFORE) -*/
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-1", TaskContentType.COMPLETED) -*/
-    error = vka_alloc_notification(&vka, &ntfn_object);
-    assert(error == 0);
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-1", TaskContentType.COMPLETED) -*/
     error = vka_alloc_notification(&vka, &ntfn_object);
     assert(error == 0);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -133,20 +129,16 @@ initialise a timer driver. Assign it to the `timer` global variable.
     assert(error == 0);
 /*-- endset -*/
 /*? task_2_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-2", TaskContentType.COMPLETED) -*/
-    error = ltimer_default_init(&timer, ops, NULL, NULL);
-    assert(error == 0);
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-2", TaskContentType.COMPLETED) -*/
     error = ltimer_default_init(&timer, ops, NULL, NULL);
     assert(error == 0);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -177,20 +169,16 @@ it.
      */
 /*-- endset -*/
 /*? task_3_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-3", TaskContentType.COMPLETED) -*/
-    error = ltimer_set_timeout(&timer, NS_IN_MS, TIMEOUT_PERIODIC);
-    assert(error == 0);
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-3", TaskContentType.COMPLETED) -*/
     error = ltimer_set_timeout(&timer, NS_IN_MS, TIMEOUT_PERIODIC);
     assert(error == 0);
+/*-- endfilter -*/
 ```
 </details>
 
@@ -224,11 +212,6 @@ and acknowledge the irq.
 /*-- filter TaskCompletion("task-4", TaskContentType.COMPLETED) -*/
 main: got a message from 0x61 to sleep 2 seconds
 /*-- endfilter -*/
-/*-- filter TaskContent("task-4", TaskContentType.COMPLETED) -*/
-        seL4_Word badge;
-        seL4_Wait(ntfn_object.cptr, &badge);
-        sel4platsupport_irq_handle(&ops.irq_ops, MINI_IRQ_INTERFACE_NTFN_ID, badge);
-/*-- endfilter -*/
 /*-- endfilter -*/
 ```
 
@@ -236,13 +219,15 @@ main: got a message from 0x61 to sleep 2 seconds
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-    seL4_Word badge;
-    seL4_Wait(ntfn_object.cptr, &badge);
-    sel4platsupport_irq_handle(&ops.irq_ops, MINI_IRQ_INTERFACE_NTFN_ID, badge);
-    count++;
-    if (count == 1000 * msg) {
-        break;
-    }
+/*-- filter TaskContent("task-4", TaskContentType.COMPLETED) -*/
+        seL4_Word badge;
+        seL4_Wait(ntfn_object.cptr, &badge);
+        sel4platsupport_irq_handle(&ops.irq_ops, MINI_IRQ_INTERFACE_NTFN_ID, badge);
+/*-- endfilter -*/
+        count++;
+        if (count == 1000 * msg) {
+            break;
+        }
 ```
 </details>
 The timer interrupts are bound to the IRQ interface initialised in Task 2,
@@ -273,9 +258,6 @@ timer client wakes up:
 timer client wakes up:
  got the current timer tick:
 /*-- endfilter -*/
-/*-- filter TaskContent("task-5", TaskContentType.COMPLETED) -*/
-    ltimer_destroy(&timer);
-/*-- endfilter -*/
 /*-- endfilter -*/
 ```
 
@@ -283,7 +265,9 @@ timer client wakes up:
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("task-5", TaskContentType.COMPLETED) -*/
     ltimer_destroy(&timer);
+/*-- endfilter -*/
 ```
 </details>
 
