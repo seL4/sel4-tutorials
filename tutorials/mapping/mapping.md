@@ -182,9 +182,11 @@ Note that in the above output, the number of failed bits has changed from `30` t
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
+/*-- filter TaskContent("mapping-pt", TaskContentType.COMPLETED, subtask='pt', completion='Caught cap fault') -*/
     // map a page table object
     error = seL4_X86_PageTable_Map(pt, seL4_CapInitThreadVSpace, TEST_VADDR, seL4_X86_Default_VMAttributes);
     assert(error == seL4_NoError);
+/*-- endfilter -*/
 ```
 </details>
 
