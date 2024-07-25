@@ -390,7 +390,7 @@ in the shared mem communication. We will then link them together using a
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```
-/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="dataport-task42") -*/
+/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="dataport-task4") -*/
     dataport Buf d;
     dataport str_buf_t d_typed;
     dataport ptr_buf_t d_ptrs;
@@ -771,7 +771,7 @@ assembly {
 
 /*? include_task_type_append([("hello","event-task5")]) ?*/
 
-/*? include_task_type_append([("hello","event-task6")]) ?*/
+/*? include_task_type_append([("hello","dataport-task6")]) ?*/
 
     }
     configuration {
@@ -847,7 +847,7 @@ int run(void) {
 
 /*? include_task_type_append([("hello","read-task12")]) ?*/
 
-/*? include_task_type_append([("hello","sendd-task13")]) ?*/
+/*? include_task_type_append([("hello","send-task13")]) ?*/
 
 /*? include_task_type_append([("hello","emit-task14")]) ?*/
 
@@ -901,7 +901,7 @@ void callback_handler_1(void *a) {
 
 /*? include_task_type_append([("hello","read-task19")]) ?*/
 
-/*? include_task_type_append([("hello","PUt-task20")]) ?*/
+/*? include_task_type_append([("hello","put-task20")]) ?*/
 
 /*? include_task_type_append([("hello","register-task21")]) ?*/
 
