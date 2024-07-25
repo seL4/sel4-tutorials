@@ -141,8 +141,6 @@ the second one was named `a2`? Then in order to call on that second
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="define",completion="Booting all finished, dropped to user space") -*/
-assembly {
-    composition {
          component EmptyComponent empty;
          // TODO define an Echo and a Client component
 /*-- endfilter -*/
@@ -153,9 +151,6 @@ assembly {
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="define") -*/
-assembly {
-    composition {
-         component EmptyComponent empty;
          component Client client;
          component Echo echo;
 /*-- endfilter -*/
@@ -187,19 +182,15 @@ assembly {
 
 ### Define an interface
 
-**Exercise** Define the interface for hello in `interfaces/HelloSimple.idl4`. 
+**Exercise** Define the interface for hello in `interfaces/HelloSimple.idl4`.
 
 ```c
 /* Simple RPC interface */
-procedure HelloSimple {
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="interface") -*/
     /* TODO define RPC functions */
     /* hint 1: define at least one function that takes a string as input parameter. call it say_hello. no return value
      * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
      */
-/*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
-};
 /*-- endfilter -*/
 ```
 
@@ -217,17 +208,6 @@ procedure HelloSimple {
 **Exercise** Implement the RPC hello function.
 
 ```c
-/*- filter File("components/Echo/src/echo.c") --*/
-/*-- filter ExcludeDocs() -*/
-/*
- * CAmkES tutorial part 1: components with RPC. Server part.
- */
-#include <stdio.h>
-
-/* generated header for our component */
-#include <camkes.h>
-/*-- endfilter -*/
-
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="rpc") -*/
 /* Implement the RPC function. */
 /* hint 1: the name of the function to implement is a composition of an interface name and a function name:
@@ -239,7 +219,6 @@ procedure HelloSimple {
  * hint 6: make the function print out a mesage using printf
  * hint 7: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
  */
-/*-- endfilter -*/
 /*-- endfilter -*/
 ```
 
@@ -256,28 +235,11 @@ void hello_say_hello(const char *str) {
 ```
 </details>
 
-### Invoke a RPC function
+### Invoke an RPC function
 
 **Exercise** Invoke the RPC function in `components/Client/src/client.c`.
 
 ```c
-/*- filter File("components/Client/src/client.c") --*/
-/*-- filter ExcludeDocs() -*/
-/*
- * CAmkES tutorial part 1: components with RPC. Client part.
- */
-
-#include <stdio.h>
-
-/* generated header for our component */
-#include <camkes.h>
-
-/* run the control thread */
-int run(void) {
-    printf("Starting the client\n");
-    printf("-------------------\n");
-/*-- endfilter -*/
-
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="hello") -*/
     /* TODO: invoke the RPC function */
     /* hint 1: the name of the function to invoke is a composition of an interface name and a function name:
@@ -287,7 +249,6 @@ int run(void) {
      * hint 4: so the function would be:  hello_say_hello()
      * hint 5: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
      */
-/*-- endfilter -*/
 /*-- endfilter -*/
 ```
 
@@ -300,9 +261,6 @@ int run(void) {
     hello_say_hello(shello);
 /*-- endfilter -*/
 
-    printf("After the client\n");
-    return 0;
-}
 ```
 </details>
 
@@ -339,13 +297,52 @@ component Echo {
     provides HelloSimple hello;
 }
 
+assembly {
+    composition {
 /*? include_task_type_append([("hello", 'define')]) ?*/
 /*? include_task_type_append([("hello", 'connect')]) ?*/
-
     }
 }
 /*-- endfilter -*/
 ```
+
+```c
+/*- filter File("components/Echo/src/echo.c") --*/
+/*
+ * CAmkES tutorial part 1: components with RPC. Server part.
+ */
+#include <stdio.h>
+
+/* generated header for our component */
+#include <camkes.h>
+/*? include_task_type_append([("hello", 'rpc')]) ?*/
+/*-- endfilter -*/
+```
+
+```c
+/*- filter File("components/Client/src/client.c") --*/
+/*
+ * CAmkES tutorial part 1: components with RPC. Client part.
+ */
+
+#include <stdio.h>
+
+/* generated header for our component */
+#include <camkes.h>
+
+/* run the control thread */
+int run(void) {
+    printf("Starting the client\n");
+    printf("-------------------\n");
+    
+/*? include_task_type_append([("hello", 'hello')]) ?*/
+
+    printf("After the client\n");
+    return 0;
+}
+/*-- endfilter -*/
+```
+
 ```
 /*- filter File("interfaces/HelloSimple.idl4") --*/
 /* Simple RPC interface */
