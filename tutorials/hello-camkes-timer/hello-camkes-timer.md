@@ -306,7 +306,7 @@ exposed by the `Timer` component is called `hello`. Thus, the function we
 need to implement is called `hello_sleep`.
 
 ```c
-/*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="part1-task9a") -*/
+/*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="part1-task9") -*/
     /* part 1, TASK 9: implement the rpc function. */
     /* hint 1: the name of the function to implement is a composition of an interface name and a function name:
     * i.e.: <interface>_<function>
@@ -323,13 +323,9 @@ need to implement is called `hello_sleep`.
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="part1-task9b") -*/
-    void hello_sleep(int sec) {
+ /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="part1-task9") -*/
+void hello_sleep(int sec) {
     int error = 0;
-/*-- endfilter -*/
-/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="part1-task9c") -*/
-/*-- endfilter -*/
-}
 /*-- endfilter -*/
 ```
 </details>
@@ -343,12 +339,10 @@ expects its time argument to be given in nanoseconds.
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="part1-task10") -*/
-    * Part 1, TASK 10: invoke a function in the supplied driver to set a timeout */
+    /* Part 1, TASK 10: invoke a function in the supplied driver to set a timeout */
     /* hint1: timer_set_timeout
      * hint2: periodic should be set to false
      */
-     error = sem_wait();
-    ZF_LOGF_IF(error != 0, "failed to wait on semaphore");
 /*-- endfilter -*/
 ```
 
@@ -414,8 +408,8 @@ lines if necessary.
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="part2-task1") -*/
-    //uncomment line below
-    component TimerDTB timer;
+    //uncomment the line below
+//    component TimerDTB timer;
 /*-- endfilter -*/
 ```
 </details>
@@ -441,7 +435,8 @@ connector.
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="part2-task2") -*/
-    connection seL4DTBHardware timer_dtb(from timer.dummy_source, to timer.tmr);
+      // uncomment the line below
+//    connection seL4DTBHardware timer_dtb(from timer.dummy_source, to timer.tmr);
 /*-- endfilter -*/
 ```
 </details>
@@ -474,8 +469,9 @@ to allocate memory and interrupts.
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="part2-task3") -*/
-    tmr.dtb = dtb({"path" : "/amba/timer@f8001000"});   // path of the timer in the DTB
-    tmr.generate_interrupts = 1;                        // tell seL4DTBHardware to init interrupts
+     // uncomment the lines below
+//    tmr.dtb = dtb({"path" : "/amba/timer@f8001000"});   // path of the timer in the DTB
+//    tmr.generate_interrupts = 1;                        // tell seL4DTBHardware to init interrupts
 /*-- endfilter -*/
 ```
 </details>
@@ -534,7 +530,7 @@ The timer needs to be stopped, the task here is the same as part one's task 5.
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="part2-task4") -*/
+/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="part2-task5") -*/
     timer_stop(&timer_drv);
 /*-- endfilter -*/
 ```
@@ -577,6 +573,8 @@ You should also expect the same output as the first part.
 
 
 /*-- filter ExcludeDocs() -*/
+/*? ExternalFile("CMakeLists.txt") ?*/
+
 ```c
 /*-- filter File("components/Client/Client.camkes") --*/
 /*
@@ -676,6 +674,10 @@ void irq_handle(void) {
 
 /*? include_task_type_append([("hello","part1-task5")]) ?*/
 
+/* signal the rpc interface. */
+    error = sem_post();
+    ZF_LOGF_IF(error != 0, "failed to post to semaphore");
+
 /*? include_task_type_append([("hello","part1-task6")]) ?*/
 
 }
@@ -688,17 +690,13 @@ void hello__init() {
 
 }
 
-/*? include_task_type_append([("hello","part1-task9a")]) ?*/
-
-/*? include_task_type_append([("hello","part1-task9b")]) ?*/
+/*? include_task_type_append([("hello","part1-task9")]) ?*/
 
 /*? include_task_type_append([("hello","part1-task10")]) ?*/
 
     error = sem_wait();
     ZF_LOGF_IF(error != 0, "failed to wait on semaphore");
-
-/*? include_task_type_append([("hello","part1-task9c")]) ?*/
-
+}
 /*-- endfilter -*/
 
 /*-- filter File("components/TimerDTB/src/timerdtb.c") --*/
@@ -810,7 +808,7 @@ assembly {
 
 /*? include_task_type_append([("hello","part1-task1")]) ?*/
 
-/*? include_task_type_append([("hello","part1-task2")]) ?*/
+/*? include_task_type_append([("hello","part2-task1")]) ?*/
 
 /*- if solution -*/
         component Client client;
@@ -821,7 +819,7 @@ assembly {
 //        component Client client;
 /*- endif -*/
 
-/*? include_task_type_append([("hello","part2-task1")]) ?*/
+/*? include_task_type_append([("hello","part1-task2")]) ?*/
 
 /*? include_task_type_append([("hello","part2-task2")]) ?*/
 
@@ -837,9 +835,7 @@ assembly {
 /*- endif -*/
     }
     configuration {
-
 /*? include_task_type_append([("hello","part1-task3")]) ?*/
-
 
         /* Part 2, TASK 3: hardware resources */
         /* TimerDTB:
@@ -855,6 +851,5 @@ assembly {
     }
 }
 /*-- endfilter -*/
-/*? ExternalFile("CMakeLists.txt") ?*/
 ```
 /*-- endfilter -*/
