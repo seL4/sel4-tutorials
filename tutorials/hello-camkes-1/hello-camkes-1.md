@@ -204,7 +204,7 @@ the second one was named `a2`? Then in order to call on that second
 ```
 </details>
 
-### Implement a RPC function
+### Implement an RPC function
 **Exercise** Implement the RPC hello function.
 
 ```c

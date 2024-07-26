@@ -294,7 +294,7 @@ After initialising the timer, we now need to start the timer. Do so by calling
 ```
 </details>
 
-### Implement a RPC interface
+### Implement an RPC interface
 Note that this task is to understand the existing code. You won't have
 to modify anything for this task.
 
