@@ -80,6 +80,7 @@ You are strongly advised to read the manual section on Events here:
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="event-task1") -*/
+    /* TASK 1: the event interfaces */
     emits TheEvent echo;
     consumes TheEvent client;
 /*-- endfilter -*/
@@ -89,7 +90,7 @@ You are strongly advised to read the manual section on Events here:
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="event-task3") -*/
-/* TASK 3: the event interfaces */
+    /* TASK 3: the event interfaces */
     /* hint 1: specify 2 interfaces: one "emits" and one "consumes"
      * hint 2: you can use an arbitrary string as the interface type (it doesn't get used)
      * hint 3: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
@@ -102,6 +103,7 @@ You are strongly advised to read the manual section on Events here:
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="event-task3") -*/
+    /* TASK 3: the event interfaces */
     consumes TheEvent echo;
     emits TheEvent client;
 /*-- endfilter -*/
@@ -112,7 +114,7 @@ You are strongly advised to read the manual section on Events here:
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="event-task5") -*/
-/* TASK 5: Event connections */
+    /* TASK 5: Event connections */
     /* hint 1: connect each "emits" interface in a component to the "consumes" interface in the other
      * hint 2: use seL4Notification as the connector
      * hint 3: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
@@ -124,6 +126,7 @@ You are strongly advised to read the manual section on Events here:
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="event-task5") -*/
+    /* TASK 5: Event connections */
     connection seL4Notification echo_event(from client.echo, to echo.echo);
     connection seL4Notification client_event(from echo.client, to client.client);
 /*-- endfilter -*/
@@ -142,8 +145,8 @@ application to transparently interact with these events.
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="signal-task10") -*/
-  /* TASK 10: emit event to signal that the data is available */
-  /* hint 1: use the function <interface_name>_emit
+    /* TASK 10: emit event to signal that the data is available */
+    /* hint 1: use the function <interface_name>_emit
     * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
     */
 /*-- endfilter -*/
@@ -154,6 +157,7 @@ application to transparently interact with these events.
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="signal-task10") -*/
+    /* TASK 10: emit event to signal that the data is available */
     echo_emit();
 /*-- endfilter -*/
 ```
@@ -172,6 +176,7 @@ application to transparently interact with these events.
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="wait-task11") -*/
+    /* TASK 11: wait to get an event back signalling that the reply data is available */
     client_wait();
 /*-- endfilter -*/
 ```
@@ -181,7 +186,7 @@ application to transparently interact with these events.
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="emit-task14") -*/
-  /* TASK 14: emit event to signal that the data is available */
+    /* TASK 14: emit event to signal that the data is available */
     /* hint 1: we've already done this before */
 /*-- endfilter -*/
 ```
@@ -191,6 +196,7 @@ application to transparently interact with these events.
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="emit-task14") -*/
+    /* TASK 14: emit event to signal that the data is available */
     echo_emit();
 /*-- endfilter -*/
 ```
@@ -200,8 +206,8 @@ application to transparently interact with these events.
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="wait-task15") -*/
-  /* TASK 15: wait to get an event back signalling that data has been read */
-  /* hint 1: we've already done this before */
+    /* TASK 15: wait to get an event back signalling that data has been read */
+    /* hint 1: we've already done this before */
 /*-- endfilter -*/
 ```
 
@@ -210,6 +216,7 @@ application to transparently interact with these events.
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="wait-task15") -*/
+    /* TASK 15: wait to get an event back signalling that data has been read */
     client_wait();
 /*-- endfilter -*/
 ```
@@ -218,8 +225,8 @@ application to transparently interact with these events.
 #### Signal that data is available
 ```c
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="notify-task22") -*/
-  /* TASK 22: notify the client that there is new data available for it */
-  /* hint 1: use the function <interface_name>_emit
+    /* TASK 22: notify the client that there is new data available for it */
+    /* hint 1: use the function <interface_name>_emit
     * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
     */
 /*-- endfilter -*/
@@ -230,7 +237,8 @@ application to transparently interact with these events.
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="notify-task22") -*/
-  client_emit();
+    /* TASK 22: notify the client that there is new data available for it */
+    client_emit();
 /*-- endfilter -*/
 ```
 </details>
@@ -239,8 +247,8 @@ application to transparently interact with these events.
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="notify-task25") -*/
-  /* TASK 25: notify the client that we are done reading the data */
-  /* hint 1: use the function <interface_name>_emit
+    /* TASK 25: notify the client that we are done reading the data */
+    /* hint 1: use the function <interface_name>_emit
     * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
     */
 /*-- endfilter -*/
@@ -251,7 +259,8 @@ application to transparently interact with these events.
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="notify-task25") -*/
-  client_emit();
+    /* TASK 25: notify the client that we are done reading the data */
+    client_emit();
 /*-- endfilter -*/
 ```
 </details>
@@ -266,7 +275,7 @@ instance. These steps help you to become familiar with this approach.
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="register-task18") -*/
-  void echo__init(void) {
+    void echo__init(void) {
     /* TASK 18: register the first callback handler for this interface */
     /* hint 1: use the function <interface name>_reg_callback()
      * hint 2: register the function "callback_handler_1"
@@ -281,6 +290,7 @@ instance. These steps help you to become familiar with this approach.
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="register-task18") -*/
+    /* TASK 18: register the first callback handler for this interface */
     int error = echo_reg_callback(callback_handler_1, NULL);
     ZF_LOGF_IF(error != 0, "Failed to register callback");
 /*-- endfilter -*/
@@ -304,8 +314,9 @@ instance. These steps help you to become familiar with this approach.
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="register-task21") -*/
-  int error = echo_reg_callback(callback_handler_2, NULL);
-  ZF_LOGF_IF(error != 0, "Failed to register callback");
+    /* TASK 21: register the second callback for this event. */
+    int error = echo_reg_callback(callback_handler_2, NULL);
+    ZF_LOGF_IF(error != 0, "Failed to register callback");
 /*-- endfilter -*/
 ```
 </details>
@@ -328,6 +339,7 @@ instance. These steps help you to become familiar with this approach.
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="register-task24") -*/
+    /* TASK 24: register the original callback handler for this event */
     int error = echo_reg_callback(callback_handler_1, NULL);
     ZF_LOGF_IF(error != 0, "Failed to register callback");
 /*-- endfilter -*/
@@ -355,7 +367,7 @@ in the shared mem communication. We will then link them together using a
 #### Specify dataport interfaces
 ```
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="dataport-task2") -*/
-  /* TASK 2: the dataport interfaces */
+    /* TASK 2: the dataport interfaces */
     /* hint 1: specify 3 interfaces: one of type "Buf", one of type "str_buf_t" and one of type "ptr_buf_t"
      * hint 2: for the definition of these types see "str_buf.h".
      * hint 3: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-dataports
@@ -368,6 +380,7 @@ in the shared mem communication. We will then link them together using a
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="dataport-task2") -*/
+    /* TASK 2: the dataport interfaces */
     dataport Buf d;
     dataport str_buf_t d_typed;
     dataport ptr_buf_t d_ptrs;
@@ -379,7 +392,7 @@ in the shared mem communication. We will then link them together using a
 #### Specify dataport interfaces
 ```
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="dataport-task4") -*/
-  /* TASK 4: the dataport interfaces */
+    /* TASK 4: the dataport interfaces */
     /* hint 1: specify 3 interfaces: one of type "Buf", one of type "str_buf_t" and one of type "ptr_buf_t"
      * hint 3: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-dataports
      */
@@ -391,6 +404,7 @@ in the shared mem communication. We will then link them together using a
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="dataport-task4") -*/
+    /* TASK 4: the dataport interfaces */
     dataport Buf d;
     dataport str_buf_t d_typed;
     dataport ptr_buf_t d_ptrs;
@@ -408,8 +422,8 @@ proceed.
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="dataport-task6") -*/
-  /* TASK 6: Dataport connections */
-  /* hint 1: connect the corresponding dataport interfaces of the components to each other
+    /* TASK 6: Dataport connections */
+    /* hint 1: connect the corresponding dataport interfaces of the components to each other
     * hint 2: use seL4SharedData as the connector
     * hint 3: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-dataports
     */
@@ -421,9 +435,10 @@ proceed.
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="dataport-task6") -*/
-  connection seL4SharedData data_conn(from client.d, to echo.d);
-  connection seL4SharedData typed_data_conn(from client.d_typed, to echo.d_typed);
-  connection seL4SharedData ptr_data_conn(from client.d_ptrs, to echo.d_ptrs);
+    /* TASK 6: Dataport connections */
+    connection seL4SharedData data_conn(from client.d, to echo.d);
+    connection seL4SharedData typed_data_conn(from client.d_typed, to echo.d_typed);
+    connection seL4SharedData ptr_data_conn(from client.d_ptrs, to echo.d_ptrs);
 /*-- endfilter -*/
 ```
 </details>
@@ -452,6 +467,7 @@ to access and manipulate the data in the shared memory mapping
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="copy-task9") -*/
+    /* TASK 9: copy strings to an untyped dataport */
     int *n = (int*)d;
     *n = NUM_STRINGS;
     char *str = (char*)(n + 1);
@@ -466,7 +482,7 @@ to access and manipulate the data in the shared memory mapping
 #### Read the reply data from a typed dataport
 ```
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="read-task12") -*/
-  /* TASK 12: read the reply data from a typed dataport */
+    /* TASK 12: read the reply data from a typed dataport */
     /* hint 1: use the "str_buf_t" dataport as defined in the Client.camkes file
      * hint 2: to access the dataport use the interface name as defined in Client.camkes.
      * For example if you defined it as "dataport str_buf_t d_typed" then you would use "d_typed" to refer to the dataport in C.
@@ -483,6 +499,7 @@ to access and manipulate the data in the shared memory mapping
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="read-task12") -*/
+    /* TASK 12: read the reply data from a typed dataport */
     for (int i = 0; i < d_typed->n; i++) {
         printf("%s: string %d (%p): \"%s\"\n", get_instance_name(), i, d_typed->str[i], d_typed->str[i]);
     }
@@ -516,6 +533,10 @@ to access and manipulate the data in the shared memory mapping
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="send-task13") -*/
+    /* TASK 13: send the data over again, this time using two dataports, one
+     * untyped dataport containing the data, and one typed dataport containing
+     * dataport pointers pointing to data in the untyped, dataport.
+     */
     d_ptrs->n = NUM_STRINGS;
     str = (char*)d;
     for (int i = 0; i < NUM_STRINGS; i++) {
@@ -551,12 +572,13 @@ code to access and manipulate the data in the shared memory mapping
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="read-task19") -*/
-  int *n = (int*)d;
-  char *str = (char*)(n + 1);
-  for (int i = 0; i < *n; i++) {
+    /* TASK 19: read some data from the untyped dataport */
+    int *n = (int*)d;
+    char *str = (char*)(n + 1);
+    for (int i = 0; i < *n; i++) {
       printf("%s: saying (%p): \"%s\"\n", get_instance_name(), str, str);
       str += strlen(str) + 1;
-  }
+    }
 /*-- endfilter -*/
 ```
 </details>
@@ -585,6 +607,7 @@ code to access and manipulate the data in the shared memory mapping
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="put-task20") -*/
+  /* TASK 20: put a modified copy of the data from the untyped dataport into the typed dataport */
     n = (int*)d;
     str = (char*)(n + 1);
     for (int i = 0, j = *n - 1; i < *n; i++, j--) {
@@ -621,6 +644,10 @@ code to access and manipulate the data in the shared memory mapping
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="read-task23") -*/
+  /* TASK 23: read some data from the dataports. specifically:
+    * read a dataport pointer from one of the typed dataports, then use
+    * that pointer to access data in the untyped dataport.
+    */
   char *str;
   for (int i = 0; i < d_ptrs->n; i++) {
       str = dataport_unwrap_ptr(d_ptrs->ptr[i]);
@@ -638,10 +665,10 @@ being asked to set the priority of the components.
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="set-task7") -*/
-  /* TASK 7: set component priorities */
-  /* hint 1: component priority is specified as an attribute with the name <component name>.priority
-   * hint 2: the highest priority is represented by 255, the lowest by 0
-  */
+    /* TASK 7: set component priorities */
+    /* hint 1: component priority is specified as an attribute with the name <component name>.priority
+    * hint 2: the highest priority is represented by 255, the lowest by 0
+    */
 /*-- endfilter -*/
 ```
 
@@ -650,8 +677,9 @@ being asked to set the priority of the components.
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="set-task7") -*/
-  client.priority = 255;
-  echo.priority = 254;
+    /* TASK 7: set component priorities */
+    client.priority = 255;
+    echo.priority = 254;
 /*-- endfilter -*/
 ```
 </details>
@@ -666,8 +694,8 @@ our constraints when mapping those Dataports.
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="restrict-task8") -*/
-  /* TASK 8: restrict access to dataports */
-  /* hint 1: use attribute <component>.<interface_name>_access for each component and interface
+    /* TASK 8: restrict access to dataports */
+    /* hint 1: use attribute <component>.<interface_name>_access for each component and interface
     * hint 2: appropriate values for the to_access and from_access attributes are: "R" or "W"
     * hint 4: make the "Buf" dataport read only for the Echo component
     * hint 3: make the "str_buf_t" dataport read only for the Client component
@@ -680,10 +708,11 @@ our constraints when mapping those Dataports.
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="restrict-task8") -*/
-  echo.d_access = "R";
-  client.d_access = "W";
-  echo.d_typed_access = "W";
-  client.d_typed_access = "R";
+    /* TASK 8: restrict access to dataports */
+    echo.d_access = "R";
+    client.d_access = "W";
+    echo.d_typed_access = "W";
+    client.d_typed_access = "R";
 /*-- endfilter -*/
 ```
 </details>
@@ -691,10 +720,10 @@ our constraints when mapping those Dataports.
 #### Test the read and write permissions on the dataport
 ```
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="test-task16") -*/
-  /* TASK 16: test the read and write permissions on the dataport.
+    /* TASK 16: test the read and write permissions on the dataport.
     * When we try to write to a read-only dataport, we will get a VM fault.
     */
-  /* hint 1: try to assign a value to a field of the "str_buf_t" dataport */
+    /* hint 1: try to assign a value to a field of the "str_buf_t" dataport */
 /*-- endfilter -*/
 ```
 
@@ -703,7 +732,10 @@ our constraints when mapping those Dataports.
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="test-task16") -*/
-  d_typed->n = 0;
+    /* TASK 16: test the read and write permissions on the dataport.
+    * When we try to write to a read-only dataport, we will get a VM fault.
+    */
+    d_typed->n = 0;
 /*-- endfilter -*/
 ```
 </details>
