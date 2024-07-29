@@ -3,7 +3,7 @@
 
   Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
-  SPDX-License-Identifier: BSD-2-Clause - yay
+  SPDX-License-Identifier: BSD-2-Clause
 -->
 
 /*? declare_task_ordering(['vm-cmake-start','vm-pkg-hello-c','vm-pkg-hello-cmake','vm-cmake-hello','vm-module-poke-c','vm-module-poke-make','vm-module-poke-cmake','vm-cmake-poke','vm-init-poke']) ?*/

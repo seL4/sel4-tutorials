@@ -3,7 +3,7 @@
 
   Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
-  SPDX-License-Identifier: BSD-2-Clause - yay
+  SPDX-License-Identifier: BSD-2-Clause
 -->
 
 # CAmkES Tutorial: Introduction to CAmkES
