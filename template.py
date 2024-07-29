@@ -19,6 +19,7 @@ try:
 except ImportError:
     from yaml import Loader, Dumper
 
+from io import StringIO
 
 def build_render_list(args):
     '''
@@ -64,6 +65,7 @@ def render_file(args, env, state, file):
     is for dependency tracking
     '''
     filename = os.path.join(args.out_dir, file)
+
     # Create required directories
     if not os.path.exists(os.path.dirname(filename)):
         os.makedirs(os.path.dirname(filename))
@@ -78,7 +80,21 @@ def render_file(args, env, state, file):
 
         # process template file
         input = in_stream.read()
-        template = env.from_string(input)
+
+        if(args.__getattribute__("docsite")):
+            s = StringIO(input)
+            lines = input.split('\n')
+
+            i = 0
+            for line in s:
+                lines[i] = line.replace("https://docs.sel4.systems/tutorials/","/tutorials/")
+                i = i + 1
+
+            new_text = '\n'.join(lines)
+            template = env.from_string(new_text)
+
+        else:
+            template = env.from_string(input())
 
         out_stream.write(template.render(context.get_context(args, state)))
 
