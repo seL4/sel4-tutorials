@@ -674,7 +674,7 @@ timer_drv_t timer_drv;
 
 void irq_handle(void) {
     int error;
-    
+
 /*? include_task_type_append([("hello","part1-task4")]) ?*/
 
 /*? include_task_type_append([("hello","part1-task5")]) ?*/
