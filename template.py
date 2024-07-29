@@ -80,6 +80,7 @@ def render_file(args, env, state, file):
 
         # process template file
         input = in_stream.read()
+        template = env.from_string(input())
 
         if(args.__getattribute__("docsite")):
             s = StringIO(input)
@@ -92,9 +93,6 @@ def render_file(args, env, state, file):
 
             new_text = ''.join(lines)
             template = env.from_string(str(new_text))
-
-        else:
-            template = env.from_string(input())
 
         out_stream.write(template.render(context.get_context(args, state)))
 
