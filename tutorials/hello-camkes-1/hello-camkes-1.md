@@ -334,7 +334,7 @@ assembly {
 int run(void) {
     printf("Starting the client\n");
     printf("-------------------\n");
-    
+
 /*? include_task_type_append([("hello", 'hello')]) ?*/
 
     printf("After the client\n");

@@ -16,9 +16,9 @@ verification. For further context on the new features, please see the
  which provides a comprehensive background on the changes.
 
 Learn:
-1. About the MCS new kernel API. 
-2. How to create and configure scheduling contexts. 
-3. The jargon *passive server*. 
+1. About the MCS new kernel API.
+2. How to create and configure scheduling contexts.
+3. The jargon *passive server*.
 4. How to spawn round-robin and periodic threads.
 
 ## Initialising
