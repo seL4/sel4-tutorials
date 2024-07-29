@@ -90,7 +90,7 @@ def render_file(args, env, state, file):
                 lines[i] = line.replace("https://docs.sel4.systems/tutorials/","/tutorials/")
                 i = i + 1
 
-            new_text = '\n'.join(lines)
+            new_text = ''.join(lines)
             template = env.from_string(new_text)
 
         else:
