@@ -91,7 +91,7 @@ def render_file(args, env, state, file):
                 i = i + 1
 
             new_text = ''.join(lines)
-            template = env.from_string(new_text)
+            template = env.from_string(str(new_text))
 
         else:
             template = env.from_string(input())
