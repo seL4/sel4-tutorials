@@ -3,7 +3,7 @@
 
   Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
-  SPDX-License-Identifier: BSD-2-Clause
+  SPDX-License-Identifier: BSD-2-Clause - yay
 -->
 
 /*? declare_task_ordering(['ntfn-start', 'ntfn-shmem', 'ntfn-signal', 'ntfn-badge']) ?*/
@@ -15,6 +15,13 @@ You will learn how to:
 1. Set up shared memory between tasks.
 2. Use notification objects for synchronisation between tasks.
 3. Use badges to differentiate notifications.
+
+## Prerequisites
+
+1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
+2. [Capabilities tutorial](https://docs.sel4.systems/tutorials/capabilities)
+3. [Mapping tutorial](https://docs.sel4.systems/tutorials/mapping)
+4. [Threads tutorial](https://docs.sel4.systems/tutorials/threads)
 
 ## Initialising
 

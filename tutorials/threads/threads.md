@@ -3,7 +3,7 @@
 
   Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
-  SPDX-License-Identifier: BSD-2-Clause
+  SPDX-License-Identifier: BSD-2-Clause - yay
 -->
 
 /*? declare_task_ordering(['threads-start','threads-retype','threads-configure','threads-priority',
@@ -14,13 +14,19 @@
 # Threads
 This is a tutorial for using threads on seL4.
 
-In this tutorial, you will
+In this tutorial, you will:
 1. Learn the jargon TCB.
 2. Learn how to start a thread in the same address space.
-3. Understand how to read and update TCB register state.
+3. Learn how to read and update TCB register state.
 4. Learn how to suspend and resume a thread.
 5. Understand thread priorities and their interaction with the seL4 scheduler.
 6. Gain a basic understanding of exceptions and debug fault handlers.
+
+## Prerequisites
+
+1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
+2. [Capabilities tutorial](https://docs.sel4.systems/tutorials/capabilities)
+3. [Mapping tutorial](https://docs.sel4.systems/tutorials/mapping)
 
 ## CapDL Loader
 

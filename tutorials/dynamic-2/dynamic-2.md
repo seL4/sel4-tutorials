@@ -62,6 +62,12 @@ Learning outcomes:
         multiple indexes concatenated into one. Understanding them well
         however, is important to understanding how capabilities work.
 
+## Prerequisites
+
+1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
+2. [Dynamic libraries: initialisation & threading](https://docs.sel4.systems/tutorials/dynamic-1)
+
+
 ## Initialising
 
 /*? macros.tutorial_init("dynamic-2") ?*/

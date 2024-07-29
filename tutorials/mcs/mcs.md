@@ -21,6 +21,20 @@ Learn:
 3. The jargon *passive server*.
 4. How to spawn round-robin and periodic threads.
 
+## Prerequisites
+
+1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
+2. [Hello world tutorial](https://docs.sel4.systems/tutorials/hello-world)
+3. [Capabilities tutorial](https://docs.sel4.systems/tutorials/capabilities)
+4. [Untyped tutorial](https://docs.sel4.systems/tutorials/untyped)
+5. [Mapping tutorial](https://docs.sel4.systems/tutorials/mapping)
+6. [Threads tutorial](https://docs.sel4.systems/tutorials/threads)
+7. [IPC tutorial](https://docs.sel4.systems/tutorials/ipc)
+8. [Notifications tutorial](https://docs.sel4.systems/tutorials/notifications)
+9. [Interrupts tutorial](https://docs.sel4.systems/tutorials/interrupts)
+10. [Fault handlers tutorial](https://docs.sel4.systems/tutorials/fault-handlers)
+
+
 ## Initialising
 
 Then initialise the tutorial:

@@ -14,10 +14,16 @@ This tutorial is an introduction to CAmkES. This will involve introducing the CA
 static CAmkES application and describing its components.
 
 Outcomes:
+1. Understand the structure of a CAmkES application, as a described, well-defined, static system.
+2. Understand the file-layout of a CAmkES ADL project.
+3. Become acquainted with the basics of creating a practical CAmkES application.
 
-- Understand the structure of a CAmkES application, as a described, well-defined, static system.
-- Understand the file-layout of a CAmkES ADL project.
-- Become acquainted with the basics of creating a practical CAmkES application.
+## Prerequisites
+1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up).
+2. [Hello world tutorial](https://docs.sel4.systems/tutorials/hello-world)
+3. Familiarise yourself with the [CAmkES manual](https://github.com/seL4/camkes-tool/blob/master/docs/index.md).
+Note that it's possible to successfully complete the CAmkES tutorial without having read the manual, however highly
+recommended.
 
 ## Background
 

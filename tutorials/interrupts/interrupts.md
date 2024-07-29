@@ -11,11 +11,15 @@
 # Interrupts
 This tutorial covers seL4 interrupts.
 
-You will learn
-* the IRQControl capability's purpose.
-* How to obtain capabilities for specific interrupts.
-* How to handle interrupts and their relation with notification objects.
+You will learn:
+1. The purpose of the IRQControl capability.
+2. How to obtain capabilities for specific interrupts.
+3. How to handle interrupts and their relation with notification objects.
 
+## Prerequisites
+
+1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
+2. [Notifications tutorial](https://docs.sel4.systems/tutorials/notifications)
 
 # Initialising
 

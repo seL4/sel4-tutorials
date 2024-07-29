@@ -3,7 +3,7 @@
 
   Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
-  SPDX-License-Identifier: BSD-2-Clause
+  SPDX-License-Identifier: BSD-2-Clause - yay
 -->
 
 # Fault handling
@@ -21,6 +21,12 @@ You will learn:
 4. What the kernel does to a thread which has faulted.
 5. How to set the endpoint that the kernel will deliver fault messages on (master vs MCS).
 6. How to resume threads after they have faulted.
+
+## Prerequisites
+
+1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
+2. [Capabilities tutorial](https://docs.sel4.systems/tutorials/capabilities)
+3. [IPC tutorial](https://docs.sel4.systems/tutorials/ipc)
 
 ## Initialising
 

@@ -12,11 +12,16 @@
 
 This tutorial provides an introduction to physical memory management on seL4.
 
-By the end of this tutorial, you should be familiar with:
-
+It covers:
 1. The jargon *untyped*, *device untyped*, and *bit size*.
-2. Know how to create objects from untyped memory in seL4.
-3. Know how to reclaim objects.
+2. How to create objects from untyped memory in seL4.
+3. How to reclaim objects.
+
+## Prerequisites
+
+1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
+2. [Capabilities tutorial](https://docs.sel4.systems/tutorials/capabilities)
+
 
 ## Initialising
 

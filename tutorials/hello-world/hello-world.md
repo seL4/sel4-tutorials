@@ -3,7 +3,7 @@
 
   Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
-  SPDX-License-Identifier: BSD-2-Clause
+  SPDX-License-Identifier: BSD-2-Clause - yay
 -->
 
 /*? declare_task_ordering(['hello-world', 'hello-world-mod']) ?*/
@@ -11,10 +11,13 @@
 
 In this tutorial you will:
 
-- Run Hello, World! to ensure your setup is working correctly
-- Become familiar with the jargon *root task*
-- Build and simulate a seL4 project
-- Have a basic understanding of the role of the `CMakeLists.txt` file in applications
+1. Run Hello, World! to ensure your setup is working correctly
+2. Become familiar with the jargon *root task*
+3. Build and simulate a seL4 project
+4. Have a basic understanding of the role of the `CMakeLists.txt` file in applications
+
+## Prerequisites
+1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
 
 ## Building your first program
 seL4 is a microkernel, not an operating system, and as a result only provides very minimal services.

@@ -24,6 +24,11 @@ The solutions to this tutorial primarily uses the method of manually defining
 hardware details. The solutions to the second part are also included, albeit
 commented out.
 
+## Prerequisites
+1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
+2. [CAmkES events tutorial](https://docs.sel4.systems/tutorials/hello-camkes-2)
+
+
 ## CapDL Loader
 
 This tutorial uses the *capDL loader*, a root task which allocates statically
@@ -294,7 +299,7 @@ After initialising the timer, we now need to start the timer. Do so by calling
 ```
 </details>
 
-### Implement an RPC interface
+### Implement a RPC interface
 Note that this task is to understand the existing code. You won't have
 to modify anything for this task.
 
@@ -669,7 +674,7 @@ timer_drv_t timer_drv;
 
 void irq_handle(void) {
     int error;
-
+    
 /*? include_task_type_append([("hello","part1-task4")]) ?*/
 
 /*? include_task_type_append([("hello","part1-task5")]) ?*/

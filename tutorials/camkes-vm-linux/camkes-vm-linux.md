@@ -3,7 +3,7 @@
 
   Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
-  SPDX-License-Identifier: BSD-2-Clause
+  SPDX-License-Identifier: BSD-2-Clause - yay
 -->
 
 /*? declare_task_ordering(['vm-cmake-start','vm-pkg-hello-c','vm-pkg-hello-cmake','vm-cmake-hello','vm-module-poke-c','vm-module-poke-make','vm-module-poke-cmake','vm-cmake-poke','vm-init-poke']) ?*/
@@ -16,6 +16,10 @@ You will become familiar with:
 
 * Creating, configuring and building guest Linux VM components in CAmkES.
 * Building and installing your own Linux VM user-level programs and kernel modules.
+
+## Prerequisites
+1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
+2. [CAmkES timer tutorial](https://docs.sel4.systems/tutorials/hello-camkes-timer)
 
 ## CapDL Loader
 

@@ -12,6 +12,11 @@
 
 This tutorial provides an introduction to virtual memory management on seL4.
 
+## Prerequisites
+
+1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
+2. [Capabilities tutorial](https://docs.sel4.systems/tutorials/capabilities)
+
 ## Initialising
 
 /*? macros.tutorial_init("mapping") ?*/

@@ -3,7 +3,7 @@
 
   Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
-  SPDX-License-Identifier: BSD-2-Clause
+  SPDX-License-Identifier: BSD-2-Clause - yay
 -->
 
 /*? declare_task_ordering(
@@ -29,6 +29,11 @@ Learning outcomes:
 - Set up a timer provided by `util_libs`.
 - Use `seL4_libs` and `util_libs` functions to manipulate timer and
       handle interrupts.
+
+## Prerequisites
+
+1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
+2. [Dynamic libraries: processes & elf loading](https://docs.sel4.systems/tutorials/dynamic-3)
 
 ## Initialising
 

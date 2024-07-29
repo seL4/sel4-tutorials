@@ -3,7 +3,7 @@
 
   Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
-  SPDX-License-Identifier: BSD-2-Clause
+  SPDX-License-Identifier: BSD-2-Clause - yay
 -->
 
 /*? declare_task_ordering(
@@ -53,6 +53,11 @@ Outcomes:
 - Understand the how to spawn new threads in seL4, and the basic
         idea that a thread has a TCB, VSpace and CSpace, and that you
         must fill these out.
+
+## Prerequisites
+
+1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
+2. [Hello world tutorial](https://docs.sel4.systems/tutorials/hello-world)
 
 
 ## Initialising

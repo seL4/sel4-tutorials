@@ -47,6 +47,10 @@ Learning outcomes:
 - Understand how minting a capability to a thread in another
         CSpace works.
 
+## Prerequisites
+
+1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
+2. [Dynamic libraries: IPC](https://docs.sel4.systems/tutorials/dynamic-2)
 
 ## Initialising
 

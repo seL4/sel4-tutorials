@@ -15,6 +15,11 @@ Learn how to:
 - Represent and implement events in CAmkES.
 - Use Dataports.
 
+## Prerequisites
+1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
+2. [Introduction to CAmkES tutorial](https://docs.sel4.systems/tutorials/hello-camkes-1)
+
+
 ## CapDL Loader
 
 This tutorial uses the *capDL loader*, a root task which allocates statically

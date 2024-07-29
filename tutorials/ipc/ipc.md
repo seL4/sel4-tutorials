@@ -11,11 +11,16 @@
 
 This tutorial is about interprocess communication (IPC), the microkernel mechanism for synchronous transmission of small amounts of data.
 
-You will learn
+You will learn:
 1. How to use IPC to send data and capabilities between processes.
 2. The jargon *cap transfer*.
 3. How to differentiate requests via badged capabilities.
 4. Design protocols that use the IPC fastpath.
+
+## Prerequisites
+
+1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
+2. [Capabilities tutorial](https://docs.sel4.systems/tutorials/capabilities)
 
 ## Initialising
 

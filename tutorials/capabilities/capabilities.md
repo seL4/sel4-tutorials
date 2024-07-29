@@ -3,7 +3,7 @@
 
   Copyright 2024, seL4 Project a Series of LF Projects, LLC.
 
-  SPDX-License-Identifier: BSD-2-Clause
+  SPDX-License-Identifier: BSD-2-Clause - yay
 -->
 
 /*? declare_task_ordering(['cnode-start', 'cnode-size', 'cnode-copy', 'cnode-delete', 'cnode-invoke']) ?*/
@@ -14,6 +14,11 @@ You will learn:
 1. The jargon CNode, CSpace, CSlot.
 2. How to invoke a capability.
 3. How to delete and copy CSlots.
+
+## Prerequisites
+
+1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
+2. [Hello world](https://docs.sel4.systems/tutorials/hello-world)
 
 ## Initialising
 
