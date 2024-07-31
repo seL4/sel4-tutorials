@@ -10,7 +10,7 @@
 /*? declare_task_ordering(['mcs-start','mcs-periodic', 'mcs-unbind', 'mcs-bind', 'mcs-sporadic',
 'mcs-server','mcs-badge','mcs-fault']) ?*/
 
-This tutorial presents the features in the upcoming MCS extensions for seL4, which are currently undergoing
+This tutorial presents the features in the Mixed-Criticality System (MCS) extensions for seL4, which are currently undergoing
 verification. For further context on the new features, please see the
 [paper](https://trustworthy.systems/publications/csiro_full_text/Lyons_MAH_18.pdf) or [phd](https://github.com/pingerino/phd/blob/master/phd.pdf)
  which provides a comprehensive background on the changes.
