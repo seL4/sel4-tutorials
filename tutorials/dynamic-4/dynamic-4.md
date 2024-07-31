@@ -1,8 +1,6 @@
 <!--
   Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
 
-  Copyright 2024, seL4 Project a Series of LF Projects, LLC.
-
   SPDX-License-Identifier: BSD-2-Clause
 -->
 
@@ -289,7 +287,7 @@ That's it for this tutorial.
 /*
  * Copyright 2018, Data61, CSIRO (ABN 41 687 119 230).
  *
- * SPDX-License-Identifier: CC-BY-SA-4.0
+ * SPDX-License-Identifier: BSD-2-Clause
  */
 /* Include Kconfig variables. */
 #include <autoconf.h>
@@ -485,9 +483,9 @@ int main(void) {
 /*-- endfilter -*/
 /*-- filter File("client.c") -*/
 /*
- * Copyright 2024, seL4 Project a Series of LF Projects, LLC..
+ * Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
  *
- * SPDX-License-Identifier: CC-BY-SA-4.0
+ * SPDX-License-Identifier: BSD-2-Clause
  */
 #include <stdio.h>
 #include <assert.h>
