@@ -22,9 +22,9 @@
 'task-15',
 ]) ?*/
 
-# seL4 Dynamic Libraries: Initialisation & Threading
+# seL4 Libraries: Initialisation & Threading
 
-This tutorial provides code examples and exercises for using the dynamic libraries
+This tutorial provides code examples and exercises for using the libraries
 found in [`seL4_libs`](https://github.com/seL4/seL4_libs) to bootstrap a system and start a thread.
 
 The tutorial is useful in that
@@ -60,14 +60,14 @@ Outcomes:
 
 ## Initialising
 
-/*? macros.tutorial_init("dynamic-1") ?*/
+/*? macros.tutorial_init("libraries-1") ?*/
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
 <br>
 All tutorials come with complete solutions. To get solutions run:
 
-/*? macros.tutorial_init_with_solution("dynamic-1") ?*/
+/*? macros.tutorial_init_with_solution("libraries-1") ?*/
 
 Answers are also available in drop down menus under each section.
 </details>
@@ -127,7 +127,7 @@ It also sets up the IPC buffer so that it can perform some syscalls such as `seL
 
 On success, you should see the following:
 ```
-dynamic-1: main@main.c:124 [Cond failed: allocman == NULL]
+libraries-1: main@main.c:124 [Cond failed: allocman == NULL]
 /*-- filter TaskCompletion("task-1", TaskContentType.COMPLETED) -*/
 	Failed to initialize alloc manager.
 	Memory pool sufficiently sized?
@@ -205,7 +205,7 @@ untypeds:        [316 --> 406)
 Initial thread domain: 0
 Initial thread cnode size:
 /*-- endfilter -*/
-dynamic-1: main@main.c:126 [Cond failed: allocman == NULL]
+libraries-1: main@main.c:126 [Cond failed: allocman == NULL]
 ```
 
 ### Initialise an allocator
@@ -248,8 +248,8 @@ step.
 The output should now be as follows:
 
 ```
-<<seL4(CPU 0) [decodeInvocation/530 T0xffffff801ffb5400 "dynamic-1" @401303]: Attempted to invoke a null cap #0.>>
-dynamic-1: main@main.c:199 [Err seL4_InvalidCapability]:
+<<seL4(CPU 0) [decodeInvocation/530 T0xffffff801ffb5400 "libraries-1" @401303]: Attempted to invoke a null cap #0.>>
+libraries-1: main@main.c:199 [Err seL4_InvalidCapability]:
 /*-- filter TaskCompletion("task-4", TaskContentType.COMPLETED) -*/
 	Failed to set the priority for the new TCB object.
 /*-- endfilter -*/
@@ -483,7 +483,7 @@ On successful completion this task, the output should not change.
 
 ```c
 /*-- filter TaskContent("task-10", TaskContentType.COMPLETED, completion="main: hello world") -*/
-    NAME_THREAD(tcb_object.cptr, "dynamic-1: thread_2");
+    NAME_THREAD(tcb_object.cptr, "libraries-1: thread_2");
 /*-- endfilter -*/
 ```
 </details>
@@ -753,8 +753,8 @@ int main(void) {
      * It is part of the root task's boot environment and defined in bootinfo.h from libsel4:
      * https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#globals-links:
      */
-    zf_log_set_tag_prefix("dynamic-1:");
-    NAME_THREAD(seL4_CapInitThreadTCB, "dynamic-1");
+    zf_log_set_tag_prefix("libraries-1:");
+    NAME_THREAD(seL4_CapInitThreadTCB, "libraries-1");
 
     /*? task_2_desc ?*/
     /*? include_task_type_append([("task-2")]) ?*/

@@ -15,7 +15,7 @@
 'task-8'
 ])?*/
 
-# seL4 Dynamic Libraries: Processes & Elf loading
+# seL4 Libraries: Processes & Elf loading
 
 This tutorial shows how a separate ELF file can be loaded and expanded into a
 VSpace, and subsequently executed, while facilitating IPC between the
@@ -48,18 +48,18 @@ Learning outcomes:
 ## Prerequisites
 
 1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
-2. [Dynamic libraries: IPC](https://docs.sel4.systems/tutorials/dynamic-2)
+2. [Libraries: IPC](https://docs.sel4.systems/tutorials/libraries-2)
 
 ## Initialising
 
-/*? macros.tutorial_init("dynamic-3") ?*/
+/*? macros.tutorial_init("libraries-3") ?*/
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
 <br>
 All tutorials come with complete solutions. To get solutions run:
 
-/*? macros.tutorial_init_with_solution("dynamic-3") ?*/
+/*? macros.tutorial_init_with_solution("libraries-3") ?*/
 
 Answers are also available in drop down menus under each section.
 </details>
@@ -83,8 +83,8 @@ userImagePaging: [12 --> 15)
 untypeds:        [399 --> 488)
 Initial thread domain: 0
 Initial thread cnode size: 12
-dynamic-3: vspace_reserve_range_aligned@vspace.h:621 Not implemented
-dynamic-3: main@main.c:117 [Cond failed: virtual_reservation.res == NULL]
+libraries-3: vspace_reserve_range_aligned@vspace.h:621 Not implemented
+libraries-3: main@main.c:117 [Cond failed: virtual_reservation.res == NULL]
 /*-- filter TaskCompletion("task-1", TaskContentType.BEFORE) -*/
 	Failed to reserve a chunk of memory.
 /*-- endfilter -*/
@@ -141,7 +141,7 @@ function may seem tedious, it's doing some important things.
 On success, you should see a different error:
 
 ```
-<<seL4(CPU 0) [handleUnknownSyscall/106 T0xffffff801ffb5400 "dynamic-3" @40139e]: SysDebugNameThread: cap is not a TCB, halting>>
+<<seL4(CPU 0) [handleUnknownSyscall/106 T0xffffff801ffb5400 "libraries-3" @40139e]: SysDebugNameThread: cap is not a TCB, halting>>
 /*-- filter TaskCompletion("task-1", TaskContentType.COMPLETED) -*/
 halting...
 /*-- endfilter -*/
@@ -192,7 +192,7 @@ thread.
 On success, you should see a different error:
 
 ```
- dynamic-3: main@main.c:196 [Cond failed: new_ep_cap == 0]
+ libraries-3: main@main.c:196 [Cond failed: new_ep_cap == 0]
 /*-- filter TaskCompletion("task-2", TaskContentType.COMPLETED) -*/
 	Failed to mint a badged copy of the IPC endpoint into the new thread's CSpace.
 	sel4utils_mint_cap_to_process takes a cspacepath_t: double check what you passed.
@@ -302,7 +302,7 @@ On success, the output should look something like:
 ```
 NEW CAP SLOT: 6ac.
 main: hello world
-dynamic-3: main@main.c:247 [Cond failed: sender_badge != EP_BADGE]
+libraries-3: main@main.c:247 [Cond failed: sender_badge != EP_BADGE]
 /*-- filter TaskCompletion("task-4", TaskContentType.COMPLETED) -*/
 	The badge we received from the new thread didn't match our expectation
 /*-- endfilter -*/
@@ -373,7 +373,7 @@ main@app.c:67 [Cond failed: msg != ~MSG_DATA]
 	Unexpected response from root thread.
 /*-- endfilter -*/
 main: hello world
-dynamic-3: main@main.c:255 [Cond failed: sender_badge != EP_BADGE]
+libraries-3: main@main.c:255 [Cond failed: sender_badge != EP_BADGE]
 	The badge we received from the new thread didn't match our expectation.
 ```
 
@@ -583,8 +583,8 @@ int main(void) {
     ZF_LOGF_IF(info == NULL, "Failed to get bootinfo.");
 
     /* Set up logging and give us a name: useful for debugging if the thread faults */
-    zf_log_set_tag_prefix("dynamic-3:");
-    NAME_THREAD(seL4_CapInitThreadTCB, "dynamic-3");
+    zf_log_set_tag_prefix("libraries-3:");
+    NAME_THREAD(seL4_CapInitThreadTCB, "libraries-3");
 
     /* init simple */
     simple_default_init_bootinfo(&simple, info);
@@ -626,7 +626,7 @@ int main(void) {
                   "\tBe sure you've passed the correct component name for the new thread!\n");
 
     /* give the new process's thread a name */
-    NAME_THREAD(new_process.thread.tcb.cptr, "dynamic-3: process_2");
+    NAME_THREAD(new_process.thread.tcb.cptr, "libraries-3: process_2");
 
     /* create an endpoint */
     vka_object_t ep_object = {0};

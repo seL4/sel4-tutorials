@@ -22,7 +22,7 @@
 'task-15',
 ]) ?*/
 
-# seL4 Dynamic Libraries: IPC
+# seL4 Libraries: IPC
 
 The tutorial is designed to
 teach the basics of seL4 IPC using Endpoint objects, and userspace
@@ -63,19 +63,19 @@ Learning outcomes:
 ## Prerequisites
 
 1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
-2. [Dynamic libraries: initialisation & threading](https://docs.sel4.systems/tutorials/dynamic-1)
+2. [Libraries: initialisation & threading](https://docs.sel4.systems/tutorials/libraries-1)
 
 
 ## Initialising
 
-/*? macros.tutorial_init("dynamic-2") ?*/
+/*? macros.tutorial_init("libraries-2") ?*/
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
 <br>
 All tutorials come with complete solutions. To get solutions run:
 
-/*? macros.tutorial_init_with_solution("dynamic-2") ?*/
+/*? macros.tutorial_init_with_solution("libraries-2") ?*/
 
 Answers are also available in drop down menus under each section.
 </details>
@@ -212,7 +212,7 @@ into a VSpace, and the mapping of a new page-table into a VSpace.
 
 On completion, the output will be as follows:
 ```
-dynamic-2: main@main.c:260 [Err seL4_FailedLookup]:
+libraries-2: main@main.c:260 [Err seL4_FailedLookup]:
 /*--filter TaskCompletion("task-2", TaskContentType.COMPLETED) -*/
 	Failed to allocate new page table.
 /*-- endfilter -*/
@@ -343,7 +343,7 @@ On completion, you will see the following:
 /*--filter TaskCompletion("task-5", TaskContentType.COMPLETED) -*/
 main: hello world
 /*-- endfilter -*/
-dynamic-2: main@main.c:464 [Cond failed: seL4_MessageInfo_get_length(tag) != 1]
+libraries-2: main@main.c:464 [Cond failed: seL4_MessageInfo_get_length(tag) != 1]
 	Response data from thread_2 was not the length expected.
 	How many registers did you set with seL4_SetMR within thread_2?
 ```
@@ -512,7 +512,7 @@ transmitted in the message.
 
 On completion, the output should change as follows:
 ```
-dynamic-2: main@main.c:472 [Cond failed: msg != ~MSG_DATA]
+libraries-2: main@main.c:472 [Cond failed: msg != ~MSG_DATA]
 /*-- filter TaskCompletion("task-8", TaskContentType.COMPLETED) -*/
 	Response data from thread_2's content was not what was expected.
 /*-- endfilter -*/
@@ -953,8 +953,8 @@ int main(void) {
     ZF_LOGF_IF(info == NULL, "Failed to get bootinfo.");
 
     /* Set up logging and give us a name: useful for debugging if the thread faults */
-    zf_log_set_tag_prefix("dynamic-2:");
-    name_thread(seL4_CapInitThreadTCB, "dynamic-2");
+    zf_log_set_tag_prefix("libraries-2:");
+    name_thread(seL4_CapInitThreadTCB, "libraries-2");
 
     /* init simple */
     simple_default_init_bootinfo(&simple, info);
@@ -1044,7 +1044,7 @@ int main(void) {
 
 
     /* give the new thread a name */
-    name_thread(tcb_object.cptr, "dynamic-2: thread_2");
+    name_thread(tcb_object.cptr, "libraries-2: thread_2");
 
     /* set start up registers for the new thread */
     seL4_UserContext regs = {0};

@@ -11,10 +11,10 @@
 'task-4',
 'task-5'
 ])?*/
-# seL4 Dynamic Libraries: Timer Tutorial
+# seL4 Libraries: Timer Tutorial
 
 This tutorial demonstrates how to set up and use a basic timer driver using the
-`seL4_libs` dynamic libraries.
+`seL4_libs` libraries.
 
 You'll observe that the things you've already covered in the other
 tutorials are already filled out and you don't have to repeat them: in
@@ -31,18 +31,18 @@ Learning outcomes:
 ## Prerequisites
 
 1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
-2. [Dynamic libraries: processes & elf loading](https://docs.sel4.systems/tutorials/dynamic-3)
+2. [Libraries: processes & elf loading](https://docs.sel4.systems/tutorials/libraries-3)
 
 ## Initialising
 
-/*? macros.tutorial_init("dynamic-4") ?*/
+/*? macros.tutorial_init("libraries-4") ?*/
 
 <details markdown='1'>
 <summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
 <br>
 All tutorials come with complete solutions. To get solutions run:
 
-/*? macros.tutorial_init_with_solution("dynamic-4") ?*/
+/*? macros.tutorial_init_with_solution("libraries-4") ?*/
 
 Answers are also available in drop down menus under each section.
 </details>
@@ -359,7 +359,7 @@ int main(void) {
     ZF_LOGF_IF(info == NULL, "Failed to get bootinfo.");
 
     /* give us a name: useful for debugging if the thread faults */
-    name_thread(seL4_CapInitThreadTCB, "dynamic-4");
+    name_thread(seL4_CapInitThreadTCB, "libraries-4");
 
     /* init simple */
     simple_default_init_bootinfo(&simple, info);
@@ -397,7 +397,7 @@ int main(void) {
     assert(error == 0);
 
     /* give the new process's thread a name */
-    name_thread(new_process.thread.tcb.cptr, "dynamic-4: timer_client");
+    name_thread(new_process.thread.tcb.cptr, "libraries-4: timer_client");
 
     /* create an endpoint */
     vka_object_t ep_object = {0};
