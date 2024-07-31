@@ -87,7 +87,7 @@ If successful, you should see the final ninja rule passing, e.g.:
 
 ### Run Hello, World using QEMU
 
-The final image can be run *inside* the container using the command:
+The final image can be run by:
 
 ```
 ./simulate
@@ -201,11 +201,11 @@ int main(int argc, char *argv[]) {
 }
 /*- endfilter --*/
 ```
+
 Once you have made your change, use Terminal B to rebuild the project.
 
-*Hint:* Remember to exit the QEMU siumator before rerunning the project with `ctrl-A,x`.
+*Hint:* Remember to exit the QEMU simulator before rerunning the project with `ctrl-A,x`
 
-Then rebuild using ninja and run the simulator again:
 /*? macros.ninja_block() ?*/
 Then run the simulator again:
 
