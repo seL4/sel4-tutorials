@@ -80,7 +80,7 @@ def render_file(args, env, state, file):
 
         # process template file
         input = in_stream.read()
-        template = env.from_string(input())
+        template = env.from_string(input)
 
         if(args.__getattribute__("docsite")):
             s = StringIO(input)
