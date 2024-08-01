@@ -278,7 +278,6 @@ instance. These steps help you to become familiar with this approach.
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="register-task18") -*/
-    void echo__init(void) {
     /* TASK 18: register the first callback handler for this interface */
     /* hint 1: use the function <interface name>_reg_callback()
      * hint 2: register the function "callback_handler_1"
