@@ -200,9 +200,6 @@ procedure HelloSimple {
      * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
      */
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
-};
-/*-- endfilter -*/
 ```
 
 <details markdown='1'>
