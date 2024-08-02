@@ -216,17 +216,6 @@ procedure HelloSimple {
 **Exercise** Implement the RPC hello function.
 
 ```c
-/*- filter File("components/Echo/src/echo.c") --*/
-/*-- filter ExcludeDocs() -*/
-/*
- * CAmkES tutorial part 1: components with RPC. Server part.
- */
-#include <stdio.h>
-
-/* generated header for our component */
-#include <camkes.h>
-/*-- endfilter -*/
-
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="rpc") -*/
 /* Implement the RPC function. */
 /* hint 1: the name of the function to implement is a composition of an interface name and a function name:
@@ -239,7 +228,6 @@ procedure HelloSimple {
  * hint 7: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
  */
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
 
@@ -248,6 +236,7 @@ procedure HelloSimple {
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="rpc") -*/
+/* Implement the RPC function. */
 void hello_say_hello(const char *str) {
     printf("Component %s saying: %s\n", get_instance_name(), str);
 }
@@ -260,8 +249,39 @@ void hello_say_hello(const char *str) {
 **Exercise** Invoke the RPC function in `components/Client/src/client.c`.
 
 ```c
-/*- filter File("components/Client/src/client.c") --*/
+/*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="hello") -*/
+    /* TODO: invoke the RPC function */
+    /* hint 1: the name of the function to invoke is a composition of an interface name and a function name:
+     * i.e.: <interface>_<function>
+     * hint 2: the interfaces available are defined by the component, e.g. in hello-1.camkes
+     * hint 3: the function name is defined by the interface definition, e.g. in interfaces/HelloSimple.idl4
+     * hint 4: so the function would be:  hello_say_hello()
+     * hint 5: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+     */
+/*-- endfilter -*/
+```
+
+<details markdown='1'>
+<summary style="display:list-item"><em>Quick solution</em></summary>
+
+```
+/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="hello") -*/
+    /* Invoke the RPC function */
+    char *shello = "hello world";
+    hello_say_hello(shello);
+/*-- endfilter -*/
+```
+</details>
+
+## Done
+
+Now build and run the project, if it compiles: Congratulations! Be sure to read up on the keywords and
+structure of ADL: it's key to understanding CAmkES. And well done on
+writing your first CAmkES application.
+
 /*-- filter ExcludeDocs() -*/
+```c
+/*- filter File("components/Client/src/client.c") --*/
 /*
  * CAmkES tutorial part 1: components with RPC. Client part.
  */
@@ -275,43 +295,31 @@ void hello_say_hello(const char *str) {
 int run(void) {
     printf("Starting the client\n");
     printf("-------------------\n");
-/*-- endfilter -*/
 
-/*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="hello") -*/
-    /* TODO: invoke the RPC function */
-    /* hint 1: the name of the function to invoke is a composition of an interface name and a function name:
-     * i.e.: <interface>_<function>
-     * hint 2: the interfaces available are defined by the component, e.g. in hello-1.camkes
-     * hint 3: the function name is defined by the interface definition, e.g. in interfaces/HelloSimple.idl4
-     * hint 4: so the function would be:  hello_say_hello()
-     * hint 5: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
-     */
-/*-- endfilter -*/
-/*-- endfilter -*/
-```
-
-<details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
-
-```
-/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="hello") -*/
-    char *shello = "hello world";
-    hello_say_hello(shello);
-/*-- endfilter -*/
+/*? include_task_type_append([("hello", 'hello')]) ?*/
 
     printf("After the client\n");
     return 0;
 }
+/*-- endfilter -*/
 ```
-</details>
 
-## Done
+```c
+/*- filter File("components/Echo/src/echo.c") --*/
+/*
+ * CAmkES tutorial part 1: components with RPC. Server part.
+ */
+#include <stdio.h>
 
-Now build and run the project, if it compiles: Congratulations! Be sure to read up on the keywords and
-structure of ADL: it's key to understanding CAmkES. And well done on
-writing your first CAmkES application.
+/* generated header for our component */
+#include <camkes.h>
 
-/*-- filter ExcludeDocs() -*/
+/*? include_task_type_append([("hello", 'rpc')]) ?*/
+
+/*-- endfilter -*/
+
+```
+
 ```
 /*- filter File("hello-1.camkes") --*/
 /*
