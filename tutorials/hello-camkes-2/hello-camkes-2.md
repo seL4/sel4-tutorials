@@ -13,6 +13,8 @@ Learn how to:
 - Represent and implement events in CAmkES.
 - Use Dataports.
 
+Use this [slide presentation](https://github.com/seL4/sel4-tutorials/blob/master/docs/CAmkESTutorial.pdf) to guide you through the tutorials [0](https://docs.sel4.systems/tutorials/hello-camkes-0), [1](https://docs.sel4.systems/tutorials/hello-camkes-1) and [2](https://docs.sel4.systems/tutorials/hello-camkes-2).
+
 ## Prerequisites
 1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
 2. [Introduction to CAmkES tutorial](https://docs.sel4.systems/tutorials/hello-camkes-1)
