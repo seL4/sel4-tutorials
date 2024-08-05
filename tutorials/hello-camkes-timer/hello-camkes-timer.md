@@ -407,7 +407,7 @@ hello_timer(from client.hello, to timer.hello);` and `timer.sem_value = 0;`
 lines if necessary.
 
 ```
-/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="part2-task1") -*/
+/*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="part2-task1") -*/
     /* Part 2, TASK 1: component instances */
     /* hint 1: a single TimerDTB component
     * hint 2: look at
