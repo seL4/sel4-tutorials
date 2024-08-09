@@ -43,3 +43,5 @@ DeclareCAmkESComponent(EmptyComponent)
 DeclareCAmkESRootserver(hello-camkes-timer.camkes)
 
 GenerateCAmkESRootserver()
+
+/*? macros.cmake_check_script(state) ?*/

@@ -4,7 +4,7 @@
   SPDX-License-Identifier: BSD-2-Clause
 -->
 
-/*? declare_task_ordering(['hello']) ?*/
+/*? declare_task_ordering(['1']) ?*/
 
 # CAmkES Timer Tutorial
 
@@ -22,10 +22,14 @@ The solutions to this tutorial primarily uses the method of manually defining
 hardware details. The solutions to the second part are also included, albeit
 commented out.
 
-## Prerequisites
-1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
-2. [CAmkES events tutorial](https://docs.sel4.systems/tutorials/hello-camkes-2)
+## Initialising
 
+/*? macros.tutorial_init("hello-camkes-timer") ?*/
+
+## Prerequisites
+
+1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
+2. [Camkes 2](https://docs.sel4.systems/Tutorials/hello-camkes-2)
 
 ## CapDL Loader
 
@@ -86,7 +90,7 @@ file. They assume that the name of the timer ''driver'' will be `timer`. If you
 wish to call your driver something else, you'll have to change these lines.
 
 ```
-/*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="part1-task1") -*/
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part1-task1") -*/
     /* Part 1, TASK 1: component instances */
     /* hint 1: one hardware component and one driver component
         * hint 2: look at
@@ -99,7 +103,7 @@ wish to call your driver something else, you'll have to change these lines.
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```
-/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="part1-task1") -*/
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task1") -*/
     /* Part 1, TASK 1: component instances */
     component Timerbase timerbase;
     component Timer timer;
@@ -115,7 +119,7 @@ be connected to the timer driver. One of these represents memory-mapped
 registers. The other represents an interrupt.
 
 ```
-/*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="part1-task2") -*/
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part1-task2") -*/
     /* Part 1, TASK 2: connections */
     /* hint 1: use seL4HardwareMMIO to connect device memory
         * hint 2: use seL4HardwareInterrupt to connect interrupt
@@ -129,7 +133,7 @@ registers. The other represents an interrupt.
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```
-/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="part1-task2") -*/
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task2") -*/
     /* Part 1, TASK 2: connections */
     connection seL4HardwareMMIO timer_mem(from timer.reg, to timerbase.reg);
     connection seL4HardwareInterrupt timer_irq(from timerbase.irq, to timer.irq);
@@ -137,13 +141,14 @@ registers. The other represents an interrupt.
 ```
 </details>
 
+
 ### Configure a timer hardware component instance
 Configure the timer hardware component instance with device-specific info. The
 physical address of the timer's memory-mapped registers, and its IRQ number
 must both be configured.
 
 ```
-/*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="part1-task3") -*/
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part1-task3") -*/
     /* Part 1, TASK 3: hardware resources */
     /* Timer and Timerbase:
         * hint 1: find out the device memory address and IRQ number from the hardware data sheet
@@ -157,7 +162,7 @@ must both be configured.
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```
-/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="part1-task3") -*/
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task3") -*/
     /* Part 1, TASK 3: hardware resources */
     timerbase.reg_paddr = 0xF8001000;   // paddr of mmio registers
     timerbase.reg_size = 0x1000;        // size of mmio registers
@@ -185,7 +190,7 @@ This task is to call the `timer_handle_irq` function from the supply driver to
 inform the driver that an interrupt has occurred.
 
 ```c
-/*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="part1-task4") -*/
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part1-task4") -*/
     /* Part 1, TASK 4: call into the supplied driver to handle the interrupt. */
     /* hint: timer_handle_irq
      */
@@ -196,7 +201,7 @@ inform the driver that an interrupt has occurred.
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="part1-task4") -*/
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task4") -*/
     /* Part 1, TASK 4: call into the supplied driver to handle the interrupt. */
     timer_handle_irq(&timer_drv);
 /*-- endfilter -*/
@@ -207,7 +212,7 @@ inform the driver that an interrupt has occurred.
 Stop the timer from running. The `timer_stop` function will be helpful here.
 
 ```c
-/*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="part1-task5") -*/
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part1-task5") -*/
     /* Part 1, TASK 5: stop the timer. */
     /* hint: timer_stop
      */
@@ -218,7 +223,7 @@ Stop the timer from running. The `timer_stop` function will be helpful here.
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="part1-task5") -*/
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task5") -*/
     /* Part 1, TASK 5: stop the timer. */
     timer_stop(&timer_drv);
 /*-- endfilter -*/
@@ -233,7 +238,7 @@ function `<interface>_acknowldege` for IRQ interfaces (specifically those
 connected with `seL4HardwareInterrupt`).
 
 ```c
-/*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="part1-task6") -*/
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part1-task6") -*/
     /* Part 1, TASK 6: acknowledge the interrupt */
     /* hint 1: use the function <irq interface name>_acknowledge()
      */
@@ -244,7 +249,7 @@ connected with `seL4HardwareInterrupt`).
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="part1-task6") -*/
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task6") -*/
     /* Part 1, TASK 6: acknowledge the interrupt */
     error = irq_acknowledge();
     ZF_LOGF_IF(error != 0, "failed to acknowledge interrupt");
@@ -260,7 +265,7 @@ We need to initialise a handle to the timer driver for this device, and store a
 handle to the driver in the global variable `timer_drv`.
 
 ```c
-/*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="part1-task7") -*/
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part1-task7") -*/
     /* Part 1, TASK 7: call into the supplied driver to get the timer handler */
     /* hint1: timer_init
      * hint2: The timer ID is supplied as a #define in this file
@@ -273,7 +278,7 @@ handle to the driver in the global variable `timer_drv`.
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="part1-task7") -*/
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task7") -*/
     /* Part 1, TASK 7: call into the supplied driver to get the timer handler */
     int error = timer_init(&timer_drv, DEFAULT_TIMER_ID, reg);
     assert(error == 0);
@@ -286,9 +291,9 @@ After initialising the timer, we now need to start the timer. Do so by calling
 `timer_start` and passing the handle to the driver.
 
 ```c
-/*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="part1-task8") -*/
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part1-task8") -*/
     /* Part 1, TASK 8: start the timer */
-     * hint: timer_start
+    /* hint: timer_start
      */
 /*-- endfilter -*/
 ```
@@ -297,7 +302,7 @@ After initialising the timer, we now need to start the timer. Do so by calling
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="part1-task8") -*/
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task8") -*/
     /* Part 1, TASK 8: start the timer */
     error = timer_start(&timer_drv);
     assert(error == 0);
@@ -317,7 +322,7 @@ exposed by the `Timer` component is called `hello`. Thus, the function we
 need to implement is called `hello_sleep`.
 
 ```c
-/*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="part1-task9") -*/
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part1-task9") -*/
     /* Part 1, TASK 9: implement the rpc function. */
     /* hint 1: the name of the function to implement is a composition of an interface name and a function name:
     * i.e.: <interface>_<function>
@@ -334,7 +339,7 @@ need to implement is called `hello_sleep`.
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
- /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="part1-task9") -*/
+ /*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task9") -*/
 /* Part 1, TASK 9: implement the rpc function. */
 void hello_sleep(int sec) {
     int error = 0;
@@ -342,15 +347,13 @@ void hello_sleep(int sec) {
 ```
 </details>
 
-
-
 ### Set a timer interrupt
 Tell the timer to interrupt after the given number of seconds. The
 `timer_set_timeout` function from the included driver will help. Note that it
 expects its time argument to be given in nanoseconds.
 
 ```c
-/*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="part1-task10") -*/
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part1-task10") -*/
     /* Part 1, TASK 10: invoke a function in the supplied driver to set a timeout */
     /* hint1: timer_set_timeout
      * hint2: periodic should be set to false
@@ -362,14 +365,13 @@ expects its time argument to be given in nanoseconds.
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="part1-task10") -*/
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task10") -*/
     /* Part 1, TASK 10: invoke a function in the supplied driver to set a timeout */
     error = timer_set_timeout(&timer_drv, sec * NS_IN_SECOND, false);
     assert(error == 0);
 /*-- endfilter -*/
 ```
 </details>
-
 
 Note the existing code in `hello_sleep`. It waits on a binary semaphore.
 `irq_handle` will be called on another thread when the timer interrupt occurs,
@@ -407,7 +409,7 @@ hello_timer(from client.hello, to timer.hello);` and `timer.sem_value = 0;`
 lines if necessary.
 
 ```
-/*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="part2-task1") -*/
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part2-task1") -*/
     /* Part 2, TASK 1: component instances */
     /* hint 1: a single TimerDTB component
     * hint 2: look at
@@ -420,7 +422,7 @@ lines if necessary.
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```
-/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="part2-task1") -*/
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part2-task1") -*/
     /* Part 2, TASK 1: component instances */
     //uncomment the line below
 //    component TimerDTB timer;
@@ -434,7 +436,7 @@ the two interfaces inside the `TimerDTB` component with the `seL4DTBHardware`
 connector.
 
 ```
-/*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="part2-task2") -*/
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part2-task2") -*/
     /* Part 2, TASK 2: connections */
     /* hint 1: connect the dummy_source and timer interfaces
     * hint 2: the dummy_source should be the 'from' end
@@ -448,7 +450,7 @@ connector.
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```
-/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="part2-task2") -*/
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part2-task2") -*/
       /* Part 2, TASK 2: connections */
       // uncomment the line below
 //    connection seL4DTBHardware timer_dtb(from timer.dummy_source, to timer.tmr);
@@ -468,7 +470,7 @@ specifically, it reads the registers field and optionally the interrupts field
 to allocate memory and interrupts.
 
 ```
-/*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="part2-task3") -*/
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part2-task3") -*/
     /* Part 2, TASK 3: hardware resources */
     /* TimerDTB:
      * hint 1: look in the DTB/DTS for the path of a timer
@@ -483,7 +485,7 @@ to allocate memory and interrupts.
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```
-/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="part2-task3") -*/
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part2-task3") -*/
      /* Part 2, TASK 3: hardware resources */
      // uncomment the lines below
 //    tmr.dtb = dtb({"path" : "/amba/timer@f8001000"});   // path of the timer in the DTB
@@ -514,7 +516,7 @@ included driver in `timer_driver` and the task here is to call
 `timer_handle_irq`.
 
 ```c
-/*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="part2-task4") -*/
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part2-task4") -*/
     /* Part 2, TASK 4: call into the supplied driver to handle the interrupt. */
     /* hint: timer_handle_irq
      */
@@ -525,18 +527,18 @@ included driver in `timer_driver` and the task here is to call
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="part2-task4") -*/
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part2-task4") -*/
     /* Part 2, TASK 4: call into the supplied driver to handle the interrupt. */
     timer_handle_irq(&timer_drv);
 /*-- endfilter -*/
 ```
 </details>
 
-### Stop the timer
-The timer needs to be stopped, the task here is the same as part one's task 5.
+### Stop a timer
+Stop the timer from running. The `timer_stop` function will be helpful here.
 
 ```c
-/*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="part2-task5") -*/
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part2-task5") -*/
     /* Part 2, TASK 5: stop the timer. */
     /* hint: timer_stop
      */
@@ -547,7 +549,7 @@ The timer needs to be stopped, the task here is the same as part one's task 5.
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="part2-task5") -*/
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part2-task5") -*/
     /* Part 2, TASK 5: stop the timer. */
     timer_stop(&timer_drv);
 /*-- endfilter -*/
@@ -565,7 +567,7 @@ CAmkES to differentiate between the possibly many interrupts of a device that
 you wish to acknowledge.
 
 ```c
-/*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="part2-task6") -*/
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part2-task6") -*/
     /* Part 2, TASK 6: acknowledge the interrupt */
     /* hint 1: use the function <to_interface_name>_irq_acknowledge()
      * hint 2: pass in the 'irq' variable to the function
@@ -577,7 +579,7 @@ you wish to acknowledge.
 <summary style="display:list-item"><em>Quick solution</em></summary>
 
 ```c
-/*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="part2-task6") -*/
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part2-task6") -*/
     /* Part 2, TASK 6: acknowledge the interrupt */
     error = tmr_irq_acknowledge(irq);
     ZF_LOGF_IF(error != 0, "failed to acknowledge interrupt");
@@ -585,15 +587,14 @@ you wish to acknowledge.
 ```
 </details>
 
+### TASK 7 - 10
+
 Task 7 to 10 are the exact same as the tasks in part one.
 
 You should also expect the same output as the first part.
 
 
-
 /*-- filter ExcludeDocs() -*/
-/*? ExternalFile("CMakeLists.txt") ?*/
-
 ```c
 /*-- filter File("components/Client/Client.camkes") --*/
 /*
@@ -665,7 +666,7 @@ component TimerDTB {
 
     configuration {
 
-/*? include_task_type_append([("hello","part2-task3")]) ?*/
+/*? include_task_type_append([("1","part2-task3")]) ?*/
 
     }
 }
@@ -689,29 +690,26 @@ timer_drv_t timer_drv;
 void irq_handle(void) {
     int error;
 
-/*? include_task_type_append([("hello","part1-task4")]) ?*/
+/*? include_task_type_append([("1","part1-task4")]) ?*/
 
-/*? include_task_type_append([("hello","part1-task5")]) ?*/
+/*? include_task_type_append([("1","part1-task5")]) ?*/
 
-/* signal the rpc interface. */
+    /* signal the rpc interface. */
     error = sem_post();
     ZF_LOGF_IF(error != 0, "failed to post to semaphore");
 
-/*? include_task_type_append([("hello","part1-task6")]) ?*/
-
+/*? include_task_type_append([("1","part1-task6")]) ?*/
 }
 
 void hello__init() {
+/*? include_task_type_append([("1","part1-task7")]) ?*/
 
-/*? include_task_type_append([("hello","part1-task7")]) ?*/
-
-/*? include_task_type_append([("hello","part1-task8")]) ?*/
-
+/*? include_task_type_append([("1","part1-task8")]) ?*/
 }
 
-/*? include_task_type_append([("hello","part1-task9")]) ?*/
+/*? include_task_type_append([("1","part1-task9")]) ?*/
 
-/*? include_task_type_append([("hello","part1-task10")]) ?*/
+/*? include_task_type_append([("1","part1-task10")]) ?*/
 
     error = sem_wait();
     ZF_LOGF_IF(error != 0, "failed to wait on semaphore");
@@ -733,16 +731,15 @@ timer_drv_t timer_drv;
 void tmr_irq_handle(ps_irq_t *irq) {
     int error;
 
-/*? include_task_type_append([("hello","part2-task4")]) ?*/
+/*? include_task_type_append([("1","part2-task4")]) ?*/
 
-/*? include_task_type_append([("hello","part2-task5")]) ?*/
+/*? include_task_type_append([("1","part2-task5")]) ?*/
 
     /* signal the rpc interface. */
     error = sem_post();
     ZF_LOGF_IF(error != 0, "failed to post to semaphore");
 
-/*? include_task_type_append([("hello","part2-task6")]) ?*/
-
+/*? include_task_type_append([("1","part2-task6")]) ?*/
 }
 
 void hello__init() {
@@ -825,9 +822,9 @@ assembly {
         component EmptyComponent empty;
 /*- endif -*/
 
-/*? include_task_type_append([("hello","part1-task1")]) ?*/
+/*? include_task_type_append([("1","part1-task1")]) ?*/
 
-/*? include_task_type_append([("hello","part2-task1")]) ?*/
+/*? include_task_type_append([("1","part2-task1")]) ?*/
 
 /*- if solution -*/
         component Client client;
@@ -838,9 +835,9 @@ assembly {
 //        component Client client;
 /*- endif -*/
 
-/*? include_task_type_append([("hello","part1-task2")]) ?*/
+/*? include_task_type_append([("1","part1-task2")]) ?*/
 
-/*? include_task_type_append([("hello","part2-task2")]) ?*/
+/*? include_task_type_append([("1","part2-task2")]) ?*/
 
         /* timer interface connection */
 /*- if solution -*/
@@ -854,7 +851,7 @@ assembly {
 /*- endif -*/
     }
     configuration {
-/*? include_task_type_append([("hello","part1-task3")]) ?*/
+/*? include_task_type_append([("1","part1-task3")]) ?*/
 
         /* Part 2, TASK 3: hardware resources */
         /* TimerDTB:
@@ -870,5 +867,10 @@ assembly {
     }
 }
 /*-- endfilter -*/
+/*? ExternalFile("CMakeLists.txt") ?*/
 ```
+
+/*- filter TaskContent("1", TaskContentType.BEFORE, completion="Booting all finished, dropped to user space") -*//*- endfilter -*/
+/*- filter TaskContent("1", TaskContentType.COMPLETED, completion="After the client: wakeup") -*//*- endfilter -*/
+
 /*-- endfilter -*/
