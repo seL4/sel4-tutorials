@@ -43,8 +43,5 @@ DeclareCAmkESComponent(EmptyComponent)
 DeclareCAmkESRootserver(hello-camkes-timer.camkes)
 
 GenerateCAmkESRootserver()
-/*? declare_task_ordering(['1']) ?*/
 
-/*- filter TaskContent("1", TaskContentType.BEFORE, completion="Booting all finished, dropped to user space") -*//*- endfilter -*/
-/*- filter TaskContent("1", TaskContentType.COMPLETED, completion="After the client: wakeup") -*//*- endfilter -*/
 /*? macros.cmake_check_script(state) ?*/
