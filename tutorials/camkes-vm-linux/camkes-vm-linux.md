@@ -15,6 +15,8 @@ You will become familiar with:
 * Creating, configuring and building guest Linux VM components in CAmkES.
 * Building and installing your own Linux VM user-level programs and kernel modules.
 
+*Note that the instructions for this tutorial are only for Linux.*
+
 ## Prerequisites
 1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
 2. [CAmkES timer tutorial](https://docs.sel4.systems/tutorials/hello-camkes-timer)
