@@ -21,6 +21,7 @@ except ImportError:
 
 from io import StringIO
 
+
 def build_render_list(args):
     '''
     This function is pretty gross. It will likely be removed once the
@@ -82,13 +83,13 @@ def render_file(args, env, state, file):
         input = in_stream.read()
         template = env.from_string(input)
 
-        if(args.__getattribute__("docsite")):
+        if (args.__getattribute__("docsite")):
             s = StringIO(input)
             lines = input.split('\n')
 
             i = 0
             for line in s:
-                lines[i] = line.replace("https://docs.sel4.systems/Tutorials/","/Tutorials/")
+                lines[i] = line.replace("https://docs.sel4.systems/Tutorials/", "/Tutorials/")
                 i = i + 1
 
             new_text = ''.join(lines)
