@@ -15,7 +15,7 @@ In this tutorial you will:
 4. Have a basic understanding of the role of the `CMakeLists.txt` file in applications
 
 ## Prerequisites
-1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
 
 ## Building your first program
 seL4 is a microkernel, not an operating system, and as a result only provides very minimal services.
@@ -28,7 +28,7 @@ The tutorial is already set up to print "Hello, world!", so at this point  all y
 
 ## Revisiting containers
 
-We will use two terminals, as described in [Setting up your machine](https://docs.sel4.systems/tutorials/setting-up#mapping-a-container).
+We will use two terminals, as described in [Setting up your machine](https://docs.sel4.systems/Tutorials/setting-up#mapping-a-container).
  - Terminal A is just a normal terminal, and is used for git operations, editing (e.g., vim, emacs), and other normal operations.
  - Terminal B is running in a container, and is only used for compilation.
 

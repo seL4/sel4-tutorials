@@ -22,9 +22,9 @@ In this tutorial, you will:
 
 ## Prerequisites
 
-1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
-2. [Capabilities tutorial](https://docs.sel4.systems/tutorials/capabilities)
-3. [Mapping tutorial](https://docs.sel4.systems/tutorials/mapping)
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
+2. [Capabilities tutorial](https://docs.sel4.systems/Tutorials/capabilities)
+3. [Mapping tutorial](https://docs.sel4.systems/Tutorials/mapping)
 
 ## CapDL Loader
 

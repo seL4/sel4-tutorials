@@ -88,7 +88,7 @@ def render_file(args, env, state, file):
 
             i = 0
             for line in s:
-                lines[i] = line.replace("https://docs.sel4.systems/tutorials/","/tutorials/")
+                lines[i] = line.replace("https://docs.sel4.systems/Tutorials/","/Tutorials/")
                 i = i + 1
 
             new_text = ''.join(lines)

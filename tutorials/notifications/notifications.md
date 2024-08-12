@@ -16,10 +16,10 @@ You will learn how to:
 
 ## Prerequisites
 
-1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
-2. [Capabilities tutorial](https://docs.sel4.systems/tutorials/capabilities)
-3. [Mapping tutorial](https://docs.sel4.systems/tutorials/mapping)
-4. [Threads tutorial](https://docs.sel4.systems/tutorials/threads)
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
+2. [Capabilities tutorial](https://docs.sel4.systems/Tutorials/capabilities)
+3. [Mapping tutorial](https://docs.sel4.systems/Tutorials/mapping)
+4. [Threads tutorial](https://docs.sel4.systems/Tutorials/threads)
 
 ## Initialising
 

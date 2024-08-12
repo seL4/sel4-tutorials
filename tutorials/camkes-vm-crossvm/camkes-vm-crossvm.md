@@ -18,8 +18,8 @@ In this tutorial you will learn how to:
 * Configure processes in a Linux guest VM to communicate with CAmkES components
 
 ## Prerequisites
-1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
-2. [CAmkES VM Linux tutorial](https://docs.sel4.systems/tutorials/camkes-vm-linux)
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
+2. [CAmkES VM Linux tutorial](https://docs.sel4.systems/Tutorials/camkes-vm-linux)
 
 *Note that the instructions for this tutorial are only for Linux.*
 

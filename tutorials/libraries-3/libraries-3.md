@@ -47,8 +47,8 @@ Learning outcomes:
 
 ## Prerequisites
 
-1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
-2. [Libraries: IPC](https://docs.sel4.systems/tutorials/libraries-2)
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
+2. [Libraries: IPC](https://docs.sel4.systems/Tutorials/libraries-2)
 
 ## Initialising
 

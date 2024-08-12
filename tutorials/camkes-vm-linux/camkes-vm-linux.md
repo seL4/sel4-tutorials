@@ -18,8 +18,8 @@ You will become familiar with:
 *Note that the instructions for this tutorial are only for Linux.*
 
 ## Prerequisites
-1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
-2. [CAmkES timer tutorial](https://docs.sel4.systems/tutorials/hello-camkes-timer)
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
+2. [CAmkES timer tutorial](https://docs.sel4.systems/Tutorials/hello-camkes-timer)
 
 ## CapDL Loader
 

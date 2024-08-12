@@ -30,8 +30,8 @@ Learning outcomes:
 
 ## Prerequisites
 
-1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
-2. [Libraries: processes & elf loading](https://docs.sel4.systems/tutorials/libraries-3)
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
+2. [Libraries: processes & elf loading](https://docs.sel4.systems/Tutorials/libraries-3)
 
 ## Initialising
 

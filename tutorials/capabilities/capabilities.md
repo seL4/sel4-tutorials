@@ -15,8 +15,8 @@ You will learn:
 
 ## Prerequisites
 
-1. [Set up your machine](https://docs.sel4.systems/tutorials/setting-up)
-2. [Hello world](https://docs.sel4.systems/tutorials/hello-world)
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
+2. [Hello world](https://docs.sel4.systems/Tutorials/hello-world)
 
 ## Initialising
 
