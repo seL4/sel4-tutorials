@@ -166,6 +166,7 @@ application to transparently interact with these events.
     echo_emit();
 /*-- endfilter -*/
 ```
+</details>
 
 #### Wait for data to become available
 ```
