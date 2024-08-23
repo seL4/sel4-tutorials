@@ -27,7 +27,7 @@ This tutorial uses the *capDL loader*, a root task which allocates statically
  configured objects and capabilities.
 
 <details markdown='1'>
-<summary style="display:list-item">Get CapDL</summary>
+<summary>Get CapDL</summary>
 The capDL loader parses
 a static description of the system and the relevant ELF binaries.
 It is primarily used in [Camkes](https://docs.sel4.systems/CAmkES/) projects
@@ -46,7 +46,7 @@ For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This ca
 /*? macros.tutorial_init("camkes-vm-linux") ?*/
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<summary><em>Hint:</em> tutorial solutions</summary>
 <br>
 All tutorials come with complete solutions. To get solutions run:
 

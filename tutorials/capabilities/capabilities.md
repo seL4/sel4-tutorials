@@ -23,7 +23,7 @@ You will learn:
 /*? macros.tutorial_init("capabilities") ?*/
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<summary><em>Hint:</em> tutorial solutions</summary>
 <br>
 All tutorials come with complete solutions. To get solutions run:
 
@@ -240,7 +240,7 @@ The third line stating the number of slots in the CSpace, is incorrect, and your
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("cnode-size", TaskContentType.COMPLETED, subtask='size', completion='The CNode is [0-9]+ bytes in size') -*/
@@ -284,7 +284,7 @@ The error occurs as the existing code tries to set the priority of the initial t
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("cnode-copy", TaskContentType.COMPLETED, subtask='copy', completion='first_free_slot is not empty') -*/
@@ -346,7 +346,7 @@ by a neat hack: by attempting to move the CSlots onto themselves. This should fa
 /*-- endfilter -*/
 ```
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("cnode-delete", TaskContentType.COMPLETED, subtask='delete', completion='Failed to suspend current thread') -*/
@@ -389,7 +389,7 @@ main@main.c:56 Failed to suspend current thread
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("cnode-invoke", TaskContentType.COMPLETED, subtask='invoke', completion='Suspending current thread') -*/

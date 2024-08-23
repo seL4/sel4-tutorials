@@ -26,7 +26,7 @@ It covers:
 /*? macros.tutorial_init("untyped") ?*/
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<summary><em>Hint:</em> tutorial solutions</summary>
 <br>
 All tutorials come with complete solutions. To get solutions run:
 
@@ -240,7 +240,7 @@ This error happens because we are trying to create an untyped of size 0.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("untyped-next", TaskContentType.COMPLETED, subtask='setup', completion='Failed to set priority') -*/
@@ -289,7 +289,7 @@ The priority check is failing as `child_tcb` is an empty CSlot.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("untyped-tcb", TaskContentType.COMPLETED, subtask='tcb', completion='Endpoint cap is null cap') -*/
@@ -327,7 +327,7 @@ The error you see now is caused be an invalid endpoint capability.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("untyped-ep", TaskContentType.COMPLETED, subtask='ep', completion='Failed to bind notification.') -*/
@@ -364,7 +364,7 @@ The next part of the tutorial attempts to use a notification object that does no
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("untyped-ntfn", TaskContentType.COMPLETED, subtask='ntfn', completion='Failed to create endpoints..') -*/
@@ -406,7 +406,7 @@ entire untyped object. However, this fails, because the untyped is already compl
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("untyped-revoke", TaskContentType.COMPLETED, subtask='revoke', completion='Success') -*/

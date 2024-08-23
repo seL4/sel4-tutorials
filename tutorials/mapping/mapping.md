@@ -20,7 +20,7 @@ This tutorial provides an introduction to virtual memory management on seL4.
 /*? macros.tutorial_init("mapping") ?*/
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<summary><em>Hint:</em> tutorial solutions</summary>
 <br>
 All tutorials come with complete solutions. To get solutions run:
 
@@ -151,7 +151,7 @@ the number of bits in the virtual address that could not be resolved due to miss
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("mapping-pd", TaskContentType.COMPLETED, subtask='pd',completion='Failed to map page') -*/
@@ -182,7 +182,7 @@ Note that in the above output, the number of failed bits has changed from `30` t
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("mapping-pt", TaskContentType.COMPLETED, subtask='pt', completion='Caught cap fault') -*/
@@ -228,7 +228,7 @@ that the fault occured on (address).
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("mapping-remap", TaskContentType.COMPLETED, subtask='remap', completion='Success!') -*/

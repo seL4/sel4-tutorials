@@ -38,7 +38,7 @@ Learning outcomes:
 /*? macros.tutorial_init("libraries-4") ?*/
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<summary><em>Hint:</em> tutorial solutions</summary>
 <br>
 All tutorials come with complete solutions. To get solutions run:
 
@@ -95,7 +95,7 @@ interrupts on.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-1", TaskContentType.COMPLETED) -*/
@@ -135,7 +135,7 @@ initialise a timer driver. Assign it to the `timer` global variable.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-2", TaskContentType.COMPLETED) -*/
@@ -175,7 +175,7 @@ it.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-3", TaskContentType.COMPLETED) -*/
@@ -219,7 +219,7 @@ main: got a message from 0x61 to sleep 2 seconds
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-4", TaskContentType.COMPLETED) -*/
@@ -265,7 +265,7 @@ timer client wakes up:
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-5", TaskContentType.COMPLETED) -*/

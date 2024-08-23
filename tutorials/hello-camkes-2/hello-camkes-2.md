@@ -26,7 +26,7 @@ This tutorial uses the *capDL loader*, a root task which allocates statically
  configured objects and capabilities.
 
 <details markdown='1'>
-<summary style="display:list-item">Get CapDL</summary>
+<summary>Get CapDL</summary>
 The capDL loader parses
 a static description of the system and the relevant ELF binaries.
 It is primarily used in [Camkes](https://docs.sel4.systems/CAmkES/) projects
@@ -45,7 +45,7 @@ For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This ca
 /*? macros.tutorial_init("hello-camkes-2") ?*/
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<summary><em>Hint:</em> tutorial solutions</summary>
 <br>
 All tutorials come with complete solutions. To get solutions run:
 
@@ -81,7 +81,7 @@ You are strongly advised to read the manual section on Events here:
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="event-task1") -*/
@@ -104,7 +104,7 @@ You are strongly advised to read the manual section on Events here:
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="event-task3") -*/
@@ -127,7 +127,7 @@ You are strongly advised to read the manual section on Events here:
 /*-- endfilter -*/
 ```
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="event-task5") -*/
@@ -158,7 +158,7 @@ application to transparently interact with these events.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="signal-task10") -*/
@@ -178,7 +178,7 @@ application to transparently interact with these events.
 /*-- endfilter -*/
 ```
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="wait-task11") -*/
@@ -198,7 +198,7 @@ application to transparently interact with these events.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="emit-task14") -*/
@@ -218,7 +218,7 @@ application to transparently interact with these events.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="wait-task15") -*/
@@ -239,7 +239,7 @@ application to transparently interact with these events.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="notify-task22") -*/
@@ -261,7 +261,7 @@ application to transparently interact with these events.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="notify-task25") -*/
@@ -291,7 +291,7 @@ instance. These steps help you to become familiar with this approach.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="register-task18") -*/
@@ -315,7 +315,7 @@ instance. These steps help you to become familiar with this approach.
 /*-- endfilter -*/
 ```
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="register-task21") -*/
@@ -340,7 +340,7 @@ instance. These steps help you to become familiar with this approach.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="register-task24") -*/
@@ -381,7 +381,7 @@ in the shared mem communication. We will then link them together using a
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="dataport-task2") -*/
@@ -405,7 +405,7 @@ in the shared mem communication. We will then link them together using a
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="dataport-task4") -*/
@@ -436,7 +436,7 @@ proceed.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="dataport-task6") -*/
@@ -468,7 +468,7 @@ to access and manipulate the data in the shared memory mapping
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="copy-task9") -*/
@@ -500,7 +500,7 @@ to access and manipulate the data in the shared memory mapping
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="read-task12") -*/
@@ -534,7 +534,7 @@ to access and manipulate the data in the shared memory mapping
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="send-task13") -*/
@@ -573,7 +573,7 @@ code to access and manipulate the data in the shared memory mapping
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="read-task19") -*/
@@ -608,7 +608,7 @@ code to access and manipulate the data in the shared memory mapping
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="put-task20") -*/
@@ -645,7 +645,7 @@ code to access and manipulate the data in the shared memory mapping
 /*-- endfilter -*/
 ```
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="read-task23") -*/
@@ -678,7 +678,7 @@ being asked to set the priority of the components.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="set-task7") -*/
@@ -709,7 +709,7 @@ our constraints when mapping those Dataports.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="restrict-task8") -*/
@@ -733,7 +733,7 @@ our constraints when mapping those Dataports.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="test-task16") -*/

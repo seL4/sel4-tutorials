@@ -40,7 +40,7 @@ Then initialise the tutorial:
 /*? macros.tutorial_init("mcs") ?*/
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<summary><em>Hint:</em> tutorial solutions</summary>
 <br>
 All tutorials come with complete solutions. To get solutions run:
 
@@ -217,7 +217,7 @@ Yield
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("mcs-periodic", TaskContentType.COMPLETED, subtask='periodic') -*/
@@ -294,7 +294,7 @@ Tick 8
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("mcs-unbind", TaskContentType.COMPLETED, subtask='unbind') -*/
@@ -322,7 +322,7 @@ Your next task is to use a different process, `sender` to experiment with sporad
 /*-- endfilter -*/
 ```
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("mcs-bind", TaskContentType.COMPLETED, subtask='bind') -*/
@@ -367,7 +367,7 @@ Tock 7
 /*-- endfilter -*/
 ```
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("mcs-sporadic", TaskContentType.COMPLETED, subtask='sporadic') -*/
@@ -393,7 +393,7 @@ not have a scheduling context, and needs one to initialise.
 /*-- endfilter -*/
 ```
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("mcs-server", TaskContentType.COMPLETED, subtask='server') -*/
@@ -489,7 +489,7 @@ echo server
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("mcs-badge", TaskContentType.COMPLETED, subtask='badge') -*/
@@ -513,7 +513,7 @@ The code then binds the scheduling context back to `spinner_tcb`, which starts y
 /*-- endfilter -*/
 ```
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("mcs-fault", TaskContentType.COMPLETED, subtask='fault') -*/

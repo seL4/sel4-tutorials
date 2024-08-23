@@ -49,7 +49,7 @@ For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This ca
 /*? macros.tutorial_init("threads") ?*/
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<summary><em>Hint:</em> tutorial solutions</summary>
 <br>
 All tutorials come with complete solutions. To get solutions run:
 
@@ -233,7 +233,7 @@ int main(int c, char* arbv[]) {
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("threads-retype", TaskContentType.COMPLETED, subtask='retype', completion="Failed to configure thread") -*/
@@ -270,7 +270,7 @@ as the current thread. Use the IPC buffer we have provided, but don't set a faul
 
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("threads-configure", TaskContentType.COMPLETED, subtask='configure', completion="child of: 'tcb_threads'") -*/
@@ -312,7 +312,7 @@ TCB capability, which has an MCP of 254.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("threads-priority", TaskContentType.COMPLETED, subtask='priority') -*/
@@ -372,7 +372,7 @@ you have at least set the instruction pointer (IP) correctly.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("threads-context", TaskContentType.COMPLETED, subtask='context', completion='Failed to start new thread') -*/
@@ -414,7 +414,7 @@ Finally you are ready to start the thread, which makes the TCB runnable and elig
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("threads-resume", TaskContentType.COMPLETED, subtask='resume', completion='Hello2: arg1 0, arg2 0, arg3 0') -*/
@@ -456,7 +456,7 @@ arg2, and arg3 respectively.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("threads-context-2", TaskContentType.ALL, subtask='context', completion='Hello2: arg1 0x1, arg2 0x2, arg3 0x3') -*/
@@ -530,7 +530,7 @@ You should be able to see that `arg2` is being dereferenced, but does not point 
 
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 Create a new variable
 ```c
     int data = 42;
@@ -550,7 +550,7 @@ Next, another fault will occur as the new thread expects `arg1` to be a pointer 
 **Exercise** Pass the address of a function which outputs the argument which is passed to it, as `arg2`.
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 Create a new function
 
 ```c

@@ -63,7 +63,7 @@ Outcomes:
 /*? macros.tutorial_init("libraries-1") ?*/
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<summary><em>Hint:</em> tutorial solutions</summary>
 <br>
 All tutorials come with complete solutions. To get solutions run:
 
@@ -116,7 +116,7 @@ It also sets up the IPC buffer so that it can perform some syscalls such as `seL
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-1", TaskContentType.COMPLETED) -*/
@@ -152,7 +152,7 @@ You need to initialize it with some default state before using it.
 /*? task_2_desc ?*/
 ```
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-2", TaskContentType.COMPLETED, completion="Memory pool pointer valid?") -*/
@@ -179,7 +179,7 @@ Use a `simple` function to print out the contents of the `seL4_BootInfo` functio
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-3", TaskContentType.COMPLETED) -*/
@@ -236,7 +236,7 @@ step.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-4", TaskContentType.COMPLETED, completion="main: hello world") -*/
@@ -279,7 +279,7 @@ and the VKA library simplifies this for you, among other things.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-5", TaskContentType.COMPLETED, completion="Failed to set the priority for the new TCB object.") -*/
@@ -306,7 +306,7 @@ On successful completion this task, the output should not change.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-6", TaskContentType.COMPLETED, completion="Failed to set the priority for the new TCB object.") -*/
@@ -353,7 +353,7 @@ On successful completion this task, the output should not change.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-7", TaskContentType.COMPLETED, completion="Failed to set the priority for the new TCB object.") -*/
@@ -387,7 +387,7 @@ On successful completion this task, the output should not change.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-8", TaskContentType.COMPLETED) -*/
@@ -440,7 +440,7 @@ main: hello world
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-9", TaskContentType.COMPLETED, completion="main: hello world") -*/
@@ -479,7 +479,7 @@ On successful completion this task, the output should not change.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-10", TaskContentType.COMPLETED, completion="main: hello world") -*/
@@ -513,7 +513,7 @@ On successful completion this task, the output should not change.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-11", TaskContentType.COMPLETED, completion="main: hello world") -*/
@@ -548,7 +548,7 @@ On successful completion this task, the output should not change.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-12", TaskContentType.COMPLETED, completion="main: hello world") -*/
@@ -584,7 +584,7 @@ On successful completion this task, the output should not change.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-13", TaskContentType.COMPLETED, completion="main: hello world") -*/
@@ -614,7 +614,7 @@ On successful completion this task, the output should not change.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-14", TaskContentType.COMPLETED, completion="main: hello world") -*/
@@ -642,7 +642,7 @@ On successful completion this task, the output should not change.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-15", TaskContentType.COMPLETED, completion="thread_2: hallo wereld") -*/

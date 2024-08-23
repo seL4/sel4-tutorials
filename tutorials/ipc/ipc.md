@@ -25,7 +25,7 @@ You will learn:
 /*? macros.tutorial_init("ipc") ?*/
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<summary><em>Hint:</em> tutorial solutions</summary>
 <br>
 All tutorials come with complete solutions. To get solutions run:
 
@@ -40,7 +40,7 @@ This tutorial uses the *capDL loader*, a root task which allocates statically
  configured objects and capabilities.
 
 <details markdown='1'>
-<summary style="display:list-item">Get CapDL</summary>
+<summary>Get CapDL</summary>
 The capDL loader parses
 a static description of the system and the relevant ELF binaries.
 It is primarily used in [CAmkES](https://docs.sel4.systems/CAmkES/) projects
@@ -234,7 +234,7 @@ receives the badged endpoint.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("ipc-badge", TaskContentType.COMPLETED, subtask="badge", completion='received badged endpoint') -*/
@@ -291,7 +291,7 @@ does not respond, or wait for new messages from this point.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("ipc-echo", TaskContentType.COMPLETED, subtask="echo") -*/
@@ -327,7 +327,7 @@ This is because the server does not reply to the client, and continues to spin i
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("ipc-reply", TaskContentType.COMPLETED, subtask="reply", completion="lazy") -*/
@@ -361,7 +361,7 @@ capability for each sender. You can use `free_slot` to store the reply capabilit
 
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("ipc-order", TaskContentType.COMPLETED, subtask="order", completion="dog") -*/

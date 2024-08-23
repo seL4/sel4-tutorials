@@ -55,7 +55,7 @@ Learning outcomes:
 /*? macros.tutorial_init("libraries-3") ?*/
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<summary><em>Hint:</em> tutorial solutions</summary>
 <br>
 All tutorials come with complete solutions. To get solutions run:
 
@@ -128,7 +128,7 @@ function may seem tedious, it's doing some important things.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-1", TaskContentType.COMPLETED) -*/
@@ -179,7 +179,7 @@ thread.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-2", TaskContentType.COMPLETED) -*/
@@ -248,7 +248,7 @@ wouldn't know who was whom.
  ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-3", TaskContentType.COMPLETED, completion="what you passed.") -*/
@@ -287,7 +287,7 @@ free slot that the VKA library found for us.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-4", TaskContentType.COMPLETED) -*/
@@ -345,7 +345,7 @@ communicate with us, we can let it run. Complete this step and proceed.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-5", TaskContentType.COMPLETED) -*/
@@ -408,7 +408,7 @@ Then we verify the fidelity of the data that was transmitted.
 
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-6", TaskContentType.COMPLETED) -*/
@@ -450,7 +450,7 @@ message sent by the new thread.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-7", TaskContentType.COMPLETED) -*/
@@ -489,7 +489,7 @@ that was sent, and that's the end.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-8", TaskContentType.COMPLETED) -*/

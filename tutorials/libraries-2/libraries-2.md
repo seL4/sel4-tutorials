@@ -71,7 +71,7 @@ Learning outcomes:
 /*? macros.tutorial_init("libraries-2") ?*/
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<summary><em>Hint:</em> tutorial solutions</summary>
 <br>
 All tutorials come with complete solutions. To get solutions run:
 
@@ -128,7 +128,7 @@ of a MMU-utilizing kernel apply.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-1", TaskContentType.COMPLETED) -*/
@@ -200,7 +200,7 @@ into a VSpace, and the mapping of a new page-table into a VSpace.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-2", TaskContentType.COMPLETED) -*/
@@ -240,7 +240,7 @@ page-table object to use as a leaf page-table in your VSpace.
  ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-3", TaskContentType.COMPLETED) -*/
@@ -293,7 +293,7 @@ try again to finally map the IPC-buffer's frame object into the VSpace.
 
 On completion, you will see another fault.
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-4", TaskContentType.COMPLETED) -*/
@@ -328,7 +328,7 @@ should fail. Complete it and proceed.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-5", TaskContentType.COMPLETED) -*/
@@ -378,7 +378,7 @@ and proceed.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-6", TaskContentType.COMPLETED, completion="main: hello world") -*/
@@ -436,7 +436,7 @@ data, and know which sender you are. Complete the step and proceed.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-7", TaskContentType.COMPLETED, completion="main: hello world") -*/
@@ -500,7 +500,7 @@ transmitted in the message.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-8", TaskContentType.COMPLETED) -*/
@@ -573,7 +573,7 @@ response message, if the sender doesn't want it to.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-9", TaskContentType.COMPLETED) -*/
@@ -621,7 +621,7 @@ designated, single IPC buffer.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-10", TaskContentType.COMPLETED, completion="thread_2: hallo wereld") -*/
@@ -663,7 +663,7 @@ explicitly interested in distinguishing the sender.
 /*? task_11_desc ?*/
 ```
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-11", TaskContentType.COMPLETED) -*/
@@ -704,7 +704,7 @@ Complete them and proceed to the next step.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-12", TaskContentType.COMPLETED, completion="thread_2: hallo wereld") -*/
@@ -739,7 +739,7 @@ Again, just reading the data from the Message Registers.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-13", TaskContentType.COMPLETED, completion="main: hello world") -*/
@@ -774,7 +774,7 @@ And writing Message Registers again.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-14", TaskContentType.COMPLETED, completion="main: hello world") -*/
@@ -825,7 +825,7 @@ Complete the step and pat yourself on the back.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("task-15", TaskContentType.COMPLETED, completion="main: hello world") -*/

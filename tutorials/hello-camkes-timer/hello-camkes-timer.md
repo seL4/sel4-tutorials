@@ -37,7 +37,7 @@ This tutorial uses the *capDL loader*, a root task which allocates statically
  configured objects and capabilities.
 
 <details markdown='1'>
-<summary style="display:list-item">Get CapDL</summary>
+<summary>Get CapDL</summary>
 The capDL loader parses
 a static description of the system and the relevant ELF binaries.
 It is primarily used in [Camkes](https://docs.sel4.systems/CAmkES/) projects
@@ -56,7 +56,7 @@ For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This ca
 /*? macros.tutorial_init("hello-camkes-timer") ?*/
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<summary><em>Hint:</em> tutorial solutions</summary>
 <br>
 All tutorials come with complete solutions. To get solutions run:
 
@@ -100,7 +100,7 @@ wish to call your driver something else, you'll have to change these lines.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```
 /*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task1") -*/
@@ -130,7 +130,7 @@ registers. The other represents an interrupt.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```
 /*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task2") -*/
@@ -159,7 +159,7 @@ must both be configured.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```
 /*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task3") -*/
@@ -198,7 +198,7 @@ inform the driver that an interrupt has occurred.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task4") -*/
@@ -220,7 +220,7 @@ Stop the timer from running. The `timer_stop` function will be helpful here.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task5") -*/
@@ -246,7 +246,7 @@ connected with `seL4HardwareInterrupt`).
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task6") -*/
@@ -275,7 +275,7 @@ handle to the driver in the global variable `timer_drv`.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task7") -*/
@@ -299,7 +299,7 @@ After initialising the timer, we now need to start the timer. Do so by calling
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task8") -*/
@@ -336,7 +336,7 @@ need to implement is called `hello_sleep`.
 /*-- endfilter -*/
 ```
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
  /*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task9") -*/
@@ -362,7 +362,7 @@ expects its time argument to be given in nanoseconds.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task10") -*/
@@ -419,7 +419,7 @@ lines if necessary.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```
 /*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part2-task1") -*/
@@ -447,7 +447,7 @@ connector.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```
 /*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part2-task2") -*/
@@ -482,7 +482,7 @@ to allocate memory and interrupts.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```
 /*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part2-task3") -*/
@@ -524,7 +524,7 @@ included driver in `timer_driver` and the task here is to call
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part2-task4") -*/
@@ -546,7 +546,7 @@ Stop the timer from running. The `timer_stop` function will be helpful here.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part2-task5") -*/
@@ -576,7 +576,7 @@ you wish to acknowledge.
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part2-task6") -*/

@@ -28,7 +28,7 @@ Use this [slide presentation](https://github.com/seL4/sel4-tutorials/blob/master
 /*? macros.tutorial_init("hello-camkes-1") ?*/
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Hint:</em> tutorial solutions</summary>
+<summary><em>Hint:</em> tutorial solutions</summary>
 <br>
 All tutorials come with complete solutions. To get solutions run:
 
@@ -153,7 +153,7 @@ assembly {
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="define") -*/
@@ -180,7 +180,7 @@ assembly {
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="connect") -*/
@@ -205,7 +205,7 @@ procedure HelloSimple {
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="interface") -*/
@@ -234,7 +234,7 @@ procedure HelloSimple {
 
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="rpc") -*/
@@ -264,7 +264,7 @@ void hello_say_hello(const char *str) {
 ```
 
 <details markdown='1'>
-<summary style="display:list-item"><em>Quick solution</em></summary>
+<summary><em>Quick solution</em></summary>
 
 ```
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="hello") -*/
