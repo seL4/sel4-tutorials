@@ -10,7 +10,7 @@ import inspect
 import os
 import stat
 from pickle import dumps
-import pyaml
+import yaml
 from jinja2 import pass_context
 
 from . import macros
@@ -390,7 +390,7 @@ class TutorialFunctions:
 
             data = {"cap_symbols": stash.cap_symbols, "region_symbols": stash.region_symbols}
 
-            manifest_file.write(pyaml.dump(data))
+            manifest_file.write(yaml.dump(data))
             allocator_file.write(dumps(stash.allocator_state))
         return ""
 
