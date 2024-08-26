@@ -6,7 +6,7 @@
 
 /*? declare_task_ordering(['vm-cmake-start','vm-pkg-hello-c','vm-pkg-hello-cmake','vm-cmake-hello','vm-module-poke-c','vm-module-poke-make','vm-module-poke-cmake','vm-cmake-poke','vm-init-poke']) ?*/
 
-# CAmkES VM: Adding a Linux Guest
+# CAmkES VM Linux
 
 This tutorial provides an introduction to creating VM guests and applications on seL4 using CAmkES.
 

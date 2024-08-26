@@ -15,7 +15,7 @@
 'task-8'
 ])?*/
 
-# seL4 Libraries: Processes & Elf loading
+# seL4 Libraries: Processes & ELF loading
 
 This tutorial shows how a separate ELF file can be loaded and expanded into a
 VSpace, and subsequently executed, while facilitating IPC between the

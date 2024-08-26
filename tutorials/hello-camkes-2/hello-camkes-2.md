@@ -6,7 +6,7 @@
 
 /*? declare_task_ordering(['hello']) ?*/
 
-# CAmkES Tutorial: Events
+# Events in CAmkES
 This tutorial shows how to build events in CAmkES.
 
 Learn how to:

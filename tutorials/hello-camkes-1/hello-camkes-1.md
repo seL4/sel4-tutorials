@@ -4,7 +4,7 @@
   SPDX-License-Identifier: BSD-2-Clause
 -->
 
-# CAmkES Tutorial: Introduction to CAmkES
+# Introduction to CAmkES
 /*? declare_task_ordering(['hello']) ?*/
 
 This tutorial is an introduction to
