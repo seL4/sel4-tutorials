@@ -40,17 +40,28 @@ def print_pexpect_failure(failure):
 
 def run_single_test_iteration(build_dir, solution, logfile):
     # Build
-    result = sh.ninja(_out=logfile, _cwd=build_dir)
+    result = None
+    if sh.__version__.startswith("1"):
+        result = sh.ninja(_out=logfile, _cwd=build_dir)
+    else:
+        result = sh.ninja(_out=logfile, _cwd=build_dir, _return_cmd=True)
     if result.exit_code != 0:
         logging.error("Failed to build. Not deleting build directory %s" % build_dir)
         sys.exit(1)
 
     check = sh.Command(os.path.join(build_dir, "check"))
     if solution:
-        result = check(_out=logfile, _cwd=build_dir)
+        if sh.__version__.startswith("1"):
+            result = check(_out=logfile, _cwd=build_dir)
+        else:
+            result = check(_out=logfile, _cwd=build_dir, _return_cmd=True)
     else:
         # We check the start state if not solution
-        result = check("--start", _out=logfile, _cwd=build_dir)
+        if sh.__version__.startswith("1"):
+            result = check("--start", _out=logfile, _cwd=build_dir)
+        else:
+            result = check("--start", _out=logfile, _cwd=build_dir,
+                           _return_cmd=True)
     for proc in psutil.process_iter():
         if "qemu" in proc.name():
             proc.kill()
