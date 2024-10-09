@@ -7,21 +7,52 @@
 # IPC
 /*? declare_task_ordering(['ipc-start', 'ipc-badge', 'ipc-echo', 'ipc-reply', 'ipc-order']) ?*/
 
+This tutorial is about interprocess communication (IPC), the microkernel mechanism for synchronous transmission of small amounts of data.
+
+You will learn:
+1. How to use IPC to send data and capabilities between processes.
+2. The jargon *cap transfer*.
+3. How to differentiate requests via badged capabilities.
+4. Design protocols that use the IPC fastpath.
+
 ## Prerequisites
 
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
 2. [Capabilities tutorial](https://docs.sel4.systems/Tutorials/capabilities)
 
 ## Initialising
 
 /*? macros.tutorial_init("ipc") ?*/
 
-## Outcomes
+<details markdown='1'>
+<summary><em>Hint:</em> tutorial solutions</summary>
+<br>
+All tutorials come with complete solutions. To get solutions run:
 
-1. Be able to use IPC to send data and capabilities between processes.
-2. Learn the jargon *cap transfer*.
-3. Be able to differentiate requests via badged capabilities.
-4. Know how to design protocols that use the IPC fastpath.
+/*? macros.tutorial_init_with_solution("ipc") ?*/
+
+Answers are also available in drop down menus under each section.
+</details>
+
+## CapDL Loader
+
+This tutorial uses the *capDL loader*, a root task which allocates statically
+ configured objects and capabilities.
+
+<details markdown='1'>
+<summary>Get CapDL</summary>
+The capDL loader parses
+a static description of the system and the relevant ELF binaries.
+It is primarily used in [CAmkES](https://docs.sel4.systems/CAmkES/) projects
+but we also use it in the tutorials to reduce redundant code.
+The program that you construct will end up with its own CSpace and VSpace, which are separate
+from the root task, meaning CSlots like `seL4_CapInitThreadVSpace` have no meaning
+in applications loaded by the capDL loader.
+
+More information about CapDL projects can be found [here](https://docs.sel4.systems/CapDL.html).
+
+For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This can be added in a directory that is adjacent to the tutorials-manifest directory.
+</details>
 
 ## Background
 
@@ -174,6 +205,8 @@ uses the badged endpoint, such that the server can identify the client. However,
 currently send the badged capability! We have provided code to badge the endpoint capability, and
 reply to the client.
 
+### Use capability transfer to send the badged capability
+
 **Exercise** Your task is to set up the cap transfer such that the client successfully
 receives the badged endpoint.
 
@@ -198,7 +231,12 @@ receives the badged endpoint.
              /* wait for the next message */
              info = seL4_Recv(endpoint, &sender);
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("ipc-badge", TaskContentType.COMPLETED, subtask="badge", completion='received badged endpoint') -*/
              /* No badge! give this sender a badged copy of the endpoint */
              seL4_Word badge = seL4_GetMR(0);
@@ -221,8 +259,10 @@ receives the badged endpoint.
              /* wait for the next message */
              info = seL4_Recv(endpoint, &sender);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+
+</details>
+
 
 Now the output should look something like:
 ```bash
@@ -239,6 +279,8 @@ Depending on timing, the messages may be different, the result is the same: the 
 This is because one of the clients has hit the else case, where the badge is set, and the server
 does not respond, or wait for new messages from this point.
 
+### Get a message
+
 **Exercise** Your next task is to implement the echo part of the server.
 
 ```c
@@ -246,15 +288,20 @@ does not respond, or wait for new messages from this point.
              // TODO use printf to print out the message sent by the client
              // followed by a new line
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("ipc-echo", TaskContentType.COMPLETED, subtask="echo") -*/
              for (int i = 0; i < seL4_MessageInfo_get_length(info); i++) {
                  printf("%c", (char) seL4_GetMR(i));
              }
              printf("\n");
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
 
 At this point, you should see a single word output to the console in a loop.
 ```
@@ -267,18 +314,27 @@ the
 
 This is because the server does not reply to the client, and continues to spin in a loop
  repeating the last message.
+
+### Reply and wait
+
 **Exercise**  Update the code to reply to the clients after printing the message.
 
 ```c
 /*-- filter TaskContent("ipc-start", TaskContentType.ALL, subtask="reply") -*/
              // TODO reply to the client and wait for the next message
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
+
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("ipc-reply", TaskContentType.COMPLETED, subtask="reply", completion="lazy") -*/
              info = seL4_ReplyRecv(endpoint, info, &sender);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
 
 Now the output should be something like this:
 
@@ -296,11 +352,17 @@ over
 lazy
 ```
 
+### Save a reply and store reply capabilities
+
 **Exercise** Currently each client is scheduled for its full timeslice until it is preempted. Alter
 your server to only print one message from each client, alternating. You will need to use
 [`seL4_CNode_SaveCaller`](https://docs.sel4.systems/ApiDoc.html#save-caller)  to save the reply
 capability for each sender. You can use `free_slot` to store the reply capabilities.
-/*-- filter ExcludeDocs() -*/
+
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
 ```c
 /*-- filter TaskContent("ipc-order", TaskContentType.COMPLETED, subtask="order", completion="dog") -*/
               error = seL4_CNode_SaveCaller(cnode, free_slot, seL4_WordBits);
@@ -313,7 +375,9 @@ capability for each sender. You can use `free_slot` to store the reply capabilit
               seL4_Send(free_slot, seL4_MessageInfo_new(0, 0, 0, 0));
 /*-- endfilter -*/
 ```
-/*-- endfilter -*/
+
+</details>
+
 
 Depending on your approach, successful output should look something like this:
 ```
@@ -338,7 +402,7 @@ to become more familiar with IPC.
 * Try using `seL4_Send` and `seL4_Recv`.
 * Try the non-blocking variants, `seL4_NBSend` and `seL4_NBRecv`.
 
-/*? macros.help_block() ?*/
+
 
 /*-- filter ExcludeDocs() -*/
 ```c
