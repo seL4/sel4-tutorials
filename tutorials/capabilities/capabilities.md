@@ -6,27 +6,31 @@
 
 /*? declare_task_ordering(['cnode-start', 'cnode-size', 'cnode-copy', 'cnode-delete', 'cnode-invoke']) ?*/
 
-
 # Capabilities
 
-This tutorial provides a basic introduction to seL4 capabilities.
+You will learn:
+1. The jargon CNode, CSpace, CSlot.
+2. How to invoke a capability.
+3. How to delete and copy CSlots.
 
 ## Prerequisites
 
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
 2. [Hello world](https://docs.sel4.systems/Tutorials/hello-world)
 
 ## Initialising
 
 /*? macros.tutorial_init("capabilities") ?*/
 
-## Outcomes
+<details markdown='1'>
+<summary><em>Hint:</em> tutorial solutions</summary>
+<br>
+All tutorials come with complete solutions. To get solutions run:
 
-By the end of this tutorial, you should be familiar with:
+/*? macros.tutorial_init_with_solution("capabilities") ?*/
 
-1. The jargon CNode, CSpace, CSlot.
-2. Know how to invoke a capability.
-3. Know how to delete and copy CSlots.
+Answers are also available in drop down menus under each section.
+</details>
 
 ## Background
 
@@ -235,7 +239,8 @@ The third line stating the number of slots in the CSpace, is incorrect, and your
 /*-- endfilter -*/
 ```
 
-/*-- filter ExcludeDocs() -*/
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("cnode-size", TaskContentType.COMPLETED, subtask='size', completion='The CNode is [0-9]+ bytes in size') -*/
@@ -244,7 +249,7 @@ The third line stating the number of slots in the CSpace, is incorrect, and your
 /*-- endfilter -*/
 ```
 
-/*-- endfilter -*/
+</details>
 
 ### Copy a capability between CSlots
 
@@ -278,7 +283,8 @@ The error occurs as the existing code tries to set the priority of the initial t
 /*-- endfilter -*/
 ```
 
-/*-- filter ExcludeDocs() -*/
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("cnode-copy", TaskContentType.COMPLETED, subtask='copy', completion='first_free_slot is not empty') -*/
@@ -299,8 +305,8 @@ The error occurs as the existing code tries to set the priority of the initial t
     ZF_LOGF_IF(error, "Failed to set priority");
 /*-- endfilter -*/
 ```
+</details>
 
-/*-- endfilter -*/
 On success, you will now see the output:
 
 ```
@@ -339,8 +345,8 @@ by a neat hack: by attempting to move the CSlots onto themselves. This should fa
     ZF_LOGF_IF(error != seL4_FailedLookup, "last_slot is not empty");
 /*-- endfilter -*/
 ```
-
-/*-- filter ExcludeDocs() -*/
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("cnode-delete", TaskContentType.COMPLETED, subtask='delete', completion='Failed to suspend current thread') -*/
@@ -359,7 +365,7 @@ by a neat hack: by attempting to move the CSlots onto themselves. This should fa
 /*-- endfilter -*/
 ```
 
-/*-- endfilter -*/
+</details>
 
 On success, the output will now show:
 
@@ -370,7 +376,7 @@ Suspending current thread
 main@main.c:56 Failed to suspend current thread
 ```
 
-#### Invoking capabilities
+#### Suspend a thread
 
 **Exercise** Use `seL4_TCB_Suspend` to try and suspend the current thread.
 
@@ -382,7 +388,8 @@ main@main.c:56 Failed to suspend current thread
 /*-- endfilter -*/
 ```
 
-/*-- filter ExcludeDocs() -*/
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
 
 ```c
 /*-- filter TaskContent("cnode-invoke", TaskContentType.COMPLETED, subtask='invoke', completion='Suspending current thread') -*/
@@ -391,8 +398,7 @@ main@main.c:56 Failed to suspend current thread
     ZF_LOGF("Failed to suspend current thread\n");
 /*-- endfilter -*/
 ```
-
-/*-- endfilter -*/
+</details>
 
 On success, the output will be as follows:
 
@@ -411,7 +417,6 @@ to become more familiar with CSpaces.
 * Make copies of the entire CSpace described by `seL4_BootInfo`
 * Experiment with other [CNode invocations](https://docs.sel4.systems/projects/sel4/api-doc.html#sel4_cnode).
 
-/*? macros.help_block() ?*/
 /*-- filter ExcludeDocs() -*/
 
 ```c

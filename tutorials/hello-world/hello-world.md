@@ -7,47 +7,92 @@
 /*? declare_task_ordering(['hello-world', 'hello-world-mod']) ?*/
 # Hello, World!
 
-This tutorial guides you through getting a simple "Hello World" program running as a user-level application on seL4. 
-It allows you to test your local set up and make sure all the tools are working before moving onto more detailed tutorials.
+In this tutorial you will:
+
+1. Run Hello, World! to ensure your setup is working correctly
+2. Become familiar with the jargon *root task*
+3. Build and simulate a seL4 project
+4. Have a basic understanding of the role of the `CMakeLists.txt` file in applications
 
 ## Prerequisites
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
 
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies). 
+## Building your first program
+seL4 is a microkernel, not an operating system, and as a result only provides very minimal services.
+
+After the kernel boots, an initial thread called the *root task* is started, which is then responsible for setting up the user-level system.
+
+When the root task starts there are no available drivers, however a minimal C library is provided.
+
+The tutorial is already set up to print "Hello, world!", so at this point  all you need to do is build and run the tutorial.
+
+## Revisiting containers
+
+We will use two terminals, as described in [Setting up your machine](https://docs.sel4.systems/Tutorials/setting-up#mapping-a-container).
+ - Terminal A is just a normal terminal, and is used for git operations, editing (e.g., vim, emacs), and other normal operations.
+ - Terminal B is running in a container, and is only used for compilation.
+
+This gives you the flexibility to use all the normal tools you are used to, while having the seL4 dependencies separated from your machine.
+
+### Create a container
+
+Open a new terminal, Terminal B, to run a container.
+
+
+Create a container:
+
+```
+container
+```
 
 ## Initialising
 
+Initialise the tutorial in Terminal B, which is running the container.
+
 /*? macros.tutorial_init("hello-world") ?*/
 
-## Outcomes
+This step creates two new directories in `sel4-tutorials-manifest`, namely `hello-world` and `hello-world_build`
 
-By the end of this tutorial, you should:
+<details markdown='1'>
 
-* Be familiar with the jargon *root task*.
-* Be able to build and simulate seL4 projects.
-* Have a basic understanding of the role of the `CMakeLists.txt` file in applications.
+<summary><em>Hint:</em> tutorial solutions</summary>
+<br>
+All tutorials come with complete solutions. To get solutions run:
 
-## Building your first program
+/*? macros.tutorial_init_with_solution("hello-world") ?*/
 
-seL4 is a microkernel, not an operating system, and as a result only provides very minimal services. 
-After the kernel boots, an initial thread called the *root task* is started, which is then responsible for
- setting up the user-level system.
-When the root task starts there are no available drivers, however a minimal C library is provided. 
+This will generate another `hello-world` directory and `hello-world_build` directory, with unique names, e.g. `hello-world44h1po5q` and `hello-world44h1po5q_build`.
 
-The tutorial is already set up to print "Hello, world!", so at this point 
-all you need to do is build and run the tutorial:
+</details>
+
+
+
+### Build the program
+
+```
+cd sel4-tutorials-manifest/hello-world_build
+```
+
+Next, build the program in Terminal B using ninja
 
 /*? macros.ninja_block() ?*/
 
-If successful, you should see the final ninja rule passing:
+If successful, you should see the final ninja rule passing, e.g.:
+
 ```
 [150/150] objcopy kernel into bootable elf
-$
 ```
 
-The final image can be run by:
-/*? macros.simulate_block() ?*/
+### Run Hello, World using QEMU
 
-This will run the result on an instance of the [QEMU](https://www.qemu.org) simulator. 
+The final image can be run by:
+
+```
+./simulate
+```
+
+This will run the result on an instance of the [QEMU](https://www.qemu.org) simulator.
+
 If everything has worked, you should see:
 
 ```
@@ -63,6 +108,12 @@ because the program hasn't properly cleaned up after itself yet. (This will come
 `Ctrl-A, X` will terminate QEMU.
 
 ## Looking at the sources
+To look at the sources, open a new terminal, Terminal A:
+
+```
+cd sel4-tutorials-manifest/hello-world
+ls
+```
 
 In your tutorial directory, you will find the following files:
  * `CMakeLists.txt` - the file that incorporates the root task into the wider seL4 build system.
@@ -148,7 +199,11 @@ int main(int argc, char *argv[]) {
 }
 /*- endfilter --*/
 ```
-Once you have made your change, rerun `ninja` to rebuild the project:
+
+Once you have made your change, use Terminal B to rebuild the project.
+
+*Hint:* Remember to exit the QEMU simulator before rerunning the project with `ctrl-A,x`
+
 /*? macros.ninja_block() ?*/
 Then run the simulator again:
 
@@ -161,8 +216,6 @@ On success, you should see the following:
 Second hello
 /*- endfilter -*/
 ```
-
-/*? macros.help_block() ?*/
 
 /*- filter ExcludeDocs() -*/
 

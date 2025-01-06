@@ -4,6 +4,8 @@
   SPDX-License-Identifier: BSD-2-Clause
 -->
 
+/*? declare_task_ordering(['1']) ?*/
+
 # CAmkES Timer Tutorial
 
 This tutorial guides you through setting up a sample timer driver component in
@@ -29,10 +31,42 @@ commented out.
 1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
 2. [Camkes 2](https://docs.sel4.systems/Tutorials/hello-camkes-2)
 
+## CapDL Loader
+
+This tutorial uses the *capDL loader*, a root task which allocates statically
+ configured objects and capabilities.
+
+<details markdown='1'>
+<summary>Get CapDL</summary>
+The capDL loader parses
+a static description of the system and the relevant ELF binaries.
+It is primarily used in [Camkes](https://docs.sel4.systems/CAmkES/) projects
+but we also use it in the tutorials to reduce redundant code.
+The program that you construct will end up with its own CSpace and VSpace, which are separate
+from the root task, meaning CSlots like `seL4_CapInitThreadVSpace` have no meaning
+in applications loaded by the capDL loader.
+<br>
+More information about CapDL projects can be found [here](https://docs.sel4.systems/CapDL.html).
+<br>
+For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This can be added in a directory that is adjacent to the tutorials-manifest directory.
+</details>
+
+## Initialising
+
+/*? macros.tutorial_init("hello-camkes-timer") ?*/
+
+<details markdown='1'>
+<summary><em>Hint:</em> tutorial solutions</summary>
+<br>
+All tutorials come with complete solutions. To get solutions run:
+
+/*? macros.tutorial_init_with_solution("hello-camkes-timer") ?*/
+
+</details>
+
 ## Exercises - Part 1
 
-### TASK 1
-
+### Instantiate a Timer and Timerbase
 Start in `hello-camkes-timer.camkes`.
 
 Instantiate some components. You're already given one component instance
@@ -55,21 +89,89 @@ timer.hello);` and `timer.sem_value = 0;` in the `hello-camkes-timer.camkes`
 file. They assume that the name of the timer ''driver'' will be `timer`. If you
 wish to call your driver something else, you'll have to change these lines.
 
-### TASK 2
+```
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part1-task1") -*/
+    /* Part 1, TASK 1: component instances */
+    /* hint 1: one hardware component and one driver component
+        * hint 2: look at
+        * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+        */
+/*-- endfilter -*/
+```
 
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task1") -*/
+    /* Part 1, TASK 1: component instances */
+    component Timerbase timerbase;
+    component Timer timer;
+/*-- endfilter -*/
+```
+</details>
+
+
+### Connect a timer driver component
 Connect the timer driver component (`Timer`) to the timer hardware component
 (`Timerbase`). The timer hardware component exposes two interfaces which must
 be connected to the timer driver. One of these represents memory-mapped
 registers. The other represents an interrupt.
 
-### TASK 3
+```
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part1-task2") -*/
+    /* Part 1, TASK 2: connections */
+    /* hint 1: use seL4HardwareMMIO to connect device memory
+        * hint 2: use seL4HardwareInterrupt to connect interrupt
+        * hint 3: look at
+        * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+        */
+/*-- endfilter -*/
+```
 
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task2") -*/
+    /* Part 1, TASK 2: connections */
+    connection seL4HardwareMMIO timer_mem(from timer.reg, to timerbase.reg);
+    connection seL4HardwareInterrupt timer_irq(from timerbase.irq, to timer.irq);
+/*-- endfilter -*/
+```
+</details>
+
+
+### Configure a timer hardware component instance
 Configure the timer hardware component instance with device-specific info. The
 physical address of the timer's memory-mapped registers, and its IRQ number
 must both be configured.
 
-### TASK 4
+```
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part1-task3") -*/
+    /* Part 1, TASK 3: hardware resources */
+    /* Timer and Timerbase:
+        * hint 1: find out the device memory address and IRQ number from the hardware data sheet
+        * hint 2: look at
+        * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#hardware-components
+        */
+/*-- endfilter -*/
+```
 
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task3") -*/
+    /* Part 1, TASK 3: hardware resources */
+    timerbase.reg_paddr = 0xF8001000;   // paddr of mmio registers
+    timerbase.reg_size = 0x1000;        // size of mmio registers
+    timerbase.irq_irq_number = 42;      // timer irq number
+/*-- endfilter -*/
+```
+</details>
+
+### Call into a supplied driver to handle the interrupt
 Now open `components/Timer/src/timer.c`.
 
 We'll start by completing the `irq_handle` function, which is called in
@@ -87,33 +189,128 @@ where the initial `repo init` command was executed.
 This task is to call the `timer_handle_irq` function from the supply driver to
 inform the driver that an interrupt has occurred.
 
-### TASK 5
+```c
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part1-task4") -*/
+    /* Part 1, TASK 4: call into the supplied driver to handle the interrupt. */
+    /* hint: timer_handle_irq
+     */
+/*-- endfilter -*/
+```
 
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task4") -*/
+    /* Part 1, TASK 4: call into the supplied driver to handle the interrupt. */
+    timer_handle_irq(&timer_drv);
+/*-- endfilter -*/
+```
+</details>
+
+### Stop a timer
 Stop the timer from running. The `timer_stop` function will be helpful here.
 
-### TASK 6
+```c
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part1-task5") -*/
+    /* Part 1, TASK 5: stop the timer. */
+    /* hint: timer_stop
+     */
+/*-- endfilter -*/
+```
 
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task5") -*/
+    /* Part 1, TASK 5: stop the timer. */
+    timer_stop(&timer_drv);
+/*-- endfilter -*/
+```
+</details>
+
+### Acknowledge an interrupt
 The interrupt now needs to be acknowledged.
 
 CAmkES generates the seL4-specific code for ack-ing an interrupt and provides a
 function `<interface>_acknowldege` for IRQ interfaces (specifically those
 connected with `seL4HardwareInterrupt`).
 
-### TASK 7
+```c
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part1-task6") -*/
+    /* Part 1, TASK 6: acknowledge the interrupt */
+    /* hint 1: use the function <irq interface name>_acknowledge()
+     */
+/*-- endfilter -*/
+```
 
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task6") -*/
+    /* Part 1, TASK 6: acknowledge the interrupt */
+    error = irq_acknowledge();
+    ZF_LOGF_IF(error != 0, "failed to acknowledge interrupt");
+/*-- endfilter -*/
+```
+</details>
+
+### Get a timer handler
 Now we'll complete `hello__init` - a function which is called once
 before the component's interfaces start running.
 
 We need to initialise a handle to the timer driver for this device, and store a
 handle to the driver in the global variable `timer_drv`.
 
-### TASK 8
+```c
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part1-task7") -*/
+    /* Part 1, TASK 7: call into the supplied driver to get the timer handler */
+    /* hint1: timer_init
+     * hint2: The timer ID is supplied as a #define in this file
+     * hint3: The register's variable name is the same name as the dataport in the Timer component
+     */
+/*-- endfilter -*/
+```
 
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task7") -*/
+    /* Part 1, TASK 7: call into the supplied driver to get the timer handler */
+    int error = timer_init(&timer_drv, DEFAULT_TIMER_ID, reg);
+    assert(error == 0);
+/*-- endfilter -*/
+```
+</details>
+
+### Start a timer
 After initialising the timer, we now need to start the timer. Do so by calling
 `timer_start` and passing the handle to the driver.
 
-### TASK 9
+```c
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part1-task8") -*/
+    /* Part 1, TASK 8: start the timer */
+    /* hint: timer_start
+     */
+/*-- endfilter -*/
+```
 
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task8") -*/
+    /* Part 1, TASK 8: start the timer */
+    error = timer_start(&timer_drv);
+    assert(error == 0);
+/*-- endfilter -*/
+```
+</details>
+
+### Implement a RPC interface
 Note that this task is to understand the existing code. You won't have
 to modify anything for this task.
 
@@ -124,11 +321,57 @@ should return after a given number of seconds. in
 exposed by the `Timer` component is called `hello`. Thus, the function we
 need to implement is called `hello_sleep`.
 
-### TASK 10
+```c
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part1-task9") -*/
+    /* Part 1, TASK 9: implement the rpc function. */
+    /* hint 1: the name of the function to implement is a composition of an interface name and a function name:
+    * i.e.: <interface>_<function>
+    * hint 2: the interfaces available are defined by the component, e.g. in components/timer/timer.camkes
+    * hint 3: the function name is defined by the interface definition, e.g. in interfaces/timer.camkes
+    * hint 4: so the function would be: hello_sleep()
+    * hint 5: the camkes 'int' type maps to 'int' in c
+    * hint 6: invoke a function in supplied driver the to set up the timer
+    * hint 7: look at https://github.com/sel4/camkes-tool/blob/master/docs/index.md#creating-an-application
+    */
+/*-- endfilter -*/
+```
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
 
+```c
+ /*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task9") -*/
+/* Part 1, TASK 9: implement the rpc function. */
+void hello_sleep(int sec) {
+    int error = 0;
+/*-- endfilter -*/
+```
+</details>
+
+### Set a timer interrupt
 Tell the timer to interrupt after the given number of seconds. The
 `timer_set_timeout` function from the included driver will help. Note that it
 expects its time argument to be given in nanoseconds.
+
+```c
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part1-task10") -*/
+    /* Part 1, TASK 10: invoke a function in the supplied driver to set a timeout */
+    /* hint1: timer_set_timeout
+     * hint2: periodic should be set to false
+     */
+/*-- endfilter -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part1-task10") -*/
+    /* Part 1, TASK 10: invoke a function in the supplied driver to set a timeout */
+    error = timer_set_timeout(&timer_drv, sec * NS_IN_SECOND, false);
+    assert(error == 0);
+/*-- endfilter -*/
+```
+</details>
 
 Note the existing code in `hello_sleep`. It waits on a binary semaphore.
 `irq_handle` will be called on another thread when the timer interrupt occurs,
@@ -157,8 +400,7 @@ kernel, look in the `tools/dts/` folder of the kernel sources. If a suitable
 devicetree blob is not available for your platform, then do not proceed with
 the tutorial.
 
-### TASK 1
-
+### Instantiate a TimerDTB component
 Navigate to the `hello-camkes-timer.camkes` file.
 
 Remove the `Timerbase` and `Timer` component instantiations and instantiate a
@@ -166,14 +408,57 @@ Remove the `Timerbase` and `Timer` component instantiations and instantiate a
 hello_timer(from client.hello, to timer.hello);` and `timer.sem_value = 0;`
 lines if necessary.
 
-### TASK 2
+```
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part2-task1") -*/
+    /* Part 2, TASK 1: component instances */
+    /* hint 1: a single TimerDTB component
+    * hint 2: look at
+    * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+    */
+/*-- endfilter -*/
+```
 
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part2-task1") -*/
+    /* Part 2, TASK 1: component instances */
+    //uncomment the line below
+//    component TimerDTB timer;
+/*-- endfilter -*/
+```
+</details>
+
+### Connect interfaces using the seL4DTBHardware connector
 Remove the `seL4HardwareMMIO` and `seL4HardwareInterrupt` connections. Connect
 the two interfaces inside the `TimerDTB` component with the `seL4DTBHardware`
 connector.
 
-### TASK 3
+```
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part2-task2") -*/
+    /* Part 2, TASK 2: connections */
+    /* hint 1: connect the dummy_source and timer interfaces
+    * hint 2: the dummy_source should be the 'from' end
+    * hint 3: look at
+    * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+    */
+/*-- endfilter -*/
+```
 
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part2-task2") -*/
+      /* Part 2, TASK 2: connections */
+      // uncomment the line below
+//    connection seL4DTBHardware timer_dtb(from timer.dummy_source, to timer.tmr);
+/*-- endfilter -*/
+```
+</details>
+
+### Configure the TimerDTB component
 Before opening `components/Timer/Timer.camkes`, remove the `Timerbase` settings
 inside the configurations block.
 
@@ -184,8 +469,32 @@ and grab the necessary data to initialise hardware resources. More
 specifically, it reads the registers field and optionally the interrupts field
 to allocate memory and interrupts.
 
-### TASK 4
+```
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part2-task3") -*/
+    /* Part 2, TASK 3: hardware resources */
+    /* TimerDTB:
+     * hint 1: look in the DTB/DTS for the path of a timer
+     * hint 2: set the 'dtb' setting for the tmr interface in the TimerDTB component,
+     *         e.g. foo.dtb = dtb({"path" : "/bar"});
+     * hint 3: set the 'generate_interrupts' setting to 1
+     */
+/*-- endfilter -*/
+```
 
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part2-task3") -*/
+     /* Part 2, TASK 3: hardware resources */
+     // uncomment the lines below
+//    tmr.dtb = dtb({"path" : "/amba/timer@f8001000"});   // path of the timer in the DTB
+//    tmr.generate_interrupts = 1;                        // tell seL4DTBHardware to init interrupts
+/*-- endfilter -*/
+```
+</details>
+
+### Handle the interrupt
 Move to `components/TimerDTB/src/timerdtb.c`.
 
 Similar to part one, we'll start with the `tmr_irq_handle` function. This
@@ -206,12 +515,48 @@ Likewise with part one, the implementation of the timer driver is in the
 included driver in `timer_driver` and the task here is to call
 `timer_handle_irq`.
 
-### TASK 5
+```c
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part2-task4") -*/
+    /* Part 2, TASK 4: call into the supplied driver to handle the interrupt. */
+    /* hint: timer_handle_irq
+     */
+/*-- endfilter -*/
+```
 
-The timer needs to be stopped, the task here is the same as part one's task 5.
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
 
-### TASK 6
+```c
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part2-task4") -*/
+    /* Part 2, TASK 4: call into the supplied driver to handle the interrupt. */
+    timer_handle_irq(&timer_drv);
+/*-- endfilter -*/
+```
+</details>
 
+### Stop a timer
+Stop the timer from running. The `timer_stop` function will be helpful here.
+
+```c
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part2-task5") -*/
+    /* Part 2, TASK 5: stop the timer. */
+    /* hint: timer_stop
+     */
+/*-- endfilter -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part2-task5") -*/
+    /* Part 2, TASK 5: stop the timer. */
+    timer_stop(&timer_drv);
+/*-- endfilter -*/
+```
+</details>
+
+### Acknowledge the interrupt
 Again, the interrupt now has to be acknowledged.
 
 For the `seL4DTBHardware` connector, CAmkES also generates and provides a
@@ -221,13 +566,33 @@ takes in a `ps_irq_t *` argument. Similarly, the `ps_irq_t *` argument helps
 CAmkES to differentiate between the possibly many interrupts of a device that
 you wish to acknowledge.
 
+```c
+/*-- filter TaskContent("1", TaskContentType.BEFORE, subtask="part2-task6") -*/
+    /* Part 2, TASK 6: acknowledge the interrupt */
+    /* hint 1: use the function <to_interface_name>_irq_acknowledge()
+     * hint 2: pass in the 'irq' variable to the function
+     */
+/*-- endfilter -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
+/*-- filter TaskContent("1", TaskContentType.COMPLETED, subtask="part2-task6") -*/
+    /* Part 2, TASK 6: acknowledge the interrupt */
+    error = tmr_irq_acknowledge(irq);
+    ZF_LOGF_IF(error != 0, "failed to acknowledge interrupt");
+/*-- endfilter -*/
+```
+</details>
+
 ### TASK 7 - 10
 
 Task 7 to 10 are the exact same as the tasks in part one.
 
 You should also expect the same output as the first part.
 
-/*? macros.help_block() ?*/
 
 /*-- filter ExcludeDocs() -*/
 ```c
@@ -300,17 +665,9 @@ component TimerDTB {
     }
 
     configuration {
-    /* Part 2, TASK 3: hardware resources */
-    /* TimerDTB:
-     * hint 1: look in the DTB/DTS for the path of a timer
-     * hint 2: set the 'dtb' setting for the tmr interface in the TimerDTB component,
-     *         e.g. foo.dtb = dtb({"path" : "/bar"});
-     * hint 3: set the 'generate_interrupts' setting to 1
-     */
-/*- if solution -*/
-//        tmr.dtb = dtb({"path" : "/amba/timer@f8001000"});   // path of the timer in the DTB
-//        tmr.generate_interrupts = 1;                        // tell seL4DTBHardware to init interrupts
-/*- endif -*/
+
+/*? include_task_type_append([("1","part2-task3")]) ?*/
+
     }
 }
 /*-- endfilter -*/
@@ -333,74 +690,26 @@ timer_drv_t timer_drv;
 void irq_handle(void) {
     int error;
 
-    /* Part 1, TASK 4: call into the supplied driver to handle the interrupt. */
-    /* hint: timer_handle_irq
-     */
-/*- if solution -*/
-    timer_handle_irq(&timer_drv);
-/*- endif -*/
+/*? include_task_type_append([("1","part1-task4")]) ?*/
 
-    /* Part 1, TASK 5: stop the timer. */
-    /* hint: timer_stop
-     */
-/*- if solution -*/
-    timer_stop(&timer_drv);
-/*- endif -*/
+/*? include_task_type_append([("1","part1-task5")]) ?*/
 
     /* signal the rpc interface. */
     error = sem_post();
     ZF_LOGF_IF(error != 0, "failed to post to semaphore");
 
-    /* Part 1, TASK 6: acknowledge the interrupt */
-    /* hint 1: use the function <irq interface name>_acknowledge()
-     */
-/*- if solution -*/
-    error = irq_acknowledge();
-    ZF_LOGF_IF(error != 0, "failed to acknowledge interrupt");
-/*- endif -*/
+/*? include_task_type_append([("1","part1-task6")]) ?*/
 }
 
 void hello__init() {
-    /* Part 1, TASK 7: call into the supplied driver to get the timer handler */
-    /* hint1: timer_init
-     * hint2: The timer ID is supplied as a #define in this file
-     * hint3: The register's variable name is the same name as the dataport in the Timer component
-     */
-/*- if solution -*/
-    int error = timer_init(&timer_drv, DEFAULT_TIMER_ID, reg);
-    assert(error == 0);
-/*- endif -*/
+/*? include_task_type_append([("1","part1-task7")]) ?*/
 
-    /* Part 1, TASK 8: start the timer
-     * hint: timer_start
-     */
-/*- if solution -*/
-    error = timer_start(&timer_drv);
-    assert(error == 0);
-/*- endif -*/
+/*? include_task_type_append([("1","part1-task8")]) ?*/
 }
 
-/* part 1, TASK 9: implement the rpc function. */
-/* hint 1: the name of the function to implement is a composition of an interface name and a function name:
- * i.e.: <interface>_<function>
- * hint 2: the interfaces available are defined by the component, e.g. in components/timer/timer.camkes
- * hint 3: the function name is defined by the interface definition, e.g. in interfaces/timer.camkes
- * hint 4: so the function would be: hello_sleep()
- * hint 5: the camkes 'int' type maps to 'int' in c
- * hint 6: invoke a function in supplied driver the to set up the timer
- * hint 7: look at https://github.com/sel4/camkes-tool/blob/master/docs/index.md#creating-an-application
- */
-void hello_sleep(int sec) {
-    int error = 0;
+/*? include_task_type_append([("1","part1-task9")]) ?*/
 
-    /* Part 1, TASK 10: invoke a function in the supplied driver to set a timeout */
-    /* hint1: timer_set_timeout
-     * hint2: periodic should be set to false
-     */
-/*- if solution -*/
-    error = timer_set_timeout(&timer_drv, sec * NS_IN_SECOND, false);
-    assert(error == 0);
-/*- endif -*/
+/*? include_task_type_append([("1","part1-task10")]) ?*/
 
     error = sem_wait();
     ZF_LOGF_IF(error != 0, "failed to wait on semaphore");
@@ -422,32 +731,15 @@ timer_drv_t timer_drv;
 void tmr_irq_handle(ps_irq_t *irq) {
     int error;
 
-    /* Part 2, TASK 4: call into the supplied driver to handle the interrupt. */
-    /* hint: timer_handle_irq
-     */
-/*- if solution -*/
-    timer_handle_irq(&timer_drv);
-/*- endif -*/
+/*? include_task_type_append([("1","part2-task4")]) ?*/
 
-    /* Part 2, TASK 5: stop the timer. */
-    /* hint: timer_stop
-     */
-/*- if solution -*/
-    timer_stop(&timer_drv);
-/*- endif -*/
+/*? include_task_type_append([("1","part2-task5")]) ?*/
 
     /* signal the rpc interface. */
     error = sem_post();
     ZF_LOGF_IF(error != 0, "failed to post to semaphore");
 
-    /* Part 2, TASK 6: acknowledge the interrupt */
-    /* hint 1: use the function <to_interface_name>_irq_acknowledge()
-     * hint 2: pass in the 'irq' variable to the function
-     */
-/*- if solution -*/
-    error = tmr_irq_acknowledge(irq);
-    ZF_LOGF_IF(error != 0, "failed to acknowledge interrupt");
-/*- endif -*/
+/*? include_task_type_append([("1","part2-task6")]) ?*/
 }
 
 void hello__init() {
@@ -529,23 +821,10 @@ assembly {
 /*- if not solution -*/
         component EmptyComponent empty;
 /*- endif -*/
-        /* Part 1, TASK 1: component instances */
-        /* hint 1: one hardware component and one driver component
-         * hint 2: look at
-         * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
-         */
 
-        /* Part 2, TASK 1: component instances */
-        /* hint 1: a single TimerDTB component
-         * hint 2: look at
-         * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
-         */
-/*- if solution -*/
-        component Timerbase timerbase;
-        component Timer timer;
+/*? include_task_type_append([("1","part1-task1")]) ?*/
 
-//        component TimerDTB timer;
-/*- endif -*/
+/*? include_task_type_append([("1","part2-task1")]) ?*/
 
 /*- if solution -*/
         component Client client;
@@ -556,25 +835,9 @@ assembly {
 //        component Client client;
 /*- endif -*/
 
-        /* Part 1, TASK 2: connections */
-        /* hint 1: use seL4HardwareMMIO to connect device memory
-         * hint 2: use seL4HardwareInterrupt to connect interrupt
-         * hint 3: look at
-         * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
-         */
+/*? include_task_type_append([("1","part1-task2")]) ?*/
 
-        /* Part 2, TASK 2: connections */
-        /* hint 1: connect the dummy_source and timer interfaces
-         * hint 2: the dummy_source should be the 'from' end
-         * hint 3: look at
-         * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
-         */
-/*- if solution -*/
-        connection seL4HardwareMMIO timer_mem(from timer.reg, to timerbase.reg);
-        connection seL4HardwareInterrupt timer_irq(from timerbase.irq, to timer.irq);
-
-//        connection seL4DTBHardware timer_dtb(from timer.dummy_source, to timer.tmr);
-/*- endif -*/
+/*? include_task_type_append([("1","part2-task2")]) ?*/
 
         /* timer interface connection */
 /*- if solution -*/
@@ -588,22 +851,12 @@ assembly {
 /*- endif -*/
     }
     configuration {
-        /* Part 1, TASK 3: hardware resources */
-        /* Timer and Timerbase:
-         * hint 1: find out the device memory address and IRQ number from the hardware data sheet
-         * hint 2: look at
-         * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#hardware-components
-         */
+/*? include_task_type_append([("1","part1-task3")]) ?*/
 
         /* Part 2, TASK 3: hardware resources */
         /* TimerDTB:
          * check components/Timer/Timer.camkes
          */
-/*- if solution -*/
-        timerbase.reg_paddr = 0xF8001000;   // paddr of mmio registers
-        timerbase.reg_size = 0x1000;        // size of mmio registers
-        timerbase.irq_irq_number = 42;      // timer irq number
-/*- endif -*/
 
         /* assign an initial value to semaphore */
 /*- if solution -*/
@@ -616,4 +869,8 @@ assembly {
 /*-- endfilter -*/
 /*? ExternalFile("CMakeLists.txt") ?*/
 ```
+
+/*- filter TaskContent("1", TaskContentType.BEFORE, completion="Booting all finished, dropped to user space") -*//*- endfilter -*/
+/*- filter TaskContent("1", TaskContentType.COMPLETED, completion="After the client: wakeup") -*//*- endfilter -*/
+
 /*-- endfilter -*/

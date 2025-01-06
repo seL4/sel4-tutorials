@@ -7,18 +7,54 @@
 /*? declare_task_ordering(['ntfn-start', 'ntfn-shmem', 'ntfn-signal', 'ntfn-badge']) ?*/
 # Notifications and shared memory
 
+This tutorial covers notification objects.
+
+You will learn how to:
+1. Set up shared memory between tasks.
+2. Use notification objects for synchronisation between tasks.
+3. Use badges to differentiate notifications.
+
 ## Prerequisites
 
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-1. [Capabilities tutorial](https://docs.sel4.systems/Tutorials/capabilities)
-1. [Mapping tutorial](https://docs.sel4.systems/Tutorials/mapping)
-1. [Threads tutorial](https://docs.sel4.systems/Tutorials/threads)
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
+2. [Capabilities tutorial](https://docs.sel4.systems/Tutorials/capabilities)
+3. [Mapping tutorial](https://docs.sel4.systems/Tutorials/mapping)
+4. [Threads tutorial](https://docs.sel4.systems/Tutorials/threads)
 
-## Outcomes
+## Initialising
 
-1. Understand how to set up shared memory between tasks.
-2. Be able to use notification objects for synchronisation between tasks.
-4. Know how to use badges to differentiate notifications.
+/*? macros.tutorial_init("notifications") ?*/
+
+
+<details markdown='1'>
+<summary><em>Hint:</em> tutorial solutions</summary>
+<br>
+All tutorials come with complete solutions. To get solutions run:
+
+/*? macros.tutorial_init_with_solution("notifications") ?*/
+
+Answers are also available in drop down menus under each section.
+</details>
+
+## CapDL Loader
+
+This tutorial uses the *capDL loader*, a root task which allocates statically
+ configured objects and capabilities.
+
+<details markdown='1'>
+<summary>Get CapDL</summary>
+The capDL loader parses
+a static description of the system and the relevant ELF binaries.
+It is primarily used in [Camkes](https://docs.sel4.systems/CAmkES/) projects
+but we also use it in the tutorials to reduce redundant code.
+The program that you construct will end up with its own CSpace and VSpace, which are separate
+from the root task, meaning CSlots like `seL4_CapInitThreadVSpace` have no meaning
+in applications loaded by the capDL loader.
+
+More information about CapDL projects can be found [here](https://docs.sel4.systems/CapDL.html).
+
+For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This can be added in a directory that is adjacent to the tutorials-manifest directory.
+</details>
 
 ## Background
 
@@ -69,10 +105,10 @@ timer tutorial. <!--TODO link to timer tutorial -->
 
 ## Exercises
 
-These exercises guide you through a basic producer consumer set up using notifications and shared memory. The 
+These exercises guide you through a basic producer consumer set up using notifications and shared memory. The
 tutorial uses the capDL loader, and already has 2 producer processes (`producer_1.c` and `producer_2`) and 1 consumer
- process running (`consumer.c`). Each has access to a number of capabilities. 
- 
+ process running (`consumer.c`). Each has access to a number of capabilities.
+
 Each producer shares a buffer with the consumer, and the consumer processes data from both producers when it is
 available.
 
@@ -83,18 +119,18 @@ Waiting for producer
 ```
 ### Set up shared memory
 
-Both producers start and block immediately, waiting for the consumer to send an IPC with the address of the shared 
+Both producers start and block immediately, waiting for the consumer to send an IPC with the address of the shared
 mapping. We provide code below that sets up the shared page between producer 1 and the consumer:
 
-```c 
+```c
 /*-- filter TaskContent("ntfn-start", TaskContentType.ALL, subtask="shmem1", completion="Caught cap fault in send phase") -*/
     /* set up shared memory for consumer 1 */
     /* first duplicate the cap */
-    error = seL4_CNode_Copy(cnode, mapping_1, seL4_WordBits, 
+    error = seL4_CNode_Copy(cnode, mapping_1, seL4_WordBits,
                           cnode, buf1_frame_cap, seL4_WordBits, seL4_AllRights);
     ZF_LOGF_IFERR(error, "Failed to copy cap");
     /* now do the mapping */
-    error = seL4_ARCH_Page_Map(mapping_1, producer_1_vspace, BUF_VADDR, 
+    error = seL4_ARCH_Page_Map(mapping_1, producer_1_vspace, BUF_VADDR,
                                seL4_AllRights, seL4_ARCH_Default_VMAttributes);
     ZF_LOGF_IFERR(error, "Failed to map frame");
 
@@ -103,16 +139,21 @@ mapping. We provide code below that sets up the shared page between producer 1 a
 
 However, we do not map the second buffer in, so producer 2 crashes immediately.
 
-**Exercise** Understand the above code, and create a second shared page between `producer_2` and `consumer`. 
+**Exercise** Understand the above code, and create a second shared page between `producer_2` and `consumer`.
 
-```c 
+```c
 /*-- filter TaskContent("ntfn-start", TaskContentType.ALL, subtask="shmem2", completion="Caught cap fault in send phase") -*/
     // TODO share buf2_frame_cap with producer_2
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
+
+```
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("ntfn-shmem", TaskContentType.COMPLETED, subtask="shmem2", completion="Waiting for producer") -*/
     /* set up shared memory for producer 2 */
-    error = seL4_CNode_Copy(cnode, mapping_2, seL4_WordBits, 
+    error = seL4_CNode_Copy(cnode, mapping_2, seL4_WordBits,
                             cnode, buf2_frame_cap, seL4_WordBits, seL4_AllRights);
     ZF_LOGF_IFERR(error, "Failed to copy cap");
    /* now do the mapping */
@@ -120,14 +161,14 @@ However, we do not map the second buffer in, so producer 2 crashes immediately.
                                seL4_AllRights, seL4_ARCH_Default_VMAttributes);
     ZF_LOGF_IFERR(error, "Failed to map frame");
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
 
 Whether this is successful will be visible after the next exercise when the consumers access their buffers. If the shared page setup for producer 2 is not correct, it will fail with a vm fault.
 
 ### Signal the producers to go
 
-At this point, both producers are waiting on the `empty` notification for a signal that the buffer is ready 
+At this point, both producers are waiting on the `empty` notification for a signal that the buffer is ready
 to be written to.
 
 **Exercise** signal both producers via the `buf1_empty` and `buf2_empty` notification objects.
@@ -136,13 +177,18 @@ to be written to.
 /*-- filter TaskContent("ntfn-start", TaskContentType.ALL, subtask="signal", completion="Waiting for producer") -*/
     // TODO signal both producers
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
+```
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("ntfn-signal", TaskContentType.COMPLETED, subtask="signal", completion="Got badge") -*/
     seL4_Signal(buf1_empty);
     seL4_Signal(buf2_empty);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
+
 
 ### Differentiate signals
 
@@ -164,13 +210,18 @@ which of the producers (it may be both) has produced data.
 
 **Exercise** Check the badge and signal the empty notification for the producers according to the bits set in the badge
  value.
- 
+
 ```c
 /*-- filter TaskContent("ntfn-start", TaskContentType.ALL, subtask="badge", completion="Got badge") -*/
-    // TODO, use the badge to check which producer has signalled you, and signal it back. Note that you 
+    // TODO, use the badge to check which producer has signalled you, and signal it back. Note that you
     // may recieve more than 1 signal at a time.
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
+
+```
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("ntfn-badge", TaskContentType.COMPLETED, subtask="badge", completion="Success") -*/
         if (badge & 0b01) {
             assert(*buf1 == 1);
@@ -183,20 +234,20 @@ which of the producers (it may be both) has produced data.
             seL4_Signal(buf2_empty);
         }
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
 
 At this point, you should see signals from both producers being processed, and the final `Success!` message printed.
- 
+
 ### Further exercises
 
 That's all for the detailed content of this tutorial. Below we list other ideas for exercises you can try,
 to become more familiar with IPC.
 
 * Create a counting semaphore implementation using notification objects.
-* Create a bounded-buffer producer consumer with a buffer size greater than 1. 
+* Create a bounded-buffer producer consumer with a buffer size greater than 1.
 
-/*? macros.help_block() ?*/
+
 
 /*-- filter ExcludeDocs() -*/
 
@@ -204,7 +255,7 @@ to become more familiar with IPC.
 /*-- filter TaskContent("ntfn-start", TaskContentType.ALL, subtask="producer", completion="Waiting for producer") -*/
     seL4_Recv(endpoint, NULL);
     volatile long *buf = (volatile long *) seL4_GetMR(0);
-    
+
     for (int i = 0; i < 100; i++) {
         seL4_Wait(empty, NULL);
         printf("%d: produce\n", id);
@@ -291,7 +342,7 @@ int main(int c, char *argv[]) {
     seL4_Send(endpoint, seL4_MessageInfo_new(0, 0, 0, 1));
     seL4_SetMR(0, BUF_VADDR);
     seL4_Send(endpoint, seL4_MessageInfo_new(0, 0, 0, 1));
-    
+
     /* start single buffer producer consumer */
     volatile long *buf1 = (long *) buf1_frame;
     volatile long *buf2 = (long *) buf2_frame;
