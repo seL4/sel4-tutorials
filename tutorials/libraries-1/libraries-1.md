@@ -22,9 +22,9 @@
 'task-15',
 ]) ?*/
 
-# seL4 Dynamic Libraries: initialisation & threading
+# seL4 Libraries: Initialisation & Threading
 
-This tutorial provides code examples and exercises for using the dynamic libraries
+This tutorial provides code examples and exercises for using the libraries
 found in [`seL4_libs`](https://github.com/seL4/seL4_libs) to bootstrap a system and start a thread.
 
 The tutorial is useful in that
@@ -33,19 +33,12 @@ it addresses conceptual problems for two different types of developers:
 - Experienced kernel developers whose minds are pre-programmed to
       think in terms of "One address space equals one process", and
       begins to introduce the seL4 CSpace vs VSpace model.
-- New kernel developers, for whom the tutorial will prompt them on
-      what to read about.
+- New kernel developers, for whom the tutorial will provide prompts on what to read.
 
 Don't gloss over the globals declared before `main()` -- they're declared
 for your benefit so you can grasp some of the basic data structures.
 
-## Prerequisites
-
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-2. [Hello world](https://docs.sel4.systems/Tutorials/hello-world)
-
-## Outcomes:
-
+Outcomes:
 - Understand the kernel's startup procedure.
 - Understand that the kernel centers around certain objects and
         capabilities to those objects.
@@ -59,9 +52,25 @@ for your benefit so you can grasp some of the basic data structures.
         idea that a thread has a TCB, VSpace and CSpace, and that you
         must fill these out.
 
+## Prerequisites
+
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
+2. [Hello world tutorial](https://docs.sel4.systems/Tutorials/hello-world)
+
+
 ## Initialising
 
-/*? macros.tutorial_init("dynamic-1") ?*/
+/*? macros.tutorial_init("libraries-1") ?*/
+
+<details markdown='1'>
+<summary><em>Hint:</em> tutorial solutions</summary>
+<br>
+All tutorials come with complete solutions. To get solutions run:
+
+/*? macros.tutorial_init_with_solution("libraries-1") ?*/
+
+Answers are also available in drop down menus under each section.
+</details>
 
 ## Exercises
 
@@ -103,16 +112,22 @@ It also sets up the IPC buffer so that it can perform some syscalls such as `seL
 /*? task_1_desc ?*/
 /*-- filter TaskContent("task-1", TaskContentType.BEFORE) -*/
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
+}
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-1", TaskContentType.COMPLETED) -*/
     info = platsupport_get_bootinfo();
 /*-- endfilter -*/
-/*-- endfilter -*/
-}
 ```
+</details>
+
 On success, you should see the following:
 ```
-dynamic-1: main@main.c:124 [Cond failed: allocman == NULL]
+libraries-1: main@main.c:124 [Cond failed: allocman == NULL]
 /*-- filter TaskCompletion("task-1", TaskContentType.COMPLETED) -*/
 	Failed to initialize alloc manager.
 	Memory pool sufficiently sized?
@@ -135,13 +150,16 @@ You need to initialize it with some default state before using it.
     */
 /*-- endset -*/
 /*? task_2_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-2", TaskContentType.COMPLETED, completion="Memory pool pointer valid?") -*/
     simple_default_init_bootinfo(&simple, info);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
-
+</details>
 On successful completion of this task, the output should not change.
 
 ### Use simple to print BootInfo
@@ -157,12 +175,18 @@ Use a `simple` function to print out the contents of the `seL4_BootInfo` functio
      */
 /*-- endset -*/
 /*? task_3_desc ?*/
-/*-- filter ExcludeDocs() -*/
+
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-3", TaskContentType.COMPLETED) -*/
     simple_print(&simple);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
 
 - <https://github.com/seL4/seL4_libs/blob/master/libsel4simple/include/simple/simple.h>
 
@@ -181,7 +205,7 @@ untypeds:        [316 --> 406)
 Initial thread domain: 0
 Initial thread cnode size:
 /*-- endfilter -*/
-dynamic-1: main@main.c:126 [Cond failed: allocman == NULL]
+libraries-1: main@main.c:126 [Cond failed: allocman == NULL]
 ```
 
 ### Initialise an allocator
@@ -209,16 +233,23 @@ step.
      */
 /*-- endset -*/
 /*? task_4_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-4", TaskContentType.COMPLETED, completion="main: hello world") -*/
     allocman = bootstrap_use_current_simple(&simple, ALLOCATOR_STATIC_POOL_SIZE, allocator_mem_pool);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
+
 The output should now be as follows:
+
 ```
-<<seL4(CPU 0) [decodeInvocation/530 T0xffffff801ffb5400 "dynamic-1" @401303]: Attempted to invoke a null cap #0.>>
-dynamic-1: main@main.c:199 [Err seL4_InvalidCapability]:
+<<seL4(CPU 0) [decodeInvocation/530 T0xffffff801ffb5400 "libraries-1" @401303]: Attempted to invoke a null cap #0.>>
+libraries-1: main@main.c:199 [Err seL4_InvalidCapability]:
 /*-- filter TaskCompletion("task-4", TaskContentType.COMPLETED) -*/
 	Failed to set the priority for the new TCB object.
 /*-- endfilter -*/
@@ -245,12 +276,17 @@ and the VKA library simplifies this for you, among other things.
      */
 /*-- endset -*/
 /*? task_5_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-5", TaskContentType.COMPLETED, completion="Failed to set the priority for the new TCB object.") -*/
     allocman_make_vka(&vka, allocman);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
 
 On successful completion this task, the output should not change.
 
@@ -267,12 +303,18 @@ On successful completion this task, the output should not change.
     seL4_CPtr cspace_cap;
 /*-- endset -*/
 /*? task_6_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-6", TaskContentType.COMPLETED, completion="Failed to set the priority for the new TCB object.") -*/
     cspace_cap = simple_get_cnode(&simple);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
+
 This is where the differences between seL4 and contemporary kernels
 begin to start playing out. Every kernel-object that you "retype" will
 be handed to you using a capability reference. The seL4 kernel keeps
@@ -307,12 +349,19 @@ On successful completion this task, the output should not change.
     seL4_CPtr pd_cap;
 /*-- endset -*/
 /*? task_7_desc ?*/
-/*-- filter ExcludeDocs() -*/
+
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-7", TaskContentType.COMPLETED, completion="Failed to set the priority for the new TCB object.") -*/
     pd_cap = simple_get_pd(&simple);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
+
 Just as in the previous step, you were made to grab a reference to the
 root of your thread's CSpace, now you're being made to grab a reference
 to the root of your thread's VSpace.
@@ -335,12 +384,18 @@ On successful completion this task, the output should not change.
     vka_object_t tcb_object = {0};
 /*-- endset -*/
 /*? task_8_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-8", TaskContentType.COMPLETED) -*/
     error = vka_alloc_tcb(&vka, &tcb_object);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
+
 In order to manage the threads that are created in seL4, the seL4 kernel
 keeps track of TCB (Thread Control Block) objects. Each of these
 represents a schedulable executable resource. Unlike other contemporary
@@ -382,12 +437,18 @@ main: hello world
      */
 /*-- endset -*/
 /*? task_9_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-9", TaskContentType.COMPLETED, completion="main: hello world") -*/
     error = seL4_TCB_Configure(tcb_object.cptr, seL4_CapNull,  cspace_cap, seL4_NilData, pd_cap, seL4_NilData, 0, 0);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
+
 You must create a new VSpace for your new thread if you need it to
 execute in its own isolated address space, and tell the kernel which
 VSpace you plan for the new thread to execute in. This opens up the
@@ -415,12 +476,18 @@ On successful completion this task, the output should not change.
     /* hint: we've done thread naming before */
 /*-- endset -*/
 /*? task_10_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-10", TaskContentType.COMPLETED, completion="main: hello world") -*/
-    NAME_THREAD(tcb_object.cptr, "dynamic-1: thread_2");
-/*-- endfilter -*/
+    NAME_THREAD(tcb_object.cptr, "libraries-1: thread_2");
 /*-- endfilter -*/
 ```
+</details>
+
 This is a convenience function -- sets a name string for the TCB object.
 
 On successful completion this task, the output should not change.
@@ -443,12 +510,18 @@ On successful completion this task, the output should not change.
      */
 /*-- endset -*/
 /*? task_11_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-11", TaskContentType.COMPLETED, completion="main: hello world") -*/
     sel4utils_set_instruction_pointer(&regs, (seL4_Word)thread_2);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
+
 Pay attention to the line that precedes this particular task -- the line
 that zeroes out a new "seL4_UserContext" object. As we previously
 explained, seL4 requires you to fill out the Thread Control Block
@@ -472,12 +545,18 @@ On successful completion this task, the output should not change.
      */
 /*-- endset -*/
 /*? task_12_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-12", TaskContentType.COMPLETED, completion="main: hello world") -*/
     sel4utils_set_stack_pointer(&regs, thread_2_stack_top);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
+
 This TASK is just some pointer arithmetic. The cautionary note that the
 stack grows down is meant to make you think about the arithmetic.
 Processor stacks push new values toward decreasing addresses, so give it
@@ -502,12 +581,18 @@ On successful completion this task, the output should not change.
      */
 /*-- endset -*/
 /*? task_13_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-13", TaskContentType.COMPLETED, completion="main: hello world") -*/
     error = seL4_TCB_WriteRegisters(tcb_object.cptr, 0, 0, 2, &regs);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
+
 As explained above, we've been filling out our new thread's TCB for the
 last few operations, so now we're writing the values we've chosen, to
 the TCB object in the kernel.
@@ -526,12 +611,18 @@ On successful completion this task, the output should not change.
      */
 /*-- endset -*/
 /*? task_14_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-14", TaskContentType.COMPLETED, completion="main: hello world") -*/
     error = seL4_TCB_Resume(tcb_object.cptr);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
+
 Finally, we tell the kernel that our new thread is runnable. From here,
 the kernel itself will choose when to run the thread based on the
 priority we gave it, and according to the kernel's configured scheduling
@@ -547,13 +638,19 @@ On successful completion this task, the output should not change.
     /* hint: printf() */
 /*-- endset -*/
 /*? task_15_desc ?*/
-/*-- filter ExcludeDocs() -*/
+}
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-15", TaskContentType.COMPLETED, completion="thread_2: hallo wereld") -*/
     printf("thread_2: hallo wereld\n");
 /*-- endfilter -*/
-/*-- endfilter -*/
-}
 ```
+</details>
+
 For the sake of confirmation that our new thread was executed by the
 kernel successfully, we cause it to print something to the screen.
 
@@ -574,7 +671,7 @@ On success, you should see output from your new thread.
 
 That's it for this tutorial.
 
-/*? macros.help_block() ?*/
+
 
 /*-- filter ExcludeDocs() -*/
 /*? ExternalFile("CMakeLists.txt") ?*/
@@ -656,8 +753,8 @@ int main(void) {
      * It is part of the root task's boot environment and defined in bootinfo.h from libsel4:
      * https://docs.sel4.systems/Tutorials/seL4_Tutorial_2#globals-links:
      */
-    zf_log_set_tag_prefix("dynamic-1:");
-    NAME_THREAD(seL4_CapInitThreadTCB, "dynamic-1");
+    zf_log_set_tag_prefix("libraries-1:");
+    NAME_THREAD(seL4_CapInitThreadTCB, "libraries-1");
 
     /*? task_2_desc ?*/
     /*? include_task_type_append([("task-2")]) ?*/

@@ -11,31 +11,41 @@
 'task-4',
 'task-5'
 ])?*/
-# seL4 Dynamic Libraries: Timer tutorial
+# seL4 Libraries: Timer Tutorial
 
 This tutorial demonstrates how to set up and use a basic timer driver using the
-`seL4_libs` dynamic libraries.
+`seL4_libs` libraries.
 
 You'll observe that the things you've already covered in the other
 tutorials are already filled out and you don't have to repeat them: in
 much the same way, we won't be repeating conceptual explanations on this
 page, if they were covered by a previous tutorial in the series.
 
-## Learning outcomes
+Learning outcomes:
 
 - Allocate a notification object.
 - Set up a timer provided by `util_libs`.
 - Use `seL4_libs` and `util_libs` functions to manipulate timer and
       handle interrupts.
 
-## Initialising
-
-/*? macros.tutorial_init("dynamic-4") ?*/
-
 ## Prerequisites
 
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-1. [dynamic-3](https://docs.sel4.systems/Tutorials/dynamic-3)
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
+2. [Libraries: processes & elf loading](https://docs.sel4.systems/Tutorials/libraries-3)
+
+## Initialising
+
+/*? macros.tutorial_init("libraries-4") ?*/
+
+<details markdown='1'>
+<summary><em>Hint:</em> tutorial solutions</summary>
+<br>
+All tutorials come with complete solutions. To get solutions run:
+
+/*? macros.tutorial_init_with_solution("libraries-4") ?*/
+
+Answers are also available in drop down menus under each section.
+</details>
 
 ## Exercises
 
@@ -82,13 +92,19 @@ interrupts on.
 /*? task_1_desc ?*/
 /*-- filter TaskContent("task-1", TaskContentType.BEFORE) -*/
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-1", TaskContentType.COMPLETED) -*/
     error = vka_alloc_notification(&vka, &ntfn_object);
     assert(error == 0);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
+
 The output will not change as a result of completing this task.
 
 ### Initialise the timer
@@ -116,13 +132,19 @@ initialise a timer driver. Assign it to the `timer` global variable.
     assert(error == 0);
 /*-- endset -*/
 /*? task_2_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-2", TaskContentType.COMPLETED) -*/
-    error = ltimer_default_init(&timer, ops, NULL, NULL); 
+    error = ltimer_default_init(&timer, ops, NULL, NULL);
     assert(error == 0);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
+
 After this change, the server will output non-zero for the tick value at the end.
 ```
 /*-- filter TaskCompletion("task-2", TaskContentType.COMPLETED) -*/
@@ -150,13 +172,19 @@ it.
      */
 /*-- endset -*/
 /*? task_3_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-3", TaskContentType.COMPLETED) -*/
     error = ltimer_set_timeout(&timer, NS_IN_MS, TIMEOUT_PERIODIC);
     assert(error == 0);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
+
 The output will cease after the following line as a result of completing this task.
 ```
 /*-- filter TaskCompletion("task-3", TaskContentType.COMPLETED) -*/
@@ -167,7 +195,7 @@ main: got a message from 0x61 to sleep 2 seconds
 ### Handle the interrupt
 
 In order to receive more interrupts, you need to handle the interrupt in the driver
-and acknowledge the irq. 
+and acknowledge the irq.
 
 ```c
 /*-- set task_4_desc -*/
@@ -187,13 +215,24 @@ and acknowledge the irq.
 /*-- filter TaskCompletion("task-4", TaskContentType.COMPLETED) -*/
 main: got a message from 0x61 to sleep 2 seconds
 /*-- endfilter -*/
+/*-- endfilter -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-4", TaskContentType.COMPLETED) -*/
         seL4_Word badge;
         seL4_Wait(ntfn_object.cptr, &badge);
         sel4platsupport_irq_handle(&ops.irq_ops, MINI_IRQ_INTERFACE_NTFN_ID, badge);
 /*-- endfilter -*/
-/*-- endfilter -*/
+        count++;
+        if (count == 1000 * msg) {
+            break;
+        }
 ```
+</details>
 The timer interrupts are bound to the IRQ interface initialised in Task 2,
 hence when we receive an interrupt, we forward it to the interface and let it notify the timer driver.
 
@@ -213,7 +252,7 @@ timer client wakes up:
 /*-- set task_5_desc -*/
     /*
      * TASK 5: Stop the timer
-     * hint: ltimer_destroy 
+     * hint: ltimer_destroy
      */
 /*-- endset -*/
 /*? task_5_desc ?*/
@@ -222,16 +261,25 @@ timer client wakes up:
 timer client wakes up:
  got the current timer tick:
 /*-- endfilter -*/
+/*-- endfilter -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-5", TaskContentType.COMPLETED) -*/
     ltimer_destroy(&timer);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
+
+
 The output should not change on successful completion of completing this task.
 
 That's it for this tutorial.
 
-/*? macros.help_block() ?*/
+
 /*-- filter ExcludeDocs() -*/
 /*? ExternalFile("CMakeLists.txt") ?*/
 ```
@@ -311,7 +359,7 @@ int main(void) {
     ZF_LOGF_IF(info == NULL, "Failed to get bootinfo.");
 
     /* give us a name: useful for debugging if the thread faults */
-    name_thread(seL4_CapInitThreadTCB, "dynamic-4");
+    name_thread(seL4_CapInitThreadTCB, "libraries-4");
 
     /* init simple */
     simple_default_init_bootinfo(&simple, info);
@@ -349,7 +397,7 @@ int main(void) {
     assert(error == 0);
 
     /* give the new process's thread a name */
-    name_thread(new_process.thread.tcb.cptr, "dynamic-4: timer_client");
+    name_thread(new_process.thread.tcb.cptr, "libraries-4: timer_client");
 
     /* create an endpoint */
     vka_object_t ep_object = {0};
@@ -435,7 +483,7 @@ int main(void) {
 /*-- endfilter -*/
 /*-- filter File("client.c") -*/
 /*
- * Copyright 2017, Data61, CSIRO (ABN 41 687 119 230).
+ * Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
  *
  * SPDX-License-Identifier: BSD-2-Clause
  */

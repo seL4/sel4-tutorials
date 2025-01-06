@@ -15,7 +15,7 @@
 'task-8'
 ])?*/
 
-# seL4 Dynamic Libraries: Processes & Elf loading
+# seL4 Libraries: Processes & ELF loading
 
 This tutorial shows how a separate ELF file can be loaded and expanded into a
 VSpace, and subsequently executed, while facilitating IPC between the
@@ -31,7 +31,7 @@ tutorial are filled out and you don't have to repeat them: in much the
 same way, we won't be repeating conceptual explanations on this page, if
 they were covered by a previous tutorial in the series.
 
-## Learning outcomes
+Learning outcomes:
 
 - Once again, repeat the spawning of a thread: however, this time
         the two threads will only share the same vspace, but have
@@ -45,15 +45,25 @@ they were covered by a previous tutorial in the series.
 - Understand how minting a capability to a thread in another
         CSpace works.
 
+## Prerequisites
+
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
+2. [Libraries: IPC](https://docs.sel4.systems/Tutorials/libraries-2)
 
 ## Initialising
 
-/*? macros.tutorial_init("dynamic-3") ?*/
+/*? macros.tutorial_init("libraries-3") ?*/
 
-## Prerequisites
+<details markdown='1'>
+<summary><em>Hint:</em> tutorial solutions</summary>
+<br>
+All tutorials come with complete solutions. To get solutions run:
 
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-1. [dynamic-2](https://docs.sel4.systems/Tutorials/dynamic-2)
+/*? macros.tutorial_init_with_solution("libraries-3") ?*/
+
+Answers are also available in drop down menus under each section.
+</details>
+
 
 ## Exercises
 
@@ -73,8 +83,8 @@ userImagePaging: [12 --> 15)
 untypeds:        [399 --> 488)
 Initial thread domain: 0
 Initial thread cnode size: 12
-dynamic-3: vspace_reserve_range_aligned@vspace.h:621 Not implemented
-dynamic-3: main@main.c:117 [Cond failed: virtual_reservation.res == NULL]
+libraries-3: vspace_reserve_range_aligned@vspace.h:621 Not implemented
+libraries-3: main@main.c:117 [Cond failed: virtual_reservation.res == NULL]
 /*-- filter TaskCompletion("task-1", TaskContentType.BEFORE) -*/
 	Failed to reserve a chunk of memory.
 /*-- endfilter -*/
@@ -115,18 +125,23 @@ function may seem tedious, it's doing some important things.
 /*? task_1_desc ?*/
 /*-- filter TaskContent("task-1", TaskContentType.BEFORE) -*/
 /*-- endfilter -*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-1", TaskContentType.COMPLETED) -*/
     error = sel4utils_bootstrap_vspace_with_bootinfo_leaky(&vspace,
                                                            &data, simple_get_pd(&simple), &vka, info);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
 
 On success, you should see a different error:
 
 ```
-<<seL4(CPU 0) [handleUnknownSyscall/106 T0xffffff801ffb5400 "dynamic-3" @40139e]: SysDebugNameThread: cap is not a TCB, halting>>
+<<seL4(CPU 0) [handleUnknownSyscall/106 T0xffffff801ffb5400 "libraries-3" @40139e]: SysDebugNameThread: cap is not a TCB, halting>>
 /*-- filter TaskCompletion("task-1", TaskContentType.COMPLETED) -*/
 halting...
 /*-- endfilter -*/
@@ -161,18 +176,23 @@ thread.
      */
 /*-- endset -*/
 /*? task_2_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-2", TaskContentType.COMPLETED) -*/
     sel4utils_process_config_t config = process_config_default_simple(&simple, APP_IMAGE_NAME, APP_PRIORITY);
     error = sel4utils_configure_process_custom(&new_process, &vka, &vspace, config);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
 
 On success, you should see a different error:
 
 ```
- dynamic-3: main@main.c:196 [Cond failed: new_ep_cap == 0]
+ libraries-3: main@main.c:196 [Cond failed: new_ep_cap == 0]
 /*-- filter TaskCompletion("task-2", TaskContentType.COMPLETED) -*/
 	Failed to mint a badged copy of the IPC endpoint into the new thread's CSpace.
 	sel4utils_mint_cap_to_process takes a cspacepath_t: double check what you passed.
@@ -225,12 +245,18 @@ wouldn't know who was whom.
     seL4_CPtr new_ep_cap = 0;
 /*-- endset -*/
 /*? task_3_desc ?*/
-/*-- filter ExcludeDocs() -*/
+ ```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-3", TaskContentType.COMPLETED, completion="what you passed.") -*/
     vka_cspace_make_path(&vka, ep_object.cptr, &ep_cap_path);
 /*-- endfilter -*/
-/*-- endfilter -*/
- ```
+```
+</details>
+
 On success, the output should not change.
 
 ### Badge a capability
@@ -258,20 +284,25 @@ free slot that the VKA library found for us.
      */
 /*-- endset -*/
 /*? task_4_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-4", TaskContentType.COMPLETED) -*/
     new_ep_cap = sel4utils_mint_cap_to_process(&new_process, ep_cap_path,
                                                seL4_AllRights, EP_BADGE);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
 
 On success, the output should look something like:
 
 ```
 NEW CAP SLOT: 6ac.
 main: hello world
-dynamic-3: main@main.c:247 [Cond failed: sender_badge != EP_BADGE]
+libraries-3: main@main.c:247 [Cond failed: sender_badge != EP_BADGE]
 /*-- filter TaskCompletion("task-4", TaskContentType.COMPLETED) -*/
 	The badge we received from the new thread didn't match our expectation
 /*-- endfilter -*/
@@ -311,7 +342,12 @@ communicate with us, we can let it run. Complete this step and proceed.
 
 /*-- endset -*/
 /*? task_5_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-5", TaskContentType.COMPLETED) -*/
     new_ep_cap = sel4utils_mint_cap_to_process(&new_process, ep_cap_path,
                                                seL4_AllRights, EP_BADGE);
@@ -322,8 +358,9 @@ communicate with us, we can let it run. Complete this step and proceed.
 
     error = sel4utils_spawn_process_v(&new_process, &vka, &vspace, argc, (char**) &argv, 1);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
+
 
 On success, you should be able to see the second process running. The output should
 be as follows:
@@ -336,7 +373,7 @@ main@app.c:67 [Cond failed: msg != ~MSG_DATA]
 	Unexpected response from root thread.
 /*-- endfilter -*/
 main: hello world
-dynamic-3: main@main.c:255 [Cond failed: sender_badge != EP_BADGE]
+libraries-3: main@main.c:255 [Cond failed: sender_badge != EP_BADGE]
 	The badge we received from the new thread didn't match our expectation.
 ```
 
@@ -366,11 +403,19 @@ Then we verify the fidelity of the data that was transmitted.
 /*-- filter TaskCompletion("task-6", TaskContentType.COMPLETED) -*/
 	Unexpected response from root thread.
 /*-- endfilter -*/
+/*-- endfilter -*/
+```
+
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-6", TaskContentType.COMPLETED) -*/
     tag = seL4_Recv(ep_cap_path.capPtr, &sender_badge);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
 
 On success, the badge error should no longer be visible.
 
@@ -401,11 +446,18 @@ message sent by the new thread.
 /*-- filter TaskCompletion("task-7", TaskContentType.COMPLETED) -*/
 	Unexpected response from root thread.
 /*-- endfilter -*/
+/*-- endfilter -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-7", TaskContentType.COMPLETED) -*/
     seL4_ReplyRecv(ep_cap_path.capPtr, tag, &sender_badge);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
 
 On success, the output should not change.
 
@@ -434,14 +486,17 @@ that was sent, and that's the end.
     seL4_CPtr ep = (seL4_CPtr) atol(argv[0]);
 /*-- endset -*/
 /*? task_8_desc ?*/
-/*-- filter ExcludeDocs() -*/
-/*-- filter TaskContent("task-8", TaskContentType.COMPLETED) -*/
-    tag = seL4_Call(ep, tag);
-
-/*-- endfilter -*/
-/*-- endfilter -*/
 ```
 
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
+/*-- filter TaskContent("task-8", TaskContentType.COMPLETED) -*/
+    tag = seL4_Call(ep, tag);
+/*-- endfilter -*/
+```
+</details>
 On success, you should see the following:
 
 ```
@@ -454,13 +509,13 @@ process_2: got a reply: 0xffffffffffff9e9e
 
 That's it for this tutorial.
 
-/*? macros.help_block() ?*/
+
 /*-- filter ExcludeDocs() -*/
 /*? ExternalFile("CMakeLists.txt") ?*/
 ```
 /*-- filter File("main.c") -*/
 /*
- * Copyright 2017, Data61, CSIRO (ABN 41 687 119 230).
+ * Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
  *
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -528,8 +583,8 @@ int main(void) {
     ZF_LOGF_IF(info == NULL, "Failed to get bootinfo.");
 
     /* Set up logging and give us a name: useful for debugging if the thread faults */
-    zf_log_set_tag_prefix("dynamic-3:");
-    NAME_THREAD(seL4_CapInitThreadTCB, "dynamic-3");
+    zf_log_set_tag_prefix("libraries-3:");
+    NAME_THREAD(seL4_CapInitThreadTCB, "libraries-3");
 
     /* init simple */
     simple_default_init_bootinfo(&simple, info);
@@ -571,7 +626,7 @@ int main(void) {
                   "\tBe sure you've passed the correct component name for the new thread!\n");
 
     /* give the new process's thread a name */
-    NAME_THREAD(new_process.thread.tcb.cptr, "dynamic-3: process_2");
+    NAME_THREAD(new_process.thread.tcb.cptr, "libraries-3: process_2");
 
     /* create an endpoint */
     vka_object_t ep_object = {0};
@@ -640,7 +695,7 @@ int main(void) {
 /*-- endfilter -*/
 /*-- filter File("app.c") -*/
 /*
- * Copyright 2017, Data61, CSIRO (ABN 41 687 119 230).
+ * Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
  *
  * SPDX-License-Identifier: BSD-2-Clause
  */

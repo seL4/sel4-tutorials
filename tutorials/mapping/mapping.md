@@ -12,14 +12,24 @@ This tutorial provides an introduction to virtual memory management on seL4.
 
 ## Prerequisites
 
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
 2. [Capabilities tutorial](https://docs.sel4.systems/Tutorials/capabilities)
 
-## Outcomes
+## Initialising
 
-By the end of this tutorial, you should be familiar with:
+/*? macros.tutorial_init("mapping") ?*/
 
-1. How to map and unmap virtual memory pages in seL4.
+<details markdown='1'>
+<summary><em>Hint:</em> tutorial solutions</summary>
+<br>
+All tutorials come with complete solutions. To get solutions run:
+
+/*? macros.tutorial_init_with_solution("mapping") ?*/
+
+Answers are also available in drop down menus under each section.
+</details>
+
+
 
 ## Background
 
@@ -139,14 +149,17 @@ the number of bits in the virtual address that could not be resolved due to miss
     // TODO map a page directory object
 /*-- endfilter -*/
 ```
-/*-- filter ExcludeDocs() -*/
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
 ```c
 /*-- filter TaskContent("mapping-pd", TaskContentType.COMPLETED, subtask='pd',completion='Failed to map page') -*/
     error = seL4_X86_PageDirectory_Map(pd, seL4_CapInitThreadVSpace, TEST_VADDR, seL4_X86_Default_VMAttributes);
     assert(error == seL4_NoError);
 /*-- endfilter -*/
 ```
-/*-- endfilter -*/
+</details>
 
 On success, you should see the following:
 ```
@@ -167,14 +180,18 @@ Note that in the above output, the number of failed bits has changed from `30` t
     // TODO map a page table object
 /*-- endfilter -*/
 ```
-/*-- filter ExcludeDocs() -*/
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
 ```c
 /*-- filter TaskContent("mapping-pt", TaskContentType.COMPLETED, subtask='pt', completion='Caught cap fault') -*/
+    // map a page table object
     error = seL4_X86_PageTable_Map(pt, seL4_CapInitThreadVSpace, TEST_VADDR, seL4_X86_Default_VMAttributes);
     assert(error == seL4_NoError);
 /*-- endfilter -*/
 ```
-/*-- endfilter -*/
+</details>
 
 On success, you should see the following:
 ```
@@ -209,14 +226,18 @@ that the fault occured on (address).
     // TODO remap the page
 /*-- endfilter -*/
 ```
-/*-- filter ExcludeDocs() -*/
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
 ```c
 /*-- filter TaskContent("mapping-remap", TaskContentType.COMPLETED, subtask='remap', completion='Success!') -*/
     error = seL4_X86_Page_Map(frame, seL4_CapInitThreadVSpace, TEST_VADDR, seL4_ReadWrite, seL4_X86_Default_VMAttributes);
     assert(error == seL4_NoError);
 /*-- endfilter -*/
 ```
-/*-- endfilter -*/
+
+</details>
 
 ### Unmapping pages
 
@@ -232,7 +253,7 @@ to become more familiar with virtual memory management on seL4.
 * Port this tutorial to another architecture (ARM, RISCV).
 * Create a generic function for converting from `seL4_MappingFailedLookupLevel` to the required seL4 object.
 
-/*? macros.help_block() ?*/
+
 
 /*-- filter ExcludeDocs() -*/
 ```c

@@ -43,10 +43,10 @@ jobs:
       matrix:
         app:
         - capabilities
-        - dynamic-1
-        - dynamic-2
-        - dynamic-3
-        - dynamic-4
+        - libraries-1
+        - libraries-2
+        - libraries-3
+        - libraries-4
         - hello-camkes-0
         - hello-camkes-1
         - hello-camkes-2

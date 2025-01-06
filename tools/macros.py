@@ -34,20 +34,6 @@ ninja && ./simulate
 ```'''
 
 
-def help_block():
-    return '''
----
-## Getting help
-Stuck? See the resources below.
-* [FAQ](https://docs.sel4.systems/FrequentlyAskedQuestions)
-* [seL4 Manual](http://sel4.systems/Info/Docs/seL4-manual-latest.pdf)
-* [Debugging guide](https://docs.sel4.systems/DebuggingGuide.html)
-* [seL4 Discourse forum](https://sel4.discourse.group)
-* [Developer's mailing list](https://lists.sel4.systems/postorius/lists/devel.sel4.systems/)
-* [Mattermost Channel](https://mattermost.trustworthy.systems/sel4-external/)
-'''
-
-
 def cmake_check_script(state):
     return '''set(FINISH_COMPLETION_TEXT "%s")
 set(START_COMPLETION_TEXT "%s")
@@ -59,11 +45,25 @@ GenerateSimulateScript()
 
 def tutorial_init(name):
     return '''```sh
-# For instructions about obtaining the tutorial sources see https://docs.sel4.systems/Tutorials/#get-the-code
+# For instructions about obtaining the tutorial sources see https://docs.sel4.systems/Tutorials/get-the-tutorials
 #
 # Follow these instructions to initialise the tutorial
 # initialising the build directory with a tutorial exercise
 ./init --tut %s
+# building the tutorial exercise
+cd %s_build
+ninja
+```
+''' % (name, name)
+
+
+def tutorial_init_with_solution(name):
+    return '''```sh
+# For instructions about obtaining the tutorial sources see https://docs.sel4.systems/Tutorials/get-the-tutorials
+#
+# Follow these instructions to initialise the tutorial
+# initialising the build directory with a tutorial exercise
+./init --solution --tut %s
 # building the tutorial exercise
 cd %s_build
 ninja

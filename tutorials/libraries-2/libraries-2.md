@@ -22,7 +22,7 @@
 'task-15',
 ]) ?*/
 
-# seL4 Dynamic Libraries: IPC
+# seL4 Libraries: IPC
 
 The tutorial is designed to
 teach the basics of seL4 IPC using Endpoint objects, and userspace
@@ -39,7 +39,7 @@ tutorial are filled out and you don't have to repeat them: in much the
 same way, we won't be repeating conceptual explanations on this page, if
 they were covered by a previous tutorial in the series.
 
-## Learning outcomes
+Learning outcomes:
 
 - Repeat the spawning of a thread. "''If it's nice, do it twice''"
         -- Caribbean folk-saying. Once again, the new thread will be
@@ -58,19 +58,27 @@ they were covered by a previous tutorial in the series.
         both an Endpoint and a Notification using "Bound Notifications".
 - Understand CSpace pointers, which are really just integers with
         multiple indexes concatenated into one. Understanding them well
-        however, is important to understanding how capabilities work. Be
-        sure you understand the diagram on the "**CSpace example and
-        addressing**" slide.
-
-## Initialising
-
-/*? macros.tutorial_init("dynamic-2") ?*/
-
+        however, is important to understanding how capabilities work.
 
 ## Prerequisites
 
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-1. [dynamic-1](https://docs.sel4.systems/Tutorials/dynamic-1)
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
+2. [Libraries: initialisation & threading](https://docs.sel4.systems/Tutorials/libraries-1)
+
+
+## Initialising
+
+/*? macros.tutorial_init("libraries-2") ?*/
+
+<details markdown='1'>
+<summary><em>Hint:</em> tutorial solutions</summary>
+<br>
+All tutorials come with complete solutions. To get solutions run:
+
+/*? macros.tutorial_init_with_solution("libraries-2") ?*/
+
+Answers are also available in drop down menus under each section.
+</details>
 
 ## Exercises
 
@@ -117,18 +125,26 @@ of a MMU-utilizing kernel apply.
     vka_object_t ipc_frame_object;
 /*-- endset -*/
 /*? task_1_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-1", TaskContentType.COMPLETED) -*/
     error = vka_alloc_frame(&vka, IPCBUF_FRAME_SIZE_BITS, &ipc_frame_object);
     ZF_LOGF_IFERR(error, "Failed to alloc a frame for the IPC buffer.\n"
                   "\tThe frame size is not the number of bytes, but an exponent.\n"
                   "\tNB: This frame is not an immediately usable, virtually mapped page.\n")
 /*-- endfilter -*/
+```
+</details>
+
+/*-- filter ExcludeDocs() -*/
 /*--filter TaskCompletion("task-1", TaskContentType.ALL) -*/
 Booting all finished, dropped to user space
 /*-- endfilter -*/
 /*-- endfilter -*/
-```
 
 On completion, the output will not change.
 
@@ -181,17 +197,22 @@ into a VSpace, and the mapping of a new page-table into a VSpace.
      */
 /*-- endset -*/
 /*? task_2_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-2", TaskContentType.COMPLETED) -*/
     error = seL4_ARCH_Page_Map(ipc_frame_object.cptr, pd_cap, ipc_buffer_vaddr,
                                seL4_AllRights, seL4_ARCH_Default_VMAttributes);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
 
 On completion, the output will be as follows:
 ```
-dynamic-2: main@main.c:260 [Err seL4_FailedLookup]:
+libraries-2: main@main.c:260 [Err seL4_FailedLookup]:
 /*--filter TaskCompletion("task-2", TaskContentType.COMPLETED) -*/
 	Failed to allocate new page table.
 /*-- endfilter -*/
@@ -216,17 +237,26 @@ page-table object to use as a leaf page-table in your VSpace.
          */
 /*-- endset -*/
 /*? task_3_desc ?*/
-/*-- filter ExcludeDocs() -*/
+ ```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-3", TaskContentType.COMPLETED) -*/
         vka_object_t pt_object;
         error =  vka_alloc_page_table(&vka, &pt_object);
 /*-- endfilter -*/
+```
+</details>
+
+On completion, you will see another fault.
+
+/*-- filter ExcludeDocs() -*/
 /*--filter TaskCompletion("task-3", TaskContentType.ALL) -*/
 Booting all finished, dropped to user space
 /*-- endfilter -*/
 /*-- endfilter -*/
- ```
-On completion, you will see another fault.
 
 ### Map a page table
 
@@ -259,17 +289,26 @@ try again to finally map the IPC-buffer's frame object into the VSpace.
          */
 /*-- endset -*/
 /*? task_4_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+On completion, you will see another fault.
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-4", TaskContentType.COMPLETED) -*/
         error = seL4_ARCH_PageTable_Map(pt_object.cptr, pd_cap,
                                         ipc_buffer_vaddr, seL4_ARCH_Default_VMAttributes);
 /*-- endfilter -*/
+```
+
+</details>
+
+/*-- filter ExcludeDocs() -*/
 /*--filter TaskCompletion("task-4", TaskContentType.ALL)--*/
 Booting all finished, dropped to user space
 /*-- endfilter -*/
 /*-- endfilter -*/
-```
-On completion, you will see another fault.
 
 ### Map a page
 
@@ -285,19 +324,26 @@ should fail. Complete it and proceed.
          */
 /*-- endset -*/
 /*? task_5_desc ?*/
-/*-- filter ExcludeDocs() -*/
+
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-5", TaskContentType.COMPLETED) -*/
         error = seL4_ARCH_Page_Map(ipc_frame_object.cptr, pd_cap,
                                    ipc_buffer_vaddr, seL4_AllRights, seL4_ARCH_Default_VMAttributes);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
+
 On completion, you will see the following:
 ```
 /*--filter TaskCompletion("task-5", TaskContentType.COMPLETED) -*/
 main: hello world
 /*-- endfilter -*/
-dynamic-2: main@main.c:464 [Cond failed: seL4_MessageInfo_get_length(tag) != 1]
+libraries-2: main@main.c:464 [Cond failed: seL4_MessageInfo_get_length(tag) != 1]
 	Response data from thread_2 was not the length expected.
 	How many registers did you set with seL4_SetMR within thread_2?
 ```
@@ -329,12 +375,18 @@ and proceed.
      */
 /*-- endset -*/
 /*? task_6_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-6", TaskContentType.COMPLETED, completion="main: hello world") -*/
     error = vka_alloc_endpoint(&vka, &ep_object);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
+
 On completion, the output will not change.
 
 ### Badge an endpoint
@@ -381,13 +433,19 @@ data, and know which sender you are. Complete the step and proceed.
      */
 /*-- endset -*/
 /*? task_7_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-7", TaskContentType.COMPLETED, completion="main: hello world") -*/
     error = vka_mint_object(&vka, &ep_object, &ep_cap_path, seL4_AllRights,
                             EP_BADGE);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
+
 On completion, the output will not change.
 
 ### Message registers
@@ -439,17 +497,22 @@ transmitted in the message.
      */
 /*-- endset -*/
 /*? task_8_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-8", TaskContentType.COMPLETED) -*/
     tag = seL4_MessageInfo_new(0, 0, 0, 1);
     seL4_SetMR(0, MSG_DATA);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
 
 On completion, the output should change as follows:
 ```
-dynamic-2: main@main.c:472 [Cond failed: msg != ~MSG_DATA]
+libraries-2: main@main.c:472 [Cond failed: msg != ~MSG_DATA]
 /*-- filter TaskCompletion("task-8", TaskContentType.COMPLETED) -*/
 	Response data from thread_2's content was not what was expected.
 /*-- endfilter -*/
@@ -507,12 +570,17 @@ response message, if the sender doesn't want it to.
      */
 /*-- endset -*/
 /*? task_9_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-9", TaskContentType.COMPLETED) -*/
     tag = seL4_Call(ep_cap_path.capPtr, tag);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
 
 On completion, you should see thread_2 fault as follows:
 ```
@@ -527,6 +595,7 @@ in thread 0xffffff801ffb4400 "child of: 'rootserver'" at address (nil)
 in thread 0xffffff801ffb4400 "child of: 'rootserver'" at address (nil)
 With stack:
 ```
+
 
 ### Receive a reply
 
@@ -549,12 +618,18 @@ designated, single IPC buffer.
      */
 /*-- endset -*/
 /*?  task_10_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-10", TaskContentType.COMPLETED, completion="thread_2: hallo wereld") -*/
     msg = seL4_GetMR(0);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
+
 On completion, the output should not change.
 
 ### Receive an IPC
@@ -586,12 +661,17 @@ explicitly interested in distinguishing the sender.
      */
 /*-- endset -*/
 /*? task_11_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-11", TaskContentType.COMPLETED) -*/
     tag = seL4_Recv(ep_object.cptr, &sender_badge);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
+
 On completion, the output should change slightly:
 ```
 /*-- filter TaskCompletion("task-11", TaskContentType.COMPLETED) -*/
@@ -621,7 +701,12 @@ Complete them and proceed to the next step.
      */
 /*-- endset -*/
 /*? task_12_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-12", TaskContentType.COMPLETED, completion="thread_2: hallo wereld") -*/
     ZF_LOGF_IF(sender_badge != EP_BADGE,
                "Badge on the endpoint was not what was expected.\n");
@@ -630,8 +715,8 @@ Complete them and proceed to the next step.
                "Length of the data send from root thread was not what was expected.\n"
                "\tHow many registers did you set with seL4_SetMR, within the root thread?\n");
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
 
 On completion, the output should not change.
 
@@ -651,12 +736,18 @@ Again, just reading the data from the Message Registers.
      */
 /*-- endset -*/
 /*? task_13_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-13", TaskContentType.COMPLETED, completion="main: hello world") -*/
     msg = seL4_GetMR(0);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
+
 On completion, the output should change slightly:
 ```
 /*--filter TaskCompletion("task-13", TaskContentType.COMPLETED) -*/
@@ -680,12 +771,18 @@ And writing Message Registers again.
      */
 /*-- endset -*/
 /*? task_14_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-14", TaskContentType.COMPLETED, completion="main: hello world") -*/
     seL4_SetMR(0, msg);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
+
 On completion, the output should not change.
 
 ### Reply to a message
@@ -725,21 +822,28 @@ Complete the step and pat yourself on the back.
      */
 /*-- endset -*/
 /*? task_15_desc ?*/
-/*-- filter ExcludeDocs() -*/
+```
+
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
 /*-- filter TaskContent("task-15", TaskContentType.COMPLETED, completion="main: hello world") -*/
     seL4_ReplyRecv(ep_object.cptr, tag, &sender_badge);
 /*-- endfilter -*/
-/*-- endfilter -*/
 ```
+</details>
+
 On completion, the output should change, with the fault message replaced with the following:
 ```
 /*--filter TaskCompletion("task-15", TaskContentType.COMPLETED) -*/
 main: got a reply: [0xffff9e9e|0xffffffffffff9e9e]
 /*-- endfilter -*/
 ```
+
 That's it for this tutorial.
 
-/*? macros.help_block() ?*/
+
 
 /*- filter ExcludeDocs() -*/
 /*? ExternalFile("CMakeLists.txt") ?*/
@@ -849,8 +953,8 @@ int main(void) {
     ZF_LOGF_IF(info == NULL, "Failed to get bootinfo.");
 
     /* Set up logging and give us a name: useful for debugging if the thread faults */
-    zf_log_set_tag_prefix("dynamic-2:");
-    name_thread(seL4_CapInitThreadTCB, "dynamic-2");
+    zf_log_set_tag_prefix("libraries-2:");
+    name_thread(seL4_CapInitThreadTCB, "libraries-2");
 
     /* init simple */
     simple_default_init_bootinfo(&simple, info);
@@ -940,7 +1044,7 @@ int main(void) {
 
 
     /* give the new thread a name */
-    name_thread(tcb_object.cptr, "dynamic-2: thread_2");
+    name_thread(tcb_object.cptr, "libraries-2: thread_2");
 
     /* set start up registers for the new thread */
     seL4_UserContext regs = {0};

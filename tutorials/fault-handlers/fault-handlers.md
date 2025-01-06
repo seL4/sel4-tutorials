@@ -10,24 +10,54 @@
         ['fault-badge', 'fault-ep-setup', 'fault-ipc-recv', 'fault-handle', 'fault-resume'])
 ?*/
 
+This tutorial covers fault handling in seL4.
+
+You will learn:
+1. About thread faults.
+2. That a thread fault is different from a processor hardware fault.
+3. About fault handlers.
+4. What the kernel does to a thread which has faulted.
+5. How to set the endpoint that the kernel will deliver fault messages on (master vs MCS).
+6. How to resume threads after they have faulted.
+
 ## Prerequisites
 
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-2. [Capabilities tutorial](https://docs.sel4.systems/Tutorials/capabilities).
-3. [IPC Tutorial](https://docs.sel4.systems/Tutorials/ipc).
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
+2. [Capabilities tutorial](https://docs.sel4.systems/Tutorials/capabilities)
+3. [IPC tutorial](https://docs.sel4.systems/Tutorials/ipc)
 
 ## Initialising
 
 /*? macros.tutorial_init("fault-handlers") ?*/
 
-## Outcomes
+<details markdown='1'>
+<summary><em>Hint:</em> tutorial solutions</summary>
+<br>
+All tutorials come with complete solutions. To get solutions run:
 
-1. Learn what a thread fault is.
-2. Understand that a thread fault is different from a processor hardware fault.
-3. Learn what a fault handler is.
-4. Understand what the kernel does to a thread which has faulted.
-5. Learn how to set the endpoint that the kernel will deliver fault messages on (master vs MCS).
-6. Learn how to resume threads after they have faulted.
+/*? macros.tutorial_init_with_solution("fault-handlers") ?*/
+
+</details>
+
+## CapDL Loader
+
+This tutorial uses the *capDL loader*, a root task which allocates statically
+ configured objects and capabilities.
+
+<details markdown='1'>
+<summary>Get CapDL</summary>
+The capDL loader parses
+a static description of the system and the relevant ELF binaries.
+It is primarily used in [Camkes](https://docs.sel4.systems/CAmkES/) projects
+but we also use it in the tutorials to reduce redundant code.
+The program that you construct will end up with its own CSpace and VSpace, which are separate
+from the root task, meaning CSlots like `seL4_CapInitThreadVSpace` have no meaning
+in applications loaded by the capDL loader.
+<br>
+More information about CapDL projects can be found [here](https://docs.sel4.systems/CapDL.html).
+<br>
+For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This can be added in a directory that is adjacent to the tutorials-manifest directory.
+</details>
 
 ## Background: What is a fault, and what is a fault handler?
 
@@ -81,7 +111,7 @@ If the fault handler did not properly rectify the anomaly in the faulting
 thread, resuming the faulting thread will simply cause the kernel to re-generate
 the fault.
 
-## Reasons for thread faults:
+## Reasons for thread faults
 
 Thread faults can be generated for different reasons. When a fault occurs the
 kernel will pass information describing the cause of the fault as an IPC
@@ -97,7 +127,7 @@ In addition, the following fault types are added by the MCS kernel:
 
 * Timeout fault: Triggered when a thread consumes all of its budget and still has further execution to do in the current period.
 
-## Thread fault messages:
+## Thread fault messages
 
 When a fault is generated, the kernel will deliver an IPC message across the
 fault endpoint. This IPC message contains information that tells the fault
@@ -112,7 +142,7 @@ the [seL4 Manual](https://sel4.systems/Info/Docs/seL4-manual-latest.pdf).
 The rest of this tutorial will attempt to teach the reader how to receive and
 handle seL4 thread faults.
 
-## Setting up a fault endpoint for a thread:
+## Setting up a fault endpoint for a thread
 
 In the scenario where a fault message is being delivered on a fault endpoint,
 the kernel acts as the IPC "sender" and the fault handler acts as a receiver.
@@ -121,7 +151,7 @@ This implies that when caps are being handed out to the fault endpoint object,
 one cap to the object must be given to the kernel and one cap to the object must
 be given to the handler.
 
-### Kernel end vs handler end:
+### Kernel end vs handler end
 
 Programmers specify the capability to use a fault handler for a thread when
 configuring a TCB. As a result the programmer can also set a badge on the
@@ -138,7 +168,7 @@ faults from multiple threads. Please see the
 [IPC Tutorial](https://docs.sel4.systems/Tutorials/ipc) for a refresher on how
 badged fault endpoints work.
 
-### Differences between MCS and Master kernel:
+### Differences between MCS and Master kernel
 
 There is a minor difference in the way that the kernel is informed of the
 cap to a fault endpoint, between the master and MCS kernels.
@@ -160,7 +190,7 @@ You will be guided through the following broad steps:
 3. Handling the fault in the fault handler.
 4. Resuming the execution of the faulting thread.
 
-### Description of the tutorial program:
+### Description of the tutorial program
 
 The tutorial features two threads in different virtual address spaces. One
 thread is the "`faulter`" and the other is the "`handler`". The `faulter` is going to
@@ -242,6 +272,35 @@ using the Master kernel, we need to pass a CPtr that can be resolved from within
 the CSpace of the `faulter` thread:
 
 ```c
+    /* Here we need to keep in mind which CPtr we give the kernel. On the MCS
+     * kernel, we must give a CPtr which can be resolved during the course of
+     * this seL4_TCB_SetSpace syscall, from within our own CSpace.
+     *
+     * On the Master kernel, we must give a CPtr which can be resolved during
+     * the generation of a fault message, from within the CSpace of the
+     * (usually foreign) faulting thread.
+     */
+
+    error = seL4_TCB_SetSpace(
+        faulter_tcb_cap,
+        foreign_badged_faulter_empty_slot_cap,
+        faulter_cspace_root,
+        0,
+        faulter_vspace_root,
+        0);
+
+    ZF_LOGF_IF(error != 0, PROGNAME "Failed to configure faulter's TCB with our fault ep!");
+    printf(PROGNAME "Successfully registered badged fault handling ep with "
+           "the kernel.\n"
+           PROGNAME "About to wake the faulter thread.\n");
+
+    /* Signal the faulter thread to try to touch the invalid cspace slot. */
+    seL4_Reply(seL4_MessageInfo_new(0, 0, 0, 0));
+    /* Now wait for the fault IPC message from the kernel. */
+    seL4_Recv(faulter_fault_ep_cap, &tmp_badge);
+```
+/*-- filter ExcludeDocs() -*/
+```c
 /*-- filter TaskContent("fault-ep-setup", TaskContentType.COMPLETED, subtask="setup", completion="About to touch fault vaddr.") -*/
     error = seL4_TCB_SetSpace(
         faulter_tcb_cap,
@@ -252,20 +311,40 @@ the CSpace of the `faulter` thread:
         0);
 /*-- endfilter -*/
 ```
+/*-- endfilter -*/
 
-### Receiving the IPC message from the kernel:
+### Receiving the IPC message from the kernel
 
 The kernel will deliver the IPC message to any thread waiting on the fault
 endpoint. To wait for a fault IPC message simply `seL4_Recv()`, the same way
 you'd wait for any other IPC message:
 
 ```c
+    /* The IPC message for a cap fault contains the cap address of the slot
+     * which generated the cap fault.
+     *
+     * We need to retrieve this slot address and fill that slot with a random
+     * endpoint cap of our choosing so that the faulter thread can touch that
+     * slot successfully.
+     */
+
+    foreign_faulter_capfault_cap = seL4_GetMR(seL4_CapFault_Addr);
+
+    printf(PROGNAME "Received fault IPC message from the kernel.\n"
+           PROGNAME "Fault occured at cap addr %lu within faulter's cspace.\n",
+           foreign_faulter_capfault_cap);
+```
+
+/*-- filter ExcludeDocs() -*/
+```c
 /*-- filter TaskContent("fault-ipc-recv", TaskContentType.COMPLETED, subtask="getmr", completion="Fault occured at cap addr 3 within faulter's cspace.") -*/
     foreign_faulter_capfault_cap = seL4_GetMR(seL4_CapFault_Addr);
 /*-- endfilter -*/
 ```
+/*-- endfilter -*/
 
-### Finding out information about the generated thread fault:
+
+### Finding out information about the generated thread fault
 
 In the thread fault IPC message, the kernel will send information about the
 fault including the capability address whose access triggered the thread fault.
@@ -277,7 +356,7 @@ In our example here, our sample code generated a Cap Fault, so according to the
 seL4 manual, we can find out the cap fault address using at offset
 `seL4_CapFault_Addr` in the IPC message, as you see above in the code snippet.
 
-### Handling a thread fault:
+### Handling a thread fault
 
 Now that we know the cap address that generated a fault in the `faulting` thread,
 we can "handle" the fault by putting a random cap into that slot and then when
@@ -286,6 +365,28 @@ no thread fault will be generated.
 
 So here we'll copy an endpoint cap into the faulting slot:
 
+```c
+    /* Handle the fault by copying an endpoint cap into the empty slot. It
+     * doesn't matter which one: as long as we copy it in with receive rights
+     * because the faulter is going to attempt to perform an seL4_NBRecv() on
+     * it.
+     */
+
+    error = seL4_CNode_Copy(
+        faulter_cspace_root,
+        foreign_faulter_capfault_cap,
+        seL4_WordBits,
+        handler_cspace_root,
+        sequencing_ep_cap,
+        seL4_WordBits,
+        seL4_AllRights);
+
+    ZF_LOGF_IF(error != 0, PROGNAME "Failed to copy a cap into faulter's cspace to resolve the fault!");
+    printf(PROGNAME "Successfully copied a cap into foreign faulting slot.\n"
+           PROGNAME "About to resume the faulter thread.\n");
+```
+
+/*-- filter ExcludeDocs() -*/
 ```c
 /*-- filter TaskContent("fault-handle", TaskContentType.COMPLETED, subtask="copy", completion="Successfully copied a cap into foreign faulting slot.") -*/
     error = seL4_CNode_Copy(
@@ -298,24 +399,32 @@ So here we'll copy an endpoint cap into the faulting slot:
         seL4_AllRights);
 /*-- endfilter -*/
 ```
+/*-- endfilter -*/
 
-### Resuming a faulting thread:
+### Resuming a faulting thread
 
 Finally, to have the `faulter` thread wake up and try to execute again, we
 `seL4_Reply()` to it:
 
 ```c
+     seL4_Reply(seL4_MessageInfo_new(0, 0, 0, 0));
+
+    printf(PROGNAME "Successfully resumed faulter thread.\n"
+           PROGNAME "Finished execution.\n");
+```
+
+/*-- filter ExcludeDocs() -*/
+```c
 /*-- filter TaskContent("fault-resume", TaskContentType.COMPLETED, subtask="reply", completion="Faulter: Finished execution.") -*/
-    seL4_Reply(seL4_MessageInfo_new(0, 0, 0, 0));
+     seL4_Reply(seL4_MessageInfo_new(0, 0, 0, 0));
 /*-- endfilter -*/
 ```
+/*-- endfilter -*/
 
 ## Further exercises
 
 If you'd like to challenge yourself, make sure to set up the fault handling on
 both versions of the kernel: master and MCS.
-
-/*? macros.help_block() ?*/
 
 /*-- filter ExcludeDocs() -*/
 
