@@ -69,7 +69,7 @@ jobs:
   deploy:
     name: Deploy manifest
     if: ${{ github.repository_owner == 'seL4' && github.event_name != 'pull_request' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: [test, code]
     steps:
     - name: Deploy
