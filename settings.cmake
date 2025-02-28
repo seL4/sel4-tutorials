@@ -80,6 +80,11 @@ set(KernelNumDomains 1 CACHE STRING "" FORCE)
 # and they don't initialize a platsupport driver.
 ApplyCommonReleaseVerificationSettings(FALSE FALSE)
 
+if (KernelSel4ArchAarch32)
+    # Set correct aarch32 TLS register config
+    set(KernelArmTLSReg tpidruro CACHE STRING "" FORCE)
+endif()
+
 # We will attempt to generate a simulation script, so try and generate a simulation
 # compatible configuration
 ApplyCommonSimulationSettings(${KernelSel4Arch})
