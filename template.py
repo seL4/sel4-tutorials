@@ -10,14 +10,12 @@ import os
 from jinja2 import Environment, FileSystemLoader
 import argparse
 import sys
-import sh
-import tools
 from tools import tutorialstate, context
-from yaml import load, dump
+from yaml import load
 try:
-    from yaml import CLoader as Loader, CDumper as Dumper
+    from yaml import CLoader as Loader
 except ImportError:
-    from yaml import Loader, Dumper
+    from yaml import Loader
 
 from io import StringIO
 
