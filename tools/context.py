@@ -149,7 +149,6 @@ class TutorialFilters:
             stash.current_cspace.alloc(tcb)
             stash.finish_elf(name, "%s.c" % name)
 
-        print("end")
         return content
 
 
@@ -248,7 +247,6 @@ class TutorialFunctions:
                 i = i[0]
             task = state.get_task(i)
             if task <= state.current_task:
-                print(task.name)
                 content = state.print_task(task, subtask)
                 if not content:
                     if state.solution:
