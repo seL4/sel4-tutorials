@@ -51,7 +51,7 @@ Initialise the tutorial in Terminal B, which is running the container.
 
 /*? macros.tutorial_init("hello-world") ?*/
 
-This step creates two new directories in `sel4-tutorials-manifest`, namely `hello-world` and `hello-world_build`
+This step creates two new directories in `tutorials/`, namely `hello-world` and `hello-world_build`
 
 <details markdown='1'>
 
@@ -70,7 +70,7 @@ This will generate another `hello-world` directory and `hello-world_build` direc
 ### Build the program
 
 ```
-cd sel4-tutorials-manifest/hello-world_build
+cd tutorials/hello-world_build
 ```
 
 Next, build the program in Terminal B using ninja
@@ -111,7 +111,7 @@ because the program hasn't properly cleaned up after itself yet. (This will come
 To look at the sources, open a new terminal, Terminal A:
 
 ```
-cd sel4-tutorials-manifest/hello-world
+cd tutorials/hello-world
 ls
 ```
 
@@ -161,7 +161,7 @@ target_link_libraries(hello-world
     muslc utils sel4tutorials
     sel4muslcsys sel4platsupport sel4utils sel4debug)
 
-# Tell the build system that this application is the root task. 
+# Tell the build system that this application is the root task.
 include(rootserver)
 DeclareRootserver(hello-world)
 /*- endset -*/
@@ -170,8 +170,8 @@ DeclareRootserver(hello-world)
 
 ### `main.c`
 
-The main C is a very typical C file. For a basic root server application, the only requirement is that 
-a `main` function is provided. 
+The main C is a very typical C file. For a basic root server application, the only requirement is that
+a `main` function is provided.
 
 ```c
 #include <stdio.h>
