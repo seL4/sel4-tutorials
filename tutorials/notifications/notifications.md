@@ -53,7 +53,7 @@ in applications loaded by the capDL loader.
 
 More information about CapDL projects can be found [here](https://docs.sel4.systems/CapDL.html).
 
-For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This can be added in a directory that is adjacent to the tutorials-manifest directory.
+For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This can be added in a directory that is adjacent to the main `tutorials` directory.
 </details>
 
 ## Background
