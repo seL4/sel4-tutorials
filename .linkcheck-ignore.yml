@@ -1,0 +1,7 @@
+# Copyright 2025, Proofcraft Pty Ltd
+#
+# SPDX-License-Identifier: BSD-2-Clause
+
+urls:
+  # link works, but checker gets 403, because only humans are allowed to check
+  - dl.acm.org/citation.cfm.id=917665
