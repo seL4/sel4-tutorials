@@ -10,14 +10,15 @@ Various tutorials for using seL4, its libraries, and CAmkES.
 
 ## Prerequisites
 
-Follow the instructions for setting up your host environment on the [seL4 docsite](https://docs.sel4.systems/HostDependencies).
+Follow the instructions for setting up your host environment on the [seL4
+docsite](https://docs.sel4.systems/Tutorials/setting-up.html).
 
 ## Starting a tutorial
 
 This tutorial repository is part of a larger collection of repositories, which
 are required to run the tutorial and are coordinated in a manifest file. See
-[this guide](https://docs.sel4.systems/Tutorials/#the-tutorials) on how to check
-out a consistent set.
+[this guide](https://docs.sel4.systems/Tutorials/get-the-tutorials.html) on how
+to check out a consistent set.
 
 Once you have that, a tutorial is started through the use of the `init` script
 that is provided in the root directory. Using this script you can specify a
@@ -80,24 +81,21 @@ not appropriate for learning how to create and structure new applications/system
 tutorials for this will be forthcoming. For now it is suggested to look at other existing
 applications for ideas.
 
-# Documentation
+## Documentation
 
-## Developer wiki
+### seL4 docsite
 
-A walkthrough of each tutorial is available on the [`docs site`](https://docs.sel4.systems/Tutorials)
+A walkthrough of each tutorial is available on the [seL4 docsite](https://docs.sel4.systems/Tutorials/)
 
-## Tutorial Slides
+### Tutorial Slides
 
-The slides used for the tutorial are available in [`docs`](docs).
+The slides used for the tutorial are available in [`docs`](docs/).
 
-## seL4 Manual
+### seL4 Manual
 
-The seL4 manual lives in the kernel source in the [`manual`](https://github.com/seL4/seL4/tree/master/manual) directory.
-To generate a PDF go into that directory and type `make`.
-You will need to have LaTeX installed to build it.
+A pre-generated PDF version of the seL4 manual can be found
+[`here`](http://sel4.systems/Info/Docs/seL4-manual-latest.pdf).
 
-A pre-generated PDF version can be found [`here`](http://sel4.systems/Info/Docs/seL4-manual-latest.pdf).
+### CAmkES Documentation
 
-## CAmkES Documentation
-
-CAmkES documentation lives in the camkes-tool repository in [docs/index.md](https://github.com/seL4/camkes-tool/blob/master/docs/index.md).
+CAmkES documentation can be found on the [CAmkES page](https://docs.sel4.systems/projects/camkes/) of the docsite.
