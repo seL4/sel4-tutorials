@@ -28,8 +28,8 @@ commented out.
 
 ## Prerequisites
 
-1. [Set up your machine](https://docs.sel4.systems/HostDependencies).
-2. [CAmkES 2](https://docs.sel4.systems/Tutorials/hello-camkes-2)
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up.html).
+2. [CAmkES 2](https://docs.sel4.systems/Tutorials/hello-camkes-2.html)
 
 ## CapDL Loader
 
@@ -40,13 +40,13 @@ This tutorial uses the *capDL loader*, a root task which allocates statically
 <summary>Get CapDL</summary>
 The capDL loader parses
 a static description of the system and the relevant ELF binaries.
-It is primarily used in [CAmkES](https://docs.sel4.systems/CAmkES/) projects
+It is primarily used in [CAmkES](https://docs.sel4.systems/projects/camkes/) projects
 but we also use it in the tutorials to reduce redundant code.
 The program that you construct will end up with its own CSpace and VSpace, which are separate
 from the root task, meaning CSlots like `seL4_CapInitThreadVSpace` have no meaning
 in applications loaded by the capDL loader.
 <br>
-More information about CapDL projects can be found [here](https://docs.sel4.systems/CapDL.html).
+More information about CapDL projects can be found [here](https://docs.sel4.systems/projects/capdl/).
 <br>
 For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This can be added in a directory that is adjacent to the main `tutorials` directory.
 </details>
@@ -94,7 +94,7 @@ wish to call your driver something else, you'll have to change these lines.
     /* Part 1, TASK 1: component instances */
     /* hint 1: one hardware component and one driver component
         * hint 2: look at
-        * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+        * https://docs.sel4.systems/projects/camkes/manual.html#creating-an-application
         */
 /*-- endfilter -*/
 ```
@@ -124,7 +124,7 @@ registers. The other represents an interrupt.
     /* hint 1: use seL4HardwareMMIO to connect device memory
         * hint 2: use seL4HardwareInterrupt to connect interrupt
         * hint 3: look at
-        * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+        * https://docs.sel4.systems/projects/camkes/manual.html#creating-an-application
         */
 /*-- endfilter -*/
 ```
@@ -153,7 +153,7 @@ must both be configured.
     /* Timer and Timerbase:
         * hint 1: find out the device memory address and IRQ number from the hardware data sheet
         * hint 2: look at
-        * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#hardware-components
+        * https://docs.sel4.systems/projects/camkes/manual.html#hardware-components
         */
 /*-- endfilter -*/
 ```
@@ -331,7 +331,7 @@ need to implement is called `hello_sleep`.
     * hint 4: so the function would be: hello_sleep()
     * hint 5: the camkes 'int' type maps to 'int' in c
     * hint 6: invoke a function in supplied driver the to set up the timer
-    * hint 7: look at https://github.com/sel4/camkes-tool/blob/master/docs/index.md#creating-an-application
+    * hint 7: look at https://docs.sel4.systems/projects/camkes/manual.html#creating-an-application
     */
 /*-- endfilter -*/
 ```
@@ -413,7 +413,7 @@ lines if necessary.
     /* Part 2, TASK 1: component instances */
     /* hint 1: a single TimerDTB component
     * hint 2: look at
-    * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+    * https://docs.sel4.systems/projects/camkes/manual.html#creating-an-application
     */
 /*-- endfilter -*/
 ```
@@ -441,7 +441,7 @@ connector.
     /* hint 1: connect the dummy_source and timer interfaces
     * hint 2: the dummy_source should be the 'from' end
     * hint 3: look at
-    * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+    * https://docs.sel4.systems/projects/camkes/manual.html#creating-an-application
     */
 /*-- endfilter -*/
 ```
@@ -773,7 +773,7 @@ void hello__init() {
  * hint 4: so the function would be: hello_sleep()
  * hint 5: the camkes 'int' type maps to 'int' in c
  * hint 6: invoke a function in the supplied driver to set a timeout
- * hint 7: look at https://github.com/sel4/camkes-tool/blob/master/docs/index.md#creating-an-application
+ * hint 7: look at https://docs.sel4.systems/projects/camkes/manual.html#creating-an-application
  */
 void hello_sleep(int sec) {
     int error = 0;

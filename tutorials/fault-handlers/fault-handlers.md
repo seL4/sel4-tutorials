@@ -22,9 +22,9 @@ You will learn:
 
 ## Prerequisites
 
-1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
-2. [Capabilities tutorial](https://docs.sel4.systems/Tutorials/capabilities)
-3. [IPC tutorial](https://docs.sel4.systems/Tutorials/ipc)
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up.html)
+2. [Capabilities tutorial](https://docs.sel4.systems/Tutorials/capabilities.html)
+3. [IPC tutorial](https://docs.sel4.systems/Tutorials/ipc.html)
 
 ## Initialising
 
@@ -48,13 +48,13 @@ This tutorial uses the *capDL loader*, a root task which allocates statically
 <summary>Get CapDL</summary>
 The capDL loader parses
 a static description of the system and the relevant ELF binaries.
-It is primarily used in [CAmkES](https://docs.sel4.systems/CAmkES/) projects
+It is primarily used in [CAmkES](https://docs.sel4.systems/projects/camkes/) projects
 but we also use it in the tutorials to reduce redundant code.
 The program that you construct will end up with its own CSpace and VSpace, which are separate
 from the root task, meaning CSlots like `seL4_CapInitThreadVSpace` have no meaning
 in applications loaded by the capDL loader.
 <br>
-More information about CapDL projects can be found [here](https://docs.sel4.systems/CapDL.html).
+More information about CapDL projects can be found [here](https://docs.sel4.systems/projects/capdl/).
 <br>
 For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This can be added in a directory that is adjacent to the main `tutorials` directory.
 </details>
@@ -65,7 +65,7 @@ A fault handler is a separate instruction stream which the CPU can jump to in
 order to rectify an anomalous condition in the current thread and then return to
 the previous instruction stream.
 
-In seL4, faults are modeled as separately programmer-designated "fault handler"
+In seL4, faults are modelled as separately programmer-designated "fault handler"
 threads. In monolithic kernels, faults are not usually delivered to a userspace
 handler, but they are handled by the monolithic kernel itself.
 
@@ -131,7 +131,7 @@ In addition, the following fault types are added by the MCS kernel:
 
 When a fault is generated, the kernel will deliver an IPC message across the
 fault endpoint. This IPC message contains information that tells the fault
-handler why the fault occured as well as surrounding contextual information
+handler why the fault occurred as well as surrounding contextual information
 about the fault which might help the fault handler to rectify the anomaly.
 
 Each anomaly has its own message format because the information needed to
@@ -161,11 +161,11 @@ When the kernel sends a fault IPC message using a badged endpoint cap, the badge
 is delivered to the receiver just the same way it is delivered for any other
 IPC where there is a badge on the sender's cap.
 
-A keen reader would probably have realized that this means that a badge on the
+A keen reader would probably have realised that this means that a badge on the
 kernel's cap to a fault endpoint can be used to distinguish fault messages
 from different faulting threads, such that a single handler can handle
 faults from multiple threads. Please see the
-[IPC Tutorial](https://docs.sel4.systems/Tutorials/ipc) for a refresher on how
+[IPC Tutorial](https://docs.sel4.systems/Tutorials/ipc.html) for a refresher on how
 badged fault endpoints work.
 
 ### Differences between MCS and Master kernel

@@ -62,8 +62,8 @@ Learning outcomes:
 
 ## Prerequisites
 
-1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
-2. [Libraries: initialisation & threading](https://docs.sel4.systems/Tutorials/libraries-1)
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up.html)
+2. [Libraries: initialisation & threading](https://docs.sel4.systems/Tutorials/libraries-1.html)
 
 
 ## Initialising

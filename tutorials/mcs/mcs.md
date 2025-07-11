@@ -21,16 +21,16 @@ Learn:
 
 ## Prerequisites
 
-1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
-2. [Hello world tutorial](https://docs.sel4.systems/Tutorials/hello-world)
-3. [Capabilities tutorial](https://docs.sel4.systems/Tutorials/capabilities)
-4. [Untyped tutorial](https://docs.sel4.systems/Tutorials/untyped)
-5. [Mapping tutorial](https://docs.sel4.systems/Tutorials/mapping)
-6. [Threads tutorial](https://docs.sel4.systems/Tutorials/threads)
-7. [IPC tutorial](https://docs.sel4.systems/Tutorials/ipc)
-8. [Notifications tutorial](https://docs.sel4.systems/Tutorials/notifications)
-9. [Interrupts tutorial](https://docs.sel4.systems/Tutorials/interrupts)
-10. [Fault handlers tutorial](https://docs.sel4.systems/Tutorials/fault-handlers)
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up.html)
+2. [Hello world tutorial](https://docs.sel4.systems/Tutorials/hello-world.html)
+3. [Capabilities tutorial](https://docs.sel4.systems/Tutorials/capabilities.html)
+4. [Untyped tutorial](https://docs.sel4.systems/Tutorials/untyped.html)
+5. [Mapping tutorial](https://docs.sel4.systems/Tutorials/mapping.html)
+6. [Threads tutorial](https://docs.sel4.systems/Tutorials/threads.html)
+7. [IPC tutorial](https://docs.sel4.systems/Tutorials/ipc.html)
+8. [Notifications tutorial](https://docs.sel4.systems/Tutorials/notifications.html)
+9. [Interrupts tutorial](https://docs.sel4.systems/Tutorials/interrupts.html)
+10. [Fault handlers tutorial](https://docs.sel4.systems/Tutorials/fault-handlers.html)
 
 
 ## Initialising

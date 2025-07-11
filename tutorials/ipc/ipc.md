@@ -17,8 +17,8 @@ You will learn:
 
 ## Prerequisites
 
-1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
-2. [Capabilities tutorial](https://docs.sel4.systems/Tutorials/capabilities)
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up.html)
+2. [Capabilities tutorial](https://docs.sel4.systems/Tutorials/capabilities.html)
 
 ## Initialising
 
@@ -43,13 +43,13 @@ This tutorial uses the *capDL loader*, a root task which allocates statically
 <summary>Get CapDL</summary>
 The capDL loader parses
 a static description of the system and the relevant ELF binaries.
-It is primarily used in [CAmkES](https://docs.sel4.systems/CAmkES/) projects
+It is primarily used in [CAmkES](https://docs.sel4.systems/projects/camkes/) projects
 but we also use it in the tutorials to reduce redundant code.
 The program that you construct will end up with its own CSpace and VSpace, which are separate
 from the root task, meaning CSlots like `seL4_CapInitThreadVSpace` have no meaning
 in applications loaded by the capDL loader.
 
-More information about CapDL projects can be found [here](https://docs.sel4.systems/CapDL.html).
+More information about CapDL projects can be found [here](https://docs.sel4.systems/projects/capdl/).
 
 For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This can be added in a directory that is adjacent to the main `tutorials` directory.
 </details>
@@ -85,7 +85,7 @@ does the same, except it sends the reply and blocks on the provided endpoint in 
 
 Since TCBs have a single space to store a reply capability, if servers need to service multiple
 requests (e.g saving requests to reply at a later time, after hardware operations have been completed),
-[`seL4_CNode_SaveCaller`](https://docs.sel4.systems/ApiDoc.html#save-caller) can be used to save
+[`seL4_CNode_SaveCaller`](https://docs.sel4.systems/projects/sel4/api-doc.html#save-caller) can be used to save
 the reply capability to an empty slot in the receivers CSpace.
 
 ### IPC Buffer
@@ -154,8 +154,8 @@ It contains the following fields:
 
 Along with the message the kernel additionally delivers the badge of the endpoint capability
 that the sender invoked to send the message. Endpoints can be badged using
-[`seL4_CNode_Mint`](https://docs.sel4.systems/ApiDoc.html#mint) or
- [`seL4_CNode_Mutate`](https://docs.sel4.systems/ApiDoc.html#mutate). Once an endpoint is badged,
+[`seL4_CNode_Mint`](https://docs.sel4.systems/projects/sel4/api-doc.html#mint) or
+ [`seL4_CNode_Mutate`](https://docs.sel4.systems/projects/sel4/api-doc.html#mutate). Once an endpoint is badged,
 the badge of the endpoint is transferred to any receiver that receives messages on that endpoint.
 The code example below demonstrates this:
 
@@ -356,7 +356,7 @@ lazy
 
 **Exercise** Currently each client is scheduled for its full timeslice until it is preempted. Alter
 your server to only print one message from each client, alternating. You will need to use
-[`seL4_CNode_SaveCaller`](https://docs.sel4.systems/ApiDoc.html#save-caller)  to save the reply
+[`seL4_CNode_SaveCaller`](https://docs.sel4.systems/projects/sel4/api-doc.html#save-caller)  to save the reply
 capability for each sender. You can use `free_slot` to store the reply capabilities.
 
 

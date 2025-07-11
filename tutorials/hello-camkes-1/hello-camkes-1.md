@@ -17,11 +17,11 @@ well-defined, static system.
 2. Understand the file-layout of a CAmkES ADL project.
 3. Become acquainted with the basics of creating a practical CAmkES application.
 
-Use this [slide presentation](https://github.com/seL4/sel4-tutorials/blob/master/docs/CAmkESTutorial.pdf) to guide you through the tutorials [0](https://docs.sel4.systems/Tutorials/hello-camkes-0), [1](https://docs.sel4.systems/Tutorials/hello-camkes-1) and [2](https://docs.sel4.systems/Tutorials/hello-camkes-2).
+Use this [slide presentation](https://github.com/seL4/sel4-tutorials/blob/master/docs/CAmkESTutorial.pdf) to guide you through the tutorials [0](https://docs.sel4.systems/Tutorials/hello-camkes-0.html), [1](https://docs.sel4.systems/Tutorials/hello-camkes-1.html) and [2](https://docs.sel4.systems/Tutorials/hello-camkes-2.html).
 
 ## Prerequisites
-1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
-2. [CAmkES hello world tutorial](https://docs.sel4.systems/Tutorials/hello-camkes-0)
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up.html)
+2. [CAmkES hello world tutorial](https://docs.sel4.systems/Tutorials/hello-camkes-0.html)
 
 ## Initialising
 
@@ -54,7 +54,7 @@ the following camkes file:
 - `hello-camkes-1/hello-1.camkes`
 
 Find the Component manual section here:
-<https://github.com/seL4/camkes-tool/blob/master/docs/index.md#component>
+<https://docs.sel4.systems/projects/camkes/manual.html#component>
 
 ### Connections
 
@@ -67,7 +67,7 @@ we are using synchronous IPC. In implementation terms, this boils down
 to the `seL4_Call` syscall on seL4.
 
 Find the "Connection" keyword manual section here:
-<https://github.com/seL4/camkes-tool/blob/master/docs/index.md#connection>
+<https://docs.sel4.systems/projects/camkes/manual.html#connection>
 
 ### Interfaces
 
@@ -94,7 +94,7 @@ Procedure interface may be found here:
 `hello-camkes-1/interfaces/HelloSimple.idl4`
 
 Find the "Procedure" keyword definition here:
-<https://github.com/seL4/camkes-tool/blob/master/docs/index.md#procedure>
+<https://docs.sel4.systems/projects/camkes/manual.html#procedure>
 
 ### Component source
 
@@ -174,7 +174,7 @@ assembly {
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="connect") -*/
         /* hint 1: use seL4RPCCall as the connector (or you could use seL4RPC if you prefer)
          * hint 2: look at
-         * https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+         * https://docs.sel4.systems/projects/camkes/manual.html#creating-an-application
          */
 /*-- endfilter -*/
 ```
@@ -199,7 +199,7 @@ procedure HelloSimple {
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="interface") -*/
     /* TODO define RPC functions */
     /* hint 1: define at least one function that takes a string as input parameter. call it say_hello. no return value
-     * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+     * hint 2: look at https://docs.sel4.systems/projects/camkes/manual.html#creating-an-application
      */
 /*-- endfilter -*/
 ```
@@ -227,7 +227,7 @@ procedure HelloSimple {
  * hint 4: so the function would be: hello_say_hello()
  * hint 5: the CAmkES 'string' type maps to 'const char *' in C
  * hint 6: make the function print out a mesage using printf
- * hint 7: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+ * hint 7: look at https://docs.sel4.systems/projects/camkes/manual.html#creating-an-application
  */
 /*-- endfilter -*/
 ```
@@ -258,7 +258,7 @@ void hello_say_hello(const char *str) {
      * hint 2: the interfaces available are defined by the component, e.g. in hello-1.camkes
      * hint 3: the function name is defined by the interface definition, e.g. in interfaces/HelloSimple.idl4
      * hint 4: so the function would be:  hello_say_hello()
-     * hint 5: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#creating-an-application
+     * hint 5: look at https://docs.sel4.systems/projects/camkes/manual.html#creating-an-application
      */
 /*-- endfilter -*/
 ```
