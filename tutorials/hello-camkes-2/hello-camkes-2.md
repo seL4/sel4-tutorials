@@ -29,7 +29,7 @@ This tutorial uses the *capDL loader*, a root task which allocates statically
 <summary>Get CapDL</summary>
 The capDL loader parses
 a static description of the system and the relevant ELF binaries.
-It is primarily used in [Camkes](https://docs.sel4.systems/CAmkES/) projects
+It is primarily used in [CAmkES](https://docs.sel4.systems/CAmkES/) projects
 but we also use it in the tutorials to reduce redundant code.
 The program that you construct will end up with its own CSpace and VSpace, which are separate
 from the root task, meaning CSlots like `seL4_CapInitThreadVSpace` have no meaning
