@@ -11,7 +11,7 @@
 # CAmkES Cross VM Connectors
 
 This tutorial provides an introduction to using the cross virtual machine (VM) connector mechanisms
-provided by seL4 and Camkes in order to connect processes in a guest Linux instance to Camkes components.
+provided by seL4 and CAmkES in order to connect processes in a guest Linux instance to CAmkES components.
 
 In this tutorial you will learn how to:
 
