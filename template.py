@@ -81,18 +81,6 @@ def render_file(args, env, state, file):
         input = in_stream.read()
         template = env.from_string(input)
 
-        if (args.__getattribute__("docsite")):
-            s = StringIO(input)
-            lines = input.split('\n')
-
-            i = 0
-            for line in s:
-                lines[i] = line.replace("https://docs.sel4.systems/Tutorials/", "/Tutorials/")
-                i = i + 1
-
-            new_text = ''.join(lines)
-            template = env.from_string(str(new_text))
-
         out_stream.write(template.render(context.get_context(args, state)))
 
 
