@@ -7,18 +7,20 @@
 /*? declare_task_ordering(['hello']) ?*/
 
 # Events in CAmkES
+
 This tutorial shows how to build events in CAmkES.
 
 Learn how to:
+
 - Represent and implement events in CAmkES.
 - Use Dataports.
 
-Use this [slide presentation](https://github.com/seL4/sel4-tutorials/blob/master/docs/CAmkESTutorial.pdf) to guide you through the tutorials [0](https://docs.sel4.systems/Tutorials/hello-camkes-0), [1](https://docs.sel4.systems/Tutorials/hello-camkes-1) and [2](https://docs.sel4.systems/Tutorials/hello-camkes-2).
+Use this [slide presentation](https://github.com/seL4/sel4-tutorials/blob/master/docs/CAmkESTutorial.pdf) to guide you through the tutorials [0](https://docs.sel4.systems/Tutorials/hello-camkes-0.html), [1](https://docs.sel4.systems/Tutorials/hello-camkes-1.html) and [2](https://docs.sel4.systems/Tutorials/hello-camkes-2.html).
 
 ## Prerequisites
-1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
-2. [Introduction to CAmkES tutorial](https://docs.sel4.systems/Tutorials/hello-camkes-1)
 
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up.html)
+2. [Introduction to CAmkES tutorial](https://docs.sel4.systems/Tutorials/hello-camkes-1.html)
 
 ## CapDL Loader
 
@@ -27,16 +29,17 @@ This tutorial uses the *capDL loader*, a root task which allocates statically
 
 <details markdown='1'>
 <summary>Get CapDL</summary>
-The capDL loader parses
-a static description of the system and the relevant ELF binaries.
-It is primarily used in [CAmkES](https://docs.sel4.systems/CAmkES/) projects
-but we also use it in the tutorials to reduce redundant code.
-The program that you construct will end up with its own CSpace and VSpace, which are separate
-from the root task, meaning CSlots like `seL4_CapInitThreadVSpace` have no meaning
-in applications loaded by the capDL loader.
-<br>
-More information about CapDL projects can be found [here](https://docs.sel4.systems/CapDL.html).
-<br>
+
+The capDL loader parses a static description of the system and the relevant ELF
+binaries. It is primarily used in
+[CAmkES](https://docs.sel4.systems/projects/camkes/) projects but we also use it
+in the tutorials to reduce redundant code. The program that you construct will
+end up with its own CSpace and VSpace, which are separate from the root task,
+meaning CSlots like `seL4_CapInitThreadVSpace` have no meaning in applications
+loaded by the capDL loader.
+
+More information about CapDL projects can be found [here](https://docs.sel4.systems/projects/capdl/).
+
 For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This can be added in a directory that is adjacent to the main `tutorials` directory.
 </details>
 
@@ -46,7 +49,7 @@ For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This ca
 
 <details markdown='1'>
 <summary><em>Hint:</em> tutorial solutions</summary>
-<br>
+
 All tutorials come with complete solutions. To get solutions run:
 
 /*? macros.tutorial_init_with_solution("hello-camkes-2") ?*/
@@ -54,14 +57,14 @@ All tutorials come with complete solutions. To get solutions run:
 </details>
 
 
-
 ### Specify an events interface
+
 Here you're declaring the events that will be bounced
 back and forth in this tutorial. An event is a signal is sent over a
 Notification connection.
 
 You are strongly advised to read the manual section on Events here:
-<https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events>.
+<https://docs.sel4.systems/projects/camkes/manual.html#an-example-of-events>.
 
   ''Ensure that when declaring the consumes and emits keywords between
   the Client.camkes and Echo.camkes files, you match them up so that
@@ -75,7 +78,7 @@ You are strongly advised to read the manual section on Events here:
     /* TASK 1: the event interfaces */
     /* hint 1: specify 2 interfaces: one "emits" and one "consumes"
      * hint 2: you can use an arbitrary string as the interface type (it doesn't get used)
-     * hint 3: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
+     * hint 3: look at https://docs.sel4.systems/projects/camkes/manual.html#an-example-of-events
      */
 /*-- endfilter -*/
 ```
@@ -98,7 +101,7 @@ You are strongly advised to read the manual section on Events here:
     /* TASK 3: the event interfaces */
     /* hint 1: specify 2 interfaces: one "emits" and one "consumes"
      * hint 2: you can use an arbitrary string as the interface type (it doesn't get used)
-     * hint 3: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
+     * hint 3: look at https://docs.sel4.systems/projects/camkes/manual.html#an-example-of-events
      */
 /*-- endfilter -*/
 ```
@@ -122,7 +125,7 @@ You are strongly advised to read the manual section on Events here:
     /* TASK 5: Event connections */
     /* hint 1: connect each "emits" interface in a component to the "consumes" interface in the other
      * hint 2: use seL4Notification as the connector
-     * hint 3: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
+     * hint 3: look at https://docs.sel4.systems/projects/camkes/manual.html#an-example-of-events
      */
 /*-- endfilter -*/
 ```
@@ -152,7 +155,7 @@ application to transparently interact with these events.
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="signal-task10") -*/
     /* TASK 10: emit event to signal that the data is available */
     /* hint 1: use the function <interface_name>_emit
-    * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
+    * hint 2: look at https://docs.sel4.systems/projects/camkes/manual.html#an-example-of-events
     */
 /*-- endfilter -*/
 ```
@@ -173,7 +176,7 @@ application to transparently interact with these events.
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="wait-task11") -*/
     /* TASK 11: wait to get an event back signalling that the reply data is available */
     /* hint 1: use the function <interface_name>_wait
-     * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
+     * hint 2: look at https://docs.sel4.systems/projects/camkes/manual.html#an-example-of-events
      */
 /*-- endfilter -*/
 ```
@@ -233,7 +236,7 @@ application to transparently interact with these events.
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="notify-task22") -*/
     /* TASK 22: notify the client that there is new data available for it */
     /* hint 1: use the function <interface_name>_emit
-    * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
+    * hint 2: look at https://docs.sel4.systems/projects/camkes/manual.html#an-example-of-events
     */
 /*-- endfilter -*/
 ```
@@ -255,7 +258,7 @@ application to transparently interact with these events.
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="notify-task25") -*/
     /* TASK 25: notify the client that we are done reading the data */
     /* hint 1: use the function <interface_name>_emit
-    * hint 2: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
+    * hint 2: look at https://docs.sel4.systems/projects/camkes/manual.html#an-example-of-events
     */
 /*-- endfilter -*/
 ```
@@ -285,7 +288,7 @@ instance. These steps help you to become familiar with this approach.
     /* hint 1: use the function <interface name>_reg_callback()
      * hint 2: register the function "callback_handler_1"
      * hint 3: pass NULL as the extra argument to the callback
-     * hint 4: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
+     * hint 4: look at https://docs.sel4.systems/projects/camkes/manual.html#an-example-of-events
      */
 /*-- endfilter -*/
 ```
@@ -310,7 +313,7 @@ instance. These steps help you to become familiar with this approach.
   /* hint 1: use the function <interface name>_reg_callback()
     * hint 2: register the function "callback_handler_2"
     * hint 3: pass NULL as the extra argument to the callback
-    * hint 4: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
+    * hint 4: look at https://docs.sel4.systems/projects/camkes/manual.html#an-example-of-events
     */
 /*-- endfilter -*/
 ```
@@ -334,7 +337,7 @@ instance. These steps help you to become familiar with this approach.
     /* hint 1: use the function <interface name>_reg_callback()
      * hint 2: register the function "callback_handler_1"
      * hint 3: pass NULL as the extra argument to the callback
-     * hint 4: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-events
+     * hint 4: look at https://docs.sel4.systems/projects/camkes/manual.html#an-example-of-events
      */
 /*-- endfilter -*/
 ```
@@ -375,7 +378,7 @@ in the shared mem communication. We will then link them together using a
     /* TASK 2: the dataport interfaces */
     /* hint 1: specify 3 interfaces: one of type "Buf", one of type "str_buf_t" and one of type "ptr_buf_t"
      * hint 2: for the definition of these types see "str_buf.h".
-     * hint 3: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-dataports
+     * hint 3: look at https://docs.sel4.systems/projects/camkes/manual.html#an-example-of-dataports
      */
  /*-- endfilter -*/
 ```
@@ -399,7 +402,7 @@ in the shared mem communication. We will then link them together using a
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="dataport-task4") -*/
     /* TASK 4: the dataport interfaces */
     /* hint 1: specify 3 interfaces: one of type "Buf", one of type "str_buf_t" and one of type "ptr_buf_t"
-     * hint 3: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-dataports
+     * hint 3: look at https://docs.sel4.systems/projects/camkes/manual.html#an-example-of-dataports
      */
 /*-- endfilter -*/
 ```
@@ -430,7 +433,7 @@ proceed.
     /* TASK 6: Dataport connections */
     /* hint 1: connect the corresponding dataport interfaces of the components to each other
     * hint 2: use seL4SharedData as the connector
-    * hint 3: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-dataports
+    * hint 3: look at https://docs.sel4.systems/projects/camkes/manual.html#an-example-of-dataports
     */
 /*-- endfilter -*/
 ```
@@ -462,7 +465,7 @@ to access and manipulate the data in the shared memory mapping
      * For example if you defined it as "dataport Buf d" then you would use "d" to refer to the dataport in C.
      * hint 3: first write the number of strings (NUM_STRINGS) to the dataport
      * hint 4: then copy all the strings from "s_arr" to the dataport.
-     * hint 5: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-dataports
+     * hint 5: look at https://docs.sel4.systems/projects/camkes/manual.html#an-example-of-dataports
      */
 /*-- endfilter -*/
 ```
@@ -494,7 +497,7 @@ to access and manipulate the data in the shared memory mapping
      * hint 3: for the definition of "str_buf_t" see "str_buf.h".
      * hint 4: use the "n" field to determine the number of strings in the dataport
      * hint 5: print out the specified number of strings from the "str" field
-     * hint 6: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-dataports
+     * hint 6: look at https://docs.sel4.systems/projects/camkes/manual.html#an-example-of-dataports
      */
 /*-- endfilter -*/
 ```
@@ -528,7 +531,7 @@ to access and manipulate the data in the shared memory mapping
      * hint 6: use the "ptr" field of the typed dataport to store the dataport pointers
      * hint 7: use the function "dataport_wrap_ptr()" to create a dataport pointer from a regular pointer
      * hint 8: the dataport pointers should point into the untyped dataport
-     * hint 9: for more information about dataport pointers see: https://github.com/seL4/camkes-tool/blob/master/docs/index.md
+     * hint 9: for more information about dataport pointers see: https://docs.sel4.systems/projects/camkes/manual.html
      */
 /*-- endfilter -*/
 ```
@@ -567,7 +570,7 @@ code to access and manipulate the data in the shared memory mapping
     * For example if you defined it as "dataport Buf d" then you would use "d" to refer to the dataport in C.
     * hint 3: first read the number of strings from the dataport
     * hint 4: then print each string from the dataport
-    * hint 5: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-dataports
+    * hint 5: look at https://docs.sel4.systems/projects/camkes/manual.html#an-example-of-dataports
     */
 /*-- endfilter -*/
 ```
@@ -601,7 +604,7 @@ code to access and manipulate the data in the shared memory mapping
      * hint 5: for the definition of "str_buf_t" see "str_buf.h"
      * hint 6: use the "n" field to specify the number of strings in the dataport
      * hint 7: copy the specified number of strings from the "Buf" dataport to the "str" field
-     * hint 8: look at https://github.com/seL4/camkes-tool/blob/master/docs/index.md#an-example-of-dataports
+     * hint 8: look at https://docs.sel4.systems/projects/camkes/manual.html#an-example-of-dataports
      * hint 9: you could combine this TASK with the previous one in a single loop if you want
      */
 /*-- endfilter -*/
@@ -639,7 +642,7 @@ code to access and manipulate the data in the shared memory mapping
     * hint 4: the "n" field of the typed dataport specifies the number of dataport pointers
     * hint 5: the "ptr" field of the typed dataport contains the dataport pointers
     * hint 6: use the function "dataport_unwrap_ptr()" to create a regular pointer from a dataport pointer
-    * hint 7: for more information about dataport pointers see: https://github.com/seL4/camkes-tool/blob/master/docs/index.md
+    * hint 7: for more information about dataport pointers see: https://docs.sel4.systems/projects/camkes/manual.html
     * hint 8: print out the string pointed to by each dataport pointer
     */
 /*-- endfilter -*/

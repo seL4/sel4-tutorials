@@ -18,8 +18,8 @@ You will become familiar with:
 *Note that the instructions for this tutorial are only for Linux.*
 
 ## Prerequisites
-1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
-2. [CAmkES timer tutorial](https://docs.sel4.systems/Tutorials/hello-camkes-timer)
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up.html)
+2. [CAmkES timer tutorial](https://docs.sel4.systems/Tutorials/hello-camkes-timer.html)
 
 ## CapDL Loader
 
@@ -30,13 +30,13 @@ This tutorial uses the *capDL loader*, a root task which allocates statically
 <summary>Get CapDL</summary>
 The capDL loader parses
 a static description of the system and the relevant ELF binaries.
-It is primarily used in [CAmkES](https://docs.sel4.systems/CAmkES/) projects
+It is primarily used in [CAmkES](https://docs.sel4.systems/projects/camkes/) projects
 but we also use it in the tutorials to reduce redundant code.
 The program that you construct will end up with its own CSpace and VSpace, which are separate
 from the root task, meaning CSlots like `seL4_CapInitThreadVSpace` have no meaning
 in applications loaded by the capDL loader.
 <br>
-More information about CapDL projects can be found [here](https://docs.sel4.systems/CapDL.html).
+More information about CapDL projects can be found [here](https://docs.sel4.systems/projects/capdl/).
 <br>
 For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This can be added in a directory that is adjacent to the main `tutorials` directory.
 </details>
@@ -151,7 +151,7 @@ The values of `vm0.kernel_cmdline`, `vm0.kernel_image` and `vm0.initrd_image` ar
 strings specifying:
  - boot arguments to the guest Linux,
  - the name of the guest Linux kernel image file,
- - and the name of the guest Linux initrd file (the root filesystem to use during system initialization).
+ - and the name of the guest Linux initrd file (the root filesystem to use during system initialisation).
 
 The kernel command-line is defined in the `VM_GUEST_CMDLINE` macro. The kernel image
 and rootfs names are defined in the applications `CMakeLists.txt` file.
@@ -160,7 +160,7 @@ linked into the VMM. In the simple configuration for thie tutorial, the VMM uses
 the `bzimage` and `rootfs.cpio` names to find the appropriate files
 in this archive.
 
-To see how the `Init` component and CPIO archive are definied within the build system,
+To see how the `Init` component and CPIO archive are defined within the build system,
 look at the app's `CMakeList.txt`:
 
 ```cmake

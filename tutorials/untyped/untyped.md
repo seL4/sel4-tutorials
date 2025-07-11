@@ -17,8 +17,8 @@ It covers:
 
 ## Prerequisites
 
-1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
-2. [Capabilities tutorial](https://docs.sel4.systems/Tutorials/capabilities)
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up.html)
+2. [Capabilities tutorial](https://docs.sel4.systems/Tutorials/capabilities.html)
 
 
 ## Initialising
@@ -81,7 +81,7 @@ shows how to print out the initial untyped capabilities provided from `seL4_Boot
 ### Retyping
 
 Untyped capabilities have a single invocation:
-[seL4_Untyped_Retype](https://docs.sel4.systems/ApiDoc.html#retype) which is
+[seL4_Untyped_Retype](https://docs.sel4.systems/projects/sel4/api-doc.html#retype) which is
 used to create a new capability (and potentially object) from an untyped
 capability. Specifically, the new capability created by a retype invocation
 provides access to a subset of the memory range of the original capability,

@@ -12,8 +12,8 @@ This tutorial provides an introduction to virtual memory management on seL4.
 
 ## Prerequisites
 
-1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
-2. [Capabilities tutorial](https://docs.sel4.systems/Tutorials/capabilities)
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up.html)
+2. [Capabilities tutorial](https://docs.sel4.systems/Tutorials/capabilities.html)
 
 ## Initialising
 
@@ -142,7 +142,7 @@ This is because while the provided code maps in a `seL4_PDPT` object, there are 
 paging structures. The value corresponds to the `libsel4` constant `SEL4_MAPPING_LOOKUP_NO_PD` which is
 the number of bits in the virtual address that could not be resolved due to missing paging structures.
 
-**Exercise** Map in the `pd` structure using (`seL4_PageDirectory_Map`)[https://docs.sel4.systems/ApiDoc.html#map-5].
+**Exercise** Map in the `pd` structure using (`seL4_PageDirectory_Map`)[https://docs.sel4.systems/projects/sel4/api-doc.html#map-5].
 
 ```c
 /*-- filter TaskContent("mapping-start", TaskContentType.ALL, subtask='pd', completion='Failed to map page') -*/
@@ -173,7 +173,7 @@ main@main.c:34 [Cond failed: error != seL4_NoError]
 Note that in the above output, the number of failed bits has changed from `30` to `21`: this is because another
 9 bits could be resolved from the newly mapped page directory.
 
-**Exercise** Map in the `pt` structure using [`seL4_PageTable_Map`](https://docs.sel4.systems/ApiDoc.html#map-6).
+**Exercise** Map in the `pt` structure using [`seL4_PageTable_Map`](https://docs.sel4.systems/projects/sel4/api-doc.html#map-6).
 
 ```c
 /*-- filter TaskContent("mapping-start", TaskContentType.ALL, subtask='pt') -*/
@@ -220,7 +220,7 @@ that the fault occured on (address).
 ### Remap a page
 
 **Exercise** Fix the fault by remapping the page with `seL4_ReadWrite` permissions, using the
-[seL4_X86_Page_Map](https://docs.sel4.systems/ApiDoc.html#map-4) invocation.
+[seL4_X86_Page_Map](https://docs.sel4.systems/projects/sel4/api-doc.html#map-4) invocation.
 ```c
 /*-- filter TaskContent("mapping-start", TaskContentType.ALL, subtask='remap') -*/
     // TODO remap the page

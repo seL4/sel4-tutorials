@@ -16,8 +16,8 @@ You will learn:
 
 ## Prerequisites
 
-1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
-2. [Notifications tutorial](https://docs.sel4.systems/Tutorials/notifications)
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up.html)
+2. [Notifications tutorial](https://docs.sel4.systems/Tutorials/notifications.html)
 
 # Initialising
 
@@ -42,13 +42,13 @@ This tutorial uses the *capDL loader*, a root task which allocates statically
 <summary>Get CapDL</summary>
 The capDL loader parses
 a static description of the system and the relevant ELF binaries.
-It is primarily used in [CAmkES](https://docs.sel4.systems/CAmkES/) projects
+It is primarily used in [CAmkES](https://docs.sel4.systems/projects/camkes/) projects
 but we also use it in the tutorials to reduce redundant code.
 The program that you construct will end up with its own CSpace and VSpace, which are separate
 from the root task, meaning CSlots like `seL4_CapInitThreadVSpace` have no meaning
 in applications loaded by the capDL loader.
 <br>
-More information about CapDL projects can be found [here](https://docs.sel4.systems/CapDL.html).
+More information about CapDL projects can be found [here](https://docs.sel4.systems/projects/capdl/).
 <br>
 For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This can be added in a directory that is adjacent to the main `tutorials` directory.
 </details>
@@ -77,9 +77,9 @@ error = seL4_IRQControl_Get(seL4_IRQControl, 7, cspace_root, 10, seL4_WordBits);
 There are a variety of different invocations to obtain irq capabilities which are hardware
 dependent, including:
 
-* [`seL4_IRQControl_GetIOAPIC`](https://docs.sel4.systems/ApiDoc.html#get-io-apic) (x86)
-* [`seL4_IRQControl_GetMSI`](https://docs.sel4.systems/ApiDoc.html#get-msi) (x86)
-* [`seL4_IRQControl_GetTrigger`](https://docs.sel4.systems/ApiDoc.html#gettrigger) (ARM)
+* [`seL4_IRQControl_GetIOAPIC`](https://docs.sel4.systems/projects/sel4/api-doc.html#get-io-apic-handler) (x86)
+* [`seL4_IRQControl_GetMSI`](https://docs.sel4.systems/projects/sel4/api-doc.html#get-msi-handler) (x86)
+* [`seL4_IRQControl_GetTrigger`](https://docs.sel4.systems/projects/sel4/api-doc.html#get-irq-handler-with-trigger-type) (ARM)
 
 ### Receiving interrupts
 
@@ -93,22 +93,22 @@ On success, this call will result in signals being delivered to the notification
 an interrupt occurs. To handle multiple interrupts on the same notification object, you
 can set different badges on the notification capabilities bound to each IRQHandler.
  When an interrupt arrives,
-the badge of the notification object bound to that IRQHandler is bitwise orred with the data
+the badge of the notification object bound to that IRQHandler is bitwise or-ed with the data
 word in the notification object.
 Recall the badging technique for differentiating signals from the
- [notification tutorial](https://docs.sel4.systems/Tutorials/notifications).
+ [notification tutorial](https://docs.sel4.systems/Tutorials/notifications.html).
 
 Interrupts can be polled for using `seL4_Poll` or waited for using `seL4_Wait`. Either system
 call results in the data word of the notification object being delivered as the badge of the
 message, and the data word cleared.
 
-[`seL4_IRQHandler_Clear`](https://docs.sel4.systems/ApiDoc.html#clear) can be used to unbind
+[`seL4_IRQHandler_Clear`](https://docs.sel4.systems/projects/sel4/api-doc.html#clear) can be used to unbind
 the notification from an IRQHandler.
 
 ### Handling interrupts
 
 Once an interrupt is received and processed by the software, you can unmask the interrupt
-using [`seL4_IRQHandler_Ack`](https://docs.sel4.systems/ApiDoc.html#ack) on the IRQHandler.
+using [`seL4_IRQHandler_Ack`](https://docs.sel4.systems/projects/sel4/api-doc.html#acknowledge) on the IRQHandler.
 seL4 will not deliver any further interrupts after an IRQ is raised until that IRQHandler
 has been acked.
 

@@ -38,7 +38,7 @@ Learning outcomes:
         different CSpaces. This is an automatic side effect of the way
         that sel4utils creates new "processes".
 - Learn how the init thread in an seL4 system performs some types
-        of initialization that aren't traditionally left to userspace.
+        of initialisation that aren't traditionally left to userspace.
 - Observe and understand the effects of creating thread that do
         not share the same CSpace.
 - Understand IPC across CSpace boundaries.
@@ -47,8 +47,8 @@ Learning outcomes:
 
 ## Prerequisites
 
-1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up)
-2. [Libraries: IPC](https://docs.sel4.systems/Tutorials/libraries-2)
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up.html)
+2. [Libraries: IPC](https://docs.sel4.systems/Tutorials/libraries-2.html)
 
 ## Initialising
 

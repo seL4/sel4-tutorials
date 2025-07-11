@@ -12,16 +12,17 @@ This tutorial is an introduction to CAmkES. This will involve introducing the CA
 static CAmkES application and describing its components.
 
 Outcomes:
+
 1. Understand the structure of a CAmkES application, as a described, well-defined, static system.
 2. Understand the file-layout of a CAmkES ADL project.
 3. Become acquainted with the basics of creating a practical CAmkES application.
 
-Use this [slide presentation](https://github.com/seL4/sel4-tutorials/blob/master/docs/CAmkESTutorial.pdf) to guide you through the tutorials [0](https://docs.sel4.systems/Tutorials/hello-camkes-0), [1](https://docs.sel4.systems/Tutorials/hello-camkes-1) and [2](https://docs.sel4.systems/Tutorials/hello-camkes-2).
+Use this [slide presentation](https://github.com/seL4/sel4-tutorials/blob/master/docs/CAmkESTutorial.pdf) to guide you through the tutorials [0](https://docs.sel4.systems/Tutorials/hello-camkes-0.html), [1](https://docs.sel4.systems/Tutorials/hello-camkes-1.html) and [2](https://docs.sel4.systems/Tutorials/hello-camkes-2.html).
 
 ## Prerequisites
-1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up).
-2. [Hello world tutorial](https://docs.sel4.systems/Tutorials/hello-world)
-3. Familiarise yourself with the [CAmkES manual](https://github.com/seL4/camkes-tool/blob/master/docs/index.md).
+1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up.html).
+2. [Hello world tutorial](https://docs.sel4.systems/Tutorials/hello-world.html)
+3. Familiarise yourself with the [CAmkES manual](https://docs.sel4.systems/projects/camkes/manual.html).
 Note that it's possible to successfully complete the CAmkES tutorial without having read the manual, however highly
 recommended.
 
@@ -34,7 +35,7 @@ interfaces which must be statically defined, over communication channels.
 ### Component
 
 As briefly described above, we identify a component as a functional grouping of code and resources. We
-use the term component in CAmkES to refer to the *type* of our functional grouping (see the Component section in the [manual](https://github.com/seL4/camkes-tool/blob/master/docs/index.md#component)).
+use the term component in CAmkES to refer to the *type* of our functional grouping (see the Component section in the [manual](https://docs.sel4.systems/projects/camkes/manual.html#component)).
 An example of this in concrete CAmkES syntax can be seen below:
 
 ```c
