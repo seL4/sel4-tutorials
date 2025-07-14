@@ -24,7 +24,7 @@ You will learn:
 
 <details markdown='1'>
 <summary><em>Hint:</em> tutorial solutions</summary>
-<br>
+
 All tutorials come with complete solutions. To get solutions run:
 
 /*? macros.tutorial_init_with_solution("capabilities") ?*/

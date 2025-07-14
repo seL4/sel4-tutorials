@@ -39,8 +39,9 @@ Don't gloss over the globals declared before `main()` -- they're declared
 for your benefit so you can grasp some of the basic data structures.
 
 Outcomes:
+
 - Understand the kernel's startup procedure.
-- Understand that the kernel centers around certain objects and
+- Understand that the kernel centres around certain objects and
         capabilities to those objects.
 - Understand that libraries exist to automate the very
         fine-grained nature of the seL4 API, and get a rough idea of
@@ -64,7 +65,7 @@ Outcomes:
 
 <details markdown='1'>
 <summary><em>Hint:</em> tutorial solutions</summary>
-<br>
+
 All tutorials come with complete solutions. To get solutions run:
 
 /*? macros.tutorial_init_with_solution("libraries-1") ?*/
@@ -76,7 +77,7 @@ Answers are also available in drop down menus under each section.
 
 When you first run the tutorial, you should see the following output:
 
-```
+```log
 Booting all finished, dropped to user space
 main@main.c:89 [Cond failed: info == NULL]
 /*-- filter TaskCompletion("task-1", TaskContentType.BEFORE) -*/
@@ -112,7 +113,6 @@ It also sets up the IPC buffer so that it can perform some syscalls such as `seL
 /*? task_1_desc ?*/
 /*-- filter TaskContent("task-1", TaskContentType.BEFORE) -*/
 /*-- endfilter -*/
-}
 ```
 
 <details markdown='1'>
@@ -123,23 +123,27 @@ It also sets up the IPC buffer so that it can perform some syscalls such as `seL
     info = platsupport_get_bootinfo();
 /*-- endfilter -*/
 ```
+
 </details>
 
 On success, you should see the following:
-```
+
+```log
 libraries-1: main@main.c:124 [Cond failed: allocman == NULL]
 /*-- filter TaskCompletion("task-1", TaskContentType.COMPLETED) -*/
-	Failed to initialize alloc manager.
-	Memory pool sufficiently sized?
-	Memory pool pointer valid?
+    Failed to initialize alloc manager.
+    Memory pool sufficiently sized?
+    Memory pool pointer valid?
 /*-- endfilter -*/
 ```
 
 ### Initialise simple
 
 `libsel4simple` provides an abstraction for the boot environment of a thread.
-You need to initialize it with some default state before using it.
+You need to initialise it with some default state before using it.
+
 - <https://github.com/seL4/seL4_libs/blob/master/libsel4simple-default/include/simple-default/simple-default.h>
+
 ```c
 /*-- set task_2_desc -*/
    /* TASK 2: initialise simple object */
@@ -151,6 +155,7 @@ You need to initialize it with some default state before using it.
 /*-- endset -*/
 /*? task_2_desc ?*/
 ```
+
 <details markdown='1'>
 <summary><em>Quick solution</em></summary>
 
@@ -159,6 +164,7 @@ You need to initialize it with some default state before using it.
     simple_default_init_bootinfo(&simple, info);
 /*-- endfilter -*/
 ```
+
 </details>
 On successful completion of this task, the output should not change.
 
@@ -186,13 +192,14 @@ Use a `simple` function to print out the contents of the `seL4_BootInfo` functio
     simple_print(&simple);
 /*-- endfilter -*/
 ```
+
 </details>
 
 - <https://github.com/seL4/seL4_libs/blob/master/libsel4simple/include/simple/simple.h>
 
 The error message should remain, but your output should now also contain something like:
 
-```
+```log
 Node 0 of 1
 IOPT levels:     4294967295
 IPC buffer:      0x52c000
@@ -219,6 +226,7 @@ don't go through that procedure, but you'll encounter it later. For now,
 use the allocman and VKA allocation system. The allocman library
 requires some initial memory to bootstrap its metadata. Complete this
 step.
+
 - <https://github.com/seL4/seL4_libs/blob/master/libsel4allocman/include/allocman/bootstrap.h>
 
 ```c
@@ -243,15 +251,16 @@ step.
     allocman = bootstrap_use_current_simple(&simple, ALLOCATOR_STATIC_POOL_SIZE, allocator_mem_pool);
 /*-- endfilter -*/
 ```
+
 </details>
 
 The output should now be as follows:
 
-```
+```log
 <<seL4(CPU 0) [decodeInvocation/530 T0xffffff801ffb5400 "libraries-1" @401303]: Attempted to invoke a null cap #0.>>
 libraries-1: main@main.c:199 [Err seL4_InvalidCapability]:
 /*-- filter TaskCompletion("task-4", TaskContentType.COMPLETED) -*/
-	Failed to set the priority for the new TCB object.
+    Failed to set the priority for the new TCB object.
 /*-- endfilter -*/
 ```
 
@@ -264,6 +273,7 @@ seL4 considers all memory that hasn't been explicitly earmarked for a
 purpose to be "untyped", and in order to repurpose any memory into a
 useful object, you must give it an seL4-specific type. This is retyping,
 and the VKA library simplifies this for you, among other things.
+
 - <https://github.com/seL4/seL4_libs/blob/master/libsel4allocman/include/allocman/vka.h>
 
 ```c
@@ -286,6 +296,7 @@ and the VKA library simplifies this for you, among other things.
     allocman_make_vka(&vka, allocman);
 /*-- endfilter -*/
 ```
+
 </details>
 
 On successful completion this task, the output should not change.
@@ -313,6 +324,7 @@ On successful completion this task, the output should not change.
     cspace_cap = simple_get_cnode(&simple);
 /*-- endfilter -*/
 ```
+
 </details>
 
 This is where the differences between seL4 and contemporary kernels
@@ -360,6 +372,7 @@ On successful completion this task, the output should not change.
     pd_cap = simple_get_pd(&simple);
 /*-- endfilter -*/
 ```
+
 </details>
 
 Just as in the previous step, you were made to grab a reference to the
@@ -372,7 +385,6 @@ On successful completion this task, the output should not change.
 ### Allocate a TCB Object
 
 ```c
-
 /*-- set task_8_desc -*/
     /* TASK 8: create a new TCB */
     /* hint: vka_alloc_tcb()
@@ -394,6 +406,7 @@ On successful completion this task, the output should not change.
     error = vka_alloc_tcb(&vka, &tcb_object);
 /*-- endfilter -*/
 ```
+
 </details>
 
 In order to manage the threads that are created in seL4, the seL4 kernel
@@ -408,13 +421,15 @@ still manually fill it out.
 
 After completing this task, the errors should disappear, and you should see the following
 output:
-```
+
+```log
 /*-- filter TaskCompletion("task-8", TaskContentType.COMPLETED) -*/
 main: hello world
 /*-- endfilter -*/
 ```
 
 ### Configure the new TCB
+
 ```c
 /*-- set task_9_desc -*/
    /* TASK 9: initialise the new TCB */
@@ -447,6 +462,7 @@ main: hello world
     error = seL4_TCB_Configure(tcb_object.cptr, seL4_CapNull,  cspace_cap, seL4_NilData, pd_cap, seL4_NilData, 0, 0);
 /*-- endfilter -*/
 ```
+
 </details>
 
 You must create a new VSpace for your new thread if you need it to
@@ -465,11 +481,13 @@ In addition, a thread needs to have a priority set on it in order for it to run.
 will give your new thread the same priority as the current thread, allowing it
 to be run the next time the seL4 scheduler is invoked.  The seL4 scheduler is invoked
 everytime there is a kernel timer tick.
+
 - <https://github.com/seL4/seL4/blob/master/libsel4/include/interfaces/sel4.xml>
 
 On successful completion this task, the output should not change.
 
 ### Name the new TCB
+
 ```c
 /*-- set task_10_desc -*/
     /* TASK 10: give the new thread a name */
@@ -486,6 +504,7 @@ On successful completion this task, the output should not change.
     NAME_THREAD(tcb_object.cptr, "libraries-1: thread_2");
 /*-- endfilter -*/
 ```
+
 </details>
 
 This is a convenience function -- sets a name string for the TCB object.
@@ -493,6 +512,7 @@ This is a convenience function -- sets a name string for the TCB object.
 On successful completion this task, the output should not change.
 
 ### Set the instruction pointer
+
 ```c
 /*-- set task_11_desc -*/
     /*
@@ -520,6 +540,7 @@ On successful completion this task, the output should not change.
     sel4utils_set_instruction_pointer(&regs, (seL4_Word)thread_2);
 /*-- endfilter -*/
 ```
+
 </details>
 
 Pay attention to the line that precedes this particular task -- the line
@@ -529,10 +550,13 @@ manually. That includes the new thread's initial register contents. You
 can set the value of the stack pointer, the instruction pointer, and if
 you want to get a little creative, you can pass some initial data to
 your new thread through its registers.
+
 - <https://github.com/seL4/seL4_libs/blob/master/libsel4utils/sel4_arch_include/x86_64/sel4utils/sel4_arch/util.h>
 
 On successful completion this task, the output should not change.
+
 ### Set the stack pointer
+
 ```c
 /*-- set task_12_desc -*/
     /* TASK 12: set stack pointer for the new thread */
@@ -555,17 +579,20 @@ On successful completion this task, the output should not change.
     sel4utils_set_stack_pointer(&regs, thread_2_stack_top);
 /*-- endfilter -*/
 ```
+
 </details>
 
 This TASK is just some pointer arithmetic. The cautionary note that the
 stack grows down is meant to make you think about the arithmetic.
 Processor stacks push new values toward decreasing addresses, so give it
 some thought.
+
 - <https://github.com/seL4/seL4_libs/blob/master/libsel4utils/sel4_arch_include/x86_64/sel4utils/sel4_arch/util.h>
 
 On successful completion this task, the output should not change.
 
 ### Write the registers
+
 ```c
 /*-- set task_13_desc -*/
     /* TASK 13: actually write the TCB registers.  We write 2 registers:
@@ -591,16 +618,19 @@ On successful completion this task, the output should not change.
     error = seL4_TCB_WriteRegisters(tcb_object.cptr, 0, 0, 2, &regs);
 /*-- endfilter -*/
 ```
+
 </details>
 
 As explained above, we've been filling out our new thread's TCB for the
 last few operations, so now we're writing the values we've chosen, to
 the TCB object in the kernel.
+
 - <https://github.com/seL4/seL4/blob/master/libsel4/include/interfaces/sel4.xml>
 
 On successful completion this task, the output should not change.
 
 ### Start the new thread
+
 ```c
 /*-- set task_14_desc -*/
     /* TASK 14: start the new thread running */
@@ -621,6 +651,7 @@ On successful completion this task, the output should not change.
     error = seL4_TCB_Resume(tcb_object.cptr);
 /*-- endfilter -*/
 ```
+
 </details>
 
 Finally, we tell the kernel that our new thread is runnable. From here,
@@ -631,14 +662,15 @@ policy.
 - <https://github.com/seL4/seL4/blob/master/libsel4/include/interfaces/sel4.xml>
 
 On successful completion this task, the output should not change.
+
 ### Print something
+
 ```c
 /*--set task_15_desc -*/
     /* TASK 15: print something */
     /* hint: printf() */
 /*-- endset -*/
 /*? task_15_desc ?*/
-}
 ```
 
 <details markdown='1'>
@@ -649,6 +681,7 @@ On successful completion this task, the output should not change.
     printf("thread_2: hallo wereld\n");
 /*-- endfilter -*/
 ```
+
 </details>
 
 For the sake of confirmation that our new thread was executed by the
@@ -675,7 +708,8 @@ That's it for this tutorial.
 
 /*-- filter ExcludeDocs() -*/
 /*? ExternalFile("CMakeLists.txt") ?*/
-```
+
+```c
 /*-- filter File("main.c") -*/
 /*
  * Copyright 2018, Data61, CSIRO (ABN 41 687 119 230).
@@ -826,9 +860,11 @@ int main(void) {
 }
 /*-- endfilter -*/
 ```
-/```cmake
+
+```cmake
 /*- filter File("settings.cmake") -*/
     set(KernelRootCNodeSizeBits 12 CACHE STRING "" FORCE)
 /*- endfilter -*/
 ```
+
 /*-- endfilter -*/

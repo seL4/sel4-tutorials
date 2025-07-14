@@ -72,7 +72,7 @@ Learning outcomes:
 
 <details markdown='1'>
 <summary><em>Hint:</em> tutorial solutions</summary>
-<br>
+
 All tutorials come with complete solutions. To get solutions run:
 
 /*? macros.tutorial_init_with_solution("libraries-2") ?*/
@@ -83,7 +83,8 @@ Answers are also available in drop down menus under each section.
 ## Exercises
 
 When you first run this tutorial, you will see a fault as follows:
-```
+
+```log
 /*-- filter TaskCompletion("task-1", TaskContentType.ALL) -*/
 Booting all finished, dropped to user space
 Caught cap fault in send phase at address (nil)
@@ -112,7 +113,7 @@ of a MMU-utilizing kernel apply.
 
 - <https://github.com/seL4/seL4_libs/blob/master/libsel4vka/include/vka/object.h>
 
-```
+```c
 /*-- set task_1_desc -*/
     /* TASK 1: get a frame cap for the ipc buffer */
     /* hint: vka_alloc_frame()
@@ -138,6 +139,7 @@ of a MMU-utilizing kernel apply.
                   "\tNB: This frame is not an immediately usable, virtually mapped page.\n")
 /*-- endfilter -*/
 ```
+
 </details>
 
 /*-- filter ExcludeDocs() -*/
@@ -170,7 +172,7 @@ into a VSpace, and the mapping of a new page-table into a VSpace.
 - <https://github.com/seL4/seL4_libs/blob/master/libsel4vspace/arch_include/x86/vspace/arch/page.h>
 - <https://github.com/seL4/seL4/blob/master/libsel4/arch_include/x86/interfaces/sel4arch.xml>
 
-```
+```c
 /*-- set task_2_desc -*/
     /* TASK 2: try to map the frame the first time  */
     /* hint 1: seL4_ARCH_Page_Map()
@@ -208,13 +210,15 @@ into a VSpace, and the mapping of a new page-table into a VSpace.
                                seL4_AllRights, seL4_ARCH_Default_VMAttributes);
 /*-- endfilter -*/
 ```
+
 </details>
 
 On completion, the output will be as follows:
-```
+
+```log
 libraries-2: main@main.c:260 [Err seL4_FailedLookup]:
 /*--filter TaskCompletion("task-2", TaskContentType.COMPLETED) -*/
-	Failed to allocate new page table.
+    Failed to allocate new page table.
 /*-- endfilter -*/
 ```
 
@@ -226,7 +230,7 @@ page-table object to use as a leaf page-table in your VSpace.
 
 - <https://github.com/seL4/seL4_libs/blob/master/libsel4vka/include/vka/object.h>
 
-```
+```c
 /*-- set task_3_desc -*/
         /* TASK 3: create a page table */
         /* hint: vka_alloc_page_table()
@@ -248,6 +252,7 @@ page-table object to use as a leaf page-table in your VSpace.
         error =  vka_alloc_page_table(&vka, &pt_object);
 /*-- endfilter -*/
 ```
+
 </details>
 
 On completion, you will see another fault.
@@ -267,7 +272,7 @@ try again to finally map the IPC-buffer's frame object into the VSpace.
 - <https://github.com/seL4/seL4_libs/blob/master/libsel4vspace/arch_include/x86/vspace/arch/page.h>
 - <https://github.com/seL4/seL4/blob/master/libsel4/arch_include/x86/interfaces/sel4arch.xml>
 
-```
+```c
 /*-- set task_4_desc -*/
         /* TASK 4: map the page table */
         /* hint 1: seL4_ARCH_PageTable_Map()
@@ -315,7 +320,8 @@ Booting all finished, dropped to user space
 Use `seL4_ARCH_Page_Map` to map the frame in.
 If everything was done correctly, there is no reason why this step
 should fail. Complete it and proceed.
-```
+
+```c
 /*-- set task_5_desc -*/
         /* TASK 5: then map the frame in */
         /* hint 1: use seL4_ARCH_Page_Map() as above
@@ -336,16 +342,18 @@ should fail. Complete it and proceed.
                                    ipc_buffer_vaddr, seL4_AllRights, seL4_ARCH_Default_VMAttributes);
 /*-- endfilter -*/
 ```
+
 </details>
 
 On completion, you will see the following:
-```
+
+```log
 /*--filter TaskCompletion("task-5", TaskContentType.COMPLETED) -*/
 main: hello world
 /*-- endfilter -*/
 libraries-2: main@main.c:464 [Cond failed: seL4_MessageInfo_get_length(tag) != 1]
-	Response data from thread_2 was not the length expected.
-	How many registers did you set with seL4_SetMR within thread_2?
+    Response data from thread_2 was not the length expected.
+    How many registers did you set with seL4_SetMR within thread_2?
 ```
 
 ### Allocate an endpoint
@@ -364,7 +372,7 @@ and proceed.
 
 - <https://github.com/seL4/seL4_libs/blob/master/libsel4vka/include/vka/object.h>
 
-```
+```c
 /*-- set task_6_desc -*/
     /* TASK 6: create an endpoint */
     /* hint: vka_alloc_endpoint()
@@ -385,6 +393,7 @@ and proceed.
     error = vka_alloc_endpoint(&vka, &ep_object);
 /*-- endfilter -*/
 ```
+
 </details>
 
 On completion, the output will not change.
@@ -415,7 +424,7 @@ data, and know which sender you are. Complete the step and proceed.
 - <https://github.com/seL4/seL4_libs/blob/master/libsel4vka/include/vka/object_capops.h>
 - <https://github.com/seL4/seL4/blob/master/libsel4/mode_include/32/sel4/shared_types.bf>
 
-```
+```c
 /*-- set task_7_desc -*/
     /* TASK 7: make a badged copy of it in our cspace. This copy will be used to send
      * an IPC message to the original cap */
@@ -444,6 +453,7 @@ data, and know which sender you are. Complete the step and proceed.
                             EP_BADGE);
 /*-- endfilter -*/
 ```
+
 </details>
 
 On completion, the output will not change.
@@ -471,7 +481,7 @@ transmitted in the message.
 - <https://github.com/seL4/seL4/blob/master/libsel4/mode_include/32/sel4/shared_types.bf>
 - <https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/functions.h>
 
-```
+```c
 /*-- set task_8_desc -*/
     /* TASK 8: set the data to send. We send it in the first message register */
     /* hint 1: seL4_MessageInfo_new()
@@ -508,13 +518,15 @@ transmitted in the message.
     seL4_SetMR(0, MSG_DATA);
 /*-- endfilter -*/
 ```
+
 </details>
 
 On completion, the output should change as follows:
-```
+
+```log
 libraries-2: main@main.c:472 [Cond failed: msg != ~MSG_DATA]
 /*-- filter TaskCompletion("task-8", TaskContentType.COMPLETED) -*/
-	Response data from thread_2's content was not what was expected.
+    Response data from thread_2's content was not what was expected.
 /*-- endfilter -*/
 ```
 
@@ -554,7 +566,7 @@ response message, if the sender doesn't want it to.
 - <https://github.com/seL4/seL4/blob/master/libsel4/sel4_arch_include/ia32/sel4/sel4_arch/syscalls.h>
 - <https://github.com/seL4/seL4/blob/master/libsel4/mode_include/32/sel4/shared_types.bf>
 
-```
+```c
 /*-- set task_9_desc -*/
     /* TASK 9: send and wait for a reply. */
     /* hint: seL4_Call()
@@ -580,10 +592,12 @@ response message, if the sender doesn't want it to.
     tag = seL4_Call(ep_cap_path.capPtr, tag);
 /*-- endfilter -*/
 ```
+
 </details>
 
 On completion, you should see thread_2 fault as follows:
-```
+
+```log
 /*--filter TaskCompletion("task-9", TaskContentType.COMPLETED) -*/
 thread_2: hallo wereld
 thread_2: got a message 0 from 0
@@ -608,7 +622,7 @@ designated, single IPC buffer.
 
 - <https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/functions.h>
 
-```
+```c
 /*-- set task_10_desc -*/
     /* TASK 10: get the reply message */
     /* hint: seL4_GetMR()
@@ -628,6 +642,7 @@ designated, single IPC buffer.
     msg = seL4_GetMR(0);
 /*-- endfilter -*/
 ```
+
 </details>
 
 On completion, the output should not change.
@@ -646,7 +661,7 @@ explicitly interested in distinguishing the sender.
 - <https://github.com/seL4/seL4/blob/master/libsel4/sel4_arch_include/aarch32/sel4/sel4_arch/syscalls.h>
 - <https://github.com/seL4/seL4/blob/master/libsel4/mode_include/32/sel4/shared_types.bf>
 
-```
+```c
 /*-- set task_11_desc -*/
     /* TASK 11: wait for a message to come in over the endpoint */
     /* hint 1: seL4_Recv()
@@ -662,6 +677,7 @@ explicitly interested in distinguishing the sender.
 /*-- endset -*/
 /*? task_11_desc ?*/
 ```
+
 <details markdown='1'>
 <summary><em>Quick solution</em></summary>
 
@@ -670,10 +686,12 @@ explicitly interested in distinguishing the sender.
     tag = seL4_Recv(ep_object.cptr, &sender_badge);
 /*-- endfilter -*/
 ```
+
 </details>
 
 On completion, the output should change slightly:
-```
+
+```log
 /*-- filter TaskCompletion("task-11", TaskContentType.COMPLETED) -*/
 thread_2: got a message 0 from 0x61
 /*-- endfilter -*/
@@ -687,7 +705,7 @@ Complete them and proceed to the next step.
 
 - <https://github.com/seL4/seL4/blob/master/libsel4/mode_include/32/sel4/shared_types.bf>
 
-```
+```c
 /*-- set task_12_desc -*/
     /* TASK 12: make sure it is what we expected */
     /* hint 1: check the badge. is it EP_BADGE?
@@ -716,6 +734,7 @@ Complete them and proceed to the next step.
                "\tHow many registers did you set with seL4_SetMR, within the root thread?\n");
 /*-- endfilter -*/
 ```
+
 </details>
 
 On completion, the output should not change.
@@ -726,7 +745,7 @@ Again, just reading the data from the Message Registers.
 
 - <https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/functions.h>
 
-```
+```c
 /*-- set task_13_desc -*/
     /* TASK 13: get the message stored in the first message register */
     /* hint: seL4_GetMR()
@@ -746,10 +765,12 @@ Again, just reading the data from the Message Registers.
     msg = seL4_GetMR(0);
 /*-- endfilter -*/
 ```
+
 </details>
 
 On completion, the output should change slightly:
-```
+
+```log
 /*--filter TaskCompletion("task-13", TaskContentType.COMPLETED) -*/
 thread_2: got a message 0x6161 from 0x61
 /*-- endfilter -*/
@@ -761,7 +782,7 @@ And writing Message Registers again.
 
 - <https://github.com/seL4/seL4/blob/master/libsel4/include/sel4/functions.h>
 
-```
+```c
 /*-- set task_14_desc -*/
     /* TASK 14: copy the modified message back into the message register */
     /* hint: seL4_SetMR()
@@ -781,6 +802,7 @@ And writing Message Registers again.
     seL4_SetMR(0, msg);
 /*-- endfilter -*/
 ```
+
 </details>
 
 On completion, the output should not change.
@@ -805,7 +827,7 @@ Complete the step and pat yourself on the back.
 - <https://github.com/seL4/seL4/blob/master/libsel4/sel4_arch_include/ia32/sel4/sel4_arch/syscalls.h>
 - <https://github.com/seL4/seL4/blob/master/libsel4/mode_include/32/sel4/shared_types.bf>
 
-```
+```c
 /*-- set task_15_desc -*/
     /* TASK 15: send the message back */
     /* hint 1: seL4_ReplyRecv()
@@ -832,10 +854,12 @@ Complete the step and pat yourself on the back.
     seL4_ReplyRecv(ep_object.cptr, tag, &sender_badge);
 /*-- endfilter -*/
 ```
+
 </details>
 
 On completion, the output should change, with the fault message replaced with the following:
-```
+
+```log
 /*--filter TaskCompletion("task-15", TaskContentType.COMPLETED) -*/
 main: got a reply: [0xffff9e9e|0xffffffffffff9e9e]
 /*-- endfilter -*/
@@ -847,7 +871,8 @@ That's it for this tutorial.
 
 /*- filter ExcludeDocs() -*/
 /*? ExternalFile("CMakeLists.txt") ?*/
-```
+
+```c
 /*-- filter File("main.c") -*/
 /*
  * Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
@@ -1115,4 +1140,5 @@ int main(void) {
 }
 /*- endfilter -*/
 ```
+
 /*- endfilter -*/

@@ -56,7 +56,7 @@ Learning outcomes:
 
 <details markdown='1'>
 <summary><em>Hint:</em> tutorial solutions</summary>
-<br>
+
 All tutorials come with complete solutions. To get solutions run:
 
 /*? macros.tutorial_init_with_solution("libraries-3") ?*/
@@ -71,7 +71,7 @@ Tasks in this tutorial are in `main.c` and `app.c`.
 
 When you first run this tutorial, you should see the following output:
 
-```
+```log
 Booting all finished, dropped to user space
 Node 0 of 1
 IOPT levels:     4294967295
@@ -86,7 +86,7 @@ Initial thread cnode size: 12
 libraries-3: vspace_reserve_range_aligned@vspace.h:621 Not implemented
 libraries-3: main@main.c:117 [Cond failed: virtual_reservation.res == NULL]
 /*-- filter TaskCompletion("task-1", TaskContentType.BEFORE) -*/
-	Failed to reserve a chunk of memory.
+    Failed to reserve a chunk of memory.
 /*-- endfilter -*/
 ```
 
@@ -136,11 +136,12 @@ function may seem tedious, it's doing some important things.
                                                            &data, simple_get_pd(&simple), &vka, info);
 /*-- endfilter -*/
 ```
+
 </details>
 
 On success, you should see a different error:
 
-```
+```log
 <<seL4(CPU 0) [handleUnknownSyscall/106 T0xffffff801ffb5400 "libraries-3" @40139e]: SysDebugNameThread: cap is not a TCB, halting>>
 /*-- filter TaskCompletion("task-1", TaskContentType.COMPLETED) -*/
 halting...
@@ -187,15 +188,16 @@ thread.
     error = sel4utils_configure_process_custom(&new_process, &vka, &vspace, config);
 /*-- endfilter -*/
 ```
+
 </details>
 
 On success, you should see a different error:
 
-```
+```log
  libraries-3: main@main.c:196 [Cond failed: new_ep_cap == 0]
 /*-- filter TaskCompletion("task-2", TaskContentType.COMPLETED) -*/
-	Failed to mint a badged copy of the IPC endpoint into the new thread's CSpace.
-	sel4utils_mint_cap_to_process takes a cspacepath_t: double check what you passed.
+    Failed to mint a badged copy of the IPC endpoint into the new thread's CSpace.
+    sel4utils_mint_cap_to_process takes a cspacepath_t: double check what you passed.
 /*-- endfilter -*/
 ```
 
@@ -255,6 +257,7 @@ wouldn't know who was whom.
     vka_cspace_make_path(&vka, ep_object.cptr, &ep_cap_path);
 /*-- endfilter -*/
 ```
+
 </details>
 
 On success, the output should not change.
@@ -295,16 +298,17 @@ free slot that the VKA library found for us.
                                                seL4_AllRights, EP_BADGE);
 /*-- endfilter -*/
 ```
+
 </details>
 
 On success, the output should look something like:
 
-```
+```log
 NEW CAP SLOT: 6ac.
 main: hello world
 libraries-3: main@main.c:247 [Cond failed: sender_badge != EP_BADGE]
 /*-- filter TaskCompletion("task-4", TaskContentType.COMPLETED) -*/
-	The badge we received from the new thread didn't match our expectation
+    The badge we received from the new thread didn't match our expectation
 /*-- endfilter -*/
 ```
 
@@ -359,22 +363,23 @@ communicate with us, we can let it run. Complete this step and proceed.
     error = sel4utils_spawn_process_v(&new_process, &vka, &vspace, argc, (char**) &argv, 1);
 /*-- endfilter -*/
 ```
+
 </details>
 
 
 On success, you should be able to see the second process running. The output should
 be as follows:
 
-```
+```log
 NEW CAP SLOT: 6ac.
 process_2: hey hey hey
 main@app.c:67 [Cond failed: msg != ~MSG_DATA]
 /*-- filter TaskCompletion("task-5", TaskContentType.COMPLETED) -*/
-	Unexpected response from root thread.
+    Unexpected response from root thread.
 /*-- endfilter -*/
 main: hello world
 libraries-3: main@main.c:255 [Cond failed: sender_badge != EP_BADGE]
-	The badge we received from the new thread didn't match our expectation.
+    The badge we received from the new thread didn't match our expectation.
 ```
 
 ### Receive a message
@@ -401,11 +406,10 @@ Then we verify the fidelity of the data that was transmitted.
 /*? task_6_desc ?*/
 /*-- filter ExcludeDocs() -*/
 /*-- filter TaskCompletion("task-6", TaskContentType.COMPLETED) -*/
-	Unexpected response from root thread.
+    Unexpected response from root thread.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
-
 
 <details markdown='1'>
 <summary><em>Quick solution</em></summary>
@@ -415,6 +419,7 @@ Then we verify the fidelity of the data that was transmitted.
     tag = seL4_Recv(ep_cap_path.capPtr, &sender_badge);
 /*-- endfilter -*/
 ```
+
 </details>
 
 On success, the badge error should no longer be visible.
@@ -444,7 +449,7 @@ message sent by the new thread.
 /*? task_7_desc ?*/
 /*-- filter ExcludeDocs() -*/
 /*-- filter TaskCompletion("task-7", TaskContentType.COMPLETED) -*/
-	Unexpected response from root thread.
+    Unexpected response from root thread.
 /*-- endfilter -*/
 /*-- endfilter -*/
 ```
@@ -457,6 +462,7 @@ message sent by the new thread.
     seL4_ReplyRecv(ep_cap_path.capPtr, tag, &sender_badge);
 /*-- endfilter -*/
 ```
+
 </details>
 
 On success, the output should not change.
@@ -496,10 +502,11 @@ that was sent, and that's the end.
     tag = seL4_Call(ep, tag);
 /*-- endfilter -*/
 ```
+
 </details>
 On success, you should see the following:
 
-```
+```log
 /*-- filter TaskCompletion("task-8", TaskContentType.COMPLETED) -*/
 process_2: hey hey hey
 main: got a message 0x6161 from 0x61
@@ -512,7 +519,8 @@ That's it for this tutorial.
 
 /*-- filter ExcludeDocs() -*/
 /*? ExternalFile("CMakeLists.txt") ?*/
-```
+
+```c
 /*-- filter File("main.c") -*/
 /*
  * Copyright 2017, Data61, CSIRO (ABN 41 687 119 230)
@@ -749,4 +757,5 @@ int main(int argc, char **argv) {
 }
 /*-- endfilter -*/
 ```
+
 /*-- endfilter -*/
