@@ -7,9 +7,11 @@
 /*? declare_task_ordering(['timer-start', 'timer-get', 'timer-set', 'timer-ack']) ?*/
 
 # Interrupts
+
 This tutorial covers seL4 interrupts.
 
 You will learn:
+
 1. The purpose of the IRQControl capability.
 2. How to obtain capabilities for specific interrupts.
 3. How to handle interrupts and their relation with notification objects.
@@ -25,7 +27,7 @@ You will learn:
 
 <details markdown='1'>
 <summary><em>Hint:</em> tutorial solutions</summary>
-<br>
+
 All tutorials come with complete solutions. To get solutions run:
 
 /*? macros.tutorial_init_with_solution("interrupts") ?*/
@@ -33,13 +35,13 @@ All tutorials come with complete solutions. To get solutions run:
 Answers are also available in drop down menus under each section.
 </details>
 
-## CapDL Loader
+## capDL Loader
 
 This tutorial uses the *capDL loader*, a root task which allocates statically
  configured objects and capabilities.
 
 <details markdown='1'>
-<summary>Get CapDL</summary>
+<summary>Get capDL</summary>
 The capDL loader parses
 a static description of the system and the relevant ELF binaries.
 It is primarily used in [CAmkES](https://docs.sel4.systems/projects/camkes/) projects
@@ -47,10 +49,10 @@ but we also use it in the tutorials to reduce redundant code.
 The program that you construct will end up with its own CSpace and VSpace, which are separate
 from the root task, meaning CSlots like `seL4_CapInitThreadVSpace` have no meaning
 in applications loaded by the capDL loader.
-<br>
-More information about CapDL projects can be found [here](https://docs.sel4.systems/projects/capdl/).
-<br>
-For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This can be added in a directory that is adjacent to the main `tutorials` directory.
+
+More information about capDL projects can be found [here](https://docs.sel4.systems/projects/capdl/).
+
+For this tutorial clone the [capDL repo](https://github.com/sel4/capdl). This can be added in a directory that is adjacent to the main `tutorials` directory.
 </details>
 
 ## Background
@@ -69,7 +71,7 @@ IRQHandler capabilities give access to a single irq and are standard seL4 capabi
 invoking the IRQControl capability, with architecture specific parameters. Below is an
 example of obtaining an IRQHandler.
 
-```bash
+```c
 // Get a capability for irq number 7 and place it in cslot 10 in a single-level cspace.
 error = seL4_IRQControl_Get(seL4_IRQControl, 7, cspace_root, 10, seL4_WordBits);
 ```
@@ -85,7 +87,8 @@ dependent, including:
 
 Interrupts are received by registering a capability to a notification object
 with the IRQHandler capability for that irq, as follows:
-```bash
+
+```c
 seL4_IRQHandler_SetNotification(irq_handler, notification);
 ```
 
@@ -124,7 +127,7 @@ makes a single request.
 
 On successful initialisation of the tutorial, you will see the following:
 
-```
+```log
 timer client: hey hey hey
 timer: got a message from 61 to sleep 2 seconds
 <<seL4(CPU 0) [decodeInvocation/530 T0xe8265600 "tcb_timer" @84e4]: Attempted to invoke a null cap #9.>>
@@ -141,7 +144,7 @@ The timer driver we are using emits an interrupt in the `TTC0_TIMER1_IRQ` number
 **Exercise** Invoke `irq_control`, which contains the `seL4_IRQControl` capability,
 the place the `IRQHandler` capability for `TTC0_TIMER1_IRQ` into the `irq_handler` CSlot.
 
-```
+```c
 /*-- filter TaskContent("timer-start", TaskContentType.ALL, subtask='get') -*/
     /* TODO invoke irq_control to put the interrupt for TTC0_TIMER1_IRQ in
        cslot irq_handler (depth is seL4_WordBits) */
@@ -166,7 +169,7 @@ the place the `IRQHandler` capability for `TTC0_TIMER1_IRQ` into the `irq_handle
 On success, you should see the following output, without the error message that occurred earlier,
 as the irq_handle capability is now valid:
 
-```
+```log
 /*-- filter TaskCompletion("timer-get", TaskContentType.COMPLETED) -*/
 Undelivered IRQ: 42
 /*-- endfilter -*/
@@ -176,9 +179,10 @@ This is a warning message from the kernel that an IRQ was recieved for irq numbe
 notification capability is set to sent a signal to.
 
 ### Set NTFN
+
 **Exercise** Now set the notification capability (`ntfn`) by invoking the irq handler.
 
-```
+```c
 /*-- filter TaskContent("timer-start", TaskContentType.ALL, subtask='set') -*/
      /* TODO set ntfn as the notification for irq_handler */
 /*-- endfilter -*/
@@ -201,7 +205,7 @@ notification capability is set to sent a signal to.
 
 Now the output will be:
 
-```
+```log
 /*-- filter TaskCompletion("timer-set", TaskContentType.COMPLETED) -*/
 Tick
 /*-- endfilter -*/
@@ -215,7 +219,7 @@ before replying to the client.
 
 **Exercise** Acknowledge the interrupt after handling it in the timer driver.
 
-```
+```c
 /*-- filter TaskContent("timer-start", TaskContentType.ALL, subtask='ack') -*/
         /* TODO ack the interrupt */
 /*-- endfilter -*/
@@ -237,7 +241,7 @@ before replying to the client.
 
 Now the timer interrupts continue to come in, and the reply is delivered to the client.
 
-```
+```log
 /*-- filter TaskCompletion("timer-ack", TaskContentType.COMPLETED) -*/
 timer client wakes up
 /*-- endfilter -*/
@@ -246,6 +250,7 @@ timer client wakes up
 That's it for this tutorial.
 
 /*-- filter ExcludeDocs() -*/
+
 ```c
 /*-- filter ELF("client") -*/
 /*- set _ = state.stash.start_elf("client") -*/

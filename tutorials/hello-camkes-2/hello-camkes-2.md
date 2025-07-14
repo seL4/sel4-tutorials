@@ -22,13 +22,13 @@ Use this [slide presentation](https://github.com/seL4/sel4-tutorials/blob/master
 1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up.html)
 2. [Introduction to CAmkES tutorial](https://docs.sel4.systems/Tutorials/hello-camkes-1.html)
 
-## CapDL Loader
+## capDL Loader
 
 This tutorial uses the *capDL loader*, a root task which allocates statically
  configured objects and capabilities.
 
 <details markdown='1'>
-<summary>Get CapDL</summary>
+<summary>Get capDL</summary>
 
 The capDL loader parses a static description of the system and the relevant ELF
 binaries. It is primarily used in
@@ -38,9 +38,9 @@ end up with its own CSpace and VSpace, which are separate from the root task,
 meaning CSlots like `seL4_CapInitThreadVSpace` have no meaning in applications
 loaded by the capDL loader.
 
-More information about CapDL projects can be found [here](https://docs.sel4.systems/projects/capdl/).
+More information about capDL projects can be found [here](https://docs.sel4.systems/projects/capdl/).
 
-For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This can be added in a directory that is adjacent to the main `tutorials` directory.
+For this tutorial clone the [capDL repo](https://github.com/sel4/capdl). This can be added in a directory that is adjacent to the main `tutorials` directory.
 </details>
 
 ## Initialising
@@ -73,7 +73,7 @@ You are strongly advised to read the manual section on Events here:
 
 #### Specify an events interface
 
-```
+```c
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="event-task1") -*/
     /* TASK 1: the event interfaces */
     /* hint 1: specify 2 interfaces: one "emits" and one "consumes"
@@ -86,7 +86,7 @@ You are strongly advised to read the manual section on Events here:
 <details markdown='1'>
 <summary><em>Quick solution</em></summary>
 
-```
+```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="event-task1") -*/
     /* TASK 1: the event interfaces */
     emits TheEvent echo;
@@ -96,7 +96,7 @@ You are strongly advised to read the manual section on Events here:
 
 </details>
 
-```
+```c
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="event-task3") -*/
     /* TASK 3: the event interfaces */
     /* hint 1: specify 2 interfaces: one "emits" and one "consumes"
@@ -109,7 +109,7 @@ You are strongly advised to read the manual section on Events here:
 <details markdown='1'>
 <summary><em>Quick solution</em></summary>
 
-```
+```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="event-task3") -*/
     /* TASK 3: the event interfaces */
     consumes TheEvent echo;
@@ -120,7 +120,7 @@ You are strongly advised to read the manual section on Events here:
 
 #### Add connections
 
-```
+```c
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="event-task5") -*/
     /* TASK 5: Event connections */
     /* hint 1: connect each "emits" interface in a component to the "consumes" interface in the other
@@ -129,29 +129,31 @@ You are strongly advised to read the manual section on Events here:
      */
 /*-- endfilter -*/
 ```
+
 <details markdown='1'>
 <summary><em>Quick solution</em></summary>
 
-```
+```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="event-task5") -*/
     /* TASK 5: Event connections */
     connection seL4Notification echo_event(from client.echo, to echo.echo);
     connection seL4Notification client_event(from echo.client, to client.client);
 /*-- endfilter -*/
 ```
+
 </details>
 
 ### Data
-Recall that CAmkES prefixes the name
-of the interface instance to the function being called across that
-interface? This is the same phenomenon, but for events; in the case of a
-connection over which events are sent, there is no API, but rather
-CAmkES will generate \_emit() and \_wait() functions to enable the
+
+Recall that CAmkES prefixes the name of the interface instance to the function
+being called across that interface? This is the same phenomenon, but for events;
+in the case of a connection over which events are sent, there is no API, but
+rather CAmkES will generate \_emit() and \_wait() functions to enable the
 application to transparently interact with these events.
 
 #### Signal that the data is available
 
-```
+```c
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="signal-task10") -*/
     /* TASK 10: emit event to signal that the data is available */
     /* hint 1: use the function <interface_name>_emit
@@ -169,10 +171,12 @@ application to transparently interact with these events.
     echo_emit();
 /*-- endfilter -*/
 ```
+
 </details>
 
 #### Wait for data to become available
-```
+
+```c
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="wait-task11") -*/
     /* TASK 11: wait to get an event back signalling that the reply data is available */
     /* hint 1: use the function <interface_name>_wait
@@ -180,6 +184,7 @@ application to transparently interact with these events.
      */
 /*-- endfilter -*/
 ```
+
 <details markdown='1'>
 <summary><em>Quick solution</em></summary>
 
@@ -189,6 +194,7 @@ application to transparently interact with these events.
     client_wait();
 /*-- endfilter -*/
 ```
+
 </details>
 
 #### Signal that data is available
@@ -209,6 +215,7 @@ application to transparently interact with these events.
     echo_emit();
 /*-- endfilter -*/
 ```
+
 </details>
 
 #### Wait for data to be read
@@ -229,9 +236,11 @@ application to transparently interact with these events.
     client_wait();
 /*-- endfilter -*/
 ```
+
 </details>
 
 #### Signal that data is available
+
 ```c
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="notify-task22") -*/
     /* TASK 22: notify the client that there is new data available for it */
@@ -250,6 +259,7 @@ application to transparently interact with these events.
     client_emit();
 /*-- endfilter -*/
 ```
+
 </details>
 
 #### Signal that data has been read
@@ -272,13 +282,15 @@ application to transparently interact with these events.
     client_emit();
 /*-- endfilter -*/
 ```
+
 </details>
 
 ### Handle notifications
-One way to handle notifications in CAmkES is to
-use callbacks when they are raised. CAmkES generates functions that
-handle the registration of callbacks for each notification interface
-instance. These steps help you to become familiar with this approach.
+
+One way to handle notifications in CAmkES is to use callbacks when they are
+raised. CAmkES generates functions that handle the registration of callbacks for
+each notification interface instance. These steps help you to become familiar
+with this approach.
 
 #### Register a callback handler
 
@@ -303,6 +315,7 @@ instance. These steps help you to become familiar with this approach.
     ZF_LOGF_IF(error != 0, "Failed to register callback");
 /*-- endfilter -*/
 ```
+
 </details>
 
 #### Register another callback handler
@@ -317,6 +330,7 @@ instance. These steps help you to become familiar with this approach.
     */
 /*-- endfilter -*/
 ```
+
 <details markdown='1'>
 <summary><em>Quick solution</em></summary>
 
@@ -327,6 +341,7 @@ instance. These steps help you to become familiar with this approach.
     ZF_LOGF_IF(error != 0, "Failed to register callback");
 /*-- endfilter -*/
 ```
+
 </details>
 
 #### Register a callback handler
@@ -352,28 +367,30 @@ instance. These steps help you to become familiar with this approach.
     ZF_LOGF_IF(error != 0, "Failed to register callback");
 /*-- endfilter -*/
 ```
+
 </details>
 
 ------------------------------------------------------------------------
 
 ### Dataports
-Dataports are typed shared memory mappings. In your
-CAmkES ADL specification, you state what C data type you'll be using to
-access the data in the shared memory -- so you can specify a C struct
-type, etc.
+
+Dataports are typed shared memory mappings. In your CAmkES ADL specification,
+you state what C data type you'll be using to access the data in the shared
+memory -- so you can specify a C struct type, etc.
 
 The really neat part is more that CAmkES provides access control for
-accessing these shared memory mappings: if a shared mem mapping is such
+accessing these shared memory mappings: if a shared memory mapping is such
 that one party writes and the other reads and never writes, we can tell
 CAmkES about this access constraint in ADL.
 
 So in TASKs 2 and 4, you're first being led to create the "Dataport"
 interface instances on each of the components that will be participating
-in the shared mem communication. We will then link them together using a
+in the shared memory communication. We will then link them together using a
 "seL4SharedData" connector later on.
 
 #### Specify dataport interfaces
-```
+
+```c
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="dataport-task2") -*/
     /* TASK 2: the dataport interfaces */
     /* hint 1: specify 3 interfaces: one of type "Buf", one of type "str_buf_t" and one of type "ptr_buf_t"
@@ -386,7 +403,7 @@ in the shared mem communication. We will then link them together using a
 <details markdown='1'>
 <summary><em>Quick solution</em></summary>
 
-```
+```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="dataport-task2") -*/
     /* TASK 2: the dataport interfaces */
     dataport Buf d;
@@ -398,7 +415,8 @@ in the shared mem communication. We will then link them together using a
 </details>
 
 #### Specify dataport interfaces
-```
+
+```c
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="dataport-task4") -*/
     /* TASK 4: the dataport interfaces */
     /* hint 1: specify 3 interfaces: one of type "Buf", one of type "str_buf_t" and one of type "ptr_buf_t"
@@ -410,7 +428,7 @@ in the shared mem communication. We will then link them together using a
 <details markdown='1'>
 <summary><em>Quick solution</em></summary>
 
-```
+```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="dataport-task4") -*/
     /* TASK 4: the dataport interfaces */
     dataport Buf d;
@@ -418,17 +436,18 @@ in the shared mem communication. We will then link them together using a
     dataport ptr_buf_t d_ptrs;
 /*-- endfilter -*/
 ```
+
 </details>
 
 ### Dataport connections
-And here we are: we're about to specify connections
-between the shared memory pages in each client, and tell CAmkES to link
-these using shared underlying Frame objects. Fill out this step, and
-proceed.
+
+And here we are: we're about to specify connections between the shared memory
+pages in each client, and tell CAmkES to link these using shared underlying
+Frame objects. Fill out this step, and proceed.
 
 #### Specify dataport connections
 
-```
+```c
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="dataport-task6") -*/
     /* TASK 6: Dataport connections */
     /* hint 1: connect the corresponding dataport interfaces of the components to each other
@@ -441,7 +460,7 @@ proceed.
 <details markdown='1'>
 <summary><em>Quick solution</em></summary>
 
-```
+```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="dataport-task6") -*/
     /* TASK 6: Dataport connections */
     connection seL4SharedData data_conn(from client.d, to echo.d);
@@ -449,14 +468,17 @@ proceed.
     connection seL4SharedData ptr_data_conn(from client.d_ptrs, to echo.d_ptrs);
 /*-- endfilter -*/
 ```
+
 </details>
 
 ### Access and manipulate share memory mapping (Dataport) of the client
-These steps are asking you to write some C code
-to access and manipulate the data in the shared memory mapping
-(Dataport) of the client. Follow through to the next step.
+
+These steps are asking you to write some C code to access and manipulate the
+data in the shared memory mapping (Dataport) of the client. Follow through to
+the next step.
 
 #### Copy strings to an untyped dataport
+
 ```c
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="copy-task9") -*/
     /* TASK 9: copy strings to an untyped dataport */
@@ -485,10 +507,12 @@ to access and manipulate the data in the shared memory mapping
     }
 /*-- endfilter -*/
 ```
+
 </details>
 
 #### Read the reply data from a typed dataport
-```
+
+```c
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="read-task12") -*/
     /* TASK 12: read the reply data from a typed dataport */
     /* hint 1: use the "str_buf_t" dataport as defined in the Client.camkes file
@@ -505,7 +529,7 @@ to access and manipulate the data in the shared memory mapping
 <details markdown='1'>
 <summary><em>Quick solution</em></summary>
 
-```
+```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="read-task12") -*/
     /* TASK 12: read the reply data from a typed dataport */
     for (int i = 0; i < d_typed->n; i++) {
@@ -513,11 +537,12 @@ to access and manipulate the data in the shared memory mapping
     }
 /*-- endfilter -*/
 ```
+
 </details>
 
 #### Send data using dataports
 
-```
+```c
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="send-task13") -*/
   /* TASK 13: send the data over again, this time using two dataports, one
      * untyped dataport containing the data, and one typed dataport containing
@@ -554,14 +579,17 @@ to access and manipulate the data in the shared memory mapping
     }
 /*-- endfilter -*/
 ```
+
 </details>
 
 ### Access and manipulate share memory mapping (Dataport) of the server
+
 And these steps are asking you to write some C
 code to access and manipulate the data in the shared memory mapping
 (Dataport) of the server.
 
 #### Read data from an untyped dataport
+
 ```c
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="read-task19") -*/
   /* TASK 19: read some data from the untyped dataport */
@@ -589,6 +617,7 @@ code to access and manipulate the data in the shared memory mapping
     }
 /*-- endfilter -*/
 ```
+
 </details>
 
 #### Put data into a typed dataport
@@ -626,6 +655,7 @@ code to access and manipulate the data in the shared memory mapping
     d_typed->n = *n;
 /*-- endfilter -*/
 ```
+
 </details>
 
 #### Read data from a typed dataport
@@ -647,6 +677,7 @@ code to access and manipulate the data in the shared memory mapping
     */
 /*-- endfilter -*/
 ```
+
 <details markdown='1'>
 <summary><em>Quick solution</em></summary>
 
@@ -663,15 +694,17 @@ code to access and manipulate the data in the shared memory mapping
   }
 /*-- endfilter -*/
 ```
+
 </details>
 
 ### CAmkES attributes
+
 This is an introduction to CAmkES attributes: you're
 being asked to set the priority of the components.
 
 #### Set component priorities
 
-```
+```c
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="set-task7") -*/
     /* TASK 7: set component priorities */
     /* hint 1: component priority is specified as an attribute with the name <component name>.priority
@@ -683,16 +716,18 @@ being asked to set the priority of the components.
 <details markdown='1'>
 <summary><em>Quick solution</em></summary>
 
-```
+```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="set-task7") -*/
     /* TASK 7: set component priorities */
     client.priority = 255;
     echo.priority = 254;
 /*-- endfilter -*/
 ```
+
 </details>
 
 ### Specify the data access constraints for Dataports
+
 This is where we specify the data access constraints
 for the Dataports in a shared memory connection. We then go about
 attempting to violate those constraints to see how CAmkES has truly met
@@ -700,7 +735,7 @@ our constraints when mapping those Dataports.
 
 #### Restrict access to dataports
 
-```
+```c
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="restrict-task8") -*/
     /* TASK 8: restrict access to dataports */
     /* hint 1: use attribute <component>.<interface_name>_access for each component and interface
@@ -714,7 +749,7 @@ our constraints when mapping those Dataports.
 <details markdown='1'>
 <summary><em>Quick solution</em></summary>
 
-```
+```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="restrict-task8") -*/
     /* TASK 8: restrict access to dataports */
     echo.d_access = "R";
@@ -723,10 +758,12 @@ our constraints when mapping those Dataports.
     client.d_typed_access = "R";
 /*-- endfilter -*/
 ```
+
 </details>
 
 #### Test the read and write permissions on the dataport
-```
+
+```c
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="test-task16") -*/
     /* TASK 16: test the read and write permissions on the dataport.
     * When we try to write to a read-only dataport, we will get a VM fault.
@@ -738,7 +775,7 @@ our constraints when mapping those Dataports.
 <details markdown='1'>
 <summary><em>Quick solution</em></summary>
 
-```
+```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="test-task16") -*/
     /* TASK 16: test the read and write permissions on the dataport.
     * When we try to write to a read-only dataport, we will get a VM fault.
@@ -746,17 +783,16 @@ our constraints when mapping those Dataports.
     d_typed->n = 0;
 /*-- endfilter -*/
 ```
+
 </details>
 
 ## Done!
- Congratulations: be sure to read up on the keywords and
-structure of ADL: it's key to understanding CAmkES. And well done on
-writing your first CAmkES application.
 
-
+Congratulations! You have completed the third CAmkES tutorial.
 
 
 /*-- filter ExcludeDocs() -*/
+
 ```c
 /*- filter File("components/Client/Client.camkes") --*/
 
@@ -791,6 +827,7 @@ component Echo {
 
 /*-- endfilter -*/
 ```
+
 ```c
 /*- filter File("hello-2.camkes") --*/
 /*
@@ -858,6 +895,7 @@ typedef struct {
 
 /*-- endfilter -*/
 ```
+
 ```c
 /*- filter File("components/Client/src/client.c") --*/
 /*
@@ -982,7 +1020,7 @@ void echo__init(void) {
 ```
 
 
-```
+```c
 /*- filter TaskCompletion("hello", TaskContentType.BEFORE) --*/
 client: the next instruction will cause a vm fault due to permissions
 /*-- endfilter -*/
@@ -1015,4 +1053,5 @@ GenerateCAmkESRootserver()
 /*? macros.cmake_check_script(state) ?*/
 /*-- endfilter -*/
 ```
+
 /*-- endfilter -*/

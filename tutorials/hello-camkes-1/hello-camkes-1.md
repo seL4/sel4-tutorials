@@ -5,21 +5,23 @@
 -->
 
 # Introduction to CAmkES
+
 /*? declare_task_ordering(['hello']) ?*/
 
-This tutorial is an introduction to
-CAmkES: bootstrapping a basic static CAmkES application, describing its
-components, and linking them together.
+This tutorial is an introduction to CAmkES: bootstrapping a basic static CAmkES
+application, describing its components, and linking them together.
 
 Outcomes:
+
 1. Understand the structure of a CAmkES application, as a described,
-well-defined, static system.
+   well-defined, static system.
 2. Understand the file-layout of a CAmkES ADL project.
 3. Become acquainted with the basics of creating a practical CAmkES application.
 
 Use this [slide presentation](https://github.com/seL4/sel4-tutorials/blob/master/docs/CAmkESTutorial.pdf) to guide you through the tutorials [0](https://docs.sel4.systems/Tutorials/hello-camkes-0.html), [1](https://docs.sel4.systems/Tutorials/hello-camkes-1.html) and [2](https://docs.sel4.systems/Tutorials/hello-camkes-2.html).
 
 ## Prerequisites
+
 1. [Set up your machine](https://docs.sel4.systems/Tutorials/setting-up.html)
 2. [CAmkES hello world tutorial](https://docs.sel4.systems/Tutorials/hello-camkes-0.html)
 
@@ -29,7 +31,7 @@ Use this [slide presentation](https://github.com/seL4/sel4-tutorials/blob/master
 
 <details markdown='1'>
 <summary><em>Hint:</em> tutorial solutions</summary>
-<br>
+
 All tutorials come with complete solutions. To get solutions run:
 
 /*? macros.tutorial_init_with_solution("hello-camkes-1") ?*/
@@ -42,49 +44,47 @@ The fundamentals of CAmkES are the component, the interface and the connection.
 
 ### Components
 
-*Components* are logical
-groupings of code and resources. They communicate with other component
-instances via well-defined interfaces which must be statically defined,
-over communication channels. This tutorial will lead you through the
-construction of a CAmkES application with two components: an Echo
-server, and its Client that makes calls to it. These components are
-defined when you initialise your build repository, found in
-the following camkes file:
+*Components* are logical groupings of code and resources. They communicate with
+other component instances via well-defined interfaces which must be statically
+defined, over communication channels. This tutorial will lead you through the
+construction of a CAmkES application with two components: an Echo server, and
+its Client that makes calls to it. These components are defined when you
+initialise your build repository, found in the following camkes file:
 
 - `hello-camkes-1/hello-1.camkes`
 
-Find the Component manual section here:
-<https://docs.sel4.systems/projects/camkes/manual.html#component>
+See also the [Component
+definition](https://docs.sel4.systems/projects/camkes/manual.html#component) in
+the CAmkES manual.
 
 ### Connections
 
- The second fundamental component of CAmkES applications
-is the *Connection*: a connection is the representation of a method of
-communication between two software components in CAmkES. The underlying
-implementation may be shared memory, synchronous IPC, notifications or
-some other implementation-provided means. In this particular tutorial,
-we are using synchronous IPC. In implementation terms, this boils down
-to the `seL4_Call` syscall on seL4.
+The second fundamental component of CAmkES applications is the *Connection*: a
+connection is the representation of a method of communication between two
+software components in CAmkES. The underlying implementation may be shared
+memory, synchronous IPC, notifications or some other implementation-provided
+means. In this particular tutorial, we are using synchronous IPC. In
+implementation terms, this boils down to the `seL4_Call` syscall on seL4.
 
-Find the "Connection" keyword manual section here:
-<https://docs.sel4.systems/projects/camkes/manual.html#connection>
+See also the [Connection
+keyword](https://docs.sel4.systems/projects/camkes/manual.html#connection) in
+the CAmkES manual.
 
 ### Interfaces
 
- All communications over a CAmkES connection must be well
-defined: static systems' communications should be able to be reasoned
-about at build time. All the function calls which will be delivered over
-a communication channel then, also are well defined, and logically
-grouped so as to provide clear directional understanding of all
-transmissions over a connection. Components are connected together in
-CAmkES, yes -- but the interfaces that are exposed over each connection
-for calling by other components, are also described.
+All communications over a CAmkES connection must be well defined: static
+systems' communications should be able to be reasoned about at build time. All
+the function calls which will be delivered over a communication channel then,
+also are well defined, and logically grouped so as to provide clear directional
+understanding of all transmissions over a connection. Components are connected
+together in CAmkES, yes --- but the interfaces that are exposed over each
+connection for calling by other components, are also described.
 
-There are different
-kinds of interfaces:
--Dataports,
--Procedural interfaces,
--and Notifications.
+There are different kinds of interfaces:
+
+- Dataports,
+- Procedural interfaces,
+- and Notifications.
 
 This tutorial will lead you through the construction of a Procedural
 interface, which is an interface over which function calls are made
@@ -93,16 +93,16 @@ kind of interface in CAmkES is `procedure`. The definition of this
 Procedure interface may be found here:
 `hello-camkes-1/interfaces/HelloSimple.idl4`
 
-Find the "Procedure" keyword definition here:
-<https://docs.sel4.systems/projects/camkes/manual.html#procedure>
+See also the [Procedure
+keyword](https://docs.sel4.systems/projects/camkes/manual.html#procedure) in the
+CAmkES manual.
 
 ### Component source
 
- Based on the ADL, CAmkES generates boilerplate which
-conforms to your system's architecture, and enables you to fill in the
-spaces with your program's logic. The two generated files in this
-tutorial application are, in accordance with the Components we have
-defined:
+Based on the ADL, CAmkES generates boilerplate which conforms to your system's
+architecture, and enables you to fill in the spaces with your program's logic.
+The two generated files in this tutorial application are, in accordance with the
+Components we have defined:
 
 - `hello-camkes-1/components/Echo/src/echo.c`
 - `hello-camkes-1/components/Client/src/client.c`
@@ -127,8 +127,8 @@ instances of functions in an Interface with the Interface-instance's
 name. In the dual-function NIC device's case, it might have a
 `provides <INTERFACE_NAME> serial` and a `provides <INTERFACE_NAME> nic`.
 When a caller wants to call for the NIC-send, it would call,
-nic_send(), and when a caller wants to invoke the Serial-send, it would
-call, "serial_send()".
+`nic_send()`, and when a caller wants to invoke the Serial-send, it would
+call, `serial_send()`.
 
 So if the `Hello` interface is provided once by `Echo` as `a`, you would
 call for the `a` instance of Echo's `Hello` by calling for `a_hello()`.
@@ -143,7 +143,7 @@ the second one was named `a2`? Then in order to call on that second
 **Exercise** First modify `hello-1.camkes`. Define instances of `Echo` and `Client` in the
 `composition` section of the ADL.
 
-```
+```c
 /*-- filter TaskContent("hello", TaskContentType.BEFORE, subtask="define",completion="Booting all finished, dropped to user space") -*/
 assembly {
     composition {
@@ -155,7 +155,7 @@ assembly {
 <details markdown='1'>
 <summary><em>Quick solution</em></summary>
 
-```
+```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="define") -*/
 assembly {
     composition {
@@ -164,6 +164,7 @@ assembly {
          component Echo echo;
 /*-- endfilter -*/
 ```
+
 </details>
 
 ### Add a connection
@@ -187,6 +188,7 @@ assembly {
         connection seL4RPCCall hello_con(from client.hello, to echo.hello);
 /*-- endfilter -*/
 ```
+
 </details>
 
 ### Define an interface
@@ -207,14 +209,16 @@ procedure HelloSimple {
 <details markdown='1'>
 <summary><em>Quick solution</em></summary>
 
-```
+```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="interface") -*/
     void say_hello(in string str);
 /*-- endfilter -*/
 ```
+
 </details>
 
-### Implement a RPC function
+### Implement an RPC function
+
 **Exercise** Implement the RPC hello function.
 
 ```c
@@ -236,7 +240,7 @@ procedure HelloSimple {
 <details markdown='1'>
 <summary><em>Quick solution</em></summary>
 
-```
+```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="rpc") -*/
 /* Implement the RPC function. */
 void hello_say_hello(const char *str) {
@@ -244,9 +248,10 @@ void hello_say_hello(const char *str) {
 }
 /*-- endfilter -*/
 ```
+
 </details>
 
-### Invoke a RPC function
+### Invoke an RPC function
 
 **Exercise** Invoke the RPC function in `components/Client/src/client.c`.
 
@@ -266,22 +271,22 @@ void hello_say_hello(const char *str) {
 <details markdown='1'>
 <summary><em>Quick solution</em></summary>
 
-```
+```c
 /*-- filter TaskContent("hello", TaskContentType.COMPLETED, subtask="hello") -*/
     /* Invoke the RPC function */
     char *shello = "hello world";
     hello_say_hello(shello);
 /*-- endfilter -*/
 ```
+
 </details>
 
 ## Done
 
-Now build and run the project, if it compiles: Congratulations! Be sure to read up on the keywords and
-structure of ADL: it's key to understanding CAmkES. And well done on
-writing your first CAmkES application.
+Now build and run the project. If it compiles: Congratulations!
 
 /*-- filter ExcludeDocs() -*/
+
 ```c
 /*- filter File("components/Client/src/client.c") --*/
 /*
@@ -322,7 +327,7 @@ int run(void) {
 
 ```
 
-```
+```c
 /*- filter File("hello-1.camkes") --*/
 /*
  * CAmkES tutorial part 1: components with RPC.
@@ -355,7 +360,8 @@ component Echo {
 }
 /*-- endfilter -*/
 ```
-```
+
+```c
 /*- filter File("interfaces/HelloSimple.idl4") --*/
 /* Simple RPC interface */
 procedure HelloSimple {
@@ -364,7 +370,8 @@ procedure HelloSimple {
 
 /*-- endfilter -*/
 ```
-```
+
+```c
 /*- filter TaskCompletion("hello", TaskContentType.ALL) --*/
 Component echo saying: hello world
 /*-- endfilter -*/
@@ -395,4 +402,5 @@ GenerateCAmkESRootserver()
 /*? macros.cmake_check_script(state) ?*/
 /*-- endfilter -*/
 ```
+
 /*-- endfilter -*/

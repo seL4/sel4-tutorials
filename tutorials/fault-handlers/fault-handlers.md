@@ -32,20 +32,20 @@ You will learn:
 
 <details markdown='1'>
 <summary><em>Hint:</em> tutorial solutions</summary>
-<br>
+
 All tutorials come with complete solutions. To get solutions run:
 
 /*? macros.tutorial_init_with_solution("fault-handlers") ?*/
 
 </details>
 
-## CapDL Loader
+## capDL Loader
 
 This tutorial uses the *capDL loader*, a root task which allocates statically
  configured objects and capabilities.
 
 <details markdown='1'>
-<summary>Get CapDL</summary>
+<summary>Get capDL</summary>
 The capDL loader parses
 a static description of the system and the relevant ELF binaries.
 It is primarily used in [CAmkES](https://docs.sel4.systems/projects/camkes/) projects
@@ -53,10 +53,10 @@ but we also use it in the tutorials to reduce redundant code.
 The program that you construct will end up with its own CSpace and VSpace, which are separate
 from the root task, meaning CSlots like `seL4_CapInitThreadVSpace` have no meaning
 in applications loaded by the capDL loader.
-<br>
-More information about CapDL projects can be found [here](https://docs.sel4.systems/projects/capdl/).
-<br>
-For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This can be added in a directory that is adjacent to the main `tutorials` directory.
+
+More information about capDL projects can be found [here](https://docs.sel4.systems/projects/capdl/).
+
+For this tutorial clone the [capDL repo](https://github.com/sel4/capdl). This can be added in a directory that is adjacent to the main `tutorials` directory.
 </details>
 
 ## Background: What is a fault, and what is a fault handler?
@@ -180,7 +180,7 @@ See the [MCS tutorial](https://docs.sel4.systems/Tutorials/mcs.html) for more in
 
 ## Exercises
 
-This tutorial has one address space set up by the CapDL loader, containing two
+This tutorial has one address space set up by the capDL loader, containing two
 threads which share the same CSpace. One of the threads is a fault handler while
 the other triggers a virtual memory fault.
 

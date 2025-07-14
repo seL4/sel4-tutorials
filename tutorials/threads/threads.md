@@ -26,7 +26,7 @@ In this tutorial, you will:
 2. [Capabilities tutorial](https://docs.sel4.systems/Tutorials/capabilities.html)
 3. [Mapping tutorial](https://docs.sel4.systems/Tutorials/mapping.html)
 
-## CapDL Loader
+## capDL Loader
 
 Previous tutorials have taken place in the root task where the starting CSpace layout is set by the
 seL4 boot protocol. This tutorial uses the *capDL loader*, a root task which allocates statically
@@ -40,9 +40,9 @@ The program that you construct will end up with its own CSpace and VSpace, which
 from the root task, meaning CSlots like `seL4_CapInitThreadVSpace` have no meaning
 in applications loaded by the capDL loader.
 
-More information about CapDL projects can be found [here](https://docs.sel4.systems/projects/capdl/).
+More information about capDL projects can be found [here](https://docs.sel4.systems/projects/capdl/).
 
-For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This can be added in a directory that is adjacent to the main `tutorials` directory.
+For this tutorial clone the [capDL repo](https://github.com/sel4/capdl). This can be added in a directory that is adjacent to the main `tutorials` directory.
 
 ## Initialising
 
@@ -50,7 +50,7 @@ For this tutorial clone the [CapDL repo](https://github.com/sel4/capdl). This ca
 
 <details markdown='1'>
 <summary><em>Hint:</em> tutorial solutions</summary>
-<br>
+
 All tutorials come with complete solutions. To get solutions run:
 
 /*? macros.tutorial_init_with_solution("threads") ?*/
@@ -147,7 +147,7 @@ int new_thread(void *arg1, void *arg2, void *arg3) {
 /*- endfilter -*/
 ```
 
-### CapDL Loader
+### capDL Loader
 
 Previous tutorials have taken place in the root task where the starting CSpace layout is set by the
 seL4 boot protocol. This tutorial uses a the *capDL loader*, a root task which allocates statically
@@ -161,7 +161,7 @@ The program that you construct will end up with its own CSpace and VSpace, which
 from the root task, meaning CSlots like `seL4_CapInitThreadVSpace` have no meaning
 in applications loaded by the capDL loader.
 
-Information about CapDL projects can be found [here](https://docs.sel4.systems/projects/capdl/).
+Information about capDL projects can be found [here](https://docs.sel4.systems/projects/capdl/).
 
 ### Configure a TCB
 
