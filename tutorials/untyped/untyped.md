@@ -56,7 +56,7 @@ them, or into further, usually smaller, untyped capabilities.
 Untyped capabilities have a boolean property *device* which indicates whether
 the memory is writable by the kernel or not: it may not be backed by RAM but
 some other device, or it may be in an area of RAM not addressable by the kernel.
-Device untyped capabilities can only be retyped intro frame objects (physical
+Device untyped capabilities can only be retyped into frame objects (physical
 memory frames, which can be mapped into virtual memory), and cannot be written
 to by the kernel.
 
