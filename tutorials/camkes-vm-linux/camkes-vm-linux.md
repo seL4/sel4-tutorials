@@ -167,7 +167,7 @@ look at the app's `CMakeList.txt`:
 include(${SEL4_TUTORIALS_DIR}/settings.cmake)
 sel4_tutorials_regenerate_tutorial(${CMAKE_CURRENT_SOURCE_DIR})
 
-cmake_minimum_required(VERSION 3.8.2)
+cmake_minimum_required(VERSION 3.10)
 
 project(vm-app C ASM)
 include(ExternalProject)
@@ -300,7 +300,7 @@ Then create a build file for the program at `pkg/hello/CMakeLists.txt`:
 
 ```cmake
 /*-- filter TaskContent("vm-pkg-hello-cmake", TaskContentType.COMPLETED, completion='buildroot login') -*/
-cmake_minimum_required(VERSION 3.8.2)
+cmake_minimum_required(VERSION 3.10)
 
 project(hello C)
 
@@ -422,7 +422,7 @@ clean:
 Create a `modules/CMakeLists.txt` to define the new Linux module with the following content:
 ```cmake
 /*-- filter TaskContent("vm-module-poke-cmake", TaskContentType.COMPLETED, completion='buildroot login') -*/
-cmake_minimum_required(VERSION 3.8.2)
+cmake_minimum_required(VERSION 3.10)
 
 if(NOT MODULE_HELPERS_FILE)
     message(FATAL_ERROR "MODULE_HELPERS_FILE is not defined")
@@ -562,7 +562,7 @@ POKE!!!
 include(${SEL4_TUTORIALS_DIR}/settings.cmake)
 sel4_tutorials_regenerate_tutorial(${CMAKE_CURRENT_SOURCE_DIR})
 
-cmake_minimum_required(VERSION 3.8.2)
+cmake_minimum_required(VERSION 3.10)
 
 project(vm-app C ASM)
 include(ExternalProject)

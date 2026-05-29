@@ -462,7 +462,7 @@ each argument to the print server one at a time.
 
 ```cmake
 /*-- filter TaskContent("crossvm", TaskContentType.COMPLETED, subtask="vm-pkg-print_client-cmake", completion='buildroot login') -*/
-cmake_minimum_required(VERSION 3.8.2)
+cmake_minimum_required(VERSION 3.10)
 
 project(print_client C)
 
@@ -544,7 +544,7 @@ world
 include(${SEL4_TUTORIALS_DIR}/settings.cmake)
 sel4_tutorials_regenerate_tutorial(${CMAKE_CURRENT_SOURCE_DIR})
 
-cmake_minimum_required(VERSION 3.8.2)
+cmake_minimum_required(VERSION 3.10)
 
 project(vm-app C ASM)
 find_package(camkes-vm REQUIRED)

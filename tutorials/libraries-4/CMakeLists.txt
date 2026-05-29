@@ -7,7 +7,7 @@
 include(${SEL4_TUTORIALS_DIR}/settings.cmake)
 sel4_tutorials_regenerate_tutorial(${CMAKE_CURRENT_SOURCE_DIR})
 
-cmake_minimum_required(VERSION 3.7.2)
+cmake_minimum_required(VERSION 3.10)
 # declare the libraries-4 CMake project and the languages it is written in
 project(libraries-4 C ASM)
 

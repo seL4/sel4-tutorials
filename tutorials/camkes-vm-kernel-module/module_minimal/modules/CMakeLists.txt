@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: BSD-2-Clause
 #
-cmake_minimum_required(VERSION 3.8.2)
+cmake_minimum_required(VERSION 3.10)
 if(NOT MODULE_HELPERS_FILE)
     message(FATAL_ERROR "MODULE_HELPERS_FILE is not defined")
 endif()

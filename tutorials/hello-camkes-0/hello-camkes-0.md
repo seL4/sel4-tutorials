@@ -153,7 +153,7 @@ directory should contain the following `CMakeLists.txt` file:
 include(${SEL4_TUTORIALS_DIR}/settings.cmake)
 sel4_tutorials_regenerate_tutorial(${CMAKE_CURRENT_SOURCE_DIR})
 
-cmake_minimum_required(VERSION 3.7.2)
+cmake_minimum_required(VERSION 3.10)
 
 project(hello-camkes-0 C ASM)
 
