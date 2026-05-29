@@ -193,7 +193,7 @@ assembly {
 
 ### Define an interface
 
-**Exercise** Define the interface for hello in `interfaces/HelloSimple.idl4`. 
+**Exercise** Define the interface for hello in `interfaces/HelloSimple.idl4`.
 
 ```c
 /* Simple RPC interface */
@@ -382,7 +382,7 @@ Component echo saying: hello world
 include(${SEL4_TUTORIALS_DIR}/settings.cmake)
 sel4_tutorials_regenerate_tutorial(${CMAKE_CURRENT_SOURCE_DIR})
 
-cmake_minimum_required(VERSION 3.7.2)
+cmake_minimum_required(VERSION 3.10)
 
 project(hello-camkes-1 C ASM)
 

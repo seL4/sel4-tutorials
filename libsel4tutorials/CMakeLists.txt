@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: BSD-2-Clause
 #
 
-cmake_minimum_required(VERSION 3.8.2)
+cmake_minimum_required(VERSION 3.10)
 
 add_library(sel4tutorials STATIC EXCLUDE_FROM_ALL src/constructors.c src/alloc.c)
 

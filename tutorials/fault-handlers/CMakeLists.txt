@@ -7,7 +7,7 @@
 include(${SEL4_TUTORIALS_DIR}/settings.cmake)
 sel4_tutorials_regenerate_tutorial(${CMAKE_CURRENT_SOURCE_DIR})
 
-cmake_minimum_required(VERSION 3.7.2)
+cmake_minimum_required(VERSION 3.10)
 # declare the fault-handlers CMake project and the languages it is written in
 project(fault-handlers C ASM)
 
@@ -19,7 +19,7 @@ cdl_pp(${CMAKE_CURRENT_SOURCE_DIR}/.manifest.obj cdl_pp_target
     ELF "/*?elf?*/"
     CFILE "${CMAKE_CURRENT_BINARY_DIR}/cspace_/*?elf?*/.c"
     /*- endfor -*/
-)   
+)
 
 /*- for (elf, file) in state.stash.elfs.items() -*/
 add_executable(/*?elf?*/ EXCLUDE_FROM_ALL /*?file['filename']?*/ cspace_/*?elf?*/.c)
@@ -32,7 +32,7 @@ list(APPEND elf_targets "/*?elf?*/")
 /*- endfor -*/
 
 
-cdl_ld("${CMAKE_CURRENT_BINARY_DIR}/spec.cdl" capdl_spec 
+cdl_ld("${CMAKE_CURRENT_BINARY_DIR}/spec.cdl" capdl_spec
     MANIFESTS ${CMAKE_CURRENT_SOURCE_DIR}/.allocator.obj
     ELF ${elf_files}
     KEYS ${elf_targets}
