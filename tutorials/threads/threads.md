@@ -361,7 +361,7 @@ you have at least set the instruction pointer (IP) correctly.
     // TODO use valid instruction pointer
     sel4utils_set_instruction_pointer(&regs, (seL4_Word)NULL);
     // TODO use valid stack pointer
-    sel4utils_set_stack_pointer(&regs, NULL);
+    sel4utils_set_stack_pointer(&regs, (seL4_Word)NULL);
     // TODO fix parameters to this invocation
     error = seL4_TCB_WriteRegisters(seL4_CapNull, 0, 0, 0, &regs);
     ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
