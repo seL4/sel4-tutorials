@@ -6,7 +6,7 @@
 
 set(supported "qemu-arm-virt")
 if(NOT "${PLATFORM}" IN_LIST supported)
-    message(FATAL_ERROR "PLATFORM: ${PLATFORM} not supported.
+  message(FATAL_ERROR "PLATFORM: ${PLATFORM} not supported.
          Supported: ${supported}")
 endif()
 
