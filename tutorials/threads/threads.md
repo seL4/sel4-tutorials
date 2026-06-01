@@ -345,18 +345,36 @@ Failed to write the new thread's register set.
 The TCB is nearly ready to run, except for its initial registers. You need to set the
 program counter and stack pointer to valid values, otherwise your thread will crash immediately.
 
-`libsel4utils` contains some functions for setting register contents in a platform agnostic manner.
-You can use these methods to set the program counter (instruction pointer) and stack pointer in
-this way.  _Note: It is assumed that the stack grows downwards on all platforms._
+`libsel4utils` contains functions for setting the program counter (instruction
+pointer) and stack pointer without mentioning their platform-specific register
+names. We will use these below.
 
-**Exercise** Set up the new thread to call the function `new_thread`. You can use the debug syscall to verify that
-you have at least set the instruction pointer (IP) correctly.
+We may assume that the stack grows downwards on all platforms, but there is
+still a difference between the calling conventions on Arm and x86-64: On x86-64,
+the compiler expects that a return address has been pushed to the stack when a
+function is called. On Arm, the link register is used instead of the stack for
+this purpose. There is no address to return to for the initial function of a
+thread, and we do not intend to return from the function `new_thread`. The
+compiler does not know this, so we simulate a pushed return address by moving
+the stack pointer by one word on x86-64.
+
+**Exercise** Set up the new thread to call the function `new_thread`. You can
+use the debug syscall to verify that you have at least set the instruction
+pointer (IP) correctly.
 
 ```c
 /*-- filter TaskContent("threads-start", TaskContentType.ALL, subtask='context') -*/
     seL4_UserContext regs = {0};
     int error = seL4_TCB_ReadRegisters(tcb_cap_slot, 0, 0, sizeof(regs)/sizeof(seL4_Word), &regs);
     ZF_LOGF_IFERR(error, "Failed to read the new thread's register set.\n");
+
+    uintptr_t thread_stack = tcb_stack_top;
+    /* The x86-64 ABI assumes there is a return address pushed on the stack. Arm uses the link register instead. */
+    #ifdef __x86_64__
+    /* Since we never return from new_thread, the value of the return address does not matter and
+       we only move the stack pointer. */
+    thread_stack -= sizeof(seL4_Word);
+    #endif
 
     // TODO use valid instruction pointer
     sel4utils_set_instruction_pointer(&regs, (seL4_Word)NULL);
@@ -380,8 +398,16 @@ you have at least set the instruction pointer (IP) correctly.
     int error = seL4_TCB_ReadRegisters(tcb_cap_slot, 0, 0, sizeof(regs)/sizeof(seL4_Word), &regs);
     ZF_LOGF_IFERR(error, "Failed to read the new thread's register set.\n");
 
+    uintptr_t new_thread_stack = tcb_stack_top;
+    /* The x86-64 ABI assumes there is a return address pushed on the stack. Arm uses the link register instead. */
+    #ifdef __x86_64__
+    /* Since we never return from new_thread, the value of the return address does not matter and
+       we only move the stack pointer. */
+    new_thread_stack -= sizeof(seL4_Word);
+    #endif
+
     sel4utils_set_instruction_pointer(&regs, (seL4_Word)new_thread);
-    sel4utils_set_stack_pointer(&regs, tcb_stack_top);
+    sel4utils_set_stack_pointer(&regs, new_thread_stack);
     error = seL4_TCB_WriteRegisters(tcb_cap_slot, 0, 0, sizeof(regs)/sizeof(seL4_Word), &regs);
     ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
                   "\tDid you write the correct number of registers? See arg4.\n");
@@ -433,21 +459,19 @@ If everything has been configured correctly, resuming the thread should result i
 
 You will notice that all of the arguments to the new thread are 0. You can set the arguments by
 using the helper function `sel4utils_arch_init_local_context` or by directly manipulating the registers
-for your target architecture.
+for your target architecture. The helper function also takes care of the difference in stack pointers
+between Arm and x86-64, so we can use `tcb_stack_top` directly in both cases if we use it.
 
-**Exercise** update the values written with `seL4_TCB_WriteRegisters` to pass the values 1, 2, 3 as arg1,
-arg2, and arg3 respectively.
+**Exercise** pass the values 1, 2, 3 as arg1, arg2, and arg3 respectively.
 
 ```c
     seL4_UserContext regs = {0};
     int error = seL4_TCB_ReadRegisters(tcb_cap_slot, 0, 0, sizeof(regs)/sizeof(seL4_Word), &regs);
     ZF_LOGF_IFERR(error, "Failed to read the new thread's register set.\n");
 
-     // use valid instruction pointer
+    // TODO: find and use sel4utils_arch_init_local_context instead of the following two functions to set up new_thread
     sel4utils_set_instruction_pointer(&regs, (seL4_Word) new_thread);
-    // use valid stack pointer
     sel4utils_set_stack_pointer(&regs, tcb_stack_top);
-    // fix parameters to this invocation
     error = seL4_TCB_WriteRegisters(tcb_cap_slot, 0, 0, sizeof(regs)/sizeof(seL4_Word), &regs);
 
     ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
@@ -461,7 +485,7 @@ arg2, and arg3 respectively.
 ```c
 /*-- filter TaskContent("threads-context-2", TaskContentType.ALL, subtask='context', completion='Hello2: arg1 0x1, arg2 0x2, arg3 0x3') -*/
 
-UNUSED seL4_UserContext regs = {0};
+    seL4_UserContext regs = {0};
     int error = seL4_TCB_ReadRegisters(tcb_cap_slot, 0, 0, sizeof(regs)/sizeof(seL4_Word), &regs);
     ZF_LOGF_IFERR(error, "Failed to write the new thread's register set.\n"
                   "\tDid you write the correct number of registers? See arg4.\n");
