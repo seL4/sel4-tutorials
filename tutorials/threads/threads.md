@@ -102,24 +102,28 @@ Threads can surrender their current timeslice using the `seL4_Yield` system call
 
 #### Domain scheduling
 
-In order to provide confidentiality seL4 provides a top-level hierarchical scheduler which
-provides static, cyclical scheduling of scheduling partitions known as domains.  Domains are
-statically configured at compile time with a cyclic schedule, and are non-preemptible resulting in
-completely deterministic scheduling of domains.
+For systems with strict confidentiality requirements, seL4 provides an optional
+top-level hierarchical scheduler with provides static, cyclical scheduling of
+scheduling partitions known as domains. Domains and domain schedules can be
+configured using the `seL4_DomainSet` capability, and are non-preemptible
+resulting in completely deterministic scheduling of domains. By default, only
+domain 0 runs and threads start in the domain they were retyped in.
 
-Threads can be assigned to domains, and threads are only scheduled
+Threads can also be manually assigned to domains. Threads are only scheduled
 when their domain is active. Cross-domain IPC is delayed until a domain switch, and
-seL4_Yield between domains is not possible. When there are no threads to run while a
+`seL4_Yield` between domains has no effect. When there are no threads to run while a
 domain is scheduled, a domain-specific idle thread will run until a switch occurs.
 
-Assigning a thread to a domain requires access to the `seL4_DomainSet` capability. This allows a
-thread to be added to any domain.
+Assigning a thread to a domain requires access to the `seL4_DomainSet`
+capability. This allows a thread to be added to any domain.
 
 ```c
 /* Set thread's domain */
 seL4_Error seL4_DomainSet_Set(seL4_DomainSet _service, seL4_Uint8 domain, seL4_TCB thread);
-
 ```
+
+See the [seL4 manual](https://sel4.systems/Info/Docs/seL4-manual-latest.pdf) for information
+on how to set up domain schedules.
 
 ### Thread Attributes
 
