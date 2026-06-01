@@ -10,9 +10,11 @@
 /*- set progname = "threads" -*/
 
 # Threads
+
 This is a tutorial for using threads on seL4.
 
 In this tutorial, you will:
+
 1. Learn the jargon TCB.
 2. Learn how to start a thread in the same address space.
 3. Learn how to read and update TCB register state.
@@ -48,6 +50,7 @@ seL4 provides threads to represent an execution context and manage processor tim
 seL4 are realised by *thread control block* objects (TCBs), one for each kernel thread.
 
 TCBs contain the following information:
+
 * a priority and maximum control priority,
 * register state and floating-point context,
 * CSpace capability,
@@ -147,7 +150,7 @@ The program that you construct will end up with its own CSpace and VSpace, which
 from the root task, meaning CSlots like `seL4_CapInitThreadVSpace` have no meaning
 in applications loaded by the capDL loader.
 
-Information about capDL projects can be found [here](https://docs.sel4.systems/projects/capdl/).
+More information about capDL can be found on the [seL4 docsite](https://docs.sel4.systems/projects/capdl/).
 
 ### Configure a TCB
 
@@ -269,6 +272,7 @@ as the current thread. Use the IPC buffer we have provided, but don't set a faul
 
 
 You should now be getting the following error:
+
 ```
 <<seL4(CPU 0) [decodeSetPriority/1035 T0xffffff8008140c00 "tcb_threads" @4012ef]: Set priority: author>
 main@threads.c:51 [Cond failed: result]
@@ -599,10 +603,10 @@ Now you should have a new thread, which immediately calls the function passed in
 That's all for the detailed content of this tutorial. Below we list other ideas for exercises you can try,
 to become more familiar with TCBs and threading in seL4.
 
-- Using different TCB invocations to change the new thread's attributes or objects
-- Investigate how setting different priorities affects when the threads are scheduled to run
-- Implementing synchronisation primitives using global memory.
-- Trying to repeat this tutorial in the root task where there are more resources available to
+* Using different TCB invocations to change the new thread's attributes or objects
+* Investigate how setting different priorities affects when the threads are scheduled to run
+* Implementing synchronisation primitives using global memory.
+* Trying to repeat this tutorial in the root task where there are more resources available to
   create more thread objects.
 
 
