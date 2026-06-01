@@ -157,8 +157,8 @@ Hello, World!
 Dumping all tcbs!
 Name                                        State           IP                       Prio    Core
 --------------------------------------------------------------------------------------
-tcb_threads                                running         0x4012ef    254                 0
-idle_thread                                 idle            (nil)   0                   0
+tcb_threads                                running          0x4012ef    254                 0
+idle_thread                                 idle            0           0                   0
 rootserver                                  inactive        0x4024c2    255                 0
 <<seL4(CPU 0) [decodeInvocation/530 T0xffffff8008140c00 "tcb_threads" @4012ef]: Attempted to invoke a >
 main@threads.c:42 [Cond failed: result]
@@ -315,10 +315,10 @@ set to the same as the main thread in the next `seL4_DebugDumpScheduler()` call.
 ```
 Name                                        State           IP                       Prio    Core
 --------------------------------------------------------------------------------------
-child of: 'tcb_threads'                    inactive        (nil)   254                 0
+child of: 'tcb_threads'                    inactive        0           254                 0
 tcb_threads                                running         0x4012ef    254                 0
-idle_thread                                 idle            (nil)   0                   0
-rootserver                                  inactive        0x4024c2    255                 0
+idle_thread                                 idle           0           0                   0
+rootserver                                  inactive       0x4024c2    255                 0
 <<seL4(CPU 0) [decodeInvocation/530 T0xffffff8008140c00 "tcb_threads" @4012ef]: Attempted to invoke a >
 main@threads.c:57 [Err seL4_InvalidCapability]:
 /*-- filter TaskCompletion("threads-priority", TaskContentType.COMPLETED) -*/
@@ -495,7 +495,7 @@ The last part of this tutorial is what to do when your thread faults. We provide
 kernel printing a fault message, as the thread you have created does not have a fault handler.
 
 In the output below you can see a cap fault has occurred. The first part of the error is that
-the kernel was unable to send a fault to a fault handler as it is set to `(nil)`. The kernel
+the kernel was unable to send a fault to a fault handler as it is set to `0`. The kernel
 then prints out the fault it was trying to send. In this case, the fault is a virtual memory fault.
 The new thread has tried to access data at address `0x2` which is an invalid and unmapped address.
 The output shows that the program counter of the thread when it faulted was `0x401e66`.
@@ -507,7 +507,7 @@ The size of the stack dump is configurable, using the
  `KernelUserStackTraceLength` cmake variable.
 
 ```
-Caught cap fault in send phase at address (nil)
+Caught cap fault in send phase at address 0
 while trying to handle:
 vm fault on data at address 0x2 with status 0x4
 in thread 0xffffff8008140400 "child of: 'tcb_threads'" at address 0x401e66
