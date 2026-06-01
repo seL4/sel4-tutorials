@@ -26,24 +26,6 @@ In this tutorial, you will:
 2. [Capabilities tutorial](https://docs.sel4.systems/Tutorials/capabilities.html)
 3. [Mapping tutorial](https://docs.sel4.systems/Tutorials/mapping.html)
 
-## capDL Loader
-
-Previous tutorials have taken place in the root task where the starting CSpace layout is set by the
-seL4 boot protocol. This tutorial uses the *capDL loader*, a root task which allocates statically
- configured objects and capabilities.
-
-The capDL loader parses
-a static description of the system and the relevant ELF binaries.
-It is primarily used in [CAmkES](https://docs.sel4.systems/projects/camkes/) projects
-but we also use it in the tutorials to reduce redundant code.
-The program that you construct will end up with its own CSpace and VSpace, which are separate
-from the root task, meaning CSlots like `seL4_CapInitThreadVSpace` have no meaning
-in applications loaded by the capDL loader.
-
-More information about capDL projects can be found [here](https://docs.sel4.systems/projects/capdl/).
-
-For this tutorial clone the [capDL repo](https://github.com/sel4/capdl). This can be added in a directory that is adjacent to the main `tutorials` directory.
-
 ## Initialising
 
 /*? macros.tutorial_init("threads") ?*/
