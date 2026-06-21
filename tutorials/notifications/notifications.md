@@ -359,6 +359,11 @@ int main(int c, char *argv[]) {
    }
 
     printf("Success!\n");
+
+    while (1) {
+        seL4_Yield();
+    }
+
     return 0;
 }
 /*-- endfilter -*/
