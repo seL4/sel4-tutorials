@@ -13,6 +13,32 @@ Various tutorials for using seL4, its libraries, and CAmkES.
 Follow the instructions for setting up your host environment on the [seL4
 docsite](https://docs.sel4.systems/Tutorials/setting-up.html).
 
+### Troubleshooting missing host tools
+
+If a tutorial build fails with:
+
+```text
+xmllint: command not found
+```
+
+install the XML command-line tools package:
+
+```sh
+sudo apt install libxml2-utils
+```
+
+If a tutorial build fails while generating `capDL-tool/parse-capDL` with:
+
+```text
+stack: No such file or directory
+```
+
+install Haskell Stack:
+
+```sh
+sudo apt install haskell-stack
+```
+
 ## Starting a tutorial
 
 This tutorial repository is part of a larger collection of repositories, which
