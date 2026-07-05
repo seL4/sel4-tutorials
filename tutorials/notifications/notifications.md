@@ -5,11 +5,13 @@
 -->
 
 /*? declare_task_ordering(['ntfn-start', 'ntfn-shmem', 'ntfn-signal', 'ntfn-badge', 'ntfn-final']) ?*/
+
 # Notifications and shared memory
 
 This tutorial covers notification objects.
 
 You will learn how to:
+
 1. Set up shared memory between tasks.
 2. Use notification objects for synchronisation between tasks.
 3. Use badges to differentiate notifications.
@@ -68,6 +70,7 @@ A notification object consists of a data word, which acts as an array of binary 
 TCBs waiting for notifications.
 
 Notification objects can be in three states:
+
 * Waiting - there are TCBs queued on this notification waiting for it to be signalled.
 * Active - TCBs have signalled data on this notification,
 * Idle - no TCBs are queued and no TCBs have signalled this object since it was last set to idle.
@@ -75,13 +78,14 @@ Notification objects can be in three states:
 #### Signalling
 
 When a task signals a notification object (using `seL4_Signal`), what occurs depends on the state of the object:
+
 * Idle - the data word is set to the badge of the capability used to send the signal, and the object is converted
  to active.
 * Active - the badge of the capability used to signal the notification object is bitwise-orred with the notifications data word.
 * Waiting - the head of the queue of TCBs is woken and the badge sent to that TCB. If the queue is empty, the notification
 object is transitioned to idle.
 
-In this way notification objects can be seen as a binary array of semaphores - if the signallers all use a
+In this way notification objects can be seen as an array of binary semaphores -- if the signallers all use a
 different bit in the badge, they can set different badge bits and waiters can observe which bits have been set.
 
 #### Waiting
@@ -99,24 +103,26 @@ immediately regardless of the state.
 
 ## Interrupts and IPC
 
-Notification objects can be used to receive signals of interrupt delivery, and can also be bound to TCBs
-such that signals and IPC can be received by the same thread. This is explained in more detail in the
-timer tutorial. <!--TODO link to timer tutorial -->
+Notification objects can be used to receive signals of interrupt delivery. This is explained in more detail in the [IRQ
+tutorial](https://docs.sel4.systems/Tutorials/interrupts.html). Notification objects can also be bound to TCBs such that
+a thread can wait for signals and IPC at the same time.
 
 ## Exercises
 
-These exercises guide you through a basic producer consumer set up using notifications and shared memory. The
-tutorial uses the capDL loader, and already has 2 producer processes (`producer_1.c` and `producer_2`) and 1 consumer
- process running (`consumer.c`). Each has access to a number of capabilities.
+These exercises guide you through a basic producer consumer set up using notifications and shared memory. The tutorial
+uses the capDL loader, and already has 2 producer processes (`producer_1.c` and `producer_2.c`) and 1 consumer process
+running (`consumer.c`). Each has access to a number of capabilities.
 
 Each producer shares a buffer with the consumer, and the consumer processes data from both producers when it is
 available.
 
 When you start the tutorial, the output will look something like this:
+
 ```
 Booting all finished, dropped to user space
 Waiting for producer
 ```
+
 ### Set up shared memory
 
 Both producers start and block immediately, waiting for the consumer to send an IPC with the address of the shared
