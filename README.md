@@ -47,13 +47,6 @@ can be provided to `--plat` and `--tut` respectively.
 Most tutorials support any target platform, with the exception of hello-camkes-timer, which only
 supports the zynq7000 platform.
 
-### Virtual Machine Image
-
-You can also download a [VirtualBox virtual machine appliance](https://trustworthy.systems/Downloads/sel4_tut_v3_lubuntu_16_041-v2.ova)([md5](https://trustworthy.systems/Downloads/sel4_tut_v3_lubuntu_16_041-v2.md5)) (3GB, based on Lubuntu 16.04.1 with all the seL4 tutorial prerequisites installed).
-
-This appliance is based on [VirtualBox 5.1.2](https://www.virtualbox.org/wiki/Downloads).
-You may also need to install the appropriate VirtualBox extensions available from the same page.
-
 ## Solutions
 
 To view the solutions for a tutorial instead of performing the tutorial pass the `--solution` flag
