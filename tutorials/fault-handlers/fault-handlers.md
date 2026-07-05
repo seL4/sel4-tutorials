@@ -716,7 +716,11 @@ int main(void)
 /*? include_task_type_append([("fault-resume", 'reply2')]) ?*/
 
 
-    return 0;
+    /* Ignore all further faults: */
+    while (1) {
+        /* It is Ok to pass NULL if we are not interested in the badge */
+        seL4_Recv(faulter_fault_ep_cap, NULL);
+    }
 }
 /*-- endfilter --*/
 ```
