@@ -36,8 +36,8 @@ Answers are also available in drop down menus under each section.
 
 ### What is a capability?
 
-A *capability* is a unique, unforgeable token that gives the possessor
-permission to access an entity or object in system. One way to think of a
+A *capability* is a unique, unforgeable token that constitutes a
+permission to access an entity or object in the system. One way to think of a
 capability is as a pointer with access rights. There are three kinds of
 capabilities in seL4:
 
@@ -96,12 +96,15 @@ Each CSlot in a CNode can be in the following state:
 * empty: the CNode slot contains a null capability,
 * full: the slot contains a capability to a kernel resource.
 
-By convention the 0th CSlot is kept empty, for the same reasons as keeping NULL unmapped in
- process virtual address spaces: to avoid errors when uninitialised slots are used unintentionally.
+By convention, most libraries keep the CSlot at index 0 empty, so that using an
+uninitialised slot variable produces an explicit error. This is similar to
+leaving NULL unmapped in a process's virtual address space.
 
-The field `info->CNodeSizeBits` gives a measure of the size of the initial
-CNode: it will have `1 << CNodeSizeBits` CSlots. A CSlot has
-`1 << seL4_SlotBits` bytes, so the size of a CNode in bytes is
+The structure `info` of type `seL4_BootInfo` in the example code contains
+information the kernel provides to the initial task. The field
+`info->CNodeSizeBits` in this structure is the *size in bits* of the initial CNode:
+the initial CNode has `1 << CNodeSizeBits` (i.e. 2<sup>CNodeSizeBits</sup>) CSlots.
+A CSlot has `1 << seL4_SlotBits` bytes, so the size of this CNode in bytes is
 `1 << (CNodeSizeBits + seL4_SlotBits)`.
 
 ### CSpaces
