@@ -16,9 +16,10 @@ docsite](https://docs.sel4.systems/Tutorials/setting-up.html).
 ## Starting a tutorial
 
 This tutorial repository is part of a larger collection of repositories, which
-are required to run the tutorial and are coordinated in a manifest file. See
-[this guide](https://docs.sel4.systems/Tutorials/get-the-tutorials.html) on how
-to check out a consistent set.
+are required to run the tutorial and are coordinated in a manifest file. After
+the setup steps above, see [this
+guide](https://docs.sel4.systems/Tutorials/get-the-tutorials.html) on how to
+check out a consistent set.
 
 Once you have that, a tutorial is started through the use of the `init` script
 that is provided in the root directory. Using this script you can specify a
