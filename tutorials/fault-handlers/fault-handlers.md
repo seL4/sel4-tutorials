@@ -5,14 +5,16 @@
 -->
 
 # Fault handling
+
 /*?
     declare_task_ordering(
-        ['fault-badge', 'fault-ep-setup', 'fault-ipc-recv', 'fault-handle', 'fault-resume'])
+        ['fault-badge', 'fault-ep-setup', 'fault-ipc-recv', 'fault-handle', 'fault-resume', 'fault-end'])
 ?*/
 
 This tutorial covers fault handling in seL4.
 
 You will learn:
+
 1. About thread faults.
 2. That a thread fault is different from a processor hardware fault.
 3. About fault handlers.
@@ -422,19 +424,48 @@ Finally, to have the `faulter` thread wake up and try to execute again, we
 `seL4_Reply()` to it:
 
 ```c
-     seL4_Reply(seL4_MessageInfo_new(0, 0, 0, 0));
-
-    printf(PROGNAME "Successfully resumed faulter thread.\n"
-           PROGNAME "Finished execution.\n");
-```
-
-/*-- filter ExcludeDocs() -*/
-```c
 /*-- filter TaskContent("fault-resume", TaskContentType.COMPLETED, subtask="reply", completion="Faulter: Finished execution.") -*/
      seL4_Reply(seL4_MessageInfo_new(0, 0, 0, 0));
+    /* faulter thread is now resumed */
 /*-- endfilter -*/
 ```
-/*-- endfilter -*/
+
+### Fault labels
+
+As mentioned above, the IPC message from the kernel contains information about
+the fault. As we have seen in the [IPC tutorial], `seL4_Recv` returns a message
+info struct, which among other fields contains the message label. For fault
+messages, this label contains the type of fault, e.g. `seL4_Fault_CapFault`
+which we handled above, or `seL4_Fault_VMFault` which is generated for instance
+when the faulting thread accesses an address that is not mapped. The chapter on
+faults in the [seL4 manual] contains the full list of fault types.
+
+When our `faulter` thread finishes and returns from `main()`, there is nothing
+to return to, since `main()` was not called by another C function. This will
+generate a VM fault, which the handler will receive.
+
+A typical fault handler would wait for such faults in a loop and then act based
+on the fault type in the message label and further information received in the
+fault message. There is nothing to repair and resume any more in our case, since
+the `faulter` thread has finished execution.
+
+```c
+/*-- filter TaskContent("fault-end", TaskContentType.ALL, subtask="end", completion="Done.") -*/
+    /* When the faulter thread returns from "main", this return will generate a VM fault. */
+    seL4_MessageInfo_t msg_info = seL4_Recv(faulter_fault_ep_cap, &tmp_badge);
+
+    /* The IPC message label says which kind of fault we have received */
+    switch (seL4_MessageInfo_get_label(msg_info)) {
+    case seL4_Fault_VMFault:
+       printf(PROGNAME "Faulter has returned from \"main\". Done.\n");
+       /* nothing to resume, the faulter has finished */
+       break;
+    default:
+       printf(PROGNAME "Received unexpected fault.\n");
+       break;
+    }
+/*-- endfilter --*/
+```
 
 ## Further exercises
 
@@ -634,12 +665,6 @@ int main(void)
 /*-- filter TaskContent("fault-resume", TaskContentType.BEFORE, subtask="reply", completion="About to resume the faulter thread.") -*/
     /* EXERCISE: How do we resume a thread that has faulted? seL4_Reply()! */;
 /*-- endfilter --*/
-
-
-/*-- filter TaskContent("fault-resume", TaskContentType.ALL, subtask="reply2") -*/
-    printf(PROGNAME "Successfully resumed faulter thread.\n"
-           PROGNAME "Finished execution.\n");
-/*-- endfilter --*/
 ```
 
 ```c
@@ -713,8 +738,8 @@ int main(void)
 /*? include_task_type_append([("fault-handle", 'copy2')]) ?*/
 
 /*? include_task_type_append([("fault-resume", 'reply')]) ?*/
-/*? include_task_type_append([("fault-resume", 'reply2')]) ?*/
 
+/*? include_task_type_append([("fault-end", 'end')]) ?*/
 
     /* Ignore all further faults: */
     while (1) {
