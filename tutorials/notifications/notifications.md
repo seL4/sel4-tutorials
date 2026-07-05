@@ -4,7 +4,7 @@
   SPDX-License-Identifier: BSD-2-Clause
 -->
 
-/*? declare_task_ordering(['ntfn-start', 'ntfn-shmem', 'ntfn-signal', 'ntfn-badge']) ?*/
+/*? declare_task_ordering(['ntfn-start', 'ntfn-shmem', 'ntfn-signal', 'ntfn-badge', 'ntfn-final']) ?*/
 # Notifications and shared memory
 
 This tutorial covers notification objects.
@@ -222,7 +222,7 @@ which of the producers (it may be both) has produced data.
 <summary><em>Quick solution</em></summary>
 
 ```c
-/*-- filter TaskContent("ntfn-badge", TaskContentType.COMPLETED, subtask="badge", completion="Success") -*/
+/*-- filter TaskContent("ntfn-badge", TaskContentType.COMPLETED, subtask="badge", completion="Got badge: 1") -*/
         if (badge & 0b01) {
             assert(*buf1 == 1);
             *buf1 = 0;
@@ -237,7 +237,43 @@ which of the producers (it may be both) has produced data.
 ```
 </details>
 
-At this point, you should see signals from both producers being processed, and the final `Success!` message printed.
+At this point, you should see signals from both producers being processed, and
+you should usually see the `Success!` message being printed.
+
+However, there is still a race condition: at the end of each loop body, both
+producers will be active in the sense that they are either running/printing or
+waiting on `empty`, but they have not been woken up from `empty`. Since they can
+both be printing, they can interleave their output with the `Success!` message.
+
+**Exercise** Make the `Success!` printing robust by using `seL4_Wait` to wait
+for the producers to finish. Note that after waiting once, both producers may
+have signalled already. Use the badge value to determine whether you have to
+wait a second time.
+
+```c
+/*-- filter TaskContent("ntfn-start", TaskContentType.ALL, subtask="final", completion="Success") -*/
+    // TODO, make the printf below race-free with the producers by waiting for
+    // the producer message. Note that both producers may have already signalled.
+/*-- endfilter -*/
+
+```
+<details markdown='1'>
+<summary><em>Quick solution</em></summary>
+
+```c
+/*-- filter TaskContent("ntfn-final", TaskContentType.COMPLETED, subtask="final", completion="Success") -*/
+    // wait for the producers to stop printing
+    seL4_Wait(full, &badge);
+    // unless we have received both signals, we need to wait for the second producer
+    if (badge != 0b11) {
+        seL4_Wait(full, &badge);
+    }
+/*-- endfilter -*/
+```
+</details>
+
+Now the final `Success!` message printing is robust against races from the
+producers.
 
 ### Further exercises
 
@@ -357,6 +393,8 @@ int main(int c, char *argv[]) {
         printf("Got badge: %lx\n", badge);
         /*? include_task_type_replace([("ntfn-start", 'badge'), ("ntfn-badge", 'badge')]) ?*/
    }
+
+    /*? include_task_type_replace([("ntfn-start", 'final'), ("ntfn-final", 'final')]) ?*/
 
     printf("Success!\n");
 
