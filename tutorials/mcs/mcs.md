@@ -103,7 +103,7 @@ for scheduling.
 ### Bounding execution
 
 For partial scheduling contexts, an upper bound on execution is enforced by seL4 using the *sporadic server*
-algorithm, which work by guaranteeing the *sliding window* constrain, meaning that during any period, the
+algorithm, which work by guaranteeing the *sliding window* constraint, meaning that during any period, the
 budget cannot be exceeded. This is achieved by tracking the eligible budget in chunks called
 *replenishments* (abbreviated to `refills` in the API for brevity). A replenishment is simply an amount
  of time, and a timestamp from which that time can be consumed. We explain this now through an example:
